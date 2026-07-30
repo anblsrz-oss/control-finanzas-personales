@@ -1,5 +1,5 @@
 {
-  "version": "0.7.0",
+  "version": "0.7.1",
   "apkUrl": "https://github.com/anblsrz-oss/finzen-frontend/releases/latest/download/finzen.apk",
   "notes": "Captura automática de movimientos: activa la sincronización en tiempo real de tu correo (Gmail) desde \"Sincronizar correo\" para que las alertas de tu banco entren solas como pendientes. En Android también puedes activar la captura automática de SMS bancarios desde \"Sincronizar SMS\", detectando ingresos y gastos según el texto."
 }

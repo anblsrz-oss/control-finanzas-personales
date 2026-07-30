@@ -56,15 +56,16 @@ public class SmsReceiver extends BroadcastReceiver {
         }
         final String body = bodyBuilder.toString();
         final String sender = address == null ? "" : address;
+        final long smsDate = date;
 
         // Filtrar por remitentes configurados (si hay lista).
         if (!senderMatches(sender, sendersCsv)) return;
 
-        final int tzOffsetMin = -TimeZone.getDefault().getOffset(date) / 60000;
+        final int tzOffsetMin = -TimeZone.getDefault().getOffset(smsDate) / 60000;
         final PendingResult pending = goAsync();
         new Thread(() -> {
             try {
-                boolean ok = post(url, anon, token, sender, body, date, tzOffsetMin);
+                boolean ok = post(url, anon, token, sender, body, smsDate, tzOffsetMin);
                 if (ok) notify(context, body);
             } catch (Exception e) {
                 Log.w(TAG, "Fallo al enviar SMS a ingest-sms", e);
