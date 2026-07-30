@@ -1,5 +1,5 @@
 {
-  "version": "0.6.0",
+  "version": "0.7.0",
   "apkUrl": "https://github.com/anblsrz-oss/finzen-frontend/releases/latest/download/finzen.apk",
-  "notes": "Sincronización de correo mejorada: ahora puedes editar y borrar los remitentes que ya tenías guardados, y si Google rechaza el permiso (403) la app te lo avisa con el motivo real en vez de un error genérico. Los movimientos detectados por correo llegan como pendientes: verás un badge con cuántos hay por revisar y un botón \"Confirmar\" para aceptarlos uno a uno desde la lista de transacciones."
+  "notes": "Captura automática de movimientos: activa la sincronización en tiempo real de tu correo (Gmail) desde \"Sincronizar correo\" para que las alertas de tu banco entren solas como pendientes. En Android también puedes activar la captura automática de SMS bancarios desde \"Sincronizar SMS\", detectando ingresos y gastos según el texto."
 }
