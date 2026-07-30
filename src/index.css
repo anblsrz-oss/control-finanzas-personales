@@ -16,6 +16,11 @@
   --brand-800: 17 94 89;
   --bg: 248 250 252; /* slate-50 */
   --surface: 255 255 255; /* white */
+
+  /* Tokens de motion compartidos (curvas fuertes para UI deliberada). */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* El store de ajustes agrega/quita la clase `dark` en <html>. */
@@ -55,5 +60,72 @@ body {
 @media (min-width: 768px) {
   .pb-nav {
     padding-bottom: 1.5rem;
+  }
+}
+
+/* Entrada de la tarjeta de éxito tras registrar un gasto/ingreso escaneado. */
+@keyframes card-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.animate-card-pop-in {
+  animation: card-pop-in 320ms var(--ease-out) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-card-pop-in {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Rebote del emoji ✅ dentro de la tarjeta de éxito (delight, poco frecuente). */
+@keyframes success-pop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.animate-success-pop {
+  animation: success-pop 400ms var(--ease-out) 80ms both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-success-pop {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+/* Entrada suave para estados vacíos (listas sin datos). */
+@keyframes empty-state-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-empty-state-in {
+  animation: empty-state-in 240ms var(--ease-out) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-empty-state-in {
+    animation: none;
+    opacity: 1;
   }
 }

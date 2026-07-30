@@ -232,7 +232,7 @@ export function CategoriesPage() {
         )}
 
         {allCategories.length === 0 && (
-          <Card className="border-dashed text-center">
+          <Card className="animate-empty-state-in border-dashed text-center">
             <p className="text-sm text-slate-500 dark:text-slate-400">{t('Sin categorías.')}</p>
           </Card>
         )}

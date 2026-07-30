@@ -40,7 +40,7 @@ export const ChartCard = forwardRef<HTMLDivElement, ChartCardProps>(function Cha
   const isLast = idx === order.length - 1
 
   const arrowClass =
-    'rounded p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-200 disabled:opacity-30 disabled:hover:bg-transparent'
+    'rounded p-1 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600 dark:hover:text-slate-200 disabled:opacity-30 disabled:hover:bg-transparent'
 
   return (
     <Card>

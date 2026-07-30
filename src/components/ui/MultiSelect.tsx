@@ -25,6 +25,8 @@ export function MultiSelect({
 }: MultiSelectProps) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
+  const [dropdownRendered, setDropdownRendered] = useState(false)
+  const [dropdownVisible, setDropdownVisible] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -43,6 +45,17 @@ export function MultiSelect({
       document.removeEventListener('touchstart', onPointerDown)
       document.removeEventListener('keydown', onKeyDown)
     }
+  }, [open])
+
+  useEffect(() => {
+    if (open) {
+      setDropdownRendered(true)
+      const raf = requestAnimationFrame(() => setDropdownVisible(true))
+      return () => cancelAnimationFrame(raf)
+    }
+    setDropdownVisible(false)
+    const timeout = setTimeout(() => setDropdownRendered(false), 120)
+    return () => clearTimeout(timeout)
   }, [open])
 
   const toggle = (v: string) => {
@@ -84,7 +97,7 @@ export function MultiSelect({
                     role="button"
                     tabIndex={0}
                     aria-label={t('Quitar')}
-                    className="cursor-pointer opacity-60 hover:opacity-100"
+                    className="cursor-pointer opacity-60 transition-opacity hover:opacity-100"
                     onClick={(e) => {
                       e.stopPropagation()
                       toggle(o.value)
@@ -106,8 +119,12 @@ export function MultiSelect({
           <span className="shrink-0 text-slate-400">▾</span>
         </button>
 
-        {open && (
-          <div className="absolute z-20 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 py-1 shadow-lg">
+        {dropdownRendered && (
+          <div
+            className={`absolute z-20 mt-1 max-h-60 w-full origin-top overflow-auto rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 py-1 shadow-lg transition-[transform,opacity] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:scale-100 motion-reduce:transition-opacity ${
+              dropdownVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
+            }`}
+          >
             {options.length === 0 && (
               <p className="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">
                 {t('Sin opciones')}

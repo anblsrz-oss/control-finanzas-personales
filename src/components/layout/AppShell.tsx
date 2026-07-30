@@ -71,6 +71,19 @@ export function AppShell() {
   const hideAmounts = useSettings((s) => s.hideAmounts)
   const toggleHideAmounts = useSettings((s) => s.toggleHideAmounts)
   const [moreOpen, setMoreOpen] = useState(false)
+  const [sheetRendered, setSheetRendered] = useState(false)
+  const [sheetVisible, setSheetVisible] = useState(false)
+
+  useEffect(() => {
+    if (moreOpen) {
+      setSheetRendered(true)
+      const raf = requestAnimationFrame(() => setSheetVisible(true))
+      return () => cancelAnimationFrame(raf)
+    }
+    setSheetVisible(false)
+    const timeout = setTimeout(() => setSheetRendered(false), 220)
+    return () => clearTimeout(timeout)
+  }, [moreOpen])
   const location = useLocation()
 
   // Cierra el menú "Más" al navegar a otra ruta.
@@ -174,13 +187,17 @@ export function AppShell() {
       </div>
 
       {/* Hoja "Más" (solo móvil) */}
-      {moreOpen && (
+      {sheetRendered && (
         <div
-          className="fixed inset-0 z-30 bg-black/40 md:hidden"
+          className={`fixed inset-0 z-30 bg-black/40 transition-opacity duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] md:hidden ${
+            sheetVisible ? 'opacity-100' : 'opacity-0'
+          }`}
           onClick={() => setMoreOpen(false)}
         >
           <div
-            className="safe-bottom fixed inset-x-0 bottom-0 z-40 rounded-t-2xl bg-surface p-4 pb-6 shadow-xl"
+            className={`safe-bottom fixed inset-x-0 bottom-0 z-40 rounded-t-2xl bg-surface p-4 pb-6 shadow-xl transition-transform duration-[280ms] ease-[cubic-bezier(0.32,0.72,0,1)] motion-reduce:transition-opacity motion-reduce:duration-200 ${
+              sheetVisible ? 'translate-y-0' : 'translate-y-full'
+            }`}
             onClick={(e) => e.stopPropagation()}
           >
             <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">

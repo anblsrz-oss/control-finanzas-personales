@@ -529,9 +529,9 @@ export function ReceiptPage() {
       )}
 
       {step === 'done' && (
-        <Card>
+        <Card className="animate-card-pop-in">
           <div className="flex flex-col items-center gap-4 py-6">
-            <span className="text-5xl">✅</span>
+            <span className="animate-success-pop text-5xl">✅</span>
             <p className="text-sm text-slate-700 dark:text-slate-200">
               {isIncome
                 ? t('Ingreso registrado correctamente.')

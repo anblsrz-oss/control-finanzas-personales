@@ -292,7 +292,7 @@ export function TransactionsPage() {
       />
 
       {transactions.length === 0 ? (
-        <Card className="border-dashed text-center">
+        <Card className="animate-empty-state-in border-dashed text-center">
           <p className="text-sm text-slate-500 dark:text-slate-400">
             {/* "No hay nada" y "no hay nada que cumpla el filtro" son
                 situaciones distintas: la segunda tiene salida. */}
@@ -342,7 +342,7 @@ export function TransactionsPage() {
                     <button
                       onClick={() => confirmTx.mutate({ id: tx.id, userId: userId! })}
                       disabled={confirmTx.isPending}
-                      className="text-xs font-medium text-green-600 hover:text-green-700 disabled:opacity-50"
+                      className="text-xs font-medium text-green-600 transition-colors hover:text-green-700 disabled:opacity-50"
                     >
                       ✓ {t('Confirmar')}
                     </button>
@@ -352,13 +352,13 @@ export function TransactionsPage() {
                       setShowForm(false)
                       setEditingTx(tx)
                     }}
-                    className="text-xs font-medium text-brand-600 hover:text-brand-800 dark:text-brand-400"
+                    className="text-xs font-medium text-brand-600 transition-colors hover:text-brand-800 dark:text-brand-400"
                   >
                     ✏️ {t('Editar')}
                   </button>
                   <button
                     onClick={() => openDelete(tx)}
-                    className="text-xs font-medium text-red-500 hover:text-red-700"
+                    className="text-xs font-medium text-red-500 transition-colors hover:text-red-700"
                   >
                     🗑 {t('Eliminar')}
                   </button>
