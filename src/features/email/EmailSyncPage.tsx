@@ -11,7 +11,11 @@ import type { ParsingRuleRow } from '@/types/db'
 import {
   connectGmail,
   getProviderToken,
+  getProviderRefreshToken,
   useSyncEmail,
+  useGmailConnection,
+  useEnableGmailPush,
+  useDisableGmailPush,
 } from '@/hooks/useEmailSync'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
@@ -29,11 +33,16 @@ export function EmailSyncPage() {
   const saveRule = useSaveParsingRule()
   const deleteRule = useDeleteParsingRule()
   const syncEmail = useSyncEmail()
+  const gmailConnQuery = useGmailConnection(userId)
+  const enablePush = useEnableGmailPush()
+  const disablePush = useDisableGmailPush()
 
   const accounts = accountsQuery.data || []
   const rules = rulesQuery.data || []
+  const pushActive = !!gmailConnQuery.data
 
   const [providerToken, setProviderToken] = useState<string | null>(null)
+  const [providerRefreshToken, setProviderRefreshToken] = useState<string | null>(null)
   const [accountId, setAccountId] = useState('')
   const [msg, setMsg] = useState<string | null>(null)
 
@@ -49,9 +58,41 @@ export function EmailSyncPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
 
   useEffect(() => {
-    // Al volver del consentimiento de Gmail, la sesión trae el provider_token.
+    // Al volver del consentimiento de Gmail, la sesión trae el provider_token
+    // (y el refresh_token solo en el primer consentimiento offline).
     void getProviderToken().then(setProviderToken)
+    void getProviderRefreshToken().then(setProviderRefreshToken)
   }, [session])
+
+  async function handleEnablePush() {
+    if (!userId || !providerToken) return
+    setMsg(null)
+    try {
+      const res = await enablePush.mutateAsync({
+        userId,
+        providerToken,
+        providerRefreshToken,
+      })
+      setMsg(
+        res.hasRefreshToken
+          ? t('Captura automática de correo activada. Los correos nuevos se registrarán solos.')
+          : t('Activada, pero Google no entregó el permiso offline. Desconecta y vuelve a conectar Gmail para que la captura se mantenga.'),
+      )
+    } catch (e) {
+      setMsg(`${t('Error:')} ${(e as Error).message}`)
+    }
+  }
+
+  async function handleDisablePush() {
+    if (!userId) return
+    setMsg(null)
+    try {
+      await disablePush.mutateAsync({ userId })
+      setMsg(t('Captura automática de correo desactivada.'))
+    } catch (e) {
+      setMsg(`${t('Error:')} ${(e as Error).message}`)
+    }
+  }
 
   async function handleSync() {
     if (!userId || !providerToken) return
@@ -137,7 +178,11 @@ export function EmailSyncPage() {
     <>
       <PageHeader
         title={t('Sincronizar correo')}
-        subtitle={t('Lee alertas de tu banco y correos de proveedores (facturas, tickets, domiciliados) desde tu Gmail y crea movimientos pendientes. Gratis y casi en tiempo real.')}
+        subtitle={
+          pushActive
+            ? t('Captura automática activa: los correos nuevos de tu banco se registran solos, en tiempo real, como pendientes.')
+            : t('Lee alertas de tu banco y correos de proveedores (facturas, tickets, domiciliados) desde tu Gmail y crea movimientos pendientes.')
+        }
       />
 
       <div className="grid gap-4">
@@ -290,9 +335,14 @@ export function EmailSyncPage() {
             {!providerToken ? (
               <Button onClick={() => connectGmail()}>{t('Conectar Gmail')}</Button>
             ) : (
-              <span className="self-center text-sm text-green-600">
-                ✓ {t('Gmail conectado')}
-              </span>
+              <>
+                <span className="self-center text-sm text-green-600">
+                  ✓ {t('Gmail conectado')}
+                </span>
+                <Button variant="secondary" onClick={() => connectGmail()}>
+                  {t('Reconectar (forzar permisos)')}
+                </Button>
+              </>
             )}
             <Button
               onClick={handleSync}
@@ -301,6 +351,9 @@ export function EmailSyncPage() {
               {syncEmail.isPending ? t('Sincronizando…') : t('Sincronizar ahora')}
             </Button>
           </div>
+          <p className="text-xs text-slate-400 dark:text-slate-500">
+            {t('Si iniciaste sesión con Google normalmente (no con este botón), el token guardado no trae permiso de Gmail. Pulsa "Reconectar" para autorizarlo, incluso si ya dice conectado.')}
+          </p>
           {rules.length === 0 && (
             <p className="text-xs text-amber-600">
               {t('Agrega al menos un remitente arriba antes de sincronizar.')}
@@ -311,6 +364,44 @@ export function EmailSyncPage() {
           </p>
           <p className="text-xs text-slate-400 dark:text-slate-500">
             {t('Los movimientos se crean como pendientes: revísalos y confírmalos en Transacciones para que cuenten en tus saldos.')}
+          </p>
+        </Card>
+
+        {/* Captura automática en tiempo real (Gmail push) */}
+        <Card className="grid gap-3">
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+            {t('3. Captura automática en tiempo real')}
+          </h3>
+          <p className="text-sm text-slate-600 dark:text-slate-300">
+            {pushActive
+              ? t('✅ Activada. Google avisa a la app en cuanto llega un correo y se registra solo.')
+              : t('Actívala para no tener que pulsar "Sincronizar": los correos nuevos se registran solos en cuanto llegan.')}
+            {pushActive && gmailConnQuery.data?.watch_expiration && (
+              <span className="block text-xs text-slate-400 dark:text-slate-500">
+                {t('Se renueva automáticamente cada semana.')}
+              </span>
+            )}
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {!pushActive ? (
+              <Button
+                onClick={handleEnablePush}
+                disabled={!providerToken || rules.length === 0 || enablePush.isPending}
+              >
+                {enablePush.isPending ? t('Activando…') : t('Activar tiempo real')}
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                onClick={handleDisablePush}
+                disabled={disablePush.isPending}
+              >
+                {t('Desactivar tiempo real')}
+              </Button>
+            )}
+          </div>
+          <p className="text-xs text-slate-400 dark:text-slate-500">
+            {t('Requiere conectar Gmail arriba. En modo de prueba de Google, cada cuenta debe reconectar Gmail cada 7 días.')}
           </p>
         </Card>
 

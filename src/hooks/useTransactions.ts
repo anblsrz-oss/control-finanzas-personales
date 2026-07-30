@@ -137,6 +137,11 @@ export function usePendingCount(userId?: string) {
     },
     enabled: !!userId,
     refetchOnWindowFocus: true,
+    // La captura automática (SMS/correo) inserta pendientes desde el servidor
+    // (webhook/receptor nativo), sin pasar por una mutación del cliente que
+    // invalide esta query. Se refresca sola cada minuto para no quedarse
+    // pegada mientras la app está abierta.
+    refetchInterval: 60_000,
   })
 }
 

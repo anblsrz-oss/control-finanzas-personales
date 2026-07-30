@@ -308,6 +308,12 @@ export interface ParsingRuleConfig {
   // Tipo de movimiento a crear. Por defecto 'expense'. Útil para remitentes de
   // ingresos (nómina, reembolsos) o proveedores.
   kind?: 'income' | 'expense'
+  // Detección de dirección para SMS (channel='sms'). Si el cuerpo del SMS hace
+  // match con alguna de incomeKeywords => 'income'; si no, 'expense'. Si no se
+  // definen, la Edge Function usa listas por defecto en español. Útil para que
+  // las transferencias recibidas entren como ingreso y las compras como gasto.
+  incomeKeywords?: string[]
+  expenseKeywords?: string[]
   // Regex que extrae la terminación (4 dígitos) de la tarjeta del correo. Se
   // cruza con cards.last4 para asignar la tarjeta/cuenta automáticamente.
   last4Regex?: string

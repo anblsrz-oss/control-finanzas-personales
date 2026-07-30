@@ -1,7 +1,9 @@
 import { create } from 'zustand'
 import type { Session } from '@supabase/supabase-js'
+import { App } from '@capacitor/app'
 import { supabase } from '@/lib/supabase'
 import { initNativeAuthListener } from '@/lib/nativeAuth'
+import { autoSyncSmsSilently, isAndroidNative } from '@/lib/smsSync'
 import type { ProfileRow } from '@/types/db'
 
 export type Profile = ProfileRow
@@ -42,6 +44,16 @@ export const useAuth = create<AuthState>((set, get) => ({
 
     // App nativa: capturar el retorno del OAuth por deep link (no-op en web).
     initNativeAuthListener()
+
+    // Android: red de seguridad de captura de SMS. Si el receptor nativo fue
+    // retrasado por batería/Doze, al abrir/reanudar la app leemos el inbox y
+    // sincronizamos los SMS pendientes. No-op si la captura no está activada.
+    if (isAndroidNative()) {
+      void autoSyncSmsSilently()
+      App.addListener('appStateChange', ({ isActive }) => {
+        if (isActive) void autoSyncSmsSilently()
+      })
+    }
 
     const {
       data: { session },
