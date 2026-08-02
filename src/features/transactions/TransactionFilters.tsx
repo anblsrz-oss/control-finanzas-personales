@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { MultiSelect } from '@/components/ui/MultiSelect'
+import { PeriodSelector } from '@/components/ui/PeriodSelector'
 import type { AccountRow, CardRow, CategoryRow } from '@/types/db'
 
 // Estado crudo del formulario. Los montos viven como string porque un input
@@ -57,6 +58,8 @@ interface TransactionFiltersProps {
   categories: CategoryRow[]
   /** Cuántas transacciones está mostrando la lista con estos filtros. */
   resultCount: number
+  /** Si puede usar el selector de periodo (Hoy/Semana/Mes/Personalizado) o solo Desde/Hasta crudos. */
+  canUsePeriodFilter: boolean
 }
 
 export function TransactionFilters({
@@ -66,6 +69,7 @@ export function TransactionFilters({
   cards,
   categories,
   resultCount,
+  canUsePeriodFilter,
 }: TransactionFiltersProps) {
   const { t } = useTranslation()
   const active = countActiveFilters(value)
@@ -111,18 +115,28 @@ export function TransactionFilters({
 
       {open && (
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <Input
-            label={t('Desde')}
-            type="date"
-            value={value.startDate}
-            onChange={(e) => set('startDate', e.target.value)}
-          />
-          <Input
-            label={t('Hasta')}
-            type="date"
-            value={value.endDate}
-            onChange={(e) => set('endDate', e.target.value)}
-          />
+          {canUsePeriodFilter ? (
+            <PeriodSelector
+              startDate={value.startDate}
+              endDate={value.endDate}
+              onChange={(range) => onChange({ ...value, ...range })}
+            />
+          ) : (
+            <>
+              <Input
+                label={t('Desde')}
+                type="date"
+                value={value.startDate}
+                onChange={(e) => set('startDate', e.target.value)}
+              />
+              <Input
+                label={t('Hasta')}
+                type="date"
+                value={value.endDate}
+                onChange={(e) => set('endDate', e.target.value)}
+              />
+            </>
+          )}
           <Input
             label={t('Buscar')}
             type="search"

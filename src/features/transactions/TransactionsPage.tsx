@@ -30,6 +30,7 @@ import {
 import type { FilterState } from './TransactionFilters'
 import { formatMoney, formatDate } from '@/lib/format'
 import { Money } from '@/components/ui/Money'
+import { monthStartISO, todayISO } from '@/lib/dates'
 import type { TransactionRow } from '@/types/db'
 
 export function TransactionsPage() {
@@ -51,7 +52,11 @@ export function TransactionsPage() {
     }
   }, [editingTx])
 
-  const [filters, setFilters] = useState<FilterState>(EMPTY_FILTERS)
+  const [filters, setFilters] = useState<FilterState>({
+    ...EMPTY_FILTERS,
+    startDate: monthStartISO(),
+    endDate: todayISO(),
+  })
 
   // El texto se debounce; el resto de los filtros se aplican de inmediato.
   const debouncedSearch = useDebouncedValue(filters.search, 300)
@@ -98,7 +103,7 @@ export function TransactionsPage() {
   const deletionsQuery = useTransactionDeletions(userId)
   const deleteTx = useDeleteTransaction()
   const confirmTx = useConfirmTransaction()
-  const { transactionLimit } = useEntitlements()
+  const { transactionLimit, canUseTransactionsPeriodFilter } = useEntitlements()
 
   // Tarjetas compartidas de mi familia (para registrar gastos familiares).
   const familiesQuery = useMyFamilies(userId)
@@ -289,6 +294,7 @@ export function TransactionsPage() {
         cards={cards}
         categories={categories}
         resultCount={transactions.length}
+        canUsePeriodFilter={canUseTransactionsPeriodFilter}
       />
 
       {transactions.length === 0 ? (

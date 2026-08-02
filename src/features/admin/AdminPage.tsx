@@ -125,6 +125,8 @@ function ConfigEditor() {
     { key: 'yields_is_premium', label: t('Rendimientos') },
     { key: 'installments_is_premium', label: t('Meses sin intereses / diferido') },
     { key: 'reports_filters_is_premium', label: t('Filtros de reportes') },
+    { key: 'dashboard_period_filter_is_premium', label: t('Selector de periodo en Resumen') },
+    { key: 'transactions_period_filter_is_premium', label: t('Selector de periodo en Movimientos') },
   ]
 
   return (
@@ -190,6 +192,8 @@ function ConfigEditor() {
                 yields_is_premium: form.yields_is_premium,
                 installments_is_premium: form.installments_is_premium,
                 reports_filters_is_premium: form.reports_filters_is_premium,
+                dashboard_period_filter_is_premium: form.dashboard_period_filter_is_premium,
+                transactions_period_filter_is_premium: form.transactions_period_filter_is_premium,
               },
               { onError: (e: any) => alert(`${t('Error:')} ${e.message}`) },
             )

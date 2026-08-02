@@ -46,6 +46,15 @@ export function monthStartISO(date?: string | Date): string {
   return `${monthISO(date)}-01`
 }
 
+/** Lunes de la semana de una fecha (por defecto, la de hoy), como "YYYY-MM-DD". */
+export function weekStartISO(date?: string | Date): string {
+  const d = date ? parseLocalDate(date) : new Date()
+  // getDay(): 0 = domingo … 6 = sábado. Distancia al lunes anterior (o el mismo dia si ya es lunes).
+  const diffToMonday = (d.getDay() + 6) % 7
+  const monday = new Date(d.getFullYear(), d.getMonth(), d.getDate() - diffToMonday)
+  return toISODate(monday)
+}
+
 /** Suma meses conservando el dia; si el dia no existe en el mes destino, lo recorta. */
 export function addMonths(date: string | Date, months: number): Date {
   const d = parseLocalDate(date)

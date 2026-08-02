@@ -13,6 +13,8 @@ const DEFAULT_CONFIG: AppConfigRow = {
   yields_is_premium: false,
   installments_is_premium: false,
   reports_filters_is_premium: false,
+  dashboard_period_filter_is_premium: false,
+  transactions_period_filter_is_premium: false,
   theme_colors: null,
   updated_at: '',
 }
@@ -70,5 +72,7 @@ export function useEntitlements() {
     canUseYields: allow(config.yields_is_premium),
     canUseInstallments: allow(config.installments_is_premium),
     canUseReportsFilters: allow(config.reports_filters_is_premium),
+    canUseDashboardPeriodFilter: allow(config.dashboard_period_filter_is_premium),
+    canUseTransactionsPeriodFilter: allow(config.transactions_period_filter_is_premium),
   }
 }

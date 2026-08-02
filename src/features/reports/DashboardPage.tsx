@@ -1,5 +1,7 @@
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
+import { useEntitlements } from '@/hooks/useAppConfig'
 import {
   useTransactionsSummary,
   useMonthlyTotals,
@@ -14,6 +16,7 @@ import { IncomeExpenseChart } from '@/components/charts/IncomeExpenseChart'
 import { CategoryPieChart } from '@/components/charts/CategoryPieChart'
 import { ChartControls } from '@/components/charts/ChartControls'
 import { Money } from '@/components/ui/Money'
+import { PeriodSelector } from '@/components/ui/PeriodSelector'
 import { monthStartISO, todayISO } from '@/lib/dates'
 import { DEFAULT_ORDER, reconcileOrder } from '@/lib/charts'
 import type { ChartId } from '@/lib/charts'
@@ -24,12 +27,13 @@ export function DashboardPage() {
   const { session, profile } = useAuth()
   const userId = session?.user?.id
   const mainCurrency = profile?.main_currency ?? 'MXN'
+  const { canUseDashboardPeriodFilter } = useEntitlements()
 
-  // Solo mes actual para Gratis
-  const startDate = monthStartISO()
-  const endDate = todayISO()
+  // Default: mes actual. Si no hay derecho al selector, se queda fijo aquí.
+  const [startDate, setStartDate] = useState(monthStartISO())
+  const [endDate, setEndDate] = useState(todayISO())
 
-  const filters = { startDate, endDate }
+  const filters = useMemo(() => ({ startDate, endDate }), [startDate, endDate])
 
   const summaryQuery = useTransactionsSummary(userId, filters)
   const monthlyQuery = useMonthlyTotals(userId, filters)
@@ -92,6 +96,25 @@ export function DashboardPage() {
         subtitle={t('Vista general de tus ingresos, egresos y balance.')}
       />
 
+      {canUseDashboardPeriodFilter ? (
+        <Card className="mb-6">
+          <PeriodSelector
+            startDate={startDate}
+            endDate={endDate}
+            onChange={(range) => {
+              setStartDate(range.startDate)
+              setEndDate(range.endDate)
+            }}
+          />
+        </Card>
+      ) : (
+        <Card className="mb-6 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
+          <p className="text-sm text-amber-800 dark:text-amber-200">
+            📅 {t('Premium: elige el periodo del resumen (hoy, semana, mes o personalizado). Actualiza tu plan para más análisis.')}
+          </p>
+        </Card>
+      )}
+
       {/* Tarjetas de resumen */}
       {summary && (
         <div className="mb-6 grid gap-3 sm:grid-cols-3">
@@ -139,7 +162,7 @@ export function DashboardPage() {
         {!monthly.length && !categories.length && !creditUsage.length && (
           <Card className="border-dashed text-center">
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              {t('Sin transacciones este mes.')}
+              {t('Sin transacciones en este periodo.')}
             </p>
           </Card>
         )}
