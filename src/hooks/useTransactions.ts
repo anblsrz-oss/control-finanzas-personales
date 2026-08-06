@@ -215,6 +215,9 @@ export function useCreateTransaction() {
       queryClient.invalidateQueries({ queryKey: ['transactions_summary', input.userId] })
       queryClient.invalidateQueries({ queryKey: ['monthly_totals', input.userId] })
       queryClient.invalidateQueries({ queryKey: ['category_totals', input.userId] })
+      // El consumo de los presupuestos sale de las transacciones: cualquier
+      // alta, edición, borrado o confirmación lo mueve.
+      queryClient.invalidateQueries({ queryKey: ['budget_status', input.userId] })
       if (input.familyId) {
         queryClient.invalidateQueries({
           queryKey: ['family_transactions', input.familyId],
@@ -288,6 +291,9 @@ export function useUpdateTransaction() {
       queryClient.invalidateQueries({ queryKey: ['transactions_summary', input.userId] })
       queryClient.invalidateQueries({ queryKey: ['monthly_totals', input.userId] })
       queryClient.invalidateQueries({ queryKey: ['category_totals', input.userId] })
+      // El consumo de los presupuestos sale de las transacciones: cualquier
+      // alta, edición, borrado o confirmación lo mueve.
+      queryClient.invalidateQueries({ queryKey: ['budget_status', input.userId] })
     },
   })
 }
@@ -316,6 +322,9 @@ export function useDeleteTransaction() {
       queryClient.invalidateQueries({ queryKey: ['transactions_summary', input.userId] })
       queryClient.invalidateQueries({ queryKey: ['monthly_totals', input.userId] })
       queryClient.invalidateQueries({ queryKey: ['category_totals', input.userId] })
+      // El consumo de los presupuestos sale de las transacciones: cualquier
+      // alta, edición, borrado o confirmación lo mueve.
+      queryClient.invalidateQueries({ queryKey: ['budget_status', input.userId] })
     },
   })
 }
@@ -343,6 +352,9 @@ export function useConfirmTransaction() {
       queryClient.invalidateQueries({ queryKey: ['transactions_summary', input.userId] })
       queryClient.invalidateQueries({ queryKey: ['monthly_totals', input.userId] })
       queryClient.invalidateQueries({ queryKey: ['category_totals', input.userId] })
+      // El consumo de los presupuestos sale de las transacciones: cualquier
+      // alta, edición, borrado o confirmación lo mueve.
+      queryClient.invalidateQueries({ queryKey: ['budget_status', input.userId] })
     },
   })
 }

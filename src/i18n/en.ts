@@ -20,6 +20,8 @@ export const en: Record<string, string> = {
   'Conexión automática': 'Auto connection',
   Conectar: 'Connect',
   Categorías: 'Categories',
+  Presupuestos: 'Budgets',
+  'Presup.': 'Budgets',
   Rendimientos: 'Yields',
   'Rendim.': 'Yields',
   Reportes: 'Reports',
@@ -816,4 +818,59 @@ export const en: Record<string, string> = {
   'Vista previa': 'Preview',
   'Usar y guardar': 'Use and save',
   Quitar: 'Remove',
+
+  // Presupuestos
+  'Cuánto puedes gastar en cada categoría y cómo vas en el periodo.':
+    'How much you can spend per category and how you are doing this period.',
+  '+ Nuevo presupuesto': '+ New budget',
+  'Crear presupuesto': 'Create budget',
+  'Sin presupuestos. Crea uno general o por categoría para ver cuánto llevas gastado.':
+    'No budgets yet. Create a general one or one per category to track your spending.',
+  'Sin presupuestos configurados.': 'No budgets configured.',
+  'General (todas las categorías)': 'General (all categories)',
+  General: 'General',
+  'Monto máximo': 'Spending limit',
+  Periodo: 'Period',
+  Diario: 'Daily',
+  Semanal: 'Weekly',
+  Quincenal: 'Biweekly',
+  // 'Mensual' y 'Activo' ya están traducidos más arriba.
+  'Se reinicia cada día.': 'Resets every day.',
+  'De lunes a domingo.': 'Monday through Sunday.',
+  'Del 1 al 15 y del 16 a fin de mes.': 'From the 1st to the 15th, and the 16th to month end.',
+  'Del día 1 a fin de mes.': 'From the 1st to month end.',
+  'Avisarme al llegar a (%)': 'Alert me at (%)',
+  'Avisarme al llegar a': 'Alert me at',
+  'Si lo dejas vacío se usa tu umbral general ({{n}}%), configurable en Configuración.':
+    'Leave empty to use your general threshold ({{n}}%), configurable in Settings.',
+  'Se usa en los presupuestos que no definen su propio umbral. Te avisamos una vez por periodo al cruzarlo, y otra si lo excedes.':
+    'Used by budgets without their own threshold. We alert you once per period when you cross it, and again if you go over.',
+  'Ver mis presupuestos': 'View my budgets',
+  'Al desactivarlo deja de calcularse y de avisarte, sin borrarlo.':
+    'Deactivating stops its tracking and alerts without deleting it.',
+  Inactivos: 'Inactive',
+  'Ya existe un presupuesto para esa categoría.': 'A budget already exists for that category.',
+  '¿Eliminar el presupuesto de "{{name}}"?': 'Delete the "{{name}}" budget?',
+  'este presupuesto': 'this budget',
+  'Te quedan': 'Left',
+  'Excedido por': 'Over by',
+  'excedido por': 'over by',
+  'por revisar': 'to review',
+  'avisa al {{n}}%': 'alerts at {{n}}%',
+  Gastado: 'Spent',
+  Restante: 'Remaining',
+  'Dentro del presupuesto': 'Within budget',
+  'Cerca del límite': 'Near the limit',
+  Excedido: 'Over budget',
+  'Plan gratis: máximo {{n}} presupuestos. Actualiza a Premium para agregar más.':
+    'Free plan: up to {{n}} budgets. Upgrade to Premium to add more.',
+  'Máx. presupuestos (gratis)': 'Max. budgets (free)',
+  // Avisos de presupuesto
+  'Llevas {{percent}}% de tu presupuesto de {{name}} ({{spent}} de {{amount}}).':
+    'You are at {{percent}}% of your {{name}} budget ({{spent}} of {{amount}}).',
+  'Excediste tu presupuesto de {{name}}: llevas {{spent}} de {{amount}}.':
+    'You went over your {{name}} budget: {{spent}} of {{amount}}.',
+  'tu presupuesto': 'your budget',
+  Ver: 'View',
+  Entendido: 'Got it',
 }

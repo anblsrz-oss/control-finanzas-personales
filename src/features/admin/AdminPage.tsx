@@ -127,6 +127,7 @@ function ConfigEditor() {
     { key: 'reports_filters_is_premium', label: t('Filtros de reportes') },
     { key: 'dashboard_period_filter_is_premium', label: t('Selector de periodo en Resumen') },
     { key: 'transactions_period_filter_is_premium', label: t('Selector de periodo en Movimientos') },
+    { key: 'budgets_is_premium', label: t('Presupuestos') },
   ]
 
   return (
@@ -160,6 +161,13 @@ function ConfigEditor() {
           value={form.free_max_transactions}
           onChange={(e) => setNum('free_max_transactions')(e.target.value)}
         />
+        <Input
+          label={t('Máx. presupuestos (gratis)')}
+          type="number"
+          min="0"
+          value={form.free_max_budgets}
+          onChange={(e) => setNum('free_max_budgets')(e.target.value)}
+        />
       </div>
 
       <p className="mb-2 mt-4 text-xs font-semibold text-slate-600 dark:text-slate-300">
@@ -188,12 +196,14 @@ function ConfigEditor() {
                 free_max_accounts: form.free_max_accounts,
                 free_max_cards: form.free_max_cards,
                 free_max_transactions: form.free_max_transactions,
+                free_max_budgets: form.free_max_budgets,
                 family_is_premium: form.family_is_premium,
                 yields_is_premium: form.yields_is_premium,
                 installments_is_premium: form.installments_is_premium,
                 reports_filters_is_premium: form.reports_filters_is_premium,
                 dashboard_period_filter_is_premium: form.dashboard_period_filter_is_premium,
                 transactions_period_filter_is_premium: form.transactions_period_filter_is_premium,
+                budgets_is_premium: form.budgets_is_premium,
               },
               { onError: (e: any) => alert(`${t('Error:')} ${e.message}`) },
             )

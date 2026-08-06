@@ -4,7 +4,8 @@ import { useAuth } from '@/store/useAuth'
 import { useSettings, type ThemePref, type LanguagePref } from '@/store/useSettings'
 import { useMyFamilies, useMyInvitations } from '@/hooks/useFamily'
 import { useStartCheckout, useOpenBillingPortal } from '@/hooks/useBilling'
-import { useUpdateMainCurrency } from '@/hooks/useProfile'
+import { useUpdateMainCurrency, useUpdateBudgetAlertThreshold } from '@/hooks/useProfile'
+import { DEFAULT_ALERT_THRESHOLD } from '@/lib/budgets'
 import { useEntitlements } from '@/hooks/useAppConfig'
 import { CURRENCIES } from '@/lib/format'
 import { APK_URL, APP_VERSION } from '@/lib/appUpdate'
@@ -46,6 +47,8 @@ export function SettingsPage() {
   const openPortal = useOpenBillingPortal()
   const updateMainCurrency = useUpdateMainCurrency()
   const mainCurrency = profile?.main_currency ?? 'MXN'
+  const updateThreshold = useUpdateBudgetAlertThreshold()
+  const alertThreshold = profile?.budget_alert_threshold ?? DEFAULT_ALERT_THRESHOLD
   const { canUseFamily } = useEntitlements()
 
   return (
@@ -191,6 +194,49 @@ export function SettingsPage() {
                 {cur}
               </button>
             ))}
+          </div>
+        </Card>
+
+        {/* Presupuestos */}
+        <Card>
+          <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
+            🎯 {t('Presupuestos')}
+          </p>
+          <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
+            {t('Se usa en los presupuestos que no definen su propio umbral. Te avisamos una vez por periodo al cruzarlo, y otra si lo excedes.')}
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="text-sm text-slate-700 dark:text-slate-200">
+              {t('Avisarme al llegar a')}
+            </label>
+            <input
+              type="number"
+              min={1}
+              max={100}
+              defaultValue={alertThreshold}
+              disabled={updateThreshold.isPending}
+              // onBlur y no onChange: guardar en cada tecla dispararía una
+              // escritura por dígito ("8" antes de "80").
+              onBlur={(e) => {
+                const value = Number(e.target.value)
+                if (!userId || !Number.isFinite(value)) return
+                const clamped = Math.min(100, Math.max(1, Math.round(value)))
+                e.target.value = String(clamped)
+                if (clamped === alertThreshold) return
+                updateThreshold.mutate(
+                  { userId, threshold: clamped },
+                  { onError: (err: any) => alert(`${t('Error:')} ${err.message}`) },
+                )
+              }}
+              className="w-20 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+            />
+            <span className="text-sm text-slate-700 dark:text-slate-200">%</span>
+            <Link
+              to="/presupuestos"
+              className="ml-auto text-sm font-medium text-brand-700 dark:text-brand-500 hover:underline"
+            >
+              {t('Ver mis presupuestos')} →
+            </Link>
           </div>
         </Card>
 

@@ -8,10 +8,12 @@ import {
   useCategoryTotals,
 } from '@/hooks/useReports'
 import { useCreditUsageBreakdown } from '@/hooks/useCreditLines'
+import { useBudgetStatus } from '@/hooks/useBudgets'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
 import { ChartCard } from '@/components/charts/ChartCard'
 import { CreditUsageChart } from '@/components/charts/CreditUsageChart'
+import { BudgetProgressChart } from '@/components/charts/BudgetProgressChart'
 import { IncomeExpenseChart } from '@/components/charts/IncomeExpenseChart'
 import { CategoryPieChart } from '@/components/charts/CategoryPieChart'
 import { ChartControls } from '@/components/charts/ChartControls'
@@ -46,10 +48,15 @@ export function DashboardPage() {
   // Estado puntual, no histórico: no depende del rango de fechas de arriba.
   const { data: creditUsage } = useCreditUsageBreakdown(userId)
 
+  // Los presupuestos tampoco dependen del selector: cada uno corre en su propio
+  // periodo (diario/semanal/quincenal/mensual), que resuelve el servidor.
+  const budgetStatus = useBudgetStatus(userId).data || []
+
   const savedOrder = useSettings((s) => s.chartOrder.dashboard)
 
   // Gráficos con datos, en orden default; luego reconciliados con lo guardado.
   const available = DEFAULT_ORDER.dashboard.filter((id) => {
+    if (id === 'budget') return budgetStatus.length > 0
     if (id === 'creditUsage') return creditUsage.length > 0
     if (id === 'incomeExpense') return monthly.length > 0
     if (id === 'category') return categories.length > 0
@@ -59,6 +66,12 @@ export function DashboardPage() {
 
   const renderChart = (id: ChartId) => {
     switch (id) {
+      case 'budget':
+        return (
+          <ChartCard key={id} chartId={id} page="dashboard" title={t('Presupuestos')} available={available}>
+            <BudgetProgressChart data={budgetStatus} />
+          </ChartCard>
+        )
       case 'creditUsage':
         return (
           <ChartCard key={id} chartId={id} page="dashboard" title={t('Uso de línea de crédito')} available={available}>
@@ -159,7 +172,7 @@ export function DashboardPage() {
 
         {order.map((id) => renderChart(id))}
 
-        {!monthly.length && !categories.length && !creditUsage.length && (
+        {!monthly.length && !categories.length && !creditUsage.length && !budgetStatus.length && (
           <Card className="border-dashed text-center">
             <p className="text-sm text-slate-500 dark:text-slate-400">
               {t('Sin transacciones en este periodo.')}
