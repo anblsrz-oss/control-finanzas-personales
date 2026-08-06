@@ -62,7 +62,10 @@ captures/
 .cxx/
 
 # Google Services (e.g. APIs or Firebase)
-# google-services.json
+# Contiene la API key pública del proyecto Firebase (no es secreta per se,
+# pero identifica el proyecto). Se distribuye por fuera del repo, junto con
+# los demás secrets del build (ver APK_BUILD.md).
+app/google-services.json
 
 # Freeline
 freeline.py
