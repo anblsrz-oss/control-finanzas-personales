@@ -22,6 +22,8 @@ export interface ProfileRow {
   main_currency: string
   /** Umbral de aviso por defecto (1-100) para presupuestos sin umbral propio. */
   budget_alert_threshold: number
+  /** Opt-in al resumen diario por correo. Apagado por defecto. */
+  budget_alerts_email: boolean
   created_at: string
 }
 

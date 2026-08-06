@@ -4,7 +4,11 @@ import { useAuth } from '@/store/useAuth'
 import { useSettings, type ThemePref, type LanguagePref } from '@/store/useSettings'
 import { useMyFamilies, useMyInvitations } from '@/hooks/useFamily'
 import { useStartCheckout, useOpenBillingPortal } from '@/hooks/useBilling'
-import { useUpdateMainCurrency, useUpdateBudgetAlertThreshold } from '@/hooks/useProfile'
+import {
+  useUpdateMainCurrency,
+  useUpdateBudgetAlertThreshold,
+  useUpdateBudgetAlertsEmail,
+} from '@/hooks/useProfile'
 import { DEFAULT_ALERT_THRESHOLD } from '@/lib/budgets'
 import { useEntitlements } from '@/hooks/useAppConfig'
 import { CURRENCIES } from '@/lib/format'
@@ -48,6 +52,7 @@ export function SettingsPage() {
   const updateMainCurrency = useUpdateMainCurrency()
   const mainCurrency = profile?.main_currency ?? 'MXN'
   const updateThreshold = useUpdateBudgetAlertThreshold()
+  const updateAlertsEmail = useUpdateBudgetAlertsEmail()
   const alertThreshold = profile?.budget_alert_threshold ?? DEFAULT_ALERT_THRESHOLD
   const { canUseFamily } = useEntitlements()
 
@@ -238,6 +243,28 @@ export function SettingsPage() {
               {t('Ver mis presupuestos')} →
             </Link>
           </div>
+
+          <label className="mt-4 flex items-start gap-2">
+            <input
+              type="checkbox"
+              className="mt-0.5 cursor-pointer"
+              checked={!!profile?.budget_alerts_email}
+              disabled={updateAlertsEmail.isPending}
+              onChange={(e) => {
+                if (!userId) return
+                updateAlertsEmail.mutate(
+                  { userId, enabled: e.target.checked },
+                  { onError: (err: any) => alert(`${t('Error:')} ${err.message}`) },
+                )
+              }}
+            />
+            <span className="text-sm text-slate-700 dark:text-slate-200">
+              {t('Avisarme también por correo')}
+              <span className="block text-xs text-slate-400 dark:text-slate-500">
+                {t('Un correo al día con los presupuestos que cruzaron su límite. Nunca se repite el mismo aviso.')}
+              </span>
+            </span>
+          </label>
         </Card>
 
         {/* Teléfono */}

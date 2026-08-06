@@ -846,6 +846,9 @@ export const en: Record<string, string> = {
   'Se usa en los presupuestos que no definen su propio umbral. Te avisamos una vez por periodo al cruzarlo, y otra si lo excedes.':
     'Used by budgets without their own threshold. We alert you once per period when you cross it, and again if you go over.',
   'Ver mis presupuestos': 'View my budgets',
+  'Avisarme también por correo': 'Also alert me by email',
+  'Un correo al día con los presupuestos que cruzaron su límite. Nunca se repite el mismo aviso.':
+    'One email a day with the budgets that crossed their limit. The same alert is never repeated.',
   'Al desactivarlo deja de calcularse y de avisarte, sin borrarlo.':
     'Deactivating stops its tracking and alerts without deleting it.',
   Inactivos: 'Inactive',

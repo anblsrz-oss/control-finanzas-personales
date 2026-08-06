@@ -34,6 +34,24 @@ export function useUpdateMainCurrency() {
   })
 }
 
+// Opt-in al aviso por correo. El envío lo hace un cron diario (Edge Function
+// budget-alerts-email); aquí solo se guarda la preferencia.
+export function useUpdateBudgetAlertsEmail() {
+  const refreshProfile = useAuth((s) => s.refreshProfile)
+  return useMutation({
+    mutationFn: async (input: { userId: string; enabled: boolean }) => {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ budget_alerts_email: input.enabled })
+        .eq('id', input.userId)
+      if (error) throw error
+    },
+    onSuccess: async () => {
+      await refreshProfile()
+    },
+  })
+}
+
 // Umbral de aviso por defecto para los presupuestos que no definen el suyo.
 export function useUpdateBudgetAlertThreshold() {
   const refreshProfile = useAuth((s) => s.refreshProfile)
