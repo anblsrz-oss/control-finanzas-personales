@@ -16,6 +16,9 @@ import androidx.core.app.NotificationCompat;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -29,6 +32,10 @@ public class SmsReceiver extends BroadcastReceiver {
     private static final String TAG = "SmsReceiver";
     private static final String PREFS = "CapacitorStorage";
     private static final String CHANNEL_ID = "sms_capture";
+    // Canal aparte y con más importancia: "te estás pasando del presupuesto"
+    // merece verse más que "hay un movimiento por revisar", y así el usuario
+    // puede silenciar uno sin perder el otro.
+    private static final String BUDGET_CHANNEL_ID = "budget_alerts";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -65,8 +72,11 @@ public class SmsReceiver extends BroadcastReceiver {
         final PendingResult pending = goAsync();
         new Thread(() -> {
             try {
-                boolean ok = post(url, anon, token, sender, body, smsDate, tzOffsetMin);
-                if (ok) notify(context, body);
+                String response = post(url, anon, token, sender, body, smsDate, tzOffsetMin);
+                if (response != null) {
+                    notify(context, body);
+                    notifyBudget(context, response);
+                }
             } catch (Exception e) {
                 Log.w(TAG, "Fallo al enviar SMS a ingest-sms", e);
             } finally {
@@ -85,8 +95,9 @@ public class SmsReceiver extends BroadcastReceiver {
         return false;
     }
 
-    private boolean post(String url, String anon, String token, String sender,
-                         String body, long date, int tzOffsetMin) throws Exception {
+    /** Devuelve el cuerpo de la respuesta si ingest-sms respondió 2xx, o null. */
+    private String post(String url, String anon, String token, String sender,
+                        String body, long date, int tzOffsetMin) throws Exception {
         JSONObject msg = new JSONObject();
         msg.put("address", sender);
         msg.put("body", body);
@@ -112,8 +123,62 @@ public class SmsReceiver extends BroadcastReceiver {
             os.write(out);
         }
         int code = conn.getResponseCode();
+        String responseBody = null;
+        if (code >= 200 && code < 300) {
+            try (InputStream is = conn.getInputStream()) {
+                responseBody = readAll(is);
+            } catch (Exception e) {
+                // El movimiento ya se guardó; sin cuerpo solo perdemos el aviso
+                // de presupuesto. Cadena vacía = "ok, pero nada que leer".
+                responseBody = "";
+            }
+        }
         conn.disconnect();
-        return code >= 200 && code < 300;
+        return responseBody;
+    }
+
+    private String readAll(InputStream is) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        try (BufferedReader r = new BufferedReader(new InputStreamReader(is, "UTF-8"))) {
+            String line;
+            while ((line = r.readLine()) != null) sb.append(line);
+        }
+        return sb.toString();
+    }
+
+    // Aviso de presupuesto que manda ingest-sms cuando el gasto capturado
+    // acerca al usuario a su tope. Es el único aviso de presupuesto que hoy
+    // llega con la app CERRADA.
+    private void notifyBudget(Context context, String response) {
+        try {
+            if (response == null || response.isEmpty()) return;
+            JSONObject json = new JSONObject(response);
+            JSONObject notice = json.optJSONObject("budgetNotice");
+            if (notice == null) return;
+            String title = notice.optString("title", "");
+            String text = notice.optString("body", "");
+            if (title.isEmpty()) return;
+
+            NotificationManager nm =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm == null) return;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel ch = new NotificationChannel(
+                    BUDGET_CHANNEL_ID, "Presupuestos", NotificationManager.IMPORTANCE_DEFAULT);
+                nm.createNotificationChannel(ch);
+            }
+            NotificationCompat.Builder b =
+                new NotificationCompat.Builder(context, BUDGET_CHANNEL_ID)
+                    .setSmallIcon(android.R.drawable.stat_notify_chat)
+                    .setContentTitle(title)
+                    .setContentText(text)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                    .setAutoCancel(true)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+            nm.notify((int) ((System.currentTimeMillis() + 1) & 0x7fffffff), b.build());
+        } catch (Exception e) {
+            Log.w(TAG, "No se pudo mostrar el aviso de presupuesto", e);
+        }
     }
 
     private void notify(Context context, String body) {
