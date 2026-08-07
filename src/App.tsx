@@ -42,6 +42,11 @@ export default function App() {
     applyThemeColors(appConfig?.theme_colors ?? null)
   }, [appConfig?.theme_colors])
 
+  // Refleja el título configurado por el admin en la pestaña del navegador.
+  useEffect(() => {
+    document.title = appConfig?.app_title || 'Mi Control de Finanzas Personales'
+  }, [appConfig?.app_title])
+
   return (
     <>
       {isNative() ? <NativeUpdatePrompt /> : <WebUpdatePrompt />}

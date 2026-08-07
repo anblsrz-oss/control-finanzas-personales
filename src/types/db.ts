@@ -368,6 +368,9 @@ export interface AppConfigRow {
   free_max_budgets: number
   // Colores de tema personalizados (null = tema por defecto). Ver ThemeColors.
   theme_colors: import('@/lib/themeColors').ThemeColors | null
+  // Marca configurable (null = usar los valores por defecto de la app).
+  app_title: string | null
+  logo_url: string | null
   updated_at: string
 }
 

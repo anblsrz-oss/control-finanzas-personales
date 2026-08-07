@@ -18,6 +18,8 @@ const DEFAULT_CONFIG: AppConfigRow = {
   dashboard_period_filter_is_premium: false,
   transactions_period_filter_is_premium: false,
   theme_colors: null,
+  app_title: null,
+  logo_url: null,
   updated_at: '',
 }
 

@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useSettings } from '@/store/useSettings'
+import { useAppConfig } from '@/hooks/useAppConfig'
 import { usePendingCount } from '@/hooks/useTransactions'
 import { useUnreadBudgetAlertsCount } from '@/hooks/useBudgets'
 import { BudgetAlertBanner } from '@/components/budgets/BudgetAlertBanner'
@@ -69,9 +70,21 @@ function PendingBadge({ count }: { count: number }) {
   )
 }
 
+const DEFAULT_APP_TITLE = 'Mi Control de Finanzas Personales'
+
+// Logo de la marca: imagen subida por el admin, o el emoji 💰 por defecto.
+function BrandLogo({ logoUrl }: { logoUrl: string | null | undefined }) {
+  if (logoUrl) {
+    return <img src={logoUrl} alt="" className="h-6 w-6 shrink-0 rounded object-cover" />
+  }
+  return <span className="text-xl">💰</span>
+}
+
 export function AppShell() {
   const { t } = useTranslation()
   const { profile, session } = useAuth()
+  const { data: appConfig } = useAppConfig()
+  const appTitle = appConfig?.app_title || DEFAULT_APP_TITLE
   const pendingCount = usePendingCount(session?.user?.id).data ?? 0
   const budgetAlertCount = useUnreadBudgetAlertsCount(session?.user?.id).data ?? 0
   const hideAmounts = useSettings((s) => s.hideAmounts)
@@ -110,8 +123,8 @@ export function AppShell() {
       {/* Sidebar */}
       <aside className="hidden w-60 flex-col border-r border-slate-200 dark:border-slate-700 bg-surface md:flex">
         <div className="flex h-16 items-center gap-2 border-b border-slate-200 dark:border-slate-700 px-5">
-          <span className="text-xl">💰</span>
-          <span className="font-semibold text-slate-800 dark:text-slate-100">Mi Control de Finanzas Personales</span>
+          <BrandLogo logoUrl={appConfig?.logo_url} />
+          <span className="font-semibold text-slate-800 dark:text-slate-100">{appTitle}</span>
         </div>
         <nav className="flex-1 space-y-1 p-3">
           {NAV.map((item) => (
@@ -156,8 +169,8 @@ export function AppShell() {
         {/* Topbar */}
         <header className="safe-top flex items-center justify-between border-b border-slate-200 dark:border-slate-700 bg-surface px-6 py-3">
           <div className="flex items-center gap-2 md:hidden">
-            <span className="text-xl">💰</span>
-            <span className="font-semibold text-slate-800 dark:text-slate-100">Mi Control de Finanzas Personales</span>
+            <BrandLogo logoUrl={appConfig?.logo_url} />
+            <span className="font-semibold text-slate-800 dark:text-slate-100">{appTitle}</span>
           </div>
           <div className="ml-auto flex items-center gap-3">
             {profile?.is_premium && (

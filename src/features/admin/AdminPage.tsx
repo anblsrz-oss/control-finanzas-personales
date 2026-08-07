@@ -1,9 +1,10 @@
-﻿import { useEffect, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/store/useAuth'
 import { useListUsers, useSetUserPremium, useSetUserAdmin } from '@/hooks/useAdmin'
 import { useAppConfig, useUpdateAppConfig } from '@/hooks/useAppConfig'
+import { supabase } from '@/lib/supabase'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -12,6 +13,138 @@ import { Badge } from '@/components/ui/Badge'
 import type { AppConfigRow } from '@/types/db'
 import { DEFAULT_THEME_COLORS, applyThemeColors } from '@/lib/themeColors'
 import type { ThemeColors } from '@/lib/themeColors'
+
+const DEFAULT_APP_TITLE = 'Mi Control de Finanzas Personales'
+const MAX_LOGO_BYTES = 2 * 1024 * 1024
+
+// Editor de la marca: nombre de la app y logo (imagen subida a Supabase Storage).
+function BrandingEditor() {
+  const { t } = useTranslation()
+  const { data: config } = useAppConfig()
+  const updateConfig = useUpdateAppConfig()
+  const [title, setTitle] = useState('')
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (config) setTitle(config.app_title ?? '')
+  }, [config])
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    setError(null)
+
+    if (!file.type.startsWith('image/')) {
+      setError(t('El logo debe ser una imagen.'))
+      return
+    }
+    if (file.size > MAX_LOGO_BYTES) {
+      setError(t('La imagen no debe superar 2 MB.'))
+      return
+    }
+
+    setUploading(true)
+    try {
+      const ext = file.name.split('.').pop() || 'png'
+      const path = `logo-${Date.now()}.${ext}`
+      const { error: uploadError } = await supabase.storage
+        .from('branding')
+        .upload(path, file, { upsert: true })
+      if (uploadError) throw uploadError
+
+      const { data } = supabase.storage.from('branding').getPublicUrl(path)
+      await updateConfig.mutateAsync({ logo_url: data.publicUrl })
+    } catch (err: any) {
+      setError(err.message ?? t('Error al subir el logo.'))
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleSaveTitle = () => {
+    updateConfig.mutate(
+      { app_title: title.trim() || null },
+      { onError: (e: any) => alert(`${t('Error:')} ${e.message}`) },
+    )
+  }
+
+  const handleReset = () => {
+    setTitle('')
+    updateConfig.mutate(
+      { app_title: null, logo_url: null },
+      { onError: (e: any) => alert(`${t('Error:')} ${e.message}`) },
+    )
+  }
+
+  return (
+    <Card className="mb-6">
+      <p className="mb-1 text-sm font-semibold text-slate-800 dark:text-slate-100">
+        🏷️ {t('Marca de la app')}
+      </p>
+      <p className="mb-4 text-xs text-slate-500 dark:text-slate-400">
+        {t('Personaliza el nombre y el logo que se ven en la barra lateral y la pestaña del navegador.')}
+      </p>
+
+      <div className="flex items-center gap-4">
+        {config?.logo_url ? (
+          <img
+            src={config.logo_url}
+            alt=""
+            className="h-12 w-12 shrink-0 rounded object-cover border border-slate-200 dark:border-slate-700"
+          />
+        ) : (
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded border border-slate-200 dark:border-slate-700 text-2xl">
+            💰
+          </span>
+        )}
+        <div>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            disabled={uploading}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {uploading ? t('Subiendo…') : t('Cambiar logo')}
+          </Button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleFileChange}
+          />
+        </div>
+      </div>
+
+      {error && <p className="mt-2 text-xs text-red-600 dark:text-red-400">{error}</p>}
+
+      <div className="mt-4">
+        <Input
+          label={t('Nombre de la app')}
+          value={title}
+          placeholder={DEFAULT_APP_TITLE}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <Button disabled={updateConfig.isPending} onClick={handleSaveTitle}>
+          {updateConfig.isPending ? t('Guardando…') : t('Guardar nombre')}
+        </Button>
+        <Button variant="ghost" disabled={updateConfig.isPending} onClick={handleReset}>
+          {t('Restablecer')}
+        </Button>
+        {updateConfig.isSuccess && (
+          <span className="text-xs text-green-600 dark:text-green-400">{t('Guardado ✓')}</span>
+        )}
+      </div>
+    </Card>
+  )
+}
 
 // Editor de colores de tema (acento + fondos/superficies claro y oscuro).
 function ThemeEditor() {
@@ -272,6 +405,8 @@ export function AdminPage() {
         title={t('Panel Admin')}
         subtitle={t('Gestiona usuarios y sus permisos de premium.')}
       />
+
+      <BrandingEditor />
 
       <ConfigEditor />
 
