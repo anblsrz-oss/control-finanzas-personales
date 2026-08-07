@@ -208,7 +208,7 @@ export function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-900 p-6">
       <Card className="w-full max-w-sm text-center">
         <div className="mb-4 text-4xl">💰</div>
-        <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-100">Ahorbit</h1>
+        <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-100">Mi Control de Finanzas Personales</h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           {t('Organiza tus ingresos, gastos y cuentas en un solo lugar.')}
         </p>

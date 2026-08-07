@@ -608,8 +608,8 @@ export const en: Record<string, string> = {
   'Registra cuentas y tarjetas, o sincroniza tus movimientos desde el correo.':
     'Add accounts and cards, or sync your transactions from email.',
   'Captura sin esfuerzo': 'Capture effortlessly',
-  'Escanea tickets y facturas con la cámara o sube un PDF; Ahorbit extrae los datos.':
-    'Scan receipts and invoices with the camera or upload a PDF; Ahorbit extracts the data.',
+  'Escanea tickets y facturas con la cámara o sube un PDF; Mi Control de Finanzas Personales extrae los datos.':
+    'Scan receipts and invoices with the camera or upload a PDF; Mi Control de Finanzas Personales extracts the data.',
   'Entiende tu dinero': 'Understand your money',
   'Mira tu balance, gastos por categoría y reportes claros en un solo lugar.':
     'See your balance, spending by category and clear reports all in one place.',
@@ -630,20 +630,20 @@ export const en: Record<string, string> = {
   'Español e inglés, claro y oscuro.': 'Spanish and English, light and dark.',
   'Llévala en tu celular': 'Take it on your phone',
   'Aplicación': 'App',
-  'Instala Ahorbit en tu teléfono y llévala contigo.':
-    'Install Ahorbit on your phone and take it with you.',
+  'Instala Mi Control de Finanzas Personales en tu teléfono y llévala contigo.':
+    'Install Mi Control de Finanzas Personales on your phone and take it with you.',
   'Versión {{version}}': 'Version {{version}}',
   'Empezar ahora': 'Start now',
   '¿Ideas para mejorar?': 'Ideas to improve?',
-  'Cuéntanos qué te gustaría ver en Ahorbit. Leemos todos los comentarios.':
-    'Tell us what you would like to see in Ahorbit. We read every comment.',
+  'Cuéntanos qué te gustaría ver en Mi Control de Finanzas Personales. Leemos todos los comentarios.':
+    'Tell us what you would like to see in Mi Control de Finanzas Personales. We read every comment.',
   'Tu nombre (opcional)': 'Your name (optional)',
   'Tu correo (opcional)': 'Your email (optional)',
   '¿Qué te gustaría mejorar o agregar?': 'What would you like to improve or add?',
   'Enviar comentario': 'Send comment',
   'No se pudo enviar. Intenta más tarde.': 'Could not send. Try again later.',
   '¡Gracias! Recibimos tu comentario.': 'Thanks! We received your comment.',
-  'Ahorbit — Finanzas personales.': 'Ahorbit — Personal finance.',
+  'Mi Control de Finanzas Personales — Finanzas personales.': 'Mi Control de Finanzas Personales — Personal finance.',
 
   // Multimoneda
   'Moneda principal': 'Main currency',

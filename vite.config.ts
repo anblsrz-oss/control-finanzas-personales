@@ -17,8 +17,8 @@ export default defineConfig({
       registerType: 'prompt',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Ahorbit',
-        short_name: 'Ahorbit',
+        name: 'Mi Control de Finanzas Personales',
+        short_name: 'Mi Control Finanzas',
         description: 'Control y organización de tus finanzas personales',
         theme_color: '#0f766e',
         background_color: '#ffffff',

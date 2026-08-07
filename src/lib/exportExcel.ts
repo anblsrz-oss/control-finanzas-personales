@@ -60,7 +60,7 @@ export async function exportReportToExcel(opts: ExportOptions): Promise<void> {
   const { saveAs } = await import('file-saver')
 
   const wb = new ExcelJS.Workbook()
-  wb.creator = 'Ahorbit'
+  wb.creator = 'Mi Control de Finanzas Personales'
 
   if (opts.mode !== 'charts') {
     // --- Hoja: Por mes ---

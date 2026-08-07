@@ -1,5 +1,5 @@
 {
   "version": "0.7.5",
-  "apkUrl": "https://github.com/anblsrz-oss/finzen-frontend/releases/latest/download/finzen.apk",
+  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/latest/download/finzen.apk",
   "notes": "Nuevo: Presupuestos. Configura cuánto quieres gastar por categoría o en general (diario, semanal, quincenal o mensual) y te avisamos al acercarte al límite, por notificación, correo y ahora también por push. Revisa \"Presupuestos\" en el menú."
 }

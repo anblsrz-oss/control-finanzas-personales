@@ -8,7 +8,7 @@ export const APP_VERSION: string =
 // Configurable con VITE_APK_URL.
 export const APK_URL: string =
   import.meta.env.VITE_APK_URL ||
-  'https://github.com/anblsrz-oss/finzen-frontend/releases/latest/download/finzen.apk'
+  'https://github.com/anblsrz-oss/control-finanzas-personales/releases/latest/download/finzen.apk'
 
 // version.json publicado junto a la web (public/version.json). La app nativa lo
 // consulta para saber si hay una versión más nueva.

@@ -173,7 +173,7 @@ export function ReportsPage() {
 
       await exportReportToExcel({
         mode: exportMode,
-        fileName: `ahorbit-reporte-${startDate}_a_${endDate}.xlsx`,
+        fileName: `mi-control-finanzas-reporte-${startDate}_a_${endDate}.xlsx`,
         monthly: monthly.map((m) => ({
           monthLabel: m.monthLabel,
           income: m.income,

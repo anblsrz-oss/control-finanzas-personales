@@ -111,7 +111,7 @@ export function AppShell() {
       <aside className="hidden w-60 flex-col border-r border-slate-200 dark:border-slate-700 bg-surface md:flex">
         <div className="flex h-16 items-center gap-2 border-b border-slate-200 dark:border-slate-700 px-5">
           <span className="text-xl">💰</span>
-          <span className="font-semibold text-slate-800 dark:text-slate-100">Ahorbit</span>
+          <span className="font-semibold text-slate-800 dark:text-slate-100">Mi Control de Finanzas Personales</span>
         </div>
         <nav className="flex-1 space-y-1 p-3">
           {NAV.map((item) => (
@@ -157,7 +157,7 @@ export function AppShell() {
         <header className="safe-top flex items-center justify-between border-b border-slate-200 dark:border-slate-700 bg-surface px-6 py-3">
           <div className="flex items-center gap-2 md:hidden">
             <span className="text-xl">💰</span>
-            <span className="font-semibold text-slate-800 dark:text-slate-100">Ahorbit</span>
+            <span className="font-semibold text-slate-800 dark:text-slate-100">Mi Control de Finanzas Personales</span>
           </div>
           <div className="ml-auto flex items-center gap-3">
             {profile?.is_premium && (

@@ -52,13 +52,11 @@ git push
 
 ## Pendiente de infraestructura (fuera del código, decidido para después)
 
-- [ ] **Repo de GitHub `finzen-frontend`** y el nombre del asset
-      `finzen.apk` (usados en `src/lib/appUpdate.ts`,
-      `.github/workflows/build-apk.yml`, `public/version.json`). GitHub
-      redirige repos renombrados, así que se puede hacer, pero renombrar
-      repo + asset a la vez es la parte frágil. Sugerencia: renombra el repo
-      primero, deja `finzen.apk` como nombre de asset hasta el siguiente
-      release, y ahí cambia junto con `version.json`.
+- [x] **Repo de GitHub** renombrado de `finzen-frontend` a
+      `control-finanzas-personales` (proyecto de Vercel renombrado igual).
+      `src/lib/appUpdate.ts` y `public/version.json` ya apuntan al repo
+      nuevo; el nombre del asset `finzen.apk` se dejó igual, como estaba
+      planeado.
 - [ ] **Dominio `finze.xyz`** — hardcodeado en `src/lib/appUpdate.ts`
       (`VERSION_JSON_URL`) y en `supabase/functions/invite-family-email/index.ts`.
       **No cambiar hasta que exista el dominio nuevo y sirva `version.json`**:

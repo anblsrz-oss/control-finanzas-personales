@@ -377,7 +377,7 @@ export function SettingsPage() {
             </p>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-sm text-slate-500 dark:text-slate-400">
-                {t('Instala Ahorbit en tu teléfono y llévala contigo.')}
+                {t('Instala Mi Control de Finanzas Personales en tu teléfono y llévala contigo.')}
                 <span className="block text-xs text-slate-400 dark:text-slate-500">
                   {t('Versión {{version}}', { version: APP_VERSION })}
                 </span>

@@ -4,7 +4,7 @@
 // Flujo: `npm run build` -> `npx cap sync` -> `npx cap open android|ios`.
 const config: CapacitorConfig = {
   appId: 'com.ahorbit.app',
-  appName: 'Ahorbit',
+  appName: 'Mi Control de Finanzas Personales',
   webDir: 'dist',
   // Esquema propio para el deep link del callback de OAuth (ver src/lib/nativeAuth.ts).
   plugins: {

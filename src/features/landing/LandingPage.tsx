@@ -103,7 +103,7 @@ export function LandingPage() {
 
   const steps = [
     { icon: '🔗', title: t('Conecta tus cuentas'), text: t('Registra cuentas y tarjetas, o sincroniza tus movimientos desde el correo.') },
-    { icon: '🧾', title: t('Captura sin esfuerzo'), text: t('Escanea tickets y facturas con la cámara o sube un PDF; Ahorbit extrae los datos.') },
+    { icon: '🧾', title: t('Captura sin esfuerzo'), text: t('Escanea tickets y facturas con la cámara o sube un PDF; Mi Control de Finanzas Personales extrae los datos.') },
     { icon: '📊', title: t('Entiende tu dinero'), text: t('Mira tu balance, gastos por categoría y reportes claros en un solo lugar.') },
   ]
 
@@ -121,7 +121,7 @@ export function LandingPage() {
       {/* Barra superior */}
       <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
         <div className="flex items-center gap-2 text-lg font-bold">
-          <span>💰</span> Ahorbit
+          <span>💰</span> Mi Control de Finanzas Personales
         </div>
         <div className="flex items-center gap-3">
           <LanguageToggle />
@@ -221,14 +221,14 @@ export function LandingPage() {
       <section className="mx-auto max-w-2xl px-6 py-12">
         <h2 className="mb-2 text-center text-2xl font-bold">{t('¿Ideas para mejorar?')}</h2>
         <p className="mb-6 text-center text-sm text-slate-600 dark:text-slate-300">
-          {t('Cuéntanos qué te gustaría ver en Ahorbit. Leemos todos los comentarios.')}
+          {t('Cuéntanos qué te gustaría ver en Mi Control de Finanzas Personales. Leemos todos los comentarios.')}
         </p>
         <FeedbackForm />
       </section>
 
       {/* Footer */}
       <footer className="border-t border-slate-200 dark:border-slate-700 py-8 text-center text-xs text-slate-400 dark:text-slate-500">
-        <p>© {t('Ahorbit — Finanzas personales.')}</p>
+        <p>© {t('Mi Control de Finanzas Personales — Finanzas personales.')}</p>
       </footer>
     </div>
   )

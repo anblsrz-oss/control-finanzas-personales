@@ -275,7 +275,7 @@ function FamilyDetail({
                         setInviteNotice(
                           result.emailSent
                             ? t('Invitación enviada por correo.')
-                            : t('Invitación creada, pero no se pudo enviar el correo. La persona la verá igual al entrar a Ahorbit.'),
+                            : t('Invitación creada, pero no se pudo enviar el correo. La persona la verá igual al entrar a Mi Control de Finanzas Personales.'),
                         )
                       },
                       onError: (e: any) =>
