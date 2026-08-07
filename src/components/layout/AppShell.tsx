@@ -4,6 +4,9 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useSettings } from '@/store/useSettings'
 import { usePendingCount } from '@/hooks/useTransactions'
+import { useUnreadBudgetAlertsCount } from '@/hooks/useBudgets'
+import { BudgetAlertBanner } from '@/components/budgets/BudgetAlertBanner'
+import { BudgetAlertWatcher } from '@/components/budgets/BudgetAlertWatcher'
 import { APK_URL } from '@/lib/appUpdate'
 import { isNative } from '@/lib/nativeAuth'
 
@@ -19,6 +22,7 @@ const NAV: NavItem[] = [
   { to: '/tarjetas', label: 'Tarjetas', icon: '💳' },
   { to: '/lineas-credito', label: 'Líneas de crédito', icon: '💠' },
   { to: '/transacciones', label: 'Transacciones', icon: '💸' },
+  { to: '/presupuestos', label: 'Presupuestos', icon: '🎯' },
   { to: '/importar', label: 'Importar', icon: '📥' },
   { to: '/recibos', label: 'Escanear recibo', icon: '🧾' },
   { to: '/familia', label: 'Familia', icon: '👨‍👩‍👧‍👦' },
@@ -41,6 +45,7 @@ const MOBILE_NAV: NavItem[] = [
 
 // Resto de secciones, accesibles desde el menú "Más" en móvil.
 const MORE_NAV: NavItem[] = [
+  { to: '/presupuestos', label: 'Presup.', icon: '🎯' },
   { to: '/tarjetas', label: 'Tarjetas', icon: '💳' },
   { to: '/lineas-credito', label: 'Crédito', icon: '💠' },
   { to: '/recibos', label: 'Recibos', icon: '🧾' },
@@ -54,7 +59,7 @@ const MORE_NAV: NavItem[] = [
   { to: '/configuracion', label: 'Ajustes', icon: '⚙️' },
 ]
 
-// Insignia con el número de movimientos pendientes por revisar.
+// Insignia con un conteo (movimientos por revisar, avisos de presupuesto).
 function PendingBadge({ count }: { count: number }) {
   if (count <= 0) return null
   return (
@@ -68,6 +73,7 @@ export function AppShell() {
   const { t } = useTranslation()
   const { profile, session } = useAuth()
   const pendingCount = usePendingCount(session?.user?.id).data ?? 0
+  const budgetAlertCount = useUnreadBudgetAlertsCount(session?.user?.id).data ?? 0
   const hideAmounts = useSettings((s) => s.hideAmounts)
   const toggleHideAmounts = useSettings((s) => s.toggleHideAmounts)
   const [moreOpen, setMoreOpen] = useState(false)
@@ -124,6 +130,7 @@ export function AppShell() {
               <span>{item.icon}</span>
               {t(item.label)}
               {item.to === '/transacciones' && <PendingBadge count={pendingCount} />}
+              {item.to === '/presupuestos' && <PendingBadge count={budgetAlertCount} />}
             </NavLink>
           ))}
           {profile?.is_admin && (
@@ -182,6 +189,11 @@ export function AppShell() {
 
         {/* pb-nav deja hueco para la barra inferior fija + área segura */}
         <main className="pb-nav flex-1 p-4 md:p-6">
+          {/* El aviso de presupuesto va aquí y no en una pantalla concreta: el
+              gasto que cruza el umbral puede registrarse desde Movimientos,
+              desde el escáner de recibos o llegar solo por SMS/correo. */}
+          <BudgetAlertWatcher />
+          <BudgetAlertBanner />
           <Outlet />
         </main>
       </div>
@@ -271,7 +283,14 @@ export function AppShell() {
             moreActive || moreOpen ? 'text-brand-700 dark:text-brand-500' : 'text-slate-500 dark:text-slate-400'
           }`}
         >
-          <span className="text-lg">⋯</span>
+          <span className="relative text-lg">
+            ⋯
+            {/* Presupuestos vive dentro de "Más" en móvil: sin este punto, un
+                aviso pendiente quedaría invisible hasta abrir la hoja. */}
+            {budgetAlertCount > 0 && (
+              <span className="absolute -right-1.5 -top-0.5 h-2 w-2 rounded-full bg-amber-500" />
+            )}
+          </span>
           {t('Más')}
         </button>
       </nav>

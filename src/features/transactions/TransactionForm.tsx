@@ -15,6 +15,7 @@ import {
 import { useCreditLines } from '@/hooks/useCreditLines'
 import { useFxRate } from '@/hooks/useFxRate'
 import { useEntitlements } from '@/hooks/useAppConfig'
+import { useRecordBudgetAlerts } from '@/hooks/useBudgets'
 import { toBaseAmount } from '@/lib/fx'
 import { CURRENCIES, formatMoney } from '@/lib/format'
 import { todayISO, formatMonthLabel } from '@/lib/dates'
@@ -104,6 +105,7 @@ export function TransactionForm({
   const updateTransaction = useUpdateTransaction()
   const createInstallment = useCreateInstallmentPlan()
   const confirmInstallments = useConfirmInstallmentPayments()
+  const recordBudgetAlerts = useRecordBudgetAlerts()
   const { canUseInstallments } = useEntitlements()
   const mainCurrency = profile?.main_currency ?? 'MXN'
 
@@ -364,6 +366,16 @@ export function TransactionForm({
       resolvedCategoryId = undefined
     }
 
+    // Reevalúa los presupuestos para que el aviso salga al instante y no en el
+    // siguiente refresco. Va suelto a propósito: si fallara, no debe tumbar el
+    // guardado, y el BudgetAlertWatcher lo reintentaría solo. Los gastos
+    // familiares no cuentan (los presupuestos son individuales en este MVP).
+    const notifyBudgets = () => {
+      if (resolvedKind === 'expense' && !familyId) {
+        recordBudgetAlerts.mutate({ userId })
+      }
+    }
+
     try {
       if (isEdit && transaction) {
         await updateTransaction.mutateAsync({
@@ -384,6 +396,7 @@ export function TransactionForm({
           txDate: data.txDate,
           notes: data.notes,
         })
+        notifyBudgets()
         onSuccess?.()
         return
       }
@@ -470,6 +483,7 @@ export function TransactionForm({
 
       form.reset()
       setMsiToPay({})
+      notifyBudgets()
       onSuccess?.()
     } catch (error: any) {
       alert(`Error: ${error.message}`)

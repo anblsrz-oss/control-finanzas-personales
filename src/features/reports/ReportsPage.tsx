@@ -10,6 +10,7 @@ import {
 } from '@/hooks/useReports'
 import { useCategories } from '@/hooks/useCategories'
 import { useCreditUsageBreakdown } from '@/hooks/useCreditLines'
+import { useBudgetStatus } from '@/hooks/useBudgets'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
@@ -20,6 +21,7 @@ import { IncomeExpenseChart } from '@/components/charts/IncomeExpenseChart'
 import { CategoryPieChart } from '@/components/charts/CategoryPieChart'
 import { BreakdownBarChart } from '@/components/charts/BreakdownBarChart'
 import { CreditUsageChart } from '@/components/charts/CreditUsageChart'
+import { BudgetProgressChart } from '@/components/charts/BudgetProgressChart'
 import { ChartControls } from '@/components/charts/ChartControls'
 import { Money } from '@/components/ui/Money'
 import { formatDate } from '@/lib/format'
@@ -54,6 +56,9 @@ export function ReportsPage() {
   const categoryQuery = useCategoryTotals(userId, filters)
   const { data: breakdown } = useCardAccountTotals(userId, filters)
   const { data: creditUsage } = useCreditUsageBreakdown(userId)
+  // Cada presupuesto corre en su propio periodo, resuelto en servidor: no
+  // depende del rango de fechas del filtro.
+  const budgetStatus = useBudgetStatus(userId).data || []
 
   const summary = summaryQuery.data
   const monthly = monthlyQuery.data || []
@@ -77,6 +82,7 @@ export function ReportsPage() {
     if (id === 'byCard') return breakdown.byCard.length > 0
     if (id === 'byAccount') return breakdown.byAccount.length > 0
     if (id === 'creditUsage') return creditUsage.length > 0
+    if (id === 'budget') return budgetStatus.length > 0
     return false
   })
   const order = reconcileOrder(savedOrder, available)
@@ -123,6 +129,12 @@ export function ReportsPage() {
         return (
           <ChartCard key={id} {...common} title={t('Uso de línea de crédito')} ref={setRef(id)}>
             <CreditUsageChart data={creditUsage} />
+          </ChartCard>
+        )
+      case 'budget':
+        return (
+          <ChartCard key={id} {...common} title={t('Presupuestos')} ref={setRef(id)}>
+            <BudgetProgressChart data={budgetStatus} />
           </ChartCard>
         )
       default:

@@ -8,13 +8,14 @@ name: Build Android APK
 #  - Ejecutar manualmente (Actions -> Build Android APK -> Run workflow)
 #    -> compila y firma; el APK queda como "artifact" descargable del run
 #
-# Requiere 6 secrets del repo (Settings -> Secrets and variables -> Actions):
+# Requiere 7 secrets del repo (Settings -> Secrets and variables -> Actions):
 #  ANDROID_KEYSTORE_BASE64      keystore en base64
 #  ANDROID_KEYSTORE_PASSWORD    contraseña del keystore
 #  ANDROID_KEY_ALIAS            alias de la llave
 #  ANDROID_KEY_PASSWORD         contraseña de la llave
 #  VITE_SUPABASE_URL            URL del proyecto Supabase (Project Settings -> API)
 #  VITE_SUPABASE_ANON_KEY       clave anon/publishable (Project Settings -> API)
+#  GOOGLE_SERVICES_JSON_BASE64  android/app/google-services.json en base64 (push/FCM)
 # (ver APK_BUILD.md para generarlos)
 
 on:
@@ -47,6 +48,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      # Sin este archivo el plugin google-services no se aplica (build.gradle
+      # lo detecta y sigue sin fallar), y el APK queda sin push funcional.
+      - name: Write google-services.json
+        run: echo "${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}" | base64 -d > android/app/google-services.json
 
       - name: Build web assets
         run: npm run build

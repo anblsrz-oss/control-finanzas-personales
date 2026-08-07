@@ -20,6 +20,10 @@ export interface ProfileRow {
   is_premium: boolean
   is_admin: boolean
   main_currency: string
+  /** Umbral de aviso por defecto (1-100) para presupuestos sin umbral propio. */
+  budget_alert_threshold: number
+  /** Opt-in al resumen diario por correo. Apagado por defecto. */
+  budget_alerts_email: boolean
   created_at: string
 }
 
@@ -360,9 +364,51 @@ export interface AppConfigRow {
   reports_filters_is_premium: boolean
   dashboard_period_filter_is_premium: boolean
   transactions_period_filter_is_premium: boolean
+  budgets_is_premium: boolean
+  free_max_budgets: number
   // Colores de tema personalizados (null = tema por defecto). Ver ThemeColors.
   theme_colors: import('@/lib/themeColors').ThemeColors | null
   updated_at: string
+}
+
+// Presupuestos ------------------------------------------------------------
+
+export type BudgetPeriod = 'daily' | 'weekly' | 'biweekly' | 'monthly'
+export type BudgetStatus = 'ok' | 'warn' | 'over'
+export type BudgetAlertLevel = 'warn' | 'over'
+
+export interface BudgetRow {
+  id: string
+  user_id: string
+  /** null = presupuesto general (todas las categorías de gasto). */
+  category_id: string | null
+  amount: number
+  currency: string
+  period: BudgetPeriod
+  /** Reservado para periodos anclados; hoy el cálculo usa calendario fijo. */
+  anchor_day: number | null
+  /** null = hereda profiles.budget_alert_threshold. */
+  alert_threshold: number | null
+  is_active: boolean
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface BudgetAlertRow {
+  id: string
+  user_id: string
+  budget_id: string
+  period_start: string
+  level: BudgetAlertLevel
+  percent: number
+  spent: number
+  amount: number
+  notified_in_app: boolean
+  notified_email: boolean
+  notified_push: boolean
+  read_at: string | null
+  created_at: string
 }
 
 // Vistas calculadas
@@ -382,4 +428,30 @@ export interface CardUsageRow {
   credit_limit: number | null
   used: number
   available: number
+}
+
+/** Fila de budget_status_at(): estado calculado en servidor, nunca en cliente. */
+export interface BudgetStatusRow {
+  budget_id: string
+  user_id: string
+  category_id: string | null
+  /** null = presupuesto general. */
+  category_name: string | null
+  category_icon: string | null
+  category_color: string | null
+  period: BudgetPeriod
+  period_start: string
+  period_end: string
+  amount: number
+  currency: string
+  /** Gasto confirmado del periodo (pending = false). Es el que dispara avisos. */
+  spent: number
+  /** Gasto por confirmar: informativo, no dispara avisos. */
+  spent_pending: number
+  remaining: number
+  /** Sin capar: puede pasar de 100. */
+  percent: number | null
+  /** Umbral efectivo: el del presupuesto o, si no tiene, el del perfil. */
+  alert_threshold: number
+  status: BudgetStatus
 }

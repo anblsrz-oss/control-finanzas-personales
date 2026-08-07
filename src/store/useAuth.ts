@@ -4,6 +4,7 @@ import { App } from '@capacitor/app'
 import { supabase } from '@/lib/supabase'
 import { initNativeAuthListener } from '@/lib/nativeAuth'
 import { autoSyncSmsSilently, isAndroidNative } from '@/lib/smsSync'
+import { registerPush, unregisterPush } from '@/lib/pushNotifications'
 import type { ProfileRow } from '@/types/db'
 
 export type Profile = ProfileRow
@@ -63,12 +64,14 @@ export const useAuth = create<AuthState>((set, get) => ({
       ? await fetchProfile(session.user.id)
       : null
     set({ session, profile, loading: false })
+    if (session?.user) void registerPush(session.user.id)
 
     supabase.auth.onAuthStateChange(async (_event, newSession) => {
       const newProfile = newSession?.user
         ? await fetchProfile(newSession.user.id)
         : null
       set({ session: newSession, profile: newProfile })
+      if (newSession?.user) void registerPush(newSession.user.id)
     })
   },
 
@@ -79,6 +82,8 @@ export const useAuth = create<AuthState>((set, get) => ({
   },
 
   signOut: async () => {
+    // Antes del signOut: después ya no hay sesión y RLS bloquea el delete.
+    await unregisterPush()
     await supabase.auth.signOut()
     set({ session: null, profile: null })
   },

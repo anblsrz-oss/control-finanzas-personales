@@ -8,6 +8,7 @@ export type ChartId =
   | 'byCard'
   | 'byAccount'
   | 'creditUsage'
+  | 'budget'
 
 export type ChartPage = 'dashboard' | 'reports'
 
@@ -84,12 +85,27 @@ export const CHART_META: Record<ChartId, ChartMeta> = {
     ],
     perPointColors: false,
   },
+  budget: {
+    id: 'budget',
+    titleKey: 'Presupuestos',
+    // Mismo esquema que el crédito: semáforo + restante. La diferencia es que
+    // aquí los cortes del semáforo no son fijos, los pone el umbral de cada
+    // presupuesto (ver BUDGET_STATUS_COLORS en lib/budgets.ts).
+    series: [
+      { key: 'ok', labelKey: 'Dentro del presupuesto', defaultColor: '#16a34a', togglable: false },
+      { key: 'warn', labelKey: 'Cerca del límite', defaultColor: '#f59e0b', togglable: false },
+      { key: 'over', labelKey: 'Excedido', defaultColor: '#ef4444', togglable: false },
+      { key: 'available', labelKey: 'Restante', defaultColor: '#e2e8f0', togglable: false },
+    ],
+    perPointColors: false,
+  },
 }
 
 // Orden por defecto de cada página (refleja el orden histórico del código).
+// Los presupuestos van primero en Resumen: es lo más accionable de la pantalla.
 export const DEFAULT_ORDER: Record<ChartPage, ChartId[]> = {
-  dashboard: ['creditUsage', 'incomeExpense', 'category'],
-  reports: ['incomeExpense', 'category', 'byCard', 'byAccount', 'creditUsage'],
+  dashboard: ['budget', 'creditUsage', 'incomeExpense', 'category'],
+  reports: ['incomeExpense', 'category', 'byCard', 'byAccount', 'creditUsage', 'budget'],
 }
 
 // Reconciliación entre el orden guardado (que puede estar incompleto o traer IDs

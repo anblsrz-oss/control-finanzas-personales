@@ -39,6 +39,16 @@ GitHub → tu repo → **Settings → Secrets and variables → Actions → New 
 | `ANDROID_KEYSTORE_PASSWORD` | la contraseña del keystore |
 | `ANDROID_KEY_ALIAS` | `Ahorbit` |
 | `ANDROID_KEY_PASSWORD` | la contraseña de la llave (suele ser la misma) |
+| `GOOGLE_SERVICES_JSON_BASE64` | `android/app/google-services.json` (de Firebase) en base64, para que el push funcione |
+
+`google-services.json` no está versionado (identifica el proyecto Firebase),
+así que sin este secret el APK compila igual pero **sin push**: el build
+detecta que falta el archivo y sigue de largo en silencio.
+
+```powershell
+# Windows PowerShell, para obtener el valor de GOOGLE_SERVICES_JSON_BASE64:
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("android\app\google-services.json")) | Set-Clipboard
+```
 
 ### 3. Publica una versión
 - **Automático (crea el Release):** empuja una etiqueta de versión:
