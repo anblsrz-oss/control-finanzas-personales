@@ -41,6 +41,8 @@ export function useTransactionsSummary(userId?: string, filters?: ReportFilters)
         .eq('user_id', userId)
         // Los gastos familiares no forman parte de las finanzas personales.
         .is('family_id', null)
+        // Las pendientes de confirmar (sync SMS/correo) aún no son datos reales.
+        .eq('pending', false)
 
       if (filters?.startDate) {
         query = query.gte('tx_date', filters.startDate)
@@ -123,6 +125,8 @@ export function useMonthlyTotals(userId?: string, filters?: ReportFilters) {
         .select(SELECT_WITH_JOINS)
         .eq('user_id', userId)
         .is('family_id', null)
+        // Las pendientes de confirmar (sync SMS/correo) aún no son datos reales.
+        .eq('pending', false)
 
       if (filters?.startDate) {
         query = query.gte('tx_date', filters.startDate)
@@ -271,6 +275,8 @@ export function useCategoryTotals(userId?: string, filters?: ReportFilters) {
         .eq('user_id', userId)
         .eq('kind', 'expense')
         .is('family_id', null)
+        // Las pendientes de confirmar (sync SMS/correo) aún no son datos reales.
+        .eq('pending', false)
 
       if (filters?.startDate) {
         query = query.gte('tx_date', filters.startDate)
