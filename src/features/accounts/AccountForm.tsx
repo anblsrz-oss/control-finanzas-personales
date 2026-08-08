@@ -19,6 +19,19 @@ const DEFAULT_ISR_RATE = 0.5
 const schema = z.object({
   name: z.string().min(1, 'Nombre requerido'),
   bank_name: z.string().optional(),
+  clabe: z.string().optional().refine((v) => !v || /^\d{18}$/.test(v), 'La CLABE debe tener 18 dígitos'),
+  account_last4: z
+    .string()
+    .optional()
+    .refine((v) => !v || /^\d{4}$/.test(v), 'Deben ser 4 dígitos'),
+  account_number: z
+    .string()
+    .optional()
+    .refine((v) => !v || /^\d{8,20}$/.test(v), 'Debe tener entre 8 y 20 dígitos'),
+  account_number_last4: z
+    .string()
+    .optional()
+    .refine((v) => !v || /^\d{4}$/.test(v), 'Deben ser 4 dígitos'),
   type: z.enum(['checking', 'savings', 'investment', 'cash', 'voucher']),
   currency: z.enum(CURRENCIES_ARRAY),
   // En edición se permite negativo (p. ej. para corregir montos de prueba).
@@ -57,6 +70,10 @@ export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) 
     defaultValues: {
       name: account?.name ?? '',
       bank_name: account?.bank_name ?? '',
+      clabe: account?.clabe ?? '',
+      account_last4: account?.account_last4 ?? '',
+      account_number: account?.account_number ?? '',
+      account_number_last4: account?.account_number_last4 ?? '',
       type: account?.type ?? 'checking',
       currency: (account?.currency as any) ?? 'MXN',
       initial_balance: account?.initial_balance ?? 0,
@@ -76,6 +93,26 @@ export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) 
   const pending = createAccount.isPending || updateAccount.isPending
   const ratePeriod = form.watch('yield_rate_period')
   const rateValue = Number(form.watch('yield_rate')) || 0
+
+  // Al capturar la CLABE completa, se autocompletan los últimos 4 para que
+  // el usuario no tenga que escribirlos dos veces. Sigue editable a mano por
+  // si solo conoce la terminación y no la CLABE completa.
+  function handleClabeChange(value: string) {
+    form.setValue('clabe', value)
+    if (/^\d{18}$/.test(value)) {
+      form.setValue('account_last4', value.slice(-4))
+    }
+  }
+
+  // Mismo autocompletado que la CLABE, pero para el número de cuenta: sus
+  // últimos 4 dígitos NO coinciden con los de la CLABE (esta trae un dígito
+  // verificador al final), así que se guardan por separado.
+  function handleAccountNumberChange(value: string) {
+    form.setValue('account_number', value)
+    if (/^\d{8,20}$/.test(value)) {
+      form.setValue('account_number_last4', value.slice(-4))
+    }
+  }
 
   async function onSubmit(data: FormData) {
     if (!session?.user?.id) {
@@ -97,6 +134,10 @@ export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) 
     const isTerm = data.has_yield && data.yield_kind === 'term'
     const payload = {
       ...data,
+      clabe: data.clabe || null,
+      account_last4: data.account_last4 || null,
+      account_number: data.account_number || null,
+      account_number_last4: data.account_number_last4 || null,
       yield_term_days: isTerm ? (data.yield_term_days ?? null) : null,
       yield_term_end: isTerm ? (data.yield_term_end || null) : null,
       isr_rate: data.has_yield && data.withhold_isr ? (data.isr_rate ?? null) : null,
@@ -134,6 +175,48 @@ export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) 
             {...form.register('bank_name')}
           />
         </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            label={t('CLABE (opcional)')}
+            placeholder="012345678901234567"
+            inputMode="numeric"
+            maxLength={18}
+            {...form.register('clabe')}
+            onChange={(e) => handleClabeChange(e.target.value)}
+            error={form.formState.errors.clabe?.message}
+          />
+          <Input
+            label={t('Últimos 4 de la CLABE (opcional)')}
+            placeholder="1234"
+            inputMode="numeric"
+            maxLength={4}
+            {...form.register('account_last4')}
+            error={form.formState.errors.account_last4?.message}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            label={t('Número de cuenta (opcional)')}
+            placeholder="01234567890"
+            inputMode="numeric"
+            maxLength={20}
+            {...form.register('account_number')}
+            onChange={(e) => handleAccountNumberChange(e.target.value)}
+            error={form.formState.errors.account_number?.message}
+          />
+          <Input
+            label={t('Últimos 4 de la cuenta (opcional)')}
+            placeholder="1234"
+            inputMode="numeric"
+            maxLength={4}
+            {...form.register('account_number_last4')}
+            error={form.formState.errors.account_number_last4?.message}
+          />
+        </div>
+        <p className="-mt-2 text-xs text-slate-400 dark:text-slate-500">
+          {t('Sirven para identificar automáticamente depósitos y transferencias por SMS o correo. Solo los últimos 4 dígitos se usan para eso, aunque guardes el número completo. La CLABE y el número de cuenta no comparten terminación, por eso van por separado.')}
+        </p>
 
         <div className="grid grid-cols-3 gap-4">
           <Select

@@ -26,6 +26,10 @@ export function useCreateAccount() {
       userId: string
       name: string
       bank_name?: string
+      clabe?: string | null
+      account_last4?: string | null
+      account_number?: string | null
+      account_number_last4?: string | null
       type: string
       currency: string
       initial_balance: number
@@ -47,6 +51,10 @@ export function useCreateAccount() {
             user_id: input.userId,
             name: input.name,
             bank_name: input.bank_name,
+            clabe: input.clabe ?? null,
+            account_last4: input.account_last4 ?? null,
+            account_number: input.account_number ?? null,
+            account_number_last4: input.account_number_last4 ?? null,
             type: input.type,
             currency: input.currency,
             initial_balance: input.initial_balance,
@@ -81,6 +89,10 @@ export function useUpdateAccount() {
       userId: string
       name?: string
       bank_name?: string
+      clabe?: string | null
+      account_last4?: string | null
+      account_number?: string | null
+      account_number_last4?: string | null
       type?: string
       currency?: string
       initial_balance?: number
@@ -99,6 +111,11 @@ export function useUpdateAccount() {
       const updates: Record<string, any> = {}
       if (rest.name !== undefined) updates.name = rest.name
       if (rest.bank_name !== undefined) updates.bank_name = rest.bank_name
+      if (rest.clabe !== undefined) updates.clabe = rest.clabe
+      if (rest.account_last4 !== undefined) updates.account_last4 = rest.account_last4
+      if (rest.account_number !== undefined) updates.account_number = rest.account_number
+      if (rest.account_number_last4 !== undefined)
+        updates.account_number_last4 = rest.account_number_last4
       if (rest.type !== undefined) updates.type = rest.type
       if (rest.currency !== undefined) updates.currency = rest.currency
       if (rest.initial_balance !== undefined) updates.initial_balance = rest.initial_balance

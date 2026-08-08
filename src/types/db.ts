@@ -32,6 +32,14 @@ export interface AccountRow {
   user_id: string
   name: string
   bank_name: string | null
+  /** CLABE completa (18 dígitos), opcional. Solo se usa para mostrarla al usuario. */
+  clabe: string | null
+  /** Últimos 4 dígitos de la CLABE. Es lo único que leen los edge functions para el matching automático. */
+  account_last4: string | null
+  /** Número de cuenta del banco (distinto de la CLABE), opcional. Solo se usa para mostrarlo al usuario. */
+  account_number: string | null
+  /** Últimos 4 dígitos del número de cuenta. No coinciden con los de la CLABE (esta trae un dígito verificador al final). */
+  account_number_last4: string | null
   type: AccountType
   currency: string
   initial_balance: number
