@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Card } from '@/components/ui/Card'
+import { BrandLogo } from '@/components/ui/BrandLogo'
+import { useAppConfig } from '@/hooks/useAppConfig'
 import { activeLocale } from '@/i18n'
 
 // Página pública (sin login) con la Política de Privacidad. Debe existir en
@@ -92,6 +94,7 @@ const SECTIONS: Section[] = [
 
 export function PrivacyPolicyPage() {
   const { t } = useTranslation()
+  const { data: appConfig } = useAppConfig()
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100">
@@ -101,6 +104,9 @@ export function PrivacyPolicyPage() {
         </Link>
 
         <Card className="mt-4">
+          <div className="mb-2">
+            <BrandLogo logoUrl={appConfig?.logo_url} size="h-9 w-9" emojiSize="text-3xl" />
+          </div>
           <h1 className="text-2xl font-bold">{t('Política de Privacidad')}</h1>
           <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
             {t('Última actualización: {{date}}', {

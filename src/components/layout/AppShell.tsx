@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useSettings } from '@/store/useSettings'
 import { useAppConfig } from '@/hooks/useAppConfig'
+import { BrandLogo } from '@/components/ui/BrandLogo'
 import { usePendingCount } from '@/hooks/useTransactions'
 import { useUnreadBudgetAlertsCount } from '@/hooks/useBudgets'
 import { BudgetAlertBanner } from '@/components/budgets/BudgetAlertBanner'
@@ -73,13 +74,6 @@ function PendingBadge({ count }: { count: number }) {
 const DEFAULT_APP_TITLE = 'Mi Control de Finanzas Personales'
 
 // Logo de la marca: imagen subida por el admin, o el emoji 💰 por defecto.
-function BrandLogo({ logoUrl }: { logoUrl: string | null | undefined }) {
-  if (logoUrl) {
-    return <img src={logoUrl} alt="" className="h-6 w-6 shrink-0 rounded object-cover" />
-  }
-  return <span className="text-xl">💰</span>
-}
-
 export function AppShell() {
   const { t } = useTranslation()
   const { profile, session } = useAuth()

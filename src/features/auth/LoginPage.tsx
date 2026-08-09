@@ -4,9 +4,11 @@ import { useTranslation } from 'react-i18next'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { BrandLogo } from '@/components/ui/BrandLogo'
 import { supabase } from '@/lib/supabase'
 import { signInWithGoogle } from '@/lib/nativeAuth'
 import { useAuth } from '@/store/useAuth'
+import { useAppConfig } from '@/hooks/useAppConfig'
 
 // Login con tres opciones:
 // - Google (OAuth, adaptado a web/nativo en nativeAuth).
@@ -21,6 +23,7 @@ type OtpStep = 'email' | 'code'
 export function LoginPage() {
   const { t } = useTranslation()
   const { session } = useAuth()
+  const { data: appConfig } = useAppConfig()
   const [searchParams] = useSearchParams()
   // La landing enlaza a /login?mode=signup para abrir directo el registro.
   const [method, setMethod] = useState<Method>('password')
@@ -207,7 +210,9 @@ export function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-900 p-6">
       <Card className="w-full max-w-sm text-center">
-        <div className="mb-4 text-4xl">💰</div>
+        <div className="mb-4">
+          <BrandLogo logoUrl={appConfig?.logo_url} size="h-12 w-12" emojiSize="text-4xl" />
+        </div>
         <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-100">Mi Control de Finanzas Personales</h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           {t('Organiza tus ingresos, gastos y cuentas en un solo lugar.')}

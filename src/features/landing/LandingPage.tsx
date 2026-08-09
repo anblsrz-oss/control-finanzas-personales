@@ -2,8 +2,10 @@
 import { Link, Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/Button'
+import { BrandLogo } from '@/components/ui/BrandLogo'
 import { useAuth } from '@/store/useAuth'
 import { useSettings } from '@/store/useSettings'
+import { useAppConfig } from '@/hooks/useAppConfig'
 import { useSendFeedback } from '@/hooks/useFeedback'
 import { APK_URL } from '@/lib/appUpdate'
 
@@ -97,6 +99,7 @@ function FeedbackForm() {
 export function LandingPage() {
   const { t } = useTranslation()
   const { session } = useAuth()
+  const { data: appConfig } = useAppConfig()
 
   // Si ya hay sesión, la landing no aplica: al panel.
   if (session) return <Navigate to="/" replace />
@@ -121,7 +124,7 @@ export function LandingPage() {
       {/* Barra superior */}
       <header className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
         <div className="flex items-center gap-2 text-lg font-bold">
-          <span>💰</span> Mi Control de Finanzas Personales
+          <BrandLogo logoUrl={appConfig?.logo_url} size="h-6 w-6" emojiSize="text-lg" /> Mi Control de Finanzas Personales
         </div>
         <div className="flex items-center gap-3">
           <LanguageToggle />
