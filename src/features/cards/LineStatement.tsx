@@ -5,11 +5,13 @@ import { formatMonthLabel } from '@/lib/dates'
 import { planProgress } from '@/lib/installments'
 import { computeLineStatement } from '@/hooks/useCreditLines'
 import type { CreditActivity } from '@/hooks/useCreditLines'
+import { LineBalanceConfirm } from '@/features/cards/LineBalanceConfirm'
 import { Button } from '@/components/ui/Button'
 import { Money } from '@/components/ui/Money'
 import type {
   CardRow,
   CreditLineRow,
+  CreditLinePeriodRow,
   InstallmentPlanRow,
   InstallmentPlanPaymentRow,
 } from '@/types/db'
@@ -20,6 +22,7 @@ interface LineStatementProps {
   activities: CreditActivity[]
   plans: InstallmentPlanRow[]
   payments: InstallmentPlanPaymentRow[]
+  periods?: CreditLinePeriodRow[]
   onPay: (amount: number) => void
 }
 
@@ -33,13 +36,14 @@ export function LineStatement({
   activities,
   plans,
   payments,
+  periods = [],
   onPay,
 }: LineStatementProps) {
   const { t } = useTranslation()
 
   const statement = useMemo(
-    () => computeLineStatement(line, cards, activities),
-    [line, cards, activities],
+    () => computeLineStatement(line, cards, activities, periods),
+    [line, cards, activities, periods],
   )
 
   // Avance de los planes MSI de esta línea (meses pagados / faltantes).
@@ -96,6 +100,8 @@ export function LineStatement({
           💳 {t('Pagar')}
         </Button>
       </div>
+
+      <LineBalanceConfirm line={line} periods={periods} statement={statement} />
 
       {linePlans.length > 0 && (
         <div className="space-y-1">

@@ -5,8 +5,14 @@ import { useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useCards, useCardUsage } from '@/hooks/useCards'
-import { periodWindow } from '@/lib/creditDates'
-import type { CardRow, CreditLineRow, CreditLineUsageRow, CardUsageRow } from '@/types/db'
+import { periodWindow, currentPeriod } from '@/lib/creditDates'
+import type {
+  CardRow,
+  CreditLineRow,
+  CreditLineUsageRow,
+  CardUsageRow,
+  CreditLinePeriodRow,
+} from '@/types/db'
 
 export function useCreditLines(userId?: string) {
   return useQuery({
@@ -178,23 +184,72 @@ export interface LineStatement {
   currency: string
 }
 
-/** Estado de cuenta del periodo vigente de una línea (cálculo puro). */
+/**
+ * Estado de cuenta del periodo vigente de una línea (cálculo puro).
+ *
+ * El monto "a pagar" solo puede calcularse de forma confiable a partir de las
+ * transacciones capturadas si TODAS quedaron registradas (incluyendo pagos,
+ * que a veces no se capturan por SMS/correo). Para no depender de eso, si el
+ * usuario confirmó el saldo real de este periodo contra su estado de cuenta,
+ * ese saldo manda. Si no, se calcula desde el saldo confirmado más reciente
+ * (si hay) más la actividad capturada desde ese ancla — en vez de desde el
+ * inicio de los tiempos, donde cualquier pago no capturado se arrastraría
+ * como error para siempre.
+ */
 export function computeLineStatement(
   line: CreditLineRow,
   cards: CardRow[],
   activities: CreditActivity[],
+  periods: CreditLinePeriodRow[] = [],
 ): LineStatement {
-  const win = periodWindow(line)
+  const period = currentPeriod(line)
+  const linePeriods = periods.filter((p) => p.credit_line_id === line.id)
+  const confirmed = period
+    ? linePeriods.find((p) => p.period_month === period.periodMonth)
+    : undefined
+  const win = periodWindow(line, new Date(), confirmed?.cut_date)
   if (!win) return { window: null, amount: 0, paid: 0, currency: line.currency }
+
+  // Si ya confirmaron el saldo de este periodo, ese es el punto de partida y
+  // solo se restan los pagos hechos después del corte (los que van bajando
+  // esa cuenta ya confirmada). Si no, el punto de partida es el saldo
+  // confirmado más reciente de un periodo anterior (o 0 si nunca se ha
+  // confirmado nada), y se suma/resta la actividad capturada desde ahí.
+  const anchor = linePeriods
+    .filter(
+      (p) =>
+        p.confirmed_balance != null &&
+        (!period || p.period_month < period.periodMonth),
+    )
+    .sort((a, b) => (a.cut_date < b.cut_date ? 1 : -1))[0]
 
   const lineCardIds = new Set(
     cards.filter((c) => c.credit_line_id === line.id).map((c) => c.id),
   )
-  let amount = 0
+  let amount = confirmed?.confirmed_balance ?? anchor?.confirmed_balance ?? 0
   let paid = 0
+
+  // Cota inferior EXCLUSIVA: se cuenta actividad con tx_date > excludeUpTo.
+  const excludeUpTo =
+    confirmed?.confirmed_balance != null
+      ? confirmed.cut_date
+      : anchor
+        ? anchor.cut_date
+        : null // sin ancla: usa win.start como cota inclusiva más abajo.
+  // Cota superior: sin tope cuando ya está confirmado (los pagos posteriores
+  // al corte siempre cuentan, sin importar qué tan lejos del corte se hagan).
+  const rangeEnd = confirmed?.confirmed_balance != null ? null : win.end
+
   for (const a of activities) {
-    if (a.tx_date < win.start || a.tx_date > win.end) continue
+    if (excludeUpTo != null ? a.tx_date <= excludeUpTo : a.tx_date < win.start) continue
+    if (rangeEnd != null && a.tx_date > rangeEnd) continue
     const v = a.currency === line.currency ? a.amount : a.base_amount ?? a.amount
+    if (confirmed?.confirmed_balance != null) {
+      // El saldo ya confirmado incluye toda la actividad hasta el corte:
+      // de aquí en adelante solo cuentan los pagos hechos después.
+      if (a.kind === 'card_payment' && a.to_credit_line_id === line.id) paid += v
+      continue
+    }
     if ((a.kind === 'expense' || a.kind === 'income') && a.card_id && lineCardIds.has(a.card_id)) {
       amount += a.kind === 'expense' ? v : -v
     } else if (a.kind === 'card_payment' && a.to_credit_line_id === line.id) {

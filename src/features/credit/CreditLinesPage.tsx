@@ -163,6 +163,7 @@ export function CreditLinesPage() {
                     activities={activities}
                     plans={plans}
                     payments={installmentPayments}
+                    periods={periods}
                     onPay={(amount) => setPayingLine({ line, amount })}
                   />
                   <div className="mt-3 flex gap-2">

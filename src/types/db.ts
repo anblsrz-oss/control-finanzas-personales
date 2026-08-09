@@ -81,6 +81,8 @@ export interface CreditLinePeriodRow {
   cut_date: string
   payment_date: string
   confirmed: boolean
+  /** Saldo real confirmado contra el estado de cuenta ("a pagar" de ese periodo). Null si no se ha confirmado. */
+  confirmed_balance: number | null
   created_at: string
 }
 
