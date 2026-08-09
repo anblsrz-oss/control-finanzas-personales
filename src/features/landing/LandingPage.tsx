@@ -229,6 +229,15 @@ export function LandingPage() {
       {/* Footer */}
       <footer className="border-t border-slate-200 dark:border-slate-700 py-8 text-center text-xs text-slate-400 dark:text-slate-500">
         <p>© {t('Mi Control de Finanzas Personales — Finanzas personales.')}</p>
+        <p className="mt-2 space-x-3">
+          <Link to="/terminos" className="underline hover:text-slate-600 dark:hover:text-slate-300">
+            {t('Términos y Condiciones')}
+          </Link>
+          <span aria-hidden="true">·</span>
+          <Link to="/privacidad" className="underline hover:text-slate-600 dark:hover:text-slate-300">
+            {t('Política de Privacidad')}
+          </Link>
+        </p>
       </footer>
     </div>
   )

@@ -69,8 +69,8 @@ export const en: Record<string, string> = {
   'Organiza tus ingresos, gastos y cuentas en un solo lugar.':
     'Organize your income, expenses and accounts in one place.',
   'Continuar con Google': 'Continue with Google',
-  'Al continuar aceptas el manejo de tus datos según la política de privacidad.':
-    'By continuing you accept the handling of your data according to the privacy policy.',
+  'Al continuar aceptas nuestros': 'By continuing you accept our',
+  'y nuestra': 'and our',
 
   // Dashboard / Reportes
   'Vista general de tus ingresos, egresos y balance.':
@@ -876,4 +876,111 @@ export const en: Record<string, string> = {
   'tu presupuesto': 'your budget',
   Ver: 'View',
   Entendido: 'Got it',
+
+  // Legal (Términos y Privacidad)
+  'Términos y Condiciones': 'Terms and Conditions',
+  'Política de Privacidad': 'Privacy Policy',
+  'Última actualización: {{date}}': 'Last updated: {{date}}',
+
+  // Términos — encabezados
+  'Aceptación de los términos': 'Acceptance of the terms',
+  'Qué es (y qué no es) la app': 'What the app is (and is not)',
+  'Tu cuenta': 'Your account',
+  'Uso aceptable': 'Acceptable use',
+  'Sincronización con Google y captura de SMS': 'Syncing with Google and SMS capture',
+  Precios: 'Pricing',
+  'Propiedad intelectual': 'Intellectual property',
+  'Limitación de responsabilidad': 'Limitation of liability',
+  'Cancelación de tu cuenta': 'Cancelling your account',
+  'Cambios a estos términos': 'Changes to these terms',
+  'Ley aplicable': 'Governing law',
+  Contacto: 'Contact',
+
+  // Términos — párrafos
+  'Al crear una cuenta o usar Mi Control de Finanzas Personales ("la app") aceptas estos Términos y Condiciones. Si no estás de acuerdo, no uses la app.':
+    'By creating an account or using Mi Control de Finanzas Personales ("the app") you accept these Terms and Conditions. If you do not agree, do not use the app.',
+  'La app es una herramienta para llevar el registro y la organización de tus finanzas personales: cuentas, tarjetas, transacciones, presupuestos y reportes.':
+    'The app is a tool for tracking and organizing your personal finances: accounts, cards, transactions, budgets and reports.',
+  'La app no es un banco, una institución financiera, un asesor financiero ni un intermediario de pagos. No movemos tu dinero, no tenemos acceso a tus contraseñas bancarias y no damos asesoría de inversión. La información que muestra la app depende de los datos que tú capturas o autorizas a sincronizar, y puede contener errores o retrasos.':
+    'The app is not a bank, a financial institution, a financial advisor or a payment intermediary. We do not move your money, we do not have access to your bank passwords, and we do not provide investment advice. The information the app shows depends on the data you enter or authorize it to sync, and it may contain errors or delays.',
+  'Debes tener al menos 18 años para crear una cuenta. Eres responsable de mantener segura tu contraseña y de toda la actividad que ocurra en tu cuenta.':
+    'You must be at least 18 years old to create an account. You are responsible for keeping your password secure and for all activity on your account.',
+  'La información que registras (cuentas, tarjetas, montos) debe ser información que tengas derecho a compartir; no uses la app para registrar datos financieros de terceros sin su consentimiento, salvo dentro de un plan familiar compartido que tú mismo administras.':
+    'The information you record (accounts, cards, amounts) must be information you have the right to share; do not use the app to record third parties\' financial data without their consent, except within a shared family plan that you manage yourself.',
+  'No debes usar la app para actividades ilegales, para intentar acceder a cuentas de otros usuarios sin autorización, ni para interferir con el funcionamiento del servicio.':
+    'You must not use the app for illegal activities, to attempt to access other users\' accounts without authorization, or to interfere with the operation of the service.',
+  'Las funciones de "Sincronizar correo" (Gmail, solo lectura) y "Sincronizar SMS" (solo Android) son opcionales y requieren tu autorización explícita. Puedes desactivarlas en cualquier momento desde la app. El tratamiento de estos datos se rige por la Política de Privacidad.':
+    'The "Sync email" (Gmail, read-only) and "Sync SMS" (Android only) features are optional and require your explicit authorization. You can turn them off at any time from within the app. The handling of this data is governed by the Privacy Policy.',
+  'Mientras la conexión con Gmail esté en modo de prueba ante Google, solo los correos agregados como "usuarios de prueba" en la consola de Google Cloud podrán usar esa función; esta limitación es de Google, no de la app.':
+    'While the Gmail connection is in testing mode with Google, only email addresses added as "test users" in the Google Cloud console can use that feature; this limitation comes from Google, not from the app.',
+  'Todas las funciones de la app son gratuitas por el momento. Si en el futuro se introducen planes de pago, se te avisará con anticipación antes de que se te cobre algo.':
+    'All app features are free for now. If paid plans are introduced in the future, you will be notified in advance before anything is charged.',
+  'La app, su diseño, código y marca nos pertenecen. Tú conservas la propiedad de los datos financieros que capturas; nos das permiso únicamente para almacenarlos y procesarlos con el fin de prestarte el servicio.':
+    'The app, its design, code and brand belong to us. You retain ownership of the financial data you enter; you grant us permission only to store and process it in order to provide you the service.',
+  'La app se ofrece "tal cual", sin garantías de que esté libre de errores o interrupciones. En la medida permitida por la ley, no somos responsables de decisiones financieras que tomes con base en la información mostrada por la app, ni de pérdidas derivadas de errores de sincronización, del correo o del SMS, o de fallas de servicios de terceros (Google, Supabase, tu banco).':
+    'The app is provided "as is", without guarantees that it is free of errors or interruptions. To the extent permitted by law, we are not responsible for financial decisions you make based on information shown by the app, nor for losses arising from sync errors, email or SMS, or failures of third-party services (Google, Supabase, your bank).',
+  'Puedes dejar de usar la app y solicitar la eliminación de tu cuenta y tus datos en cualquier momento escribiendo a {{email}}. Podemos suspender o cancelar cuentas que incumplan estos términos.':
+    'You can stop using the app and request deletion of your account and data at any time by writing to {{email}}. We may suspend or cancel accounts that violate these terms.',
+  'Podemos actualizar estos términos ocasionalmente. Publicaremos cualquier cambio en esta misma página con la fecha de actualización correspondiente.':
+    'We may update these terms from time to time. We will publish any changes on this same page with the corresponding update date.',
+  'Estos términos se rigen por las leyes de México, sin perjuicio de los derechos que la legislación de tu país de residencia te reconozca como consumidor.':
+    'These terms are governed by the laws of Mexico, without prejudice to the rights that the laws of your country of residence grant you as a consumer.',
+  '¿Dudas sobre estos términos? Escríbenos a {{email}}.':
+    'Questions about these terms? Write to us at {{email}}.',
+
+  // Privacidad — encabezados
+  'Quiénes somos': 'Who we are',
+  'Qué datos recopilamos': 'What data we collect',
+  'Uso de datos obtenidos mediante las APIs de Google': 'Use of data obtained through Google APIs',
+  'Cómo usamos tus datos': 'How we use your data',
+  'Con quién compartimos tus datos': 'Who we share your data with',
+  'Retención y eliminación de datos': 'Data retention and deletion',
+  Seguridad: 'Security',
+  'Tus derechos': 'Your rights',
+  'Menores de edad': 'Minors',
+  'Cambios a esta política': 'Changes to this policy',
+
+  // Privacidad — párrafos
+  'Mi Control de Finanzas Personales ("la app", "nosotros") es una aplicación de finanzas personales que te ayuda a organizar ingresos, gastos, cuentas, tarjetas y presupuestos. Esta política explica qué datos recopilamos, cómo los usamos y qué derechos tienes sobre ellos.':
+    'Mi Control de Finanzas Personales ("the app", "we") is a personal finance app that helps you organize income, expenses, accounts, cards and budgets. This policy explains what data we collect, how we use it, and what rights you have over it.',
+  'Datos de cuenta: nombre, correo electrónico y, si inicias sesión con Google, tu nombre y correo asociados a tu cuenta de Google.':
+    'Account data: name, email address, and, if you sign in with Google, the name and email associated with your Google account.',
+  'Datos financieros que capturas tú mismo: cuentas, tarjetas, líneas de crédito, transacciones, categorías, presupuestos y montos, ya sea escritos a mano, importados desde un archivo, o extraídos de un recibo/factura que fotografías o subes.':
+    'Financial data you enter yourself: accounts, cards, credit lines, transactions, categories, budgets and amounts, whether typed in by hand, imported from a file, or extracted from a receipt/invoice you photograph or upload.',
+  'Datos de sincronización opcional por correo: si activas "Sincronizar correo" y conectas tu cuenta de Gmail, la app lee únicamente los mensajes que coinciden con reglas de remitente que tú configuras (por ejemplo, notificaciones de tu banco o de servicios como Xsolla/EBANX), extrae de ellos los datos de una transacción (monto, fecha, concepto) y no guarda el contenido completo del correo.':
+    'Optional email sync data: if you turn on "Sync email" and connect your Gmail account, the app only reads messages that match sender rules you configure (for example, notifications from your bank or services like Xsolla/EBANX), extracts transaction data from them (amount, date, description), and does not store the full email content.',
+  'Datos de sincronización opcional por SMS (solo Android): si activas "Sincronizar SMS", la app lee los mensajes de texto entrantes para detectar avisos de transacciones bancarias y extraer monto, fecha y concepto; no se sube ni se comparte el contenido completo del SMS ni los mensajes que no correspondan a movimientos financieros.':
+    'Optional SMS sync data (Android only): if you turn on "Sync SMS", the app reads incoming text messages to detect bank transaction alerts and extract amount, date and description; the full SMS content is not uploaded or shared, nor are messages that are not financial transactions.',
+  'Datos de uso: información técnica básica para el funcionamiento de la app (por ejemplo, idioma preferido, tema claro/oscuro, y registros de error para poder corregir fallas).':
+    'Usage data: basic technical information needed to run the app (for example, preferred language, light/dark theme, and error logs so we can fix bugs).',
+  'El uso y la transferencia de información recibida desde las APIs de Google por parte de Mi Control de Finanzas Personales se ajustará a la Política de Datos de Usuario de los Servicios de API de Google (Google API Services User Data Policy), incluidos los requisitos de Uso Limitado ("Limited Use").':
+    "Mi Control de Finanzas Personales's use and transfer of information received from Google APIs will adhere to the Google API Services User Data Policy, including the Limited Use requirements.",
+  'En concreto: el acceso de solo lectura a Gmail (scope gmail.readonly) se usa exclusivamente para detectar transacciones financieras en los correos que coinciden con las reglas de remitente que tú configuras dentro de la app. No usamos estos datos para publicidad, no los vendemos, no los compartimos con terceros salvo lo necesario para operar el servicio (ver "Con quién compartimos tus datos"), y ningún humano lee tu correo salvo que sea estrictamente necesario para dar soporte técnico que tú mismo solicites, para cumplir la ley, o para investigar un uso indebido.':
+    'Specifically: read-only Gmail access (the gmail.readonly scope) is used exclusively to detect financial transactions in emails that match the sender rules you configure inside the app. We do not use this data for advertising, we do not sell it, and we do not share it with third parties except as necessary to operate the service (see "Who we share your data with"); no human reads your email unless strictly necessary to provide technical support you request, to comply with the law, or to investigate misuse.',
+  'Puedes revocar el acceso de la app a tu cuenta de Google en cualquier momento desde la configuración de tu cuenta de Google (myaccount.google.com/permissions) o desde la sección "Sincronizar correo" dentro de la app.':
+    'You can revoke the app\'s access to your Google account at any time from your Google account settings (myaccount.google.com/permissions) or from the "Sync email" section inside the app.',
+  'Usamos tus datos para operar la app: mostrar tus saldos, transacciones, reportes y presupuestos; enviarte notificaciones relacionadas con tu cuenta; y responder a tus comentarios o solicitudes de soporte.':
+    'We use your data to run the app: showing your balances, transactions, reports and budgets; sending you notifications related to your account; and responding to your feedback or support requests.',
+  'No usamos tus datos financieros para publicidad ni los vendemos a terceros.':
+    'We do not use your financial data for advertising, nor do we sell it to third parties.',
+  'Usamos Supabase como proveedor de infraestructura (base de datos, autenticación y funciones del servidor) para operar la app; Supabase procesa los datos en nuestro nombre bajo sus propias medidas de seguridad, y no los usa para sus propios fines.':
+    'We use Supabase as our infrastructure provider (database, authentication and server functions) to run the app; Supabase processes data on our behalf under its own security measures, and does not use it for its own purposes.',
+  'Cuando inicias sesión con Google, o conectas Gmail, compartimos información con Google únicamente en la medida necesaria para autenticarte o para leer los correos que tú autorizas, conforme a esta política.':
+    'When you sign in with Google, or connect Gmail, we share information with Google only to the extent necessary to authenticate you or to read the emails you authorize, in accordance with this policy.',
+  'No compartimos tus datos financieros con anunciantes ni los vendemos a terceros.':
+    'We do not share your financial data with advertisers, nor do we sell it to third parties.',
+  'Conservamos tus datos mientras tu cuenta esté activa. Puedes exportar tus transacciones a Excel en cualquier momento desde la app.':
+    'We keep your data while your account is active. You can export your transactions to Excel at any time from the app.',
+  'Si quieres eliminar tu cuenta y tus datos, escríbenos a {{email}} y lo haremos en un plazo razonable, salvo la información que debamos conservar por obligación legal.':
+    'If you want to delete your account and your data, write to us at {{email}} and we will do so within a reasonable time, except for information we must retain due to legal obligations.',
+  'Tus datos se transmiten mediante conexiones cifradas (HTTPS) y se almacenan con controles de acceso a nivel de fila (row-level security), de modo que cada usuario solo puede ver su propia información o la de una familia/cuenta compartida a la que fue invitado explícitamente.':
+    'Your data is transmitted over encrypted connections (HTTPS) and stored with row-level security access controls, so each user can only see their own information or that of a shared family/account they were explicitly invited to.',
+  'Puedes acceder, corregir, exportar o solicitar la eliminación de tus datos personales en cualquier momento, ya sea desde la propia app (sección "Configuración") o escribiéndonos a {{email}}.':
+    'You can access, correct, export or request deletion of your personal data at any time, either from within the app itself ("Settings" section) or by writing to us at {{email}}.',
+  'La app no está dirigida a menores de 18 años y no recopilamos intencionalmente datos de menores.':
+    'The app is not directed at anyone under 18 and we do not knowingly collect data from minors.',
+  'Podemos actualizar esta política ocasionalmente. Publicaremos cualquier cambio en esta misma página con la fecha de actualización correspondiente.':
+    'We may update this policy from time to time. We will publish any changes on this same page with the corresponding update date.',
+  '¿Dudas sobre esta política? Escríbenos a {{email}}.':
+    'Questions about this policy? Write to us at {{email}}.',
 }

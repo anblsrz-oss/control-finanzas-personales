@@ -8,6 +8,8 @@ import { ProtectedRoute } from '@/features/auth/ProtectedRoute'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { ResetPasswordPage } from '@/features/auth/ResetPasswordPage'
 import { LandingPage } from '@/features/landing/LandingPage'
+import { PrivacyPolicyPage } from '@/features/legal/PrivacyPolicyPage'
+import { TermsPage } from '@/features/legal/TermsPage'
 import { DashboardPage } from '@/features/reports/DashboardPage'
 import { AccountsPage } from '@/features/accounts/AccountsPage'
 import { CardsPage } from '@/features/cards/CardsPage'
@@ -52,6 +54,8 @@ export default function App() {
       {isNative() ? <NativeUpdatePrompt /> : <WebUpdatePrompt />}
     <Routes>
       <Route path="/bienvenida" element={<LandingPage />} />
+      <Route path="/privacidad" element={<PrivacyPolicyPage />} />
+      <Route path="/terminos" element={<TermsPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route

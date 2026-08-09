@@ -415,7 +415,15 @@ export function LoginPage() {
         </div>
 
         <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">
-          {t('Al continuar aceptas el manejo de tus datos según la política de privacidad.')}
+          {t('Al continuar aceptas nuestros')}{' '}
+          <Link to="/terminos" className="underline">
+            {t('Términos y Condiciones')}
+          </Link>{' '}
+          {t('y nuestra')}{' '}
+          <Link to="/privacidad" className="underline">
+            {t('Política de Privacidad')}
+          </Link>
+          .
         </p>
       </Card>
     </div>
