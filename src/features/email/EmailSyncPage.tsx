@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useAccounts } from '@/hooks/useAccounts'
+import { useCategories } from '@/hooks/useCategories'
 import {
   useParsingRules,
   useSaveParsingRule,
@@ -29,6 +30,7 @@ export function EmailSyncPage() {
   const userId = session?.user?.id
 
   const accountsQuery = useAccounts(userId)
+  const categoriesQuery = useCategories(userId)
   const rulesQuery = useParsingRules(userId, 'email')
   const saveRule = useSaveParsingRule()
   const deleteRule = useDeleteParsingRule()
@@ -38,6 +40,7 @@ export function EmailSyncPage() {
   const disablePush = useDisableGmailPush()
 
   const accounts = accountsQuery.data || []
+  const categories = categoriesQuery.data || []
   const rules = rulesQuery.data || []
   const pushActive = !!gmailConnQuery.data
 
@@ -54,6 +57,8 @@ export function EmailSyncPage() {
   const [currency, setCurrency] = useState('')
   const [kind, setKind] = useState<'expense' | 'income'>('expense')
   const [last4Regex, setLast4Regex] = useState('')
+  const [ruleDefaultAccountId, setRuleDefaultAccountId] = useState('')
+  const [ruleCategoryId, setRuleCategoryId] = useState('')
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
 
@@ -124,6 +129,8 @@ export function EmailSyncPage() {
     setCurrency('')
     setKind('expense')
     setLast4Regex('')
+    setRuleDefaultAccountId('')
+    setRuleCategoryId('')
     setShowAdvanced(false)
     setEditingId(null)
   }
@@ -149,6 +156,8 @@ export function EmailSyncPage() {
         currency: currency.trim() || undefined,
         kind,
         last4Regex: last4Regex.trim() || undefined,
+        defaultAccountId: ruleDefaultAccountId || undefined,
+        categoryId: ruleCategoryId || undefined,
       },
     })
     resetForm()
@@ -163,6 +172,8 @@ export function EmailSyncPage() {
     setCurrency(r.config.currency ?? '')
     setKind(r.config.kind === 'income' ? 'income' : 'expense')
     setLast4Regex(r.config.last4Regex ?? '')
+    setRuleDefaultAccountId(r.config.defaultAccountId ?? '')
+    setRuleCategoryId(r.config.categoryId ?? '')
     setShowAdvanced(true)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -292,6 +303,39 @@ export function EmailSyncPage() {
               />
               <p className="text-xs text-slate-400 dark:text-slate-500 sm:col-span-2">
                 {t('Si el correo trae la terminación de la tarjeta, se asignará automáticamente la tarjeta que coincida (y su cuenta ligada).')}
+              </p>
+              {accounts.length > 0 && (
+                <Select
+                  label={t('Cuenta por defecto (opcional)')}
+                  value={ruleDefaultAccountId}
+                  onChange={(e) => setRuleDefaultAccountId(e.target.value)}
+                  options={[
+                    { value: '', label: t('Sin cuenta por defecto') },
+                    ...accounts.map((a) => ({
+                      value: a.id,
+                      label: `${a.name} (${a.currency})`,
+                    })),
+                  ]}
+                />
+              )}
+              <p className="text-xs text-slate-400 dark:text-slate-500 sm:col-span-2">
+                {t('Se usa solo cuando el correo no trae ninguna terminación de tarjeta/cuenta (ej. pagos vía wallet de un gateway como EBANX/Xsolla).')}
+              </p>
+              {categories.filter((c) => c.kind === kind).length > 0 && (
+                <Select
+                  label={t('Categoría fija (opcional)')}
+                  value={ruleCategoryId}
+                  onChange={(e) => setRuleCategoryId(e.target.value)}
+                  options={[
+                    { value: '', label: t('Sin categoría fija') },
+                    ...categories
+                      .filter((c) => c.kind === kind)
+                      .map((c) => ({ value: c.id, label: `${c.icon ?? ''} ${c.name}`.trim() })),
+                  ]}
+                />
+              )}
+              <p className="text-xs text-slate-400 dark:text-slate-500 sm:col-span-2">
+                {t('Se asigna siempre a los movimientos de este remitente (ej. PlayStation Store → Videojuegos), sin importar qué se haya comprado.')}
               </p>
             </div>
           )}

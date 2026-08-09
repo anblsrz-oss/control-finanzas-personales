@@ -329,6 +329,12 @@ export interface ParsingRuleConfig {
   // Regex que extrae la terminación (4 dígitos) de la tarjeta del correo. Se
   // cruza con cards.last4 para asignar la tarjeta/cuenta automáticamente.
   last4Regex?: string
+  // Cuenta a usar cuando el correo no trae ninguna terminación de
+  // tarjeta/cuenta (ej. pagos vía wallet de un gateway como EBANX/Xsolla).
+  defaultAccountId?: string
+  // Categoría fija para este remitente (ej. PlayStation Store -> Videojuegos).
+  // Gana siempre sobre la categoría adivinada por texto.
+  categoryId?: string
 }
 
 export interface TransactionDeletionRow {
