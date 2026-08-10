@@ -189,6 +189,7 @@ export function EmailSyncPage() {
     <>
       <PageHeader
         title={t('Sincronizar correo')}
+        helpId="correo"
         subtitle={
           pushActive
             ? t('Captura automática activa: los correos nuevos de tu banco se registran solos, en tiempo real, como pendientes.')

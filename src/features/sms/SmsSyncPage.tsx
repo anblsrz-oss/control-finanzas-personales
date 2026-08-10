@@ -166,6 +166,7 @@ export function SmsSyncPage() {
       <PageHeader
         title={t('Captura automática de SMS')}
         subtitle={t('Registra solo las alertas de compra y transferencia por SMS de tu banco. Disponible solo en la app de Android.')}
+        helpId="sms"
       />
 
       {!available ? (

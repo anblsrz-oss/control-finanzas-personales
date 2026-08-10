@@ -174,6 +174,7 @@ export function CardsPage() {
       <PageHeader
         title={t('Tarjetas')}
         subtitle={t('Tus tarjetas de crédito, débito y vales. Los límites y pagos están en Líneas de crédito.')}
+        helpId="tarjetas"
         actions={
           <PremiumGate
             count={cards.length}

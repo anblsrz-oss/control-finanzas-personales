@@ -308,6 +308,7 @@ export function ReceiptPage() {
       <PageHeader
         title={t('Escanear recibo')}
         subtitle={t('Toma una foto del ticket o sube una factura y registra el movimiento automáticamente')}
+        helpId="recibos"
       />
 
       {step === 'capture' && (

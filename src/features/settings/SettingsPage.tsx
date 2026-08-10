@@ -61,6 +61,7 @@ export function SettingsPage() {
       <PageHeader
         title={t('Configuración')}
         subtitle={t('Tu cuenta y preferencias')}
+        helpId="configuracion"
       />
 
       <div className="grid gap-4">

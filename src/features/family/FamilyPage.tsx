@@ -58,6 +58,7 @@ export function FamilyPage() {
       <PageHeader
         title={t('Familia')}
         subtitle={t('Comparte tarjetas con tu familia y lleven los gastos juntos')}
+        helpId="familia"
       />
 
       {/* Invitaciones pendientes (cualquier usuario) */}

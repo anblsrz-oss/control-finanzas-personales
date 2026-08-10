@@ -80,6 +80,7 @@ export function CreditLinesPage() {
       <PageHeader
         title={t('Líneas de crédito')}
         subtitle={t('Límites, fechas de corte y pago que comparten tus tarjetas de crédito.')}
+        helpId="credito"
         actions={
           <Button
             onClick={() => {

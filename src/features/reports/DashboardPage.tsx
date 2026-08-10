@@ -107,6 +107,7 @@ export function DashboardPage() {
       <PageHeader
         title={t('Resumen')}
         subtitle={t('Vista general de tus ingresos, egresos y balance.')}
+        helpId="resumen"
       />
 
       {canUseDashboardPeriodFilter ? (

@@ -91,6 +91,7 @@ export function CategoriesPage() {
       <PageHeader
         title={t('Categorías')}
         subtitle={t('Clasifica tus ingresos y gastos.')}
+        helpId="categorias"
         actions={
           <Button
             onClick={() => {

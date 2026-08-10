@@ -9,6 +9,8 @@ import { usePendingCount } from '@/hooks/useTransactions'
 import { useUnreadBudgetAlertsCount } from '@/hooks/useBudgets'
 import { BudgetAlertBanner } from '@/components/budgets/BudgetAlertBanner'
 import { BudgetAlertWatcher } from '@/components/budgets/BudgetAlertWatcher'
+import { OnboardingTour } from '@/features/onboarding/OnboardingTour'
+import { WhatsNewButton } from '@/features/onboarding/WhatsNewModal'
 import { APK_URL } from '@/lib/appUpdate'
 import { isNative } from '@/lib/nativeAuth'
 
@@ -114,6 +116,7 @@ export function AppShell() {
 
   return (
     <div className="flex min-h-screen bg-canvas">
+      <OnboardingTour />
       {/* Sidebar */}
       <aside className="hidden w-60 flex-col border-r border-slate-200 dark:border-slate-700 bg-surface md:flex">
         <div className="flex h-16 items-center gap-2 border-b border-slate-200 dark:border-slate-700 px-5">
@@ -175,6 +178,7 @@ export function AppShell() {
             <span className="hidden text-sm text-slate-600 dark:text-slate-300 sm:inline">
               {profile?.full_name ?? profile?.email ?? t('Usuario')}
             </span>
+            <WhatsNewButton />
             <button
               type="button"
               onClick={toggleHideAmounts}

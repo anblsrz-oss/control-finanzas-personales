@@ -79,6 +79,7 @@ export function AccountsPage() {
       <PageHeader
         title={t('Cuentas')}
         subtitle={t('Tus cuentas y bancos, con saldo y rendimientos.')}
+        helpId="cuentas"
         actions={
           <PremiumGate
             count={accounts.length}

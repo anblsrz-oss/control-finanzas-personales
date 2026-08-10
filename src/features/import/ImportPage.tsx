@@ -179,6 +179,7 @@ export function ImportPage() {
       <PageHeader
         title={t('Importar movimientos')}
         subtitle={t('Sube el estado de cuenta (CSV) de tu banco y conviértelo en transacciones. Tus datos no salen a terceros.')}
+        helpId="importar"
       />
 
       {accounts.length === 0 ? (

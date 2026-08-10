@@ -55,6 +55,7 @@ export function BudgetsPage() {
       <PageHeader
         title={t('Presupuestos')}
         subtitle={t('Cuánto puedes gastar en cada categoría y cómo vas en el periodo.')}
+        helpId="presupuestos"
         actions={
           <PremiumGate
             count={budgets.length}

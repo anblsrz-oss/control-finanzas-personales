@@ -200,6 +200,7 @@ export function ReportsPage() {
       <PageHeader
         title={t('Reportes')}
         subtitle={t('Gráficas de ingresos y gastos por período, cuenta y tarjeta.')}
+        helpId="reportes"
       />
 
       {/* Filtros (configurable como Premium) */}

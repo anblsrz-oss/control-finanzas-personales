@@ -178,6 +178,7 @@ export function TransactionsPage() {
       <PageHeader
         title={t('Transacciones')}
         subtitle={t('Ingresos, egresos y transferencias entre tus cuentas.')}
+        helpId="transacciones"
         actions={
           <div className="flex flex-wrap gap-2">
             <Button

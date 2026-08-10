@@ -404,6 +404,7 @@ export function AdminPage() {
       <PageHeader
         title={t('Panel Admin')}
         subtitle={t('Gestiona usuarios y sus permisos de premium.')}
+        helpId="admin"
       />
 
       <BrandingEditor />
