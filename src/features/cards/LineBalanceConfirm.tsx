@@ -5,7 +5,9 @@ import { useConfirmLineBalance } from '@/hooks/useCreditLinePeriods'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Money } from '@/components/ui/Money'
-import { currentPeriod } from '@/lib/creditDates'
+import { formatDate } from '@/lib/format'
+import { currentPeriod, cutDateForMonth } from '@/lib/creditDates'
+import { parseLocalDate } from '@/lib/dates'
 import type { CreditLineRow, CreditLinePeriodRow } from '@/types/db'
 import type { LineStatement } from '@/hooks/useCreditLines'
 
@@ -36,6 +38,14 @@ export function LineBalanceConfirm({ line, periods, statement }: LineBalanceConf
   )
   const confirmedBalance = existing?.confirmed_balance ?? null
   const pending = Math.max(0, statement.amount - statement.paid)
+  // Periodo ya saldado: el saldo confirmado deja de ser lo relevante y pasa
+  // a interesar lo que se va acumulando para el estado de cuenta siguiente.
+  const settled = confirmedBalance != null && pending <= 0
+  const cutDate = existing?.cut_date ?? period.cutDate
+  const cutDateParsed = parseLocalDate(cutDate)
+  const nextCutDate = line.cut_day
+    ? cutDateForMonth(line.cut_day, new Date(cutDateParsed.getFullYear(), cutDateParsed.getMonth() + 1, 1))
+    : null
 
   function startEditing() {
     setValue((confirmedBalance ?? pending).toFixed(2))
@@ -75,6 +85,33 @@ export function LineBalanceConfirm({ line, periods, statement }: LineBalanceConf
         <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>
           {t('Cancelar')}
         </Button>
+      </div>
+    )
+  }
+
+  if (settled) {
+    return (
+      <div className="mt-2 space-y-1">
+        <p className="text-xs text-green-600 dark:text-green-400">
+          ✓ {t('Periodo pagado')}{' '}
+          <button
+            type="button"
+            onClick={startEditing}
+            className="text-slate-500 hover:underline dark:text-slate-400"
+          >
+            {t('editar')} <Money amount={confirmedBalance!} currency={statement.currency} />
+          </button>
+        </p>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          {t('Gasto acumulado del periodo siguiente:')}{' '}
+          <Money amount={statement.nextPeriodAmount} currency={statement.currency} />
+          {nextCutDate && (
+            <>
+              {' · '}
+              {t('corte')} {formatDate(nextCutDate)}
+            </>
+          )}
+        </p>
       </div>
     )
   }

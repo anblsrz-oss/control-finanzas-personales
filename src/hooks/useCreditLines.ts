@@ -6,12 +6,16 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useCards, useCardUsage } from '@/hooks/useCards'
 import { periodWindow, currentPeriod } from '@/lib/creditDates'
+import { monthsElapsed } from '@/lib/dates'
+import { planProgress } from '@/lib/installments'
 import type {
   CardRow,
   CreditLineRow,
   CreditLineUsageRow,
   CardUsageRow,
   CreditLinePeriodRow,
+  InstallmentPlanRow,
+  InstallmentPlanPaymentRow,
 } from '@/types/db'
 
 export function useCreditLines(userId?: string) {
@@ -147,6 +151,7 @@ export function useCreditUsageBreakdown(userId?: string) {
 // Movimientos de crédito (consumos, reembolsos y pagos) para calcular el estado
 // de cuenta por periodo. Se filtra en cliente por ventana de corte.
 export interface CreditActivity {
+  id: string
   kind: string
   amount: number
   base_amount: number | null
@@ -163,7 +168,7 @@ export function useCreditActivity(userId?: string) {
       if (!userId) return []
       const { data, error } = await supabase
         .from('transactions')
-        .select('kind, amount, base_amount, currency, tx_date, card_id, to_credit_line_id')
+        .select('id, kind, amount, base_amount, currency, tx_date, card_id, to_credit_line_id')
         .eq('user_id', userId)
         .is('family_id', null)
         .in('kind', ['expense', 'income', 'card_payment'])
@@ -181,6 +186,12 @@ export interface LineStatement {
   amount: number
   /** Pagos abonados a la línea dentro de la ventana. */
   paid: number
+  /**
+   * Consumo neto capturado después del corte de un periodo ya confirmado —
+   * gasto del periodo siguiente, que aún no tiene su propio estado de cuenta.
+   * 0 cuando el periodo vigente no está confirmado.
+   */
+  nextPeriodAmount: number
   currency: string
 }
 
@@ -201,6 +212,8 @@ export function computeLineStatement(
   cards: CardRow[],
   activities: CreditActivity[],
   periods: CreditLinePeriodRow[] = [],
+  plans: InstallmentPlanRow[] = [],
+  payments: InstallmentPlanPaymentRow[] = [],
 ): LineStatement {
   const period = currentPeriod(line)
   const linePeriods = periods.filter((p) => p.credit_line_id === line.id)
@@ -208,7 +221,9 @@ export function computeLineStatement(
     ? linePeriods.find((p) => p.period_month === period.periodMonth)
     : undefined
   const win = periodWindow(line, new Date(), confirmed?.cut_date)
-  if (!win) return { window: null, amount: 0, paid: 0, currency: line.currency }
+  if (!win || !period) {
+    return { window: null, amount: 0, paid: 0, nextPeriodAmount: 0, currency: line.currency }
+  }
 
   // Si ya confirmaron el saldo de este periodo, ese es el punto de partida y
   // solo se restan los pagos hechos después del corte (los que van bajando
@@ -226,8 +241,22 @@ export function computeLineStatement(
   const lineCardIds = new Set(
     cards.filter((c) => c.credit_line_id === line.id).map((c) => c.id),
   )
+
+  // Una compra a MSI se registra una sola vez, por el monto total, el día de
+  // la compra — pero el banco solo cobra una mensualidad por ciclo. Su
+  // transacción original se excluye de la suma normal (más abajo) y en su
+  // lugar se agrega, por cada ciclo, solo la mensualidad que le toca.
+  const linePlans = plans.filter((p) => p.card_id && lineCardIds.has(p.card_id))
+  const msiTransactionIds = new Set(
+    linePlans.map((p) => p.transaction_id).filter((id): id is string => !!id),
+  )
+
   let amount = confirmed?.confirmed_balance ?? anchor?.confirmed_balance ?? 0
   let paid = 0
+  // Consumo capturado después del corte de un periodo ya confirmado: todavía
+  // no tiene estado de cuenta propio, pero ya se puede mostrar como avance
+  // del periodo siguiente.
+  let nextAmount = 0
 
   // Cota inferior EXCLUSIVA: se cuenta actividad con tx_date > excludeUpTo.
   const excludeUpTo =
@@ -244,19 +273,51 @@ export function computeLineStatement(
     if (excludeUpTo != null ? a.tx_date <= excludeUpTo : a.tx_date < win.start) continue
     if (rangeEnd != null && a.tx_date > rangeEnd) continue
     const v = a.currency === line.currency ? a.amount : a.base_amount ?? a.amount
+    const isMsiPurchase = msiTransactionIds.has(a.id)
     if (confirmed?.confirmed_balance != null) {
       // El saldo ya confirmado incluye toda la actividad hasta el corte:
       // de aquí en adelante solo cuentan los pagos hechos después.
       if (a.kind === 'card_payment' && a.to_credit_line_id === line.id) paid += v
+      else if (
+        !isMsiPurchase &&
+        (a.kind === 'expense' || a.kind === 'income') &&
+        a.card_id &&
+        lineCardIds.has(a.card_id)
+      ) {
+        nextAmount += a.kind === 'expense' ? v : -v
+      }
       continue
     }
-    if ((a.kind === 'expense' || a.kind === 'income') && a.card_id && lineCardIds.has(a.card_id)) {
+    if (!isMsiPurchase && (a.kind === 'expense' || a.kind === 'income') && a.card_id && lineCardIds.has(a.card_id)) {
       amount += a.kind === 'expense' ? v : -v
     } else if (a.kind === 'card_payment' && a.to_credit_line_id === line.id) {
       paid += v
     }
   }
-  return { window: win, amount, paid, currency: line.currency }
+
+  // Mensualidades MSI que le tocan a este cálculo. "Activo" se define igual
+  // que en el panel "Meses sin intereses activos" (remainingCount > 0 según
+  // el ledger installment_plan_payments), para que "a pagar" no contradiga
+  // lo que ese panel ya le muestra al usuario como pendiente. Al periodo
+  // confirmado no se le suma nada (su monto real ya las incluye) salvo un
+  // adelanto de una mensualidad para el acumulado del periodo siguiente. A
+  // un periodo sin confirmar se le suma una mensualidad por plan activo por
+  // cada ciclo transcurrido desde el ancla (o solo una si nunca se ha
+  // confirmado nada), topado a lo que le quede al plan.
+  const cyclesSinceAnchor = anchor ? monthsElapsed(anchor.period_month, period.periodMonth) : 1
+  for (const plan of linePlans) {
+    const paidPeriods = new Set(
+      payments.filter((p) => p.plan_id === plan.id).map((p) => p.period_month),
+    )
+    const progress = planProgress(plan, paidPeriods)
+    if (progress.remainingCount <= 0) continue
+    if (confirmed?.confirmed_balance != null) {
+      nextAmount += progress.monthly
+      continue
+    }
+    amount += progress.monthly * Math.min(cyclesSinceAnchor, progress.remainingCount)
+  }
+  return { window: win, amount, paid, nextPeriodAmount: nextAmount, currency: line.currency }
 }
 
 export function useCreateCreditLine() {

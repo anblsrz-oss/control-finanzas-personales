@@ -983,4 +983,21 @@ export const en: Record<string, string> = {
     'We may update this policy from time to time. We will publish any changes on this same page with the corresponding update date.',
   '¿Dudas sobre esta política? Escríbenos a {{email}}.':
     'Questions about this policy? Write to us at {{email}}.',
+
+  // Ajustes 6 — panel de periodo pagado
+  'Periodo pagado': 'Period paid',
+  'Gasto acumulado del periodo siguiente:': 'Spending accrued for next period:',
+  pagado: 'paid',
+
+  // Ajustes 6 — tutorial guiado y novedades
+  '¡Bienvenido a {{app}}!': 'Welcome to {{app}}!',
+  'Un vistazo rápido a lo que puedes hacer aquí. Puedes saltarte esto y consultarlo después con el botón de ayuda de cada sección.':
+    "A quick look at what you can do here. You can skip this and check it later with each section's help button.",
+  Anterior: 'Back',
+  Siguiente: 'Next',
+  Omitir: 'Skip',
+  Empezar: 'Get started',
+  'Ayuda de esta sección': 'Help for this section',
+  Novedades: 'What’s new',
+  'No hay novedades por ahora.': 'No news yet.',
 }

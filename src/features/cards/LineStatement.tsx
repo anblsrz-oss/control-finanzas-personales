@@ -42,8 +42,8 @@ export function LineStatement({
   const { t } = useTranslation()
 
   const statement = useMemo(
-    () => computeLineStatement(line, cards, activities, periods),
-    [line, cards, activities, periods],
+    () => computeLineStatement(line, cards, activities, periods, plans, payments),
+    [line, cards, activities, periods, plans, payments],
   )
 
   // Avance de los planes MSI de esta línea (meses pagados / faltantes).

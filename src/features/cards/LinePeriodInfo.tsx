@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { formatDate } from '@/lib/format'
 import { currentPeriod, cutDateForMonth, shiftDays } from '@/lib/creditDates'
 import { daysUntil, parseLocalDate, formatMonthLabel } from '@/lib/dates'
+import { Money } from '@/components/ui/Money'
 import type { CreditLineRow, CreditLinePeriodRow } from '@/types/db'
 
 interface LinePeriodInfoProps {
@@ -74,6 +75,14 @@ export function LinePeriodInfo({ line, periods }: LinePeriodInfoProps) {
                     )}
                     {' · '}
                     {t('pago')} {formatDate(p.payment_date)}
+                    {p.confirmed_balance != null && (
+                      <>
+                        {' · '}
+                        <span className="text-green-600 dark:text-green-400">
+                          {t('pagado')} <Money amount={p.confirmed_balance} currency={line.currency} />
+                        </span>
+                      </>
+                    )}
                   </li>
                 )
               })}
