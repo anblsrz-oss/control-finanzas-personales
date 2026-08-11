@@ -318,3 +318,51 @@ export function useCategoryTotals(userId?: string, filters?: ReportFilters) {
     enabled: !!userId,
   })
 }
+
+// Gasto por suscripción en el rango de fechas — solo transacciones ya
+// vinculadas a una suscripción (subscription_id), sin importar su estado
+// (una suscripción pausada/cancelada igual gastó lo que gastó en el rango).
+// Mismo shape que useCategoryTotals ({name, icon, total, color}) para poder
+// reutilizar CategoryPieChart tal cual.
+export function useSubscriptionTotals(userId?: string, filters?: ReportFilters) {
+  return useQuery({
+    queryKey: ['subscription_totals', userId, filters],
+    queryFn: async () => {
+      if (!userId) return []
+
+      let query = supabase
+        .from('transactions')
+        .select('base_amount, amount, subscription:subscriptions(id, name, icon)')
+        .eq('user_id', userId)
+        .not('subscription_id', 'is', null)
+        .is('family_id', null)
+        .eq('pending', false)
+
+      if (filters?.startDate) query = query.gte('tx_date', filters.startDate)
+      if (filters?.endDate) query = query.lte('tx_date', filters.endDate)
+
+      const { data, error } = await query
+      if (error) throw error
+
+      const rows = (data || []) as any[]
+      const bySubscription: Record<string, { name: string; icon: string; total: number; color: string }> = {}
+
+      rows.forEach((tx) => {
+        if (!tx.subscription) return
+        const id = tx.subscription.id as string
+        if (!bySubscription[id]) {
+          bySubscription[id] = {
+            name: tx.subscription.name || 'Suscripción',
+            icon: tx.subscription.icon || '🔁',
+            total: 0,
+            color: '',
+          }
+        }
+        bySubscription[id].total += tx.base_amount ?? tx.amount
+      })
+
+      return Object.values(bySubscription).sort((a, b) => b.total - a.total)
+    },
+    enabled: !!userId,
+  })
+}

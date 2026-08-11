@@ -9,6 +9,7 @@ export type ChartId =
   | 'byAccount'
   | 'creditUsage'
   | 'budget'
+  | 'subscriptions'
 
 export type ChartPage = 'dashboard' | 'reports'
 
@@ -99,13 +100,21 @@ export const CHART_META: Record<ChartId, ChartMeta> = {
     ],
     perPointColors: false,
   },
+  subscriptions: {
+    id: 'subscriptions',
+    titleKey: 'Gasto por Suscripción',
+    // Una sola serie de valor; el color real vive por punto (suscripción),
+    // igual que 'category'.
+    series: [{ key: 'value', labelKey: 'Gasto', defaultColor: '#8b5cf6', togglable: false }],
+    perPointColors: true,
+  },
 }
 
 // Orden por defecto de cada página (refleja el orden histórico del código).
 // Los presupuestos van primero en Resumen: es lo más accionable de la pantalla.
 export const DEFAULT_ORDER: Record<ChartPage, ChartId[]> = {
   dashboard: ['budget', 'creditUsage', 'incomeExpense', 'category'],
-  reports: ['incomeExpense', 'category', 'byCard', 'byAccount', 'creditUsage', 'budget'],
+  reports: ['incomeExpense', 'category', 'subscriptions', 'byCard', 'byAccount', 'creditUsage', 'budget'],
 }
 
 // Reconciliación entre el orden guardado (que puede estar incompleto o traer IDs

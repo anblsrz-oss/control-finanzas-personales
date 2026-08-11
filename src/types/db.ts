@@ -24,6 +24,8 @@ export interface ProfileRow {
   budget_alert_threshold: number
   /** Opt-in al resumen diario por correo. Apagado por defecto. */
   budget_alerts_email: boolean
+  /** Opt-in a los avisos de suscripciones por correo. Apagado por defecto. */
+  subscription_alerts_email: boolean
   created_at: string
 }
 
@@ -156,6 +158,8 @@ export interface TransactionRow {
   pending: boolean
   raw_ref: string | null
   family_id: string | null
+  /** Suscripción recurrente a la que quedó vinculado este cargo, si la hay. */
+  subscription_id: string | null
   created_at: string
 }
 
@@ -473,4 +477,50 @@ export interface BudgetStatusRow {
   /** Umbral efectivo: el del presupuesto o, si no tiene, el del perfil. */
   alert_threshold: number
   status: BudgetStatus
+}
+
+// Suscripciones recurrentes ------------------------------------------------
+
+export type SubscriptionStatus = 'suggested' | 'active' | 'paused' | 'cancelled' | 'ignored'
+export type SubscriptionBillingCycle = 'weekly' | 'monthly' | 'yearly'
+export type SubscriptionDetectionSource = 'catalog' | 'heuristic' | 'manual'
+export type SubscriptionAlertKind = 'upcoming_charge' | 'price_change'
+
+export interface SubscriptionRow {
+  id: string
+  user_id: string
+  card_id: string | null
+  account_id: string | null
+  category_id: string | null
+  /** Clave estable del comercio: la del catálogo ('netflix', …) o 'generic:<hash>'. */
+  merchant_key: string
+  name: string
+  icon: string | null
+  amount: number
+  currency: string
+  billing_cycle: SubscriptionBillingCycle
+  next_charge_date: string | null
+  status: SubscriptionStatus
+  detection_source: SubscriptionDetectionSource
+  last_transaction_id: string | null
+  confirmed_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface SubscriptionAlertRow {
+  id: string
+  user_id: string
+  subscription_id: string
+  kind: SubscriptionAlertKind
+  dedupe_key: string
+  old_amount: number | null
+  new_amount: number
+  currency: string
+  charge_date: string | null
+  notified_in_app: boolean
+  notified_email: boolean
+  notified_push: boolean
+  read_at: string | null
+  created_at: string
 }

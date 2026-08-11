@@ -16,6 +16,7 @@ import { CardsPage } from '@/features/cards/CardsPage'
 import { CreditLinesPage } from '@/features/credit/CreditLinesPage'
 import { TransactionsPage } from '@/features/transactions/TransactionsPage'
 import { BudgetsPage } from '@/features/budgets/BudgetsPage'
+import { SubscriptionsPage } from '@/features/subscriptions/SubscriptionsPage'
 import { ImportPage } from '@/features/import/ImportPage'
 import { ReceiptPage } from '@/features/receipts/ReceiptPage'
 import { FamilyPage } from '@/features/family/FamilyPage'
@@ -71,6 +72,7 @@ export default function App() {
         <Route path="/lineas-credito" element={<CreditLinesPage />} />
         <Route path="/transacciones" element={<TransactionsPage />} />
         <Route path="/presupuestos" element={<BudgetsPage />} />
+        <Route path="/suscripciones" element={<SubscriptionsPage />} />
         <Route path="/importar" element={<ImportPage />} />
         <Route path="/recibos" element={<ReceiptPage />} />
         <Route path="/familia" element={<FamilyPage />} />

@@ -7,8 +7,11 @@ import { useAppConfig } from '@/hooks/useAppConfig'
 import { BrandLogo } from '@/components/ui/BrandLogo'
 import { usePendingCount } from '@/hooks/useTransactions'
 import { useUnreadBudgetAlertsCount } from '@/hooks/useBudgets'
+import { useUnreadSubscriptionAlertsCount } from '@/hooks/useSubscriptions'
 import { BudgetAlertBanner } from '@/components/budgets/BudgetAlertBanner'
 import { BudgetAlertWatcher } from '@/components/budgets/BudgetAlertWatcher'
+import { SubscriptionAlertBanner } from '@/components/subscriptions/SubscriptionAlertBanner'
+import { SubscriptionAlertWatcher } from '@/components/subscriptions/SubscriptionAlertWatcher'
 import { OnboardingTour } from '@/features/onboarding/OnboardingTour'
 import { WhatsNewButton } from '@/features/onboarding/WhatsNewModal'
 import { APK_URL } from '@/lib/appUpdate'
@@ -27,6 +30,7 @@ const NAV: NavItem[] = [
   { to: '/lineas-credito', label: 'Líneas de crédito', icon: '💠' },
   { to: '/transacciones', label: 'Transacciones', icon: '💸' },
   { to: '/presupuestos', label: 'Presupuestos', icon: '🎯' },
+  { to: '/suscripciones', label: 'Suscripciones', icon: '🔁' },
   { to: '/importar', label: 'Importar', icon: '📥' },
   { to: '/recibos', label: 'Escanear recibo', icon: '🧾' },
   { to: '/familia', label: 'Familia', icon: '👨‍👩‍👧‍👦' },
@@ -50,6 +54,7 @@ const MOBILE_NAV: NavItem[] = [
 // Resto de secciones, accesibles desde el menú "Más" en móvil.
 const MORE_NAV: NavItem[] = [
   { to: '/presupuestos', label: 'Presup.', icon: '🎯' },
+  { to: '/suscripciones', label: 'Suscrip.', icon: '🔁' },
   { to: '/tarjetas', label: 'Tarjetas', icon: '💳' },
   { to: '/lineas-credito', label: 'Crédito', icon: '💠' },
   { to: '/recibos', label: 'Recibos', icon: '🧾' },
@@ -83,6 +88,7 @@ export function AppShell() {
   const appTitle = appConfig?.app_title || DEFAULT_APP_TITLE
   const pendingCount = usePendingCount(session?.user?.id).data ?? 0
   const budgetAlertCount = useUnreadBudgetAlertsCount(session?.user?.id).data ?? 0
+  const subscriptionAlertCount = useUnreadSubscriptionAlertsCount(session?.user?.id).data ?? 0
   const hideAmounts = useSettings((s) => s.hideAmounts)
   const toggleHideAmounts = useSettings((s) => s.toggleHideAmounts)
   const [moreOpen, setMoreOpen] = useState(false)
@@ -141,6 +147,7 @@ export function AppShell() {
               {t(item.label)}
               {item.to === '/transacciones' && <PendingBadge count={pendingCount} />}
               {item.to === '/presupuestos' && <PendingBadge count={budgetAlertCount} />}
+              {item.to === '/suscripciones' && <PendingBadge count={subscriptionAlertCount} />}
             </NavLink>
           ))}
           {profile?.is_admin && (
@@ -204,7 +211,9 @@ export function AppShell() {
               gasto que cruza el umbral puede registrarse desde Movimientos,
               desde el escáner de recibos o llegar solo por SMS/correo. */}
           <BudgetAlertWatcher />
+          <SubscriptionAlertWatcher />
           <BudgetAlertBanner />
+          <SubscriptionAlertBanner />
           <Outlet />
         </main>
       </div>
@@ -296,9 +305,10 @@ export function AppShell() {
         >
           <span className="relative text-lg">
             ⋯
-            {/* Presupuestos vive dentro de "Más" en móvil: sin este punto, un
-                aviso pendiente quedaría invisible hasta abrir la hoja. */}
-            {budgetAlertCount > 0 && (
+            {/* Presupuestos y Suscripciones viven dentro de "Más" en móvil:
+                sin este punto, un aviso pendiente quedaría invisible hasta
+                abrir la hoja. */}
+            {(budgetAlertCount > 0 || subscriptionAlertCount > 0) && (
               <span className="absolute -right-1.5 -top-0.5 h-2 w-2 rounded-full bg-amber-500" />
             )}
           </span>

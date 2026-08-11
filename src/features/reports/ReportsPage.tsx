@@ -7,6 +7,7 @@ import {
   useMonthlyTotals,
   useCategoryTotals,
   useCardAccountTotals,
+  useSubscriptionTotals,
 } from '@/hooks/useReports'
 import { useCategories } from '@/hooks/useCategories'
 import { useCreditUsageBreakdown } from '@/hooks/useCreditLines'
@@ -54,6 +55,7 @@ export function ReportsPage() {
   const summaryQuery = useTransactionsSummary(userId, filters)
   const monthlyQuery = useMonthlyTotals(userId, filters)
   const categoryQuery = useCategoryTotals(userId, filters)
+  const subscriptionQuery = useSubscriptionTotals(userId, filters)
   const { data: breakdown } = useCardAccountTotals(userId, filters)
   const { data: creditUsage } = useCreditUsageBreakdown(userId)
   // Cada presupuesto corre en su propio periodo, resuelto en servidor: no
@@ -63,6 +65,7 @@ export function ReportsPage() {
   const summary = summaryQuery.data
   const monthly = monthlyQuery.data || []
   const categories = categoryQuery.data || []
+  const subscriptionTotals = subscriptionQuery.data || []
   const mainCurrency = profile?.main_currency ?? 'MXN'
   const { canUseReportsFilters } = useEntitlements()
 
@@ -79,6 +82,7 @@ export function ReportsPage() {
   const available = DEFAULT_ORDER.reports.filter((id) => {
     if (id === 'incomeExpense') return monthly.length > 0
     if (id === 'category') return categories.length > 0
+    if (id === 'subscriptions') return subscriptionTotals.length > 0
     if (id === 'byCard') return breakdown.byCard.length > 0
     if (id === 'byAccount') return breakdown.byAccount.length > 0
     if (id === 'creditUsage') return creditUsage.length > 0
@@ -111,6 +115,18 @@ export function ReportsPage() {
             ref={setRef(id)}
           >
             <CategoryPieChart data={categories} currency={mainCurrency} />
+          </ChartCard>
+        )
+      case 'subscriptions':
+        return (
+          <ChartCard
+            key={id}
+            {...common}
+            title={t('Gasto por Suscripción')}
+            points={subscriptionTotals.map((s) => s.name)}
+            ref={setRef(id)}
+          >
+            <CategoryPieChart data={subscriptionTotals} currency={mainCurrency} />
           </ChartCard>
         )
       case 'byCard':
