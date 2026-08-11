@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 
 const GMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.readonly'
+const OUTLOOK_SCOPE = 'offline_access https://graph.microsoft.com/Mail.Read'
 
 // Pide consentimiento del scope de solo-lectura de Gmail. Provoca un nuevo flujo
 // OAuth; al volver, la sesión trae `provider_token` para llamar a Gmail API.
@@ -16,13 +17,28 @@ export async function connectGmail(): Promise<void> {
   })
 }
 
-// Token de Google presente en la sesión tras el consentimiento (transitorio).
+// Igual que connectGmail pero contra Microsoft (Outlook/Azure AD). El scope
+// `offline_access` es el que hace que Microsoft entregue un refresh_token
+// (Google usa `access_type: 'offline'` para lo mismo).
+export async function connectOutlook(): Promise<void> {
+  await supabase.auth.signInWithOAuth({
+    provider: 'azure',
+    options: {
+      scopes: OUTLOOK_SCOPE,
+      redirectTo: window.location.href,
+      queryParams: { prompt: 'consent' },
+    },
+  })
+}
+
+// Token del proveedor (Google u Microsoft, el que se haya conectado más
+// recientemente) presente en la sesión tras el consentimiento (transitorio).
 export async function getProviderToken(): Promise<string | null> {
   const { data } = await supabase.auth.getSession()
   return data.session?.provider_token ?? null
 }
 
-// Refresh token de Google (solo llega en el primer consentimiento offline).
+// Refresh token del proveedor (solo llega en el primer consentimiento offline).
 export async function getProviderRefreshToken(): Promise<string | null> {
   const { data } = await supabase.auth.getSession()
   return (data.session as { provider_refresh_token?: string })?.provider_refresh_token ?? null
@@ -103,6 +119,80 @@ export function useDisableGmailPush() {
   })
 }
 
+export interface OutlookConnection {
+  user_id: string
+  email: string | null
+  watch_expiration: string | null
+}
+
+// Estado de la captura en tiempo real de Outlook (mismo patrón que
+// useGmailConnection).
+export function useOutlookConnection(userId?: string) {
+  return useQuery({
+    queryKey: ['outlook_connection', userId],
+    queryFn: async (): Promise<OutlookConnection | null> => {
+      if (!userId) return null
+      const { data } = await supabase
+        .from('outlook_connections')
+        .select('user_id, email, watch_expiration')
+        .eq('user_id', userId)
+        .maybeSingle()
+      return (data as OutlookConnection) ?? null
+    },
+    enabled: !!userId,
+  })
+}
+
+// Activa el push (suscripción de Graph) llamando a la Edge Function
+// outlook-watch con el access token y el refresh token offline.
+export function useEnableOutlookPush() {
+  const queryClient = useQueryClient()
+  return useMutation<
+    { ok: boolean; expiration: string | null; hasRefreshToken: boolean },
+    Error,
+    { userId: string; providerToken: string; providerRefreshToken: string | null }
+  >({
+    mutationFn: async ({ providerToken, providerRefreshToken }) => {
+      const { data, error } = await supabase.functions.invoke('outlook-watch', {
+        body: { providerToken, providerRefreshToken },
+      })
+      if (error) {
+        let detail = error.message
+        try {
+          const ctx = (error as { context?: Response }).context
+          const bodyJson = ctx && typeof ctx.json === 'function' ? await ctx.json() : null
+          if (bodyJson?.error) detail = bodyJson.error
+        } catch {
+          /* deja el mensaje genérico */
+        }
+        throw new Error(detail)
+      }
+      return data
+    },
+    onSuccess: (_d, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['outlook_connection', vars.userId] })
+    },
+  })
+}
+
+// Desactiva el push: borra la conexión (la suscripción de Graph expira sola
+// y la renovación la ignora al no existir la fila).
+export function useDisableOutlookPush() {
+  const queryClient = useQueryClient()
+  return useMutation<void, Error, { userId: string }>({
+    mutationFn: async ({ userId }) => {
+      const { error } = await supabase
+        .from('outlook_connections')
+        .delete()
+        .eq('user_id', userId)
+      if (error) throw error
+    },
+    onSuccess: (_d, vars) => {
+      queryClient.invalidateQueries({ queryKey: ['outlook_connection', vars.userId] })
+    },
+  })
+}
+
 interface SyncResult {
   inserted: number
   found: number
@@ -110,17 +200,24 @@ interface SyncResult {
   error?: string
 }
 
-// Llama a la Edge Function sync-email con el token de Google del usuario.
+// Llama a la Edge Function sync-email con el token del proveedor del usuario
+// (Gmail por defecto; pasar provider: 'outlook' para Microsoft).
 export function useSyncEmail() {
   const queryClient = useQueryClient()
   return useMutation<
     SyncResult,
     Error,
-    { userId: string; providerToken: string; accountId?: string; sinceDays?: number }
+    {
+      userId: string
+      providerToken: string
+      accountId?: string
+      sinceDays?: number
+      provider?: 'gmail' | 'outlook'
+    }
   >({
-    mutationFn: async ({ providerToken, accountId, sinceDays }) => {
+    mutationFn: async ({ providerToken, accountId, sinceDays, provider }) => {
       const { data, error } = await supabase.functions.invoke('sync-email', {
-        body: { providerToken, accountId, sinceDays },
+        body: { providerToken, accountId, sinceDays, provider },
       })
       if (error) {
         // En un fallo non-2xx, supabase-js pone la respuesta real en `context`;

@@ -11,18 +11,30 @@ import {
 import type { ParsingRuleRow } from '@/types/db'
 import {
   connectGmail,
+  connectOutlook,
   getProviderToken,
   getProviderRefreshToken,
   useSyncEmail,
   useGmailConnection,
   useEnableGmailPush,
   useDisableGmailPush,
+  useOutlookConnection,
+  useEnableOutlookPush,
+  useDisableOutlookPush,
 } from '@/hooks/useEmailSync'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
+
+// Supabase solo guarda en la sesión el provider_token del ÚLTIMO OAuth
+// completado (Google o Microsoft, cualquiera que se haya usado más
+// recientemente), y el flujo de conexión recarga la página al volver del
+// consentimiento (redirectTo: window.location.href). Este flag en
+// sessionStorage sobrevive esa recarga y le dice al efecto de abajo a cuál
+// de los dos proveedores pertenece el token recién leído.
+const EMAIL_SYNC_PROVIDER_KEY = 'finzen_email_sync_provider'
 
 export function EmailSyncPage() {
   const { t } = useTranslation()
@@ -38,14 +50,22 @@ export function EmailSyncPage() {
   const gmailConnQuery = useGmailConnection(userId)
   const enablePush = useEnableGmailPush()
   const disablePush = useDisableGmailPush()
+  const outlookConnQuery = useOutlookConnection(userId)
+  const enableOutlookPush = useEnableOutlookPush()
+  const disableOutlookPush = useDisableOutlookPush()
 
   const accounts = accountsQuery.data || []
   const categories = categoriesQuery.data || []
   const rules = rulesQuery.data || []
   const pushActive = !!gmailConnQuery.data
+  const outlookPushActive = !!outlookConnQuery.data
 
   const [providerToken, setProviderToken] = useState<string | null>(null)
   const [providerRefreshToken, setProviderRefreshToken] = useState<string | null>(null)
+  const [outlookProviderToken, setOutlookProviderToken] = useState<string | null>(null)
+  const [outlookProviderRefreshToken, setOutlookProviderRefreshToken] = useState<string | null>(
+    null,
+  )
   const [accountId, setAccountId] = useState('')
   const [msg, setMsg] = useState<string | null>(null)
 
@@ -63,11 +83,33 @@ export function EmailSyncPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
 
   useEffect(() => {
-    // Al volver del consentimiento de Gmail, la sesión trae el provider_token
-    // (y el refresh_token solo en el primer consentimiento offline).
-    void getProviderToken().then(setProviderToken)
-    void getProviderRefreshToken().then(setProviderRefreshToken)
+    // Al volver del consentimiento (Gmail u Outlook), la sesión trae el
+    // provider_token (y el refresh_token solo en el primer consentimiento
+    // offline). EMAIL_SYNC_PROVIDER_KEY dice a cuál de los dos pertenece.
+    void (async () => {
+      const [token, refreshToken] = await Promise.all([
+        getProviderToken(),
+        getProviderRefreshToken(),
+      ])
+      if (sessionStorage.getItem(EMAIL_SYNC_PROVIDER_KEY) === 'outlook') {
+        setOutlookProviderToken(token)
+        setOutlookProviderRefreshToken(refreshToken)
+      } else {
+        setProviderToken(token)
+        setProviderRefreshToken(refreshToken)
+      }
+    })()
   }, [session])
+
+  function handleConnectGmail() {
+    sessionStorage.setItem(EMAIL_SYNC_PROVIDER_KEY, 'gmail')
+    void connectGmail()
+  }
+
+  function handleConnectOutlook() {
+    sessionStorage.setItem(EMAIL_SYNC_PROVIDER_KEY, 'outlook')
+    void connectOutlook()
+  }
 
   async function handleEnablePush() {
     if (!userId || !providerToken) return
@@ -108,6 +150,59 @@ export function EmailSyncPage() {
         providerToken,
         accountId: accountId || undefined,
         sinceDays: 30,
+      })
+      setMsg(
+        t('Correos encontrados: {{found}}. Movimientos nuevos (pendientes): {{inserted}}{{dups}}.', {
+          found: res.found,
+          inserted: res.inserted,
+          dups: res.duplicates ? t(', {{n}} duplicados', { n: res.duplicates }) : '',
+        }),
+      )
+    } catch (e) {
+      setMsg(`${t('Error:')} ${(e as Error).message}`)
+    }
+  }
+
+  async function handleEnableOutlookPush() {
+    if (!userId || !outlookProviderToken) return
+    setMsg(null)
+    try {
+      const res = await enableOutlookPush.mutateAsync({
+        userId,
+        providerToken: outlookProviderToken,
+        providerRefreshToken: outlookProviderRefreshToken,
+      })
+      setMsg(
+        res.hasRefreshToken
+          ? t('Captura automática de correo activada. Los correos nuevos se registrarán solos.')
+          : t('Activada, pero Microsoft no entregó el permiso offline. Desconecta y vuelve a conectar Outlook para que la captura se mantenga.'),
+      )
+    } catch (e) {
+      setMsg(`${t('Error:')} ${(e as Error).message}`)
+    }
+  }
+
+  async function handleDisableOutlookPush() {
+    if (!userId) return
+    setMsg(null)
+    try {
+      await disableOutlookPush.mutateAsync({ userId })
+      setMsg(t('Captura automática de correo desactivada.'))
+    } catch (e) {
+      setMsg(`${t('Error:')} ${(e as Error).message}`)
+    }
+  }
+
+  async function handleSyncOutlook() {
+    if (!userId || !outlookProviderToken) return
+    setMsg(null)
+    try {
+      const res = await syncEmail.mutateAsync({
+        userId,
+        providerToken: outlookProviderToken,
+        accountId: accountId || undefined,
+        sinceDays: 30,
+        provider: 'outlook',
       })
       setMsg(
         t('Correos encontrados: {{found}}. Movimientos nuevos (pendientes): {{inserted}}{{dups}}.', {
@@ -191,9 +286,9 @@ export function EmailSyncPage() {
         title={t('Sincronizar correo')}
         helpId="correo"
         subtitle={
-          pushActive
+          pushActive || outlookPushActive
             ? t('Captura automática activa: los correos nuevos de tu banco se registran solos, en tiempo real, como pendientes.')
-            : t('Lee alertas de tu banco y correos de proveedores (facturas, tickets, domiciliados) desde tu Gmail y crea movimientos pendientes.')
+            : t('Lee alertas de tu banco y correos de proveedores (facturas, tickets, domiciliados) desde Gmail u Outlook y crea movimientos pendientes.')
         }
       />
 
@@ -378,13 +473,13 @@ export function EmailSyncPage() {
           )}
           <div className="flex flex-wrap gap-3">
             {!providerToken ? (
-              <Button onClick={() => connectGmail()}>{t('Conectar Gmail')}</Button>
+              <Button onClick={handleConnectGmail}>{t('Conectar Gmail')}</Button>
             ) : (
               <>
                 <span className="self-center text-sm text-green-600">
                   ✓ {t('Gmail conectado')}
                 </span>
-                <Button variant="secondary" onClick={() => connectGmail()}>
+                <Button variant="secondary" onClick={handleConnectGmail}>
                   {t('Reconectar (forzar permisos)')}
                 </Button>
               </>
@@ -415,7 +510,7 @@ export function EmailSyncPage() {
         {/* Captura automática en tiempo real (Gmail push) */}
         <Card className="grid gap-3">
           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-            {t('3. Captura automática en tiempo real')}
+            {t('3. Captura automática en tiempo real (Gmail)')}
           </h3>
           <p className="text-sm text-slate-600 dark:text-slate-300">
             {pushActive
@@ -447,6 +542,84 @@ export function EmailSyncPage() {
           </div>
           <p className="text-xs text-slate-400 dark:text-slate-500">
             {t('Requiere conectar Gmail arriba. En modo de prueba de Google, cada cuenta debe reconectar Gmail cada 7 días.')}
+          </p>
+        </Card>
+
+        {/* Conectar + sincronizar Outlook */}
+        <Card className="grid gap-3">
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+            {t('4. Conecta Outlook y sincroniza')}
+          </h3>
+          <div className="flex flex-wrap gap-3">
+            {!outlookProviderToken ? (
+              <Button onClick={handleConnectOutlook}>{t('Conectar Outlook')}</Button>
+            ) : (
+              <>
+                <span className="self-center text-sm text-green-600">
+                  ✓ {t('Outlook conectado')}
+                </span>
+                <Button variant="secondary" onClick={handleConnectOutlook}>
+                  {t('Reconectar (forzar permisos)')}
+                </Button>
+              </>
+            )}
+            <Button
+              onClick={handleSyncOutlook}
+              disabled={!outlookProviderToken || rules.length === 0 || syncEmail.isPending}
+            >
+              {syncEmail.isPending ? t('Sincronizando…') : t('Sincronizar ahora')}
+            </Button>
+          </div>
+          <p className="text-xs text-slate-400 dark:text-slate-500">
+            {t('Usa los mismos remitentes configurados arriba: no hace falta duplicarlos por proveedor.')}
+          </p>
+          {rules.length === 0 && (
+            <p className="text-xs text-amber-600">
+              {t('Agrega al menos un remitente arriba antes de sincronizar.')}
+            </p>
+          )}
+          <p className="text-xs text-slate-400 dark:text-slate-500">
+            {t('Los movimientos se crean como pendientes: revísalos y confírmalos en Transacciones para que cuenten en tus saldos.')}
+          </p>
+        </Card>
+
+        {/* Captura automática en tiempo real (Outlook push) */}
+        <Card className="grid gap-3">
+          <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+            {t('5. Captura automática en tiempo real (Outlook)')}
+          </h3>
+          <p className="text-sm text-slate-600 dark:text-slate-300">
+            {outlookPushActive
+              ? t('✅ Activada. Microsoft avisa a la app en cuanto llega un correo y se registra solo.')
+              : t('Actívala para no tener que pulsar "Sincronizar": los correos nuevos se registran solos en cuanto llegan.')}
+            {outlookPushActive && outlookConnQuery.data?.watch_expiration && (
+              <span className="block text-xs text-slate-400 dark:text-slate-500">
+                {t('Se renueva automáticamente antes de vencer.')}
+              </span>
+            )}
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {!outlookPushActive ? (
+              <Button
+                onClick={handleEnableOutlookPush}
+                disabled={
+                  !outlookProviderToken || rules.length === 0 || enableOutlookPush.isPending
+                }
+              >
+                {enableOutlookPush.isPending ? t('Activando…') : t('Activar tiempo real')}
+              </Button>
+            ) : (
+              <Button
+                variant="secondary"
+                onClick={handleDisableOutlookPush}
+                disabled={disableOutlookPush.isPending}
+              >
+                {t('Desactivar tiempo real')}
+              </Button>
+            )}
+          </div>
+          <p className="text-xs text-slate-400 dark:text-slate-500">
+            {t('Requiere conectar Outlook arriba.')}
           </p>
         </Card>
 
