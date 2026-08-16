@@ -1,5 +1,5 @@
 {
-  "version": "0.7.6",
+  "version": "0.8.0",
   "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/latest/download/finzen.apk",
-  "notes": "Nuevo: como admin puedes cambiar el nombre y el logo de la app desde el Panel Admin, sin tocar código."
+  "notes": "Nuevo: reembolsos de compras, categorías en transferencias, recordatorios en Google Calendar (suscripciones y pago de tarjeta) y nuevo selector de emojis."
 }
