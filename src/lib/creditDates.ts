@@ -4,6 +4,12 @@
 //   - Un día que no existe en el mes se recorta (corte el 31 → 28 en febrero).
 //   - El pago siempre cae DESPUÉS del corte: si payment_day <= cut_day, es del
 //     mes siguiente.
+//
+// ESPEJADO EN SQL: finzen-backend/supabase/migrations/0051_card_payment_alerts.sql
+// (clamp_day_to_month, cut_date_for_month, payment_date_for_cut, card_period_dates)
+// genera los avisos de pago de tarjeta/MSI con esta misma aritmética, porque
+// Postgres no puede invocar este archivo. Si cambia una regla aquí, replicarla
+// también allá.
 
 import { clampDayToMonth, toISODate, parseLocalDate, monthStartISO } from '@/lib/dates'
 

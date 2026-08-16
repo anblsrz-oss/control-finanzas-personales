@@ -15,6 +15,7 @@ import { PageHeader } from '@/components/ui/PageHeader'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Money } from '@/components/ui/Money'
+import { Emoji } from '@/components/ui/Emoji'
 import { SubscriptionForm } from './SubscriptionForm'
 import { monthlyEquivalent } from '@/lib/subscriptionMerchants'
 import type { SubscriptionRow } from '@/types/db'
@@ -152,7 +153,7 @@ export function SubscriptionsPage() {
           {suggested.map((s) => (
             <Card key={s.id} className="flex flex-wrap items-center justify-between gap-3 border-teal-200 dark:border-teal-800">
               <div className="flex items-center gap-3">
-                <span className="text-2xl">{s.icon ?? '🔁'}</span>
+                <span className="text-2xl"><Emoji emoji={s.icon ?? '🔁'} /></span>
                 <div>
                   <p className="font-medium text-slate-800 dark:text-slate-100">{s.name}</p>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -210,7 +211,7 @@ export function SubscriptionsPage() {
               {group.items.map((s) => (
                 <Card key={s.id} className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl">{s.icon ?? '🔁'}</span>
+                    <span className="text-2xl"><Emoji emoji={s.icon ?? '🔁'} /></span>
                     <div>
                       <p className="font-medium text-slate-800 dark:text-slate-100">{s.name}</p>
                       <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -262,7 +263,7 @@ export function SubscriptionsPage() {
               {history.map((s) => (
                 <Card key={s.id} className="flex flex-wrap items-center justify-between gap-2 opacity-70">
                   <span className="text-sm text-slate-500 dark:text-slate-400">
-                    {s.icon ?? '🔁'} {s.name} ·{' '}
+                    <Emoji emoji={s.icon ?? '🔁'} /> {s.name} ·{' '}
                     {t(
                       s.status === 'paused'
                         ? 'pausada'

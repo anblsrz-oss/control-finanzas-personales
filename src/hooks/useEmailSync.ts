@@ -4,6 +4,16 @@ import { supabase } from '@/lib/supabase'
 const GMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.readonly'
 const OUTLOOK_SCOPE = 'offline_access https://graph.microsoft.com/Mail.Read'
 
+// Supabase solo guarda en la sesión el provider_token del ÚLTIMO OAuth
+// completado (Gmail, Outlook o Calendar, cualquiera que se haya usado más
+// recientemente), y cada flujo de conexión recarga la página al volver del
+// consentimiento (redirectTo: window.location.href). Este flag en
+// sessionStorage sobrevive esa recarga y le dice a cada página a cuál de
+// los proveedores pertenece el token recién leído — exportado aquí (no
+// declarado en EmailSyncPage) para que useGoogleCalendar/SettingsPage
+// puedan marcar 'calendar' sin que EmailSyncPage lo confunda con Gmail.
+export const EMAIL_SYNC_PROVIDER_KEY = 'finzen_email_sync_provider'
+
 // Pide consentimiento del scope de solo-lectura de Gmail. Provoca un nuevo flujo
 // OAuth; al volver, la sesión trae `provider_token` para llamar a Gmail API.
 export async function connectGmail(): Promise<void> {

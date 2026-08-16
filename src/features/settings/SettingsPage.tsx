@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
@@ -8,7 +9,16 @@ import {
   useUpdateMainCurrency,
   useUpdateBudgetAlertThreshold,
   useUpdateBudgetAlertsEmail,
+  useUpdateCalendarSubscriptionReminders,
+  useUpdateCalendarCardPaymentReminders,
 } from '@/hooks/useProfile'
+import { EMAIL_SYNC_PROVIDER_KEY, getProviderToken, getProviderRefreshToken } from '@/hooks/useEmailSync'
+import {
+  connectGoogleCalendar,
+  useGoogleCalendarConnection,
+  useEnableGoogleCalendar,
+  useDisconnectGoogleCalendar,
+} from '@/hooks/useGoogleCalendar'
 import { DEFAULT_ALERT_THRESHOLD } from '@/lib/budgets'
 import { useEntitlements } from '@/hooks/useAppConfig'
 import { CURRENCIES } from '@/lib/format'
@@ -55,6 +65,58 @@ export function SettingsPage() {
   const updateAlertsEmail = useUpdateBudgetAlertsEmail()
   const alertThreshold = profile?.budget_alert_threshold ?? DEFAULT_ALERT_THRESHOLD
   const { canUseFamily } = useEntitlements()
+
+  const calendarConnQuery = useGoogleCalendarConnection(userId)
+  const calendarConnected = !!calendarConnQuery.data
+  const enableCalendar = useEnableGoogleCalendar()
+  const disconnectCalendar = useDisconnectGoogleCalendar()
+  const updateCalendarSubReminders = useUpdateCalendarSubscriptionReminders()
+  const updateCalendarCardReminders = useUpdateCalendarCardPaymentReminders()
+  const [calendarProviderToken, setCalendarProviderToken] = useState<string | null>(null)
+  const [calendarProviderRefreshToken, setCalendarProviderRefreshToken] = useState<string | null>(
+    null,
+  )
+
+  useEffect(() => {
+    // Solo nos interesa el token si el consentimiento que se acaba de
+    // completar fue el de Calendar (mismo flag que EmailSyncPage usa para
+    // Gmail/Outlook, ver useEmailSync.ts) — evita confundirlo con un token
+    // de otra página si el usuario venía de conectar correo.
+    if (sessionStorage.getItem(EMAIL_SYNC_PROVIDER_KEY) !== 'calendar') return
+    void (async () => {
+      const [token, refreshToken] = await Promise.all([
+        getProviderToken(),
+        getProviderRefreshToken(),
+      ])
+      setCalendarProviderToken(token)
+      setCalendarProviderRefreshToken(refreshToken)
+    })()
+  }, [session])
+
+  async function handleEnableCalendar() {
+    if (!userId || !calendarProviderToken) return
+    try {
+      await enableCalendar.mutateAsync({
+        userId,
+        providerToken: calendarProviderToken,
+        providerRefreshToken: calendarProviderRefreshToken,
+      })
+      sessionStorage.removeItem(EMAIL_SYNC_PROVIDER_KEY)
+      setCalendarProviderToken(null)
+    } catch (e) {
+      alert(`${t('Error:')} ${(e as Error).message}`)
+    }
+  }
+
+  async function handleDisconnectCalendar() {
+    if (!userId) return
+    if (!window.confirm(t('¿Desconectar Google Calendar? Los recordatorios ya creados se quedan en tu calendario.'))) return
+    try {
+      await disconnectCalendar.mutateAsync({ userId })
+    } catch (e) {
+      alert(`${t('Error:')} ${(e as Error).message}`)
+    }
+  }
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -266,6 +328,86 @@ export function SettingsPage() {
               </span>
             </span>
           </label>
+        </Card>
+
+        {/* Google Calendar */}
+        <Card>
+          <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
+            📅 {t('Recordatorios en Google Calendar')}
+          </p>
+          <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
+            {t('Crea un evento en tu calendario cuando se acerca el próximo cobro de una suscripción o la fecha de pago de una tarjeta/MSI.')}
+          </p>
+
+          <div className="flex flex-wrap items-center gap-3">
+            {!calendarConnected ? (
+              !calendarProviderToken ? (
+                <Button onClick={() => void connectGoogleCalendar()}>
+                  {t('Conectar Google Calendar')}
+                </Button>
+              ) : (
+                <Button onClick={handleEnableCalendar} disabled={enableCalendar.isPending}>
+                  {enableCalendar.isPending ? t('Activando…') : t('Activar recordatorios')}
+                </Button>
+              )
+            ) : (
+              <>
+                <span className="text-sm text-green-600">
+                  ✓ {t('Conectado{{email}}', {
+                    email: calendarConnQuery.data?.email ? ` (${calendarConnQuery.data.email})` : '',
+                  })}
+                </span>
+                <Button
+                  variant="secondary"
+                  onClick={handleDisconnectCalendar}
+                  disabled={disconnectCalendar.isPending}
+                >
+                  {t('Desconectar')}
+                </Button>
+              </>
+            )}
+          </div>
+
+          {calendarConnected && (
+            <div className="mt-4 grid gap-2">
+              <label className="flex items-start gap-2">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 cursor-pointer"
+                  checked={!!profile?.calendar_subscription_reminders}
+                  disabled={updateCalendarSubReminders.isPending}
+                  onChange={(e) => {
+                    if (!userId) return
+                    updateCalendarSubReminders.mutate(
+                      { userId, enabled: e.target.checked },
+                      { onError: (err: any) => alert(`${t('Error:')} ${err.message}`) },
+                    )
+                  }}
+                />
+                <span className="text-sm text-slate-700 dark:text-slate-200">
+                  {t('Próximo cobro de suscripciones')}
+                </span>
+              </label>
+              <label className="flex items-start gap-2">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 cursor-pointer"
+                  checked={!!profile?.calendar_card_payment_reminders}
+                  disabled={updateCalendarCardReminders.isPending}
+                  onChange={(e) => {
+                    if (!userId) return
+                    updateCalendarCardReminders.mutate(
+                      { userId, enabled: e.target.checked },
+                      { onError: (err: any) => alert(`${t('Error:')} ${err.message}`) },
+                    )
+                  }}
+                />
+                <span className="text-sm text-slate-700 dark:text-slate-200">
+                  {t('Pago de tarjeta / MSI')}
+                </span>
+              </label>
+            </div>
+          )}
         </Card>
 
         {/* Teléfono */}

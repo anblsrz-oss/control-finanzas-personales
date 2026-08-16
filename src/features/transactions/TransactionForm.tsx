@@ -5,13 +5,17 @@ import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import {
+  useTransactions,
   useCreateTransaction,
   useUpdateTransaction,
   useCreateInstallmentPlan,
   useInstallmentPlans,
   useInstallmentPayments,
   useConfirmInstallmentPayments,
+  useTransactionRefunds,
+  useCancelInstallmentPlan,
 } from '@/hooks/useTransactions'
+import { remainingRefundable, checkAndCancelMsiPlan } from '@/lib/refunds'
 import { useCreditLines } from '@/hooks/useCreditLines'
 import { useFxRate } from '@/hooks/useFxRate'
 import { useEntitlements } from '@/hooks/useAppConfig'
@@ -30,6 +34,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Card } from '@/components/ui/Card'
+import { Money } from '@/components/ui/Money'
 import type {
   AccountRow,
   CardRow,
@@ -43,7 +48,7 @@ import type {
 // cartera) o a un 'expense' desde la cuenta origen (si ya se gastó / es para
 // un pago). No es un kind que se guarde en la base de datos.
 const schema = z.object({
-  kind: z.enum(['income', 'expense', 'transfer', 'card_payment', 'cash_withdrawal']),
+  kind: z.enum(['income', 'expense', 'transfer', 'card_payment', 'cash_withdrawal', 'refund']),
   amount: z.coerce.number().positive('Monto debe ser mayor a 0'),
   currency: z.string(),
   concept: z.string().optional(),
@@ -55,6 +60,8 @@ const schema = z.object({
   toCreditLineId: z.string().optional(),
   // Transferencia a una cuenta que no es mía (cuenta como egreso).
   isExternal: z.boolean().default(false),
+  // Reembolso: compra original que cancela parcial o totalmente.
+  refundOfTransactionId: z.string().optional(),
   txDate: z.string(),
   notes: z.string().optional(),
   msi: z.boolean().default(false),
@@ -105,6 +112,7 @@ export function TransactionForm({
   const updateTransaction = useUpdateTransaction()
   const createInstallment = useCreateInstallmentPlan()
   const confirmInstallments = useConfirmInstallmentPayments()
+  const cancelInstallmentPlan = useCancelInstallmentPlan()
   const recordBudgetAlerts = useRecordBudgetAlerts()
   const { canUseInstallments } = useEntitlements()
   const mainCurrency = profile?.main_currency ?? 'MXN'
@@ -131,6 +139,7 @@ export function TransactionForm({
           cardId: transaction.card_id ?? '',
           toCreditLineId: transaction.to_credit_line_id ?? '',
           isExternal: transaction.is_external,
+          refundOfTransactionId: transaction.refund_of_transaction_id ?? '',
           txDate: transaction.tx_date,
           notes: transaction.notes ?? '',
           msi: false,
@@ -143,6 +152,7 @@ export function TransactionForm({
           currency: mainCurrency,
           amount: initial?.amount as any,
           toCreditLineId: initial?.toCreditLineId ?? '',
+          refundOfTransactionId: '',
           txDate: todayISO(),
           isExternal: false,
           msi: false,
@@ -158,6 +168,34 @@ export function TransactionForm({
   const amountRaw = form.watch('amount')
   const isExternal = form.watch('isExternal')
   const toCreditLineId = form.watch('toCreditLineId')
+  const refundOfTransactionId = form.watch('refundOfTransactionId')
+
+  // Reembolso: gastos recientes para elegir la compra original, y sus
+  // reembolsos ya registrados para prellenar el monto restante.
+  const refundableExpensesQuery = useTransactions(userId, { kind: 'expense' }, 100)
+  const refundableExpenses = refundableExpensesQuery.data || []
+  const selectedOriginal = refundableExpenses.find((e) => e.id === refundOfTransactionId)
+  const originalRefundsQuery = useTransactionRefunds(selectedOriginal?.id)
+  const originalRefunds = originalRefundsQuery.data || []
+  const originalRemaining = selectedOriginal
+    ? remainingRefundable(selectedOriginal, originalRefunds)
+    : 0
+
+  // Al elegir (o cambiar) la compra a reembolsar, copiar cuenta/tarjeta/
+  // categoría/moneda y proponer el monto restante. Solo al crear: si se
+  // edita un reembolso ya guardado, no se pisa lo que el usuario ajustó.
+  useEffect(() => {
+    if (isEdit || !selectedOriginal) return
+    form.setValue('accountId', selectedOriginal.account_id ?? '')
+    form.setValue('cardId', selectedOriginal.card_id ?? '')
+    form.setValue('categoryId', selectedOriginal.category_id ?? '')
+    form.setValue('currency', selectedOriginal.currency)
+    form.setValue(
+      'amount',
+      (originalRemaining > 0 ? originalRemaining : selectedOriginal.amount) as any,
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEdit, selectedOriginal?.id, originalRefundsQuery.dataUpdatedAt])
 
   // Multimoneda: cuando la moneda del movimiento difiere de la principal, se
   // obtiene el tipo de cambio (editable) para convertir a la moneda principal.
@@ -246,7 +284,7 @@ export function TransactionForm({
           paidByPlan.get(p.id) ?? new Set<string>(),
         ),
       }))
-      .filter((x) => x.progress.remainingCount > 0 && x.progress.nextDuePeriod)
+      .filter((x) => x.progress.remainingCount > 0 && x.progress.nextDuePeriod && !x.plan.cancelled_at)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txKind, toCreditLineId, plans, paidByPlan, cards])
 
@@ -282,6 +320,10 @@ export function TransactionForm({
     }
     if (data.kind === 'card_payment' && (!data.accountId || !data.toCreditLineId)) {
       alert(t('Selecciona la cuenta origen y la línea de crédito a pagar'))
+      return
+    }
+    if (data.kind === 'refund' && !data.refundOfTransactionId) {
+      alert(t('Selecciona la compra a reembolsar'))
       return
     }
     if (data.kind === 'cash_withdrawal') {
@@ -359,11 +401,13 @@ export function TransactionForm({
       resolvedAccountId = data.accountId || undefined
       external = data.isExternal
       resolvedToAccountId = external ? undefined : data.toAccountId || undefined
-      resolvedCategoryId = undefined
     } else if (data.kind === 'card_payment') {
       resolvedAccountId = data.accountId || undefined
       resolvedToCreditLineId = data.toCreditLineId || undefined
       resolvedCategoryId = undefined
+    } else if (data.kind === 'refund') {
+      resolvedAccountId = data.accountId || undefined
+      resolvedCardId = data.cardId || undefined
     }
 
     // Reevalúa los presupuestos para que el aviso salga al instante y no en el
@@ -393,6 +437,7 @@ export function TransactionForm({
           cardId: resolvedCardId ?? null,
           toCreditLineId: resolvedToCreditLineId ?? null,
           isExternal: external,
+          refundOfTransactionId: data.refundOfTransactionId || null,
           txDate: data.txDate,
           notes: data.notes,
         })
@@ -416,6 +461,7 @@ export function TransactionForm({
         cardId: resolvedCardId,
         toCreditLineId: resolvedToCreditLineId,
         isExternal: external,
+        refundOfTransactionId: data.refundOfTransactionId || undefined,
         txDate: data.txDate,
         notes: data.notes,
         familyId,
@@ -467,6 +513,19 @@ export function TransactionForm({
         }
       }
 
+      // Reembolso: si la compra original tenía un plan MSI y lo ya reembolsado
+      // (incluyendo este) alcanza su total, se cancela — deja de pedir/sumar
+      // mensualidades futuras.
+      if (data.kind === 'refund' && data.refundOfTransactionId) {
+        await checkAndCancelMsiPlan(
+          userId,
+          data.refundOfTransactionId,
+          plans,
+          [...originalRefunds, tx as TransactionRow],
+          cancelInstallmentPlan,
+        )
+      }
+
       // Pago de tarjeta: conciliar las mensualidades MSI marcadas del periodo.
       if (data.kind === 'card_payment') {
         const rows = linePlans
@@ -505,6 +564,7 @@ export function TransactionForm({
             { value: 'transfer', label: t('🔄 Transferencia') },
             { value: 'card_payment', label: t('💳 Pago de tarjeta') },
             { value: 'cash_withdrawal', label: t('🏧 Retiro de efectivo') },
+            { value: 'refund', label: t('↩️ Reembolso') },
           ]}
           {...form.register('kind')}
         />
@@ -564,7 +624,7 @@ export function TransactionForm({
           </div>
         )}
 
-        {/* Concepto y categoría (la categoría no aplica a transferencias ni pagos) */}
+        {/* Concepto y categoría (no aplica a pago de tarjeta) */}
         <div className="grid grid-cols-2 gap-4">
           <Input
             label={t('Concepto')}
@@ -573,6 +633,8 @@ export function TransactionForm({
           />
           {(txKind === 'income' ||
             txKind === 'expense' ||
+            txKind === 'refund' ||
+            txKind === 'transfer' ||
             (txKind === 'cash_withdrawal' && spentAsCash)) && (
             <Select
               label={t('Categoría')}
@@ -800,6 +862,42 @@ export function TransactionForm({
                   </label>
                 ))}
               </div>
+            )}
+          </div>
+        )}
+
+        {txKind === 'refund' && (
+          <div className="space-y-2">
+            <Select
+              label={t('Compra a reembolsar')}
+              options={[
+                { value: '', label: t('Selecciona una compra') },
+                ...refundableExpenses.map((e) => ({
+                  value: e.id,
+                  label: `${e.concept || t('Sin concepto')} · ${formatMoney(e.amount, e.currency)} · ${e.tx_date}`,
+                })),
+              ]}
+              {...form.register('refundOfTransactionId')}
+            />
+            {selectedOriginal && (
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {originalRemaining < selectedOriginal.amount ? (
+                  <>
+                    {t('Ya reembolsado')}{' '}
+                    <Money
+                      amount={selectedOriginal.amount - originalRemaining}
+                      currency={selectedOriginal.currency}
+                    />{' '}
+                    {t('de')}{' '}
+                    <Money amount={selectedOriginal.amount} currency={selectedOriginal.currency} />
+                  </>
+                ) : (
+                  <>
+                    {t('Monto de la compra')}{' '}
+                    <Money amount={selectedOriginal.amount} currency={selectedOriginal.currency} />
+                  </>
+                )}
+              </p>
             )}
           </div>
         )}

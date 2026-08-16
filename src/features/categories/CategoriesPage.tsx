@@ -13,6 +13,7 @@ import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { EmojiPicker } from '@/components/ui/EmojiPicker'
+import { Emoji } from '@/components/ui/Emoji'
 import { ColorPicker } from '@/components/ui/ColorPicker'
 import type { CategoryRow } from '@/types/db'
 
@@ -161,7 +162,7 @@ export function CategoriesPage() {
                       className="flex h-9 w-9 items-center justify-center rounded-full text-xl"
                       style={cat.color ? { backgroundColor: `${cat.color}22` } : undefined}
                     >
-                      {cat.icon || '•'}
+                      {cat.icon ? <Emoji emoji={cat.icon} className="text-xl" /> : '•'}
                     </span>
                     <div>
                       <p className="font-medium text-slate-800 dark:text-slate-100">
@@ -204,7 +205,7 @@ export function CategoriesPage() {
                       className="flex h-9 w-9 items-center justify-center rounded-full text-xl"
                       style={cat.color ? { backgroundColor: `${cat.color}22` } : undefined}
                     >
-                      {cat.icon || '•'}
+                      {cat.icon ? <Emoji emoji={cat.icon} className="text-xl" /> : '•'}
                     </span>
                     <div>
                       <p className="font-medium text-slate-800 dark:text-slate-100">

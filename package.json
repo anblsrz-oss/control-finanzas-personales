@@ -8,6 +8,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "tsc --noEmit",
+    "emoji:sync": "node scripts/sync-emoji-assets.mjs",
     "cap:sync": "npm run build && npx cap sync",
     "cap:android": "npm run build && npx cap sync android && npx cap open android",
     "cap:ios": "npm run build && npx cap sync ios && npx cap open ios"
@@ -45,6 +46,7 @@
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.4.2",
+    "@twemoji/api": "^17.0.3",
     "@types/file-saver": "^2.0.7",
     "@types/papaparse": "^5.5.2",
     "@types/react": "^18.3.9",

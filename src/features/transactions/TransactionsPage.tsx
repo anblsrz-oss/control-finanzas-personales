@@ -7,6 +7,7 @@ import {
   useDeleteTransaction,
   useConfirmTransaction,
   useTransactionDeletions,
+  useInstallmentPlans,
 } from '@/hooks/useTransactions'
 import type { TransactionFilter } from '@/hooks/useTransactions'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
@@ -22,6 +23,7 @@ import { PremiumGate } from '@/components/ui/PremiumGate'
 import { Card } from '@/components/ui/Card'
 import { Modal } from '@/components/ui/Modal'
 import { TransactionForm } from './TransactionForm'
+import { RefundDialog } from './RefundDialog'
 import {
   TransactionFilters,
   EMPTY_FILTERS,
@@ -41,6 +43,7 @@ export function TransactionsPage() {
   const [showHistory, setShowHistory] = useState(false)
   const [editingTx, setEditingTx] = useState<TransactionRow | null>(null)
   const [deleting, setDeleting] = useState<TransactionRow | null>(null)
+  const [refunding, setRefunding] = useState<TransactionRow | null>(null)
   const [reason, setReason] = useState('')
   const [error, setError] = useState<string | null>(null)
   const formRef = useRef<HTMLDivElement>(null)
@@ -101,6 +104,7 @@ export function TransactionsPage() {
   const creditLinesQuery = useCreditLines(userId)
   const categoriesQuery = useCategories(userId)
   const deletionsQuery = useTransactionDeletions(userId)
+  const plansQuery = useInstallmentPlans(userId)
   const deleteTx = useDeleteTransaction()
   const confirmTx = useConfirmTransaction()
   const { transactionLimit, canUseTransactionsPeriodFilter } = useEntitlements()
@@ -119,6 +123,22 @@ export function TransactionsPage() {
   const categories = categoriesQuery.data || []
   const deletions = deletionsQuery.data || []
   const familyCards = familyCardsQuery.data || []
+  const plans = plansQuery.data || []
+
+  // Reembolsos vinculados entre las transacciones ya cargadas (best-effort:
+  // solo cubre el rango de fechas filtrado actualmente, sin query aparte).
+  const refundedTotalsByOriginal = useMemo(() => {
+    const map = new Map<string, number>()
+    for (const t of transactions) {
+      if (t.kind === 'refund' && t.refund_of_transaction_id) {
+        map.set(
+          t.refund_of_transaction_id,
+          (map.get(t.refund_of_transaction_id) || 0) + t.amount,
+        )
+      }
+    }
+    return map
+  }, [transactions])
 
   const getAccountName = (id?: string) =>
     accounts.find((a) => a.id === id)?.name || '—'
@@ -156,7 +176,9 @@ export function TransactionsPage() {
         ? t('📤 Egreso')
         : kind === 'card_payment'
           ? t('💳 Pago de tarjeta')
-          : t('🔄 Transferencia')
+          : kind === 'refund'
+            ? t('↩️ Reembolso')
+            : t('🔄 Transferencia')
 
   // Origen/destino que se muestra bajo el concepto, según el tipo.
   const flowLabel = (tx: TransactionRow) => {
@@ -327,21 +349,35 @@ export function TransactionsPage() {
                   )}
                 </div>
                 <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                  {(tx.kind === 'income' || tx.kind === 'expense') &&
+                  {(tx.kind === 'income' || tx.kind === 'expense' || tx.kind === 'refund') &&
                     `${getCategoryName(tx.category_id || undefined)} • `}
+                  {tx.kind === 'transfer' && tx.category_id &&
+                    `${getCategoryName(tx.category_id)} • `}
                   {flowLabel(tx)} • {formatDate(tx.tx_date)}
                 </p>
                 {tx.notes && (
                   <p className="mt-1 text-xs italic text-slate-400 dark:text-slate-500">{tx.notes}</p>
                 )}
+                {tx.kind === 'expense' && (refundedTotalsByOriginal.get(tx.id) ?? 0) > 0 && (
+                  <p className="mt-1 text-xs font-medium text-brand-600 dark:text-brand-400">
+                    ↩️ {t('Reembolsado')}{' '}
+                    {formatMoney(refundedTotalsByOriginal.get(tx.id)!, tx.currency)}
+                  </p>
+                )}
               </div>
               <div className="flex flex-col items-end gap-2">
                 <p
                   className={`text-lg font-semibold ${
-                    tx.kind === 'income' ? 'text-green-600' : 'text-slate-800 dark:text-slate-100'
+                    tx.kind === 'income' || tx.kind === 'refund'
+                      ? 'text-green-600'
+                      : 'text-slate-800 dark:text-slate-100'
                   }`}
                 >
-                  {tx.kind === 'income' ? '+' : tx.kind === 'transfer' && !tx.is_external ? '' : '-'}
+                  {tx.kind === 'income' || tx.kind === 'refund'
+                    ? '+'
+                    : tx.kind === 'transfer' && !tx.is_external
+                      ? ''
+                      : '-'}
                   <Money amount={tx.amount} currency={tx.currency} />
                 </p>
                 <div className="flex items-center gap-3">
@@ -352,6 +388,14 @@ export function TransactionsPage() {
                       className="text-xs font-medium text-green-600 transition-colors hover:text-green-700 disabled:opacity-50"
                     >
                       ✓ {t('Confirmar')}
+                    </button>
+                  )}
+                  {tx.kind === 'expense' && (
+                    <button
+                      onClick={() => setRefunding(tx)}
+                      className="text-xs font-medium text-brand-600 transition-colors hover:text-brand-800 dark:text-brand-400"
+                    >
+                      ↩️ {t('Reembolsar')}
                     </button>
                   )}
                   <button
@@ -419,6 +463,13 @@ export function TransactionsPage() {
           </div>
         )}
       </Modal>
+
+      <RefundDialog
+        transaction={refunding}
+        userId={userId}
+        plans={plans}
+        onClose={() => setRefunding(null)}
+      />
     </>
   )
 }

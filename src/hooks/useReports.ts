@@ -89,6 +89,10 @@ export function useTransactionsSummary(userId?: string, filters?: ReportFilters)
           // Transferencia entre cuentas propias: no es ingreso ni egreso.
         } else if (t.kind === 'card_payment') {
           cardPayments += v
+        } else if (t.kind === 'refund') {
+          // Reembolso: espejo de expense, nunca cuenta como ingreso nuevo.
+          if (isCreditCard(t)) creditUsed -= v
+          else cashExpenseAccounts -= v
         }
       }
 
@@ -163,6 +167,9 @@ export function useMonthlyTotals(userId?: string, filters?: ReportFilters) {
           if (tx.is_external) byMonth[month].expense += value
         } else if (tx.kind === 'card_payment') {
           byMonth[month].expense += value
+        } else if (tx.kind === 'refund') {
+          if (credit) byMonth[month].credit -= value
+          else byMonth[month].expense -= value
         }
       })
 
@@ -227,23 +234,27 @@ export function useCardAccountTotals(userId?: string, filters?: ReportFilters) {
     }
 
     ;(txs || []).forEach((tx) => {
-      // Solo ingresos y egresos entran al desglose por tarjeta/cuenta. Las
-      // transferencias y los pagos de tarjeta se contabilizan aparte.
-      if (tx.kind !== 'income' && tx.kind !== 'expense') return
+      // Ingresos, egresos y reembolsos entran al desglose por tarjeta/cuenta
+      // (el reembolso resta del egreso). Transferencias y pagos de tarjeta
+      // se contabilizan aparte.
+      if (tx.kind !== 'income' && tx.kind !== 'expense' && tx.kind !== 'refund') return
       const value = tx.base_amount ?? tx.amount
+      // Un reembolso resta del bucket de egreso, nunca suma a ingreso.
+      const bucket: 'income' | 'expense' = tx.kind === 'income' ? 'income' : 'expense'
+      const signedValue = tx.kind === 'refund' ? -value : value
 
       if (tx.card_id) {
         const card = cardById.get(tx.card_id)
-        bump(byCard, tx.card_id, card?.name || 'Sin asignar', card?.color, tx.kind, value)
+        bump(byCard, tx.card_id, card?.name || 'Sin asignar', card?.color, bucket, signedValue)
       } else {
-        bump(byCard, UNASSIGNED, 'Sin asignar', null, tx.kind, value)
+        bump(byCard, UNASSIGNED, 'Sin asignar', null, bucket, signedValue)
       }
 
       if (tx.account_id) {
         const acc = accountById.get(tx.account_id)
-        bump(byAccount, tx.account_id, acc?.name || 'Sin asignar', null, tx.kind, value)
+        bump(byAccount, tx.account_id, acc?.name || 'Sin asignar', null, bucket, signedValue)
       } else {
-        bump(byAccount, UNASSIGNED, 'Sin asignar', null, tx.kind, value)
+        bump(byAccount, UNASSIGNED, 'Sin asignar', null, bucket, signedValue)
       }
     })
 
@@ -273,7 +284,7 @@ export function useCategoryTotals(userId?: string, filters?: ReportFilters) {
         .from('transactions')
         .select('*, categories(name, icon, color)')
         .eq('user_id', userId)
-        .eq('kind', 'expense')
+        .in('kind', ['expense', 'refund', 'transfer'])
         .is('family_id', null)
         // Las pendientes de confirmar (sync SMS/correo) aún no son datos reales.
         .eq('pending', false)
@@ -288,7 +299,11 @@ export function useCategoryTotals(userId?: string, filters?: ReportFilters) {
       const { data, error } = await query
       if (error) throw error
 
-      const txs = (data || []) as any[]
+      // Transferencias entre mis propias cuentas no son gasto real; solo las
+      // externas (a terceros) cuentan aquí, igual que en useTransactionsSummary.
+      const txs = ((data || []) as any[]).filter(
+        (tx) => tx.kind !== 'transfer' || tx.is_external,
+      )
 
       // Agrupar por categoría
       const byCategory: Record<
@@ -309,10 +324,13 @@ export function useCategoryTotals(userId?: string, filters?: ReportFilters) {
             color: tx.categories?.color || '',
           }
         }
-        byCategory[catName].total += tx.base_amount ?? tx.amount
+        const value = tx.base_amount ?? tx.amount
+        // Un reembolso resta: la categoría refleja el gasto neto.
+        byCategory[catName].total += tx.kind === 'refund' ? -value : value
       })
 
       return Object.values(byCategory)
+        .filter((c) => c.total > 0)
         .sort((a, b) => b.total - a.total)
     },
     enabled: !!userId,

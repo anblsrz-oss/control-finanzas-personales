@@ -310,7 +310,7 @@ export function computeLineStatement(
       payments.filter((p) => p.plan_id === plan.id).map((p) => p.period_month),
     )
     const progress = planProgress(plan, paidPeriods)
-    if (progress.remainingCount <= 0) continue
+    if (progress.remainingCount <= 0 || plan.cancelled_at) continue
     if (confirmed?.confirmed_balance != null) {
       nextAmount += progress.monthly
       continue

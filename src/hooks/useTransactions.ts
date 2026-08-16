@@ -98,6 +98,24 @@ export function useTransactions(
   })
 }
 
+// Reembolsos ya registrados contra una compra (para saber cuánto ya se
+// reembolsó y prellenar el monto restante en el diálogo de reembolso).
+export function useTransactionRefunds(originalId?: string) {
+  return useQuery({
+    queryKey: ['transaction_refunds', originalId],
+    queryFn: async () => {
+      if (!originalId) return []
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('refund_of_transaction_id', originalId)
+      if (error) throw error
+      return (data || []) as TransactionRow[]
+    },
+    enabled: !!originalId,
+  })
+}
+
 // Total sin filtrar. El límite del plan Gratis se mide contra todo el
 // histórico: si se contaran solo las filas visibles, aplicar un filtro
 // desbloquearía el botón de "Nueva transacción".
@@ -164,6 +182,8 @@ export function useCreateTransaction() {
       toCreditLineId?: string
       /** Transferencia a una cuenta que no es del usuario (cuenta como egreso). */
       isExternal?: boolean
+      /** Reembolso: compra original que cancela parcial o totalmente. */
+      refundOfTransactionId?: string
       txDate: string
       notes?: string
       source?: TxSource
@@ -191,6 +211,7 @@ export function useCreateTransaction() {
       if (input.cardId) txData.card_id = input.cardId
       if (input.toCreditLineId) txData.to_credit_line_id = input.toCreditLineId
       if (input.isExternal) txData.is_external = true
+      if (input.refundOfTransactionId) txData.refund_of_transaction_id = input.refundOfTransactionId
       if (input.notes?.trim()) txData.notes = input.notes
       if (input.source) txData.source = input.source
       if (input.externalId) txData.external_id = input.externalId
@@ -252,6 +273,7 @@ export function useUpdateTransaction() {
       cardId?: string | null
       toCreditLineId?: string | null
       isExternal?: boolean
+      refundOfTransactionId?: string | null
       txDate: string
       notes?: string
     }) => {
@@ -267,6 +289,7 @@ export function useUpdateTransaction() {
         card_id: input.cardId || null,
         to_credit_line_id: input.toCreditLineId || null,
         is_external: input.isExternal ?? false,
+        refund_of_transaction_id: input.refundOfTransactionId || null,
         notes: input.notes?.trim() || null,
       }
       if (input.fxRate !== undefined) updates.fx_rate = input.fxRate
@@ -436,6 +459,27 @@ export function useCreateInstallmentPlan() {
         .single()
       if (error) throw error
       return data
+    },
+    onSuccess: (_data, input) => {
+      queryClient.invalidateQueries({
+        queryKey: ['installment_plans', input.userId],
+      })
+    },
+  })
+}
+
+// Cancela un plan MSI cuya compra se reembolsó por completo: deja de
+// pedir/sumar mensualidades futuras en LineStatement, computeLineStatement
+// y la conciliación al pagar tarjeta.
+export function useCancelInstallmentPlan() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ id }: { id: string; userId: string }) => {
+      const { error } = await supabase
+        .from('installment_plans')
+        .update({ cancelled_at: new Date().toISOString() })
+        .eq('id', id)
+      if (error) throw error
     },
     onSuccess: (_data, input) => {
       queryClient.invalidateQueries({

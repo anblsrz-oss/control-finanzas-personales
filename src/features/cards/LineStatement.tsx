@@ -65,7 +65,7 @@ export function LineStatement({
           paidByPlan.get(p.id) ?? new Set<string>(),
         ),
       }))
-      .filter((x) => x.progress.remainingCount > 0)
+      .filter((x) => x.progress.remainingCount > 0 && !x.plan.cancelled_at)
   }, [line.id, cards, plans, payments])
 
   if (!statement.window) return null

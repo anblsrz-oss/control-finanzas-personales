@@ -3,7 +3,7 @@
 
 export type AccountType = 'checking' | 'savings' | 'investment' | 'cash' | 'voucher'
 export type CardType = 'credit' | 'debit' | 'voucher'
-export type TxKind = 'income' | 'expense' | 'transfer' | 'card_payment'
+export type TxKind = 'income' | 'expense' | 'transfer' | 'card_payment' | 'refund'
 export type CategoryKind = 'income' | 'expense'
 export type TxSource = 'manual' | 'import' | 'email' | 'sms' | 'aggregator' | 'receipt'
 export type IngestChannel = 'csv' | 'pdf' | 'email' | 'sms'
@@ -26,6 +26,10 @@ export interface ProfileRow {
   budget_alerts_email: boolean
   /** Opt-in a los avisos de suscripciones por correo. Apagado por defecto. */
   subscription_alerts_email: boolean
+  /** Opt-in a los recordatorios de suscripción en Google Calendar. Encendido por defecto (la conexión misma ya es el consentimiento). */
+  calendar_subscription_reminders: boolean
+  /** Opt-in a los recordatorios de pago de tarjeta/MSI en Google Calendar. */
+  calendar_card_payment_reminders: boolean
   created_at: string
 }
 
@@ -160,6 +164,8 @@ export interface TransactionRow {
   family_id: string | null
   /** Suscripción recurrente a la que quedó vinculado este cargo, si la hay. */
   subscription_id: string | null
+  /** Compra original que este reembolso cancela parcial o totalmente. */
+  refund_of_transaction_id: string | null
   created_at: string
 }
 
@@ -245,6 +251,8 @@ export interface InstallmentPlanRow {
   interest_amount: number
   monthly_payment: number
   start_date: string
+  /** Si la compra se reembolsó por completo, cuándo se canceló el plan. */
+  cancelled_at: string | null
   created_at: string
 }
 
@@ -521,6 +529,28 @@ export interface SubscriptionAlertRow {
   notified_in_app: boolean
   notified_email: boolean
   notified_push: boolean
+  notified_calendar: boolean
+  calendar_event_id: string | null
+  read_at: string | null
+  created_at: string
+}
+
+export type CardPaymentAlertKind = 'card_due' | 'msi_due'
+
+export interface CardPaymentAlertRow {
+  id: string
+  user_id: string
+  card_id: string | null
+  credit_line_id: string | null
+  installment_plan_id: string | null
+  kind: CardPaymentAlertKind
+  dedupe_key: string
+  due_date: string
+  amount: number | null
+  currency: string
+  notified_in_app: boolean
+  notified_calendar: boolean
+  calendar_event_id: string | null
   read_at: string | null
   created_at: string
 }

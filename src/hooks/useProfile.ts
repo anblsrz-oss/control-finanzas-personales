@@ -52,6 +52,43 @@ export function useUpdateBudgetAlertsEmail() {
   })
 }
 
+// Opt-in a los recordatorios de próximo cobro de suscripción en Google
+// Calendar. La conexión misma (useEnableGoogleCalendar) ya es un
+// consentimiento; este toggle deja apagar ESTE tipo de recordatorio sin
+// desconectar Calendar entero (ver también calendar_card_payment_reminders).
+export function useUpdateCalendarSubscriptionReminders() {
+  const refreshProfile = useAuth((s) => s.refreshProfile)
+  return useMutation({
+    mutationFn: async (input: { userId: string; enabled: boolean }) => {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ calendar_subscription_reminders: input.enabled })
+        .eq('id', input.userId)
+      if (error) throw error
+    },
+    onSuccess: async () => {
+      await refreshProfile()
+    },
+  })
+}
+
+// Opt-in a los recordatorios de pago de tarjeta/MSI en Google Calendar.
+export function useUpdateCalendarCardPaymentReminders() {
+  const refreshProfile = useAuth((s) => s.refreshProfile)
+  return useMutation({
+    mutationFn: async (input: { userId: string; enabled: boolean }) => {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ calendar_card_payment_reminders: input.enabled })
+        .eq('id', input.userId)
+      if (error) throw error
+    },
+    onSuccess: async () => {
+      await refreshProfile()
+    },
+  })
+}
+
 // Umbral de aviso por defecto para los presupuestos que no definen el suyo.
 export function useUpdateBudgetAlertThreshold() {
   const refreshProfile = useAuth((s) => s.refreshProfile)

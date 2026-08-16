@@ -8,10 +8,13 @@ import { BrandLogo } from '@/components/ui/BrandLogo'
 import { usePendingCount } from '@/hooks/useTransactions'
 import { useUnreadBudgetAlertsCount } from '@/hooks/useBudgets'
 import { useUnreadSubscriptionAlertsCount } from '@/hooks/useSubscriptions'
+import { useUnreadCardPaymentAlertsCount } from '@/hooks/useCardPaymentAlerts'
 import { BudgetAlertBanner } from '@/components/budgets/BudgetAlertBanner'
 import { BudgetAlertWatcher } from '@/components/budgets/BudgetAlertWatcher'
 import { SubscriptionAlertBanner } from '@/components/subscriptions/SubscriptionAlertBanner'
 import { SubscriptionAlertWatcher } from '@/components/subscriptions/SubscriptionAlertWatcher'
+import { CardPaymentAlertBanner } from '@/components/cards/CardPaymentAlertBanner'
+import { CardPaymentAlertWatcher } from '@/components/cards/CardPaymentAlertWatcher'
 import { OnboardingTour } from '@/features/onboarding/OnboardingTour'
 import { WhatsNewButton } from '@/features/onboarding/WhatsNewModal'
 import { APK_URL } from '@/lib/appUpdate'
@@ -89,6 +92,7 @@ export function AppShell() {
   const pendingCount = usePendingCount(session?.user?.id).data ?? 0
   const budgetAlertCount = useUnreadBudgetAlertsCount(session?.user?.id).data ?? 0
   const subscriptionAlertCount = useUnreadSubscriptionAlertsCount(session?.user?.id).data ?? 0
+  const cardPaymentAlertCount = useUnreadCardPaymentAlertsCount(session?.user?.id).data ?? 0
   const hideAmounts = useSettings((s) => s.hideAmounts)
   const toggleHideAmounts = useSettings((s) => s.toggleHideAmounts)
   const [moreOpen, setMoreOpen] = useState(false)
@@ -148,6 +152,7 @@ export function AppShell() {
               {item.to === '/transacciones' && <PendingBadge count={pendingCount} />}
               {item.to === '/presupuestos' && <PendingBadge count={budgetAlertCount} />}
               {item.to === '/suscripciones' && <PendingBadge count={subscriptionAlertCount} />}
+              {item.to === '/tarjetas' && <PendingBadge count={cardPaymentAlertCount} />}
             </NavLink>
           ))}
           {profile?.is_admin && (
@@ -212,8 +217,10 @@ export function AppShell() {
               desde el escáner de recibos o llegar solo por SMS/correo. */}
           <BudgetAlertWatcher />
           <SubscriptionAlertWatcher />
+          <CardPaymentAlertWatcher />
           <BudgetAlertBanner />
           <SubscriptionAlertBanner />
+          <CardPaymentAlertBanner />
           <Outlet />
         </main>
       </div>
@@ -305,10 +312,10 @@ export function AppShell() {
         >
           <span className="relative text-lg">
             ⋯
-            {/* Presupuestos y Suscripciones viven dentro de "Más" en móvil:
-                sin este punto, un aviso pendiente quedaría invisible hasta
-                abrir la hoja. */}
-            {(budgetAlertCount > 0 || subscriptionAlertCount > 0) && (
+            {/* Presupuestos, Suscripciones y Tarjetas viven dentro de "Más" en
+                móvil: sin este punto, un aviso pendiente quedaría invisible
+                hasta abrir la hoja. */}
+            {(budgetAlertCount > 0 || subscriptionAlertCount > 0 || cardPaymentAlertCount > 0) && (
               <span className="absolute -right-1.5 -top-0.5 h-2 w-2 rounded-full bg-amber-500" />
             )}
           </span>

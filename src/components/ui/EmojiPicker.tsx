@@ -1,45 +1,12 @@
 import { useTranslation } from 'react-i18next'
+import emojiCategories from '../../data/emojiCategories.json'
+import { Emoji } from './Emoji'
 
-// Galería curada de emojis para categorías (sin librería externa: solo un array
-// estático para no inflar el bundle). Agrupada por tema relevante a finanzas.
-const EMOJI_GROUPS: { label: string; emojis: string[] }[] = [
-  {
-    label: 'Dinero',
-    emojis: ['💰', '💵', '💳', '🏦', '📈', '📉', '🪙', '💱', '🧾', '💸', '🏧', '📊'],
-  },
-  {
-    label: 'Comida',
-    emojis: ['🍔', '🍕', '🍽️', '☕', '🍺', '🛒', '🥑', '🍎', '🍞', '🥩', '🍣', '🍦'],
-  },
-  {
-    label: 'Transporte',
-    emojis: ['🚗', '⛽', '🚕', '🚌', '🚇', '✈️', '🚲', '🛵', '🅿️', '🚙', '🛣️', '🚏'],
-  },
-  {
-    label: 'Hogar',
-    emojis: ['🏠', '🔌', '💡', '🚿', '🛋️', '🧹', '🪑', '🧺', '🔧', '📶', '🚰', '🗑️'],
-  },
-  {
-    label: 'Salud',
-    emojis: ['🏥', '💊', '🩺', '🦷', '🏋️', '🧘', '👓', '🧴', '🩹', '❤️', '🧠', '🩸'],
-  },
-  {
-    label: 'Ocio',
-    emojis: ['🎬', '🎮', '📺', '🎵', '🎧', '📚', '✈️', '🏖️', '🎟️', '🎨', '⚽', '🎁'],
-  },
-  {
-    label: 'Compras',
-    emojis: ['🛍️', '👕', '👟', '💄', '🧢', '⌚', '📱', '💻', '🎒', '🕶️', '💍', '🧸'],
-  },
-  {
-    label: 'Trabajo/Estudio',
-    emojis: ['💼', '🧑‍💻', '🎓', '✏️', '📎', '🖨️', '📅', '🗂️', '🔬', '🏢', '📖', '🎒'],
-  },
-  {
-    label: 'Otros',
-    emojis: ['🐶', '🎓', '🎉', '🌱', '🔒', '⭐', '❓', '➕', '➖', '🔁', '💝', '🧩'],
-  },
-]
+// Galería curada de emojis para categorías, agrupada por tema relevante a
+// finanzas. El catálogo vive en src/data/emojiCategories.json y se renderiza
+// como SVG de Twemoji (ver Emoji.tsx) en vez de depender de la fuente nativa
+// del sistema. Para agregar emojis: editar el JSON y correr `npm run emoji:sync`.
+const EMOJI_GROUPS: { label: string; emojis: string[] }[] = emojiCategories
 
 interface EmojiPickerProps {
   value?: string
@@ -53,7 +20,7 @@ export function EmojiPicker({ value, onChange, label }: EmojiPickerProps) {
     <div>
       {label && (
         <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
-          {label} {value && <span className="text-lg">{value}</span>}
+          {label} {value && <Emoji emoji={value} className="text-lg" />}
         </label>
       )}
       <div className="max-h-44 space-y-3 overflow-y-auto rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-3">
@@ -74,7 +41,7 @@ export function EmojiPicker({ value, onChange, label }: EmojiPickerProps) {
                       : 'hover:bg-slate-100 dark:hover:bg-slate-700'
                   }`}
                 >
-                  {emoji}
+                  <Emoji emoji={emoji} />
                 </button>
               ))}
             </div>

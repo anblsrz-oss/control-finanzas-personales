@@ -10,6 +10,7 @@ import {
 } from '@/hooks/useImports'
 import type { ParsingRuleRow } from '@/types/db'
 import {
+  EMAIL_SYNC_PROVIDER_KEY,
   connectGmail,
   connectOutlook,
   getProviderToken,
@@ -27,14 +28,6 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
-
-// Supabase solo guarda en la sesión el provider_token del ÚLTIMO OAuth
-// completado (Google o Microsoft, cualquiera que se haya usado más
-// recientemente), y el flujo de conexión recarga la página al volver del
-// consentimiento (redirectTo: window.location.href). Este flag en
-// sessionStorage sobrevive esa recarga y le dice al efecto de abajo a cuál
-// de los dos proveedores pertenece el token recién leído.
-const EMAIL_SYNC_PROVIDER_KEY = 'finzen_email_sync_provider'
 
 export function EmailSyncPage() {
   const { t } = useTranslation()
@@ -91,9 +84,13 @@ export function EmailSyncPage() {
         getProviderToken(),
         getProviderRefreshToken(),
       ])
-      if (sessionStorage.getItem(EMAIL_SYNC_PROVIDER_KEY) === 'outlook') {
+      const provider = sessionStorage.getItem(EMAIL_SYNC_PROVIDER_KEY)
+      if (provider === 'outlook') {
         setOutlookProviderToken(token)
         setOutlookProviderRefreshToken(refreshToken)
+      } else if (provider === 'calendar') {
+        // Token del consentimiento de Google Calendar (otra página, ver
+        // SettingsPage/useGoogleCalendar): no trae scope de Gmail, ignorarlo.
       } else {
         setProviderToken(token)
         setProviderRefreshToken(refreshToken)

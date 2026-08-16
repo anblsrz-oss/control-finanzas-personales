@@ -678,6 +678,7 @@ export const en: Record<string, string> = {
   Hogar: 'Home',
   Salud: 'Health',
   Ocio: 'Leisure',
+  Deportes: 'Sports',
   Compras: 'Shopping',
   'Trabajo/Estudio': 'Work/Study',
   Otros: 'Other',
