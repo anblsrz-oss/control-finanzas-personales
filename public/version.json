@@ -1,5 +1,5 @@
 {
-  "version": "0.8.0",
+  "version": "0.9.0",
   "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/latest/download/finzen.apk",
-  "notes": "Nuevo: reembolsos de compras, categorías en transferencias, recordatorios en Google Calendar (suscripciones y pago de tarjeta) y nuevo selector de emojis."
+  "notes": "Nuevo: escanea recibos y estados de cuenta con IA (detecta monto, fecha, cuenta/tarjeta y moneda automáticamente) en vez del OCR local."
 }
