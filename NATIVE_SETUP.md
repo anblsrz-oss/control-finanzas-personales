@@ -1,4 +1,4 @@
-﻿# Ahorbit — Guía de app nativa (Capacitor) y sincronización de datos
+﻿# Mi Control de Finanzas Personales — Guía de app nativa (Capacitor) y sincronización de datos
 
 Fase 8. La PWA React se empaqueta como app nativa con **Capacitor** y se añaden
 tres vías propias de ingesta de movimientos (import CSV, correo, SMS) más el

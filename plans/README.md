@@ -1,4 +1,4 @@
-# Animation improvement plans — Ahorbit (Finzen frontend)
+# Animation improvement plans — Mi Control de Finanzas Personales (Finzen frontend)
 
 Generated from a `find-animation-opportunities` sweep + `improve-animations` audit on commit `444eb61`. The app has no existing motion library and no motion tokens — `src/index.css` now carries three shared easing tokens (`--ease-out`, `--ease-in-out`, `--ease-drawer`) that every plan below reuses.
 

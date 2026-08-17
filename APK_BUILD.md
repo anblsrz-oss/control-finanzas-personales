@@ -1,4 +1,8 @@
-﻿# APK de Ahorbit (Android) — build, firma y publicación
+﻿# APK de Mi Control de Finanzas Personales (Android) — build, firma y publicación
+
+> Los nombres `Ahorbit.keystore`, el alias `Ahorbit`, el archivo `Ahorbit.apk` y
+> el repo `Ahorbit-frontend` que aparecen abajo son identificadores reales que
+> siguen en uso: no los renombres o se rompen la firma y las descargas.
 
 Hay dos caminos. **Recomendado: GitHub Actions** (compila y firma en la nube; tu
 equipo no necesita Android Studio). El proyecto `android/` ya está generado y
