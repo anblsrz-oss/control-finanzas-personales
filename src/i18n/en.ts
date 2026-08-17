@@ -562,6 +562,9 @@ export const en: Record<string, string> = {
   'Gestionar suscripción': 'Manage subscription',
   'Hacerse Premium': 'Go Premium',
   'Abriendo…': 'Opening…',
+  '7 días de prueba gratis. Cancela cuando quieras.':
+    '7-day free trial. Cancel anytime.',
+  '2 meses gratis': '2 months free',
 
   // Teléfono / SMS
   Cambiar: 'Change',

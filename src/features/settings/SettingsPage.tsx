@@ -451,17 +451,34 @@ export function SettingsPage() {
               <p className="text-sm text-slate-500 dark:text-slate-400">
                 {t('Plan gratuito. Premium desbloquea plan familiar, MSI/diferidos y rendimientos.')}
               </p>
-              <Button
-                className="self-start"
-                disabled={startCheckout.isPending}
-                onClick={() =>
-                  startCheckout.mutate(undefined, {
-                    onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
-                  })
-                }
-              >
-                {startCheckout.isPending ? t('Abriendo…') : t('Hacerse Premium')}
-              </Button>
+              <p className="text-xs text-slate-400 dark:text-slate-500">
+                {t('7 días de prueba gratis. Cancela cuando quieras.')}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  disabled={startCheckout.isPending}
+                  onClick={() =>
+                    startCheckout.mutate('monthly', {
+                      onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
+                    })
+                  }
+                >
+                  {startCheckout.isPending ? t('Abriendo…') : `${t('Mensual')} · $79`}
+                </Button>
+                <Button
+                  variant="secondary"
+                  disabled={startCheckout.isPending}
+                  onClick={() =>
+                    startCheckout.mutate('yearly', {
+                      onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
+                    })
+                  }
+                >
+                  {startCheckout.isPending
+                    ? t('Abriendo…')
+                    : `${t('Anual')} · $790 · ${t('2 meses gratis')}`}
+                </Button>
+              </div>
             </div>
           )}
         </Card>

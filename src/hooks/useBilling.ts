@@ -6,8 +6,11 @@ import { supabase } from '@/lib/supabase'
 // Llama a una edge function de Stripe con el JWT del usuario y devuelve la URL
 // de checkout/portal. Abre esa URL: en web con redirect, en app nativa con el
 // navegador del sistema (@capacitor/browser).
+export type BillingPlan = 'monthly' | 'yearly'
+
 async function invokeBilling(
   fn: 'create-checkout-session' | 'create-portal-session',
+  plan?: BillingPlan,
 ): Promise<void> {
   const { data: sess } = await supabase.auth.getSession()
   if (!sess.session) throw new Error('No session')
@@ -20,7 +23,7 @@ async function invokeBilling(
         Authorization: `Bearer ${sess.session.access_token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ returnUrl: window.location.origin }),
+      body: JSON.stringify({ returnUrl: window.location.origin, plan }),
     },
   )
   const data = await res.json()
@@ -37,7 +40,10 @@ async function invokeBilling(
 }
 
 export function useStartCheckout() {
-  return useMutation({ mutationFn: () => invokeBilling('create-checkout-session') })
+  return useMutation({
+    mutationFn: (plan: BillingPlan = 'monthly') =>
+      invokeBilling('create-checkout-session', plan),
+  })
 }
 
 export function useOpenBillingPortal() {
