@@ -30,8 +30,20 @@ export interface ProfileRow {
   calendar_subscription_reminders: boolean
   /** Opt-in a los recordatorios de pago de tarjeta/MSI en Google Calendar. */
   calendar_card_payment_reminders: boolean
+  /** Opt-in al reporte financiero periódico por correo. Apagado por defecto. */
+  report_email_enabled: boolean
+  report_email_period: ReportEmailPeriod | null
+  /** Días entre envíos, solo si report_email_period = 'custom'. */
+  report_email_custom_days: number | null
+  /** Día de la semana (0=domingo) de envío, para weekly/biweekly. */
+  report_email_weekday: number | null
+  /** Día del mes (1-28) de envío, para monthly/quarterly. */
+  report_email_day_of_month: number | null
+  report_email_last_sent_at: string | null
   created_at: string
 }
+
+export type ReportEmailPeriod = 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'custom'
 
 export interface AccountRow {
   id: string

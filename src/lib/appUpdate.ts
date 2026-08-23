@@ -12,7 +12,7 @@ export const APK_URL: string =
 
 // version.json publicado junto a la web (public/version.json). La app nativa lo
 // consulta para saber si hay una versión más nueva.
-export const VERSION_JSON_URL = 'https://finze.xyz/version.json'
+export const VERSION_JSON_URL = 'https://controlfinanzaspersonales.com/version.json'
 
 export interface RemoteVersion {
   version: string

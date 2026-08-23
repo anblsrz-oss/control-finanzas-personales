@@ -9,12 +9,10 @@ import { usePendingCount } from '@/hooks/useTransactions'
 import { useUnreadBudgetAlertsCount } from '@/hooks/useBudgets'
 import { useUnreadSubscriptionAlertsCount } from '@/hooks/useSubscriptions'
 import { useUnreadCardPaymentAlertsCount } from '@/hooks/useCardPaymentAlerts'
-import { BudgetAlertBanner } from '@/components/budgets/BudgetAlertBanner'
 import { BudgetAlertWatcher } from '@/components/budgets/BudgetAlertWatcher'
-import { SubscriptionAlertBanner } from '@/components/subscriptions/SubscriptionAlertBanner'
 import { SubscriptionAlertWatcher } from '@/components/subscriptions/SubscriptionAlertWatcher'
-import { CardPaymentAlertBanner } from '@/components/cards/CardPaymentAlertBanner'
 import { CardPaymentAlertWatcher } from '@/components/cards/CardPaymentAlertWatcher'
+import { NotificationBell } from '@/components/layout/NotificationBell'
 import { OnboardingTour } from '@/features/onboarding/OnboardingTour'
 import { WhatsNewButton } from '@/features/onboarding/WhatsNewModal'
 import { APK_URL } from '@/lib/appUpdate'
@@ -93,6 +91,7 @@ export function AppShell() {
   const budgetAlertCount = useUnreadBudgetAlertsCount(session?.user?.id).data ?? 0
   const subscriptionAlertCount = useUnreadSubscriptionAlertsCount(session?.user?.id).data ?? 0
   const cardPaymentAlertCount = useUnreadCardPaymentAlertsCount(session?.user?.id).data ?? 0
+  const totalAlertCount = budgetAlertCount + subscriptionAlertCount + cardPaymentAlertCount
   const hideAmounts = useSettings((s) => s.hideAmounts)
   const toggleHideAmounts = useSettings((s) => s.toggleHideAmounts)
   const [moreOpen, setMoreOpen] = useState(false)
@@ -191,6 +190,7 @@ export function AppShell() {
               {profile?.full_name ?? profile?.email ?? t('Usuario')}
             </span>
             <WhatsNewButton />
+            <NotificationBell count={totalAlertCount} />
             <button
               type="button"
               onClick={toggleHideAmounts}
@@ -212,15 +212,14 @@ export function AppShell() {
 
         {/* pb-nav deja hueco para la barra inferior fija + área segura */}
         <main className="pb-nav flex-1 p-4 md:p-6">
-          {/* El aviso de presupuesto va aquí y no en una pantalla concreta: el
-              gasto que cruza el umbral puede registrarse desde Movimientos,
-              desde el escáner de recibos o llegar solo por SMS/correo. */}
+          {/* Los watchers generan los avisos en segundo plano sin importar en
+              qué pantalla esté el usuario (el gasto/cobro que los dispara
+              puede llegar solo por SMS/correo). Ya no se muestran como
+              banners aquí — viven en /notificaciones, accesible desde la
+              campana del header. */}
           <BudgetAlertWatcher />
           <SubscriptionAlertWatcher />
           <CardPaymentAlertWatcher />
-          <BudgetAlertBanner />
-          <SubscriptionAlertBanner />
-          <CardPaymentAlertBanner />
           <Outlet />
         </main>
       </div>

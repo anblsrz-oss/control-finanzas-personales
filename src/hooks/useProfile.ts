@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/store/useAuth'
+import type { ReportEmailPeriod } from '@/types/db'
 
 // Actualiza la moneda principal del usuario. La política profiles_update_own
 // permite editar el propio perfil; el trigger protect_profile_privileged_cols
@@ -80,6 +81,39 @@ export function useUpdateCalendarCardPaymentReminders() {
       const { error } = await supabase
         .from('profiles')
         .update({ calendar_card_payment_reminders: input.enabled })
+        .eq('id', input.userId)
+      if (error) throw error
+    },
+    onSuccess: async () => {
+      await refreshProfile()
+    },
+  })
+}
+
+// Preferencias del reporte financiero periódico por correo (report-emails).
+// El envío lo hace un cron diario que decide, por usuario, si hoy toca según
+// esta configuración (ver pending_report_emails en 0058_report_emails.sql).
+export interface ReportEmailSettings {
+  enabled: boolean
+  period: ReportEmailPeriod | null
+  customDays: number | null
+  weekday: number | null
+  dayOfMonth: number | null
+}
+
+export function useUpdateReportEmailSettings() {
+  const refreshProfile = useAuth((s) => s.refreshProfile)
+  return useMutation({
+    mutationFn: async (input: { userId: string } & ReportEmailSettings) => {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          report_email_enabled: input.enabled,
+          report_email_period: input.period,
+          report_email_custom_days: input.customDays,
+          report_email_weekday: input.weekday,
+          report_email_day_of_month: input.dayOfMonth,
+        })
         .eq('id', input.userId)
       if (error) throw error
     },

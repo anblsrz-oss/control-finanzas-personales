@@ -11,6 +11,7 @@ import { LandingPage } from '@/features/landing/LandingPage'
 import { PrivacyPolicyPage } from '@/features/legal/PrivacyPolicyPage'
 import { TermsPage } from '@/features/legal/TermsPage'
 import { DashboardPage } from '@/features/reports/DashboardPage'
+import { NotificationsPage } from '@/features/notifications/NotificationsPage'
 import { AccountsPage } from '@/features/accounts/AccountsPage'
 import { CardsPage } from '@/features/cards/CardsPage'
 import { CreditLinesPage } from '@/features/credit/CreditLinesPage'
@@ -67,6 +68,7 @@ export default function App() {
         }
       >
         <Route path="/" element={<DashboardPage />} />
+        <Route path="/notificaciones" element={<NotificationsPage />} />
         <Route path="/cuentas" element={<AccountsPage />} />
         <Route path="/tarjetas" element={<CardsPage />} />
         <Route path="/lineas-credito" element={<CreditLinesPage />} />

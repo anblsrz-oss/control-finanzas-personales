@@ -11,7 +11,10 @@ import {
   useUpdateBudgetAlertsEmail,
   useUpdateCalendarSubscriptionReminders,
   useUpdateCalendarCardPaymentReminders,
+  useUpdateReportEmailSettings,
+  type ReportEmailSettings,
 } from '@/hooks/useProfile'
+import type { ReportEmailPeriod } from '@/types/db'
 import { EMAIL_SYNC_PROVIDER_KEY, getProviderToken, getProviderRefreshToken } from '@/hooks/useEmailSync'
 import {
   connectGoogleCalendar,
@@ -41,6 +44,24 @@ const LANGUAGE_OPTIONS: { value: LanguagePref; label: string }[] = [
   { value: 'en', label: 'English' },
 ]
 
+const REPORT_PERIOD_OPTIONS: { value: ReportEmailPeriod; label: string }[] = [
+  { value: 'weekly', label: 'Semanal' },
+  { value: 'biweekly', label: 'Quincenal' },
+  { value: 'monthly', label: 'Mensual' },
+  { value: 'quarterly', label: 'Trimestral' },
+  { value: 'custom', label: 'Personalizado' },
+]
+
+const WEEKDAY_OPTIONS: { value: number; label: string }[] = [
+  { value: 0, label: 'Domingo' },
+  { value: 1, label: 'Lunes' },
+  { value: 2, label: 'Martes' },
+  { value: 3, label: 'Miércoles' },
+  { value: 4, label: 'Jueves' },
+  { value: 5, label: 'Viernes' },
+  { value: 6, label: 'Sábado' },
+]
+
 export function SettingsPage() {
   const { t } = useTranslation()
   const { session, profile, signOut } = useAuth()
@@ -64,6 +85,28 @@ export function SettingsPage() {
   const updateThreshold = useUpdateBudgetAlertThreshold()
   const updateAlertsEmail = useUpdateBudgetAlertsEmail()
   const alertThreshold = profile?.budget_alert_threshold ?? DEFAULT_ALERT_THRESHOLD
+
+  const updateReportEmail = useUpdateReportEmailSettings()
+  const reportEmailEnabled = !!profile?.report_email_enabled
+  const reportEmailPeriod: ReportEmailPeriod = profile?.report_email_period ?? 'monthly'
+  const reportEmailCustomDays = profile?.report_email_custom_days ?? 30
+  const reportEmailWeekday = profile?.report_email_weekday ?? 1
+  const reportEmailDayOfMonth = profile?.report_email_day_of_month ?? 1
+  const saveReportEmail = (partial: Partial<ReportEmailSettings>) => {
+    if (!userId) return
+    updateReportEmail.mutate(
+      {
+        userId,
+        enabled: reportEmailEnabled,
+        period: reportEmailPeriod,
+        customDays: reportEmailCustomDays,
+        weekday: reportEmailWeekday,
+        dayOfMonth: reportEmailDayOfMonth,
+        ...partial,
+      },
+      { onError: (err: any) => alert(`${t('Error:')} ${err.message}`) },
+    )
+  }
   const { canUseFamily } = useEntitlements()
 
   const calendarConnQuery = useGoogleCalendarConnection(userId)
@@ -328,6 +371,102 @@ export function SettingsPage() {
               </span>
             </span>
           </label>
+        </Card>
+
+        {/* Reporte financiero periódico por correo */}
+        <Card>
+          <label className="flex items-start gap-2">
+            <input
+              type="checkbox"
+              className="mt-0.5 cursor-pointer"
+              checked={reportEmailEnabled}
+              disabled={updateReportEmail.isPending}
+              onChange={(e) => saveReportEmail({ enabled: e.target.checked })}
+            />
+            <span className="text-sm text-slate-700 dark:text-slate-200">
+              {t('Reporte financiero por correo')}
+              <span className="block text-xs text-slate-400 dark:text-slate-500">
+                {t('Un resumen de ingresos, egresos y categorías, con un Excel adjunto, con la frecuencia que elijas.')}
+              </span>
+            </span>
+          </label>
+
+          {reportEmailEnabled && (
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <select
+                value={reportEmailPeriod}
+                disabled={updateReportEmail.isPending}
+                onChange={(e) => saveReportEmail({ period: e.target.value as ReportEmailPeriod })}
+                className="rounded-lg border border-slate-300 dark:border-slate-600 bg-surface px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+              >
+                {REPORT_PERIOD_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {t(opt.label)}
+                  </option>
+                ))}
+              </select>
+
+              {(reportEmailPeriod === 'weekly' || reportEmailPeriod === 'biweekly') && (
+                <select
+                  value={reportEmailWeekday}
+                  disabled={updateReportEmail.isPending}
+                  onChange={(e) => saveReportEmail({ weekday: Number(e.target.value) })}
+                  className="rounded-lg border border-slate-300 dark:border-slate-600 bg-surface px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                >
+                  {WEEKDAY_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {t(opt.label)}
+                    </option>
+                  ))}
+                </select>
+              )}
+
+              {(reportEmailPeriod === 'monthly' || reportEmailPeriod === 'quarterly') && (
+                <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+                  {t('Día del mes')}
+                  <input
+                    type="number"
+                    min={1}
+                    max={28}
+                    defaultValue={reportEmailDayOfMonth}
+                    disabled={updateReportEmail.isPending}
+                    onBlur={(e) => {
+                      const value = Number(e.target.value)
+                      if (!Number.isFinite(value)) return
+                      const clamped = Math.min(28, Math.max(1, Math.round(value)))
+                      e.target.value = String(clamped)
+                      if (clamped === reportEmailDayOfMonth) return
+                      saveReportEmail({ dayOfMonth: clamped })
+                    }}
+                    className="w-20 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                  />
+                </label>
+              )}
+
+              {reportEmailPeriod === 'custom' && (
+                <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
+                  {t('Cada')}
+                  <input
+                    type="number"
+                    min={1}
+                    max={366}
+                    defaultValue={reportEmailCustomDays}
+                    disabled={updateReportEmail.isPending}
+                    onBlur={(e) => {
+                      const value = Number(e.target.value)
+                      if (!Number.isFinite(value)) return
+                      const clamped = Math.min(366, Math.max(1, Math.round(value)))
+                      e.target.value = String(clamped)
+                      if (clamped === reportEmailCustomDays) return
+                      saveReportEmail({ customDays: clamped })
+                    }}
+                    className="w-20 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                  />
+                  {t('días')}
+                </label>
+              )}
+            </div>
+          )}
         </Card>
 
         {/* Google Calendar */}
