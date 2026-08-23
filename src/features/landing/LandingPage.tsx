@@ -32,6 +32,35 @@ type Plan = {
 
 function PricingSection() {
   const { t } = useTranslation()
+  const { data: config } = useAppConfig()
+
+  // Los límites del plan gratis y qué funciones son de pago los define el admin
+  // en /admin, y pueden cambiar. Se leen de la config en vez de escribirlos a
+  // mano para que la landing nunca prometa algo distinto de lo que la app
+  // aplica de verdad. Convención del backend: 0 = ilimitado.
+  const cap = (n?: number) => (n && n > 0 ? n : null)
+  const maxAccounts = cap(config?.free_max_accounts)
+  const maxCards = cap(config?.free_max_cards)
+  const maxBudgets = cap(config?.free_max_budgets)
+  const hasFreeCaps = !!(maxAccounts || maxCards || maxBudgets)
+
+  const freePerks = [
+    maxAccounts ? t('Hasta {{n}} cuentas', { n: maxAccounts }) : t('Cuentas ilimitadas'),
+    maxCards ? t('Hasta {{n}} tarjetas', { n: maxCards }) : t('Tarjetas ilimitadas'),
+    maxBudgets
+      ? t('Hasta {{n}} presupuestos', { n: maxBudgets })
+      : t('Presupuestos ilimitados'),
+    t('Escaneo de recibos y reportes'),
+  ]
+
+  const premiumPerks = [
+    ...(hasFreeCaps ? [t('Cuentas, tarjetas y presupuestos ilimitados')] : []),
+    ...(config?.family_is_premium ? [t('Plan familiar: comparte con tu familia')] : []),
+    ...(config?.installments_is_premium ? [t('MSI y diferidos mes a mes')] : []),
+    ...(config?.yields_is_premium ? [t('Rendimientos de tus cuentas')] : []),
+    ...(config?.budgets_is_premium ? [t('Presupuestos')] : []),
+    ...(config?.reports_filters_is_premium ? [t('Filtros avanzados de reportes')] : []),
+  ]
 
   const plans: Plan[] = [
     {
@@ -41,11 +70,7 @@ function PricingSection() {
       period: t('para siempre'),
       cta: t('Crear cuenta gratis'),
       to: '/login?mode=signup',
-      perks: [
-        t('Cuentas, tarjetas y transacciones'),
-        t('Presupuestos y reportes'),
-        t('Escaneo de recibos'),
-      ],
+      perks: freePerks,
     },
     {
       id: 'monthly',
@@ -56,12 +81,7 @@ function PricingSection() {
       highlight: true,
       cta: t('Empezar prueba gratis'),
       to: '/login?mode=signup&plan=monthly',
-      perks: [
-        t('Todo lo del plan gratis'),
-        t('Plan familiar: comparte con tu familia'),
-        t('MSI y diferidos mes a mes'),
-        t('Rendimientos de tus cuentas'),
-      ],
+      perks: premiumPerks,
     },
     {
       id: 'yearly',
