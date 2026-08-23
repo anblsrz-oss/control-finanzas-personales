@@ -9,9 +9,136 @@ import { useAppConfig } from '@/hooks/useAppConfig'
 import { useSendFeedback } from '@/hooks/useFeedback'
 import { APK_URL } from '@/lib/appUpdate'
 
-// Página pública de bienvenida (pre-login). Presenta la app, permite iniciar
-// sesión / crear cuenta, cambiar de idioma, descargar la app y enviar
-// comentarios. Sin sección de precios/premium por ahora.
+// Página pública de bienvenida (pre-login). Presenta la app, los planes,
+// permite iniciar sesión / crear cuenta, cambiar de idioma, descargar la app y
+// enviar comentarios.
+//
+// Los botones de plan no pueden ir directo a Stripe: create-checkout-session
+// exige un JWT y aquí nunca hay sesión (si la hubiera, esta página redirige al
+// panel). Por eso llevan a /login?mode=signup&plan=…; LoginPage arrastra ese
+// plan hasta /configuracion?plan=…, que arranca el checkout solo.
+
+type Plan = {
+  id: 'free' | 'monthly' | 'yearly'
+  name: string
+  price: string
+  period: string
+  note?: string
+  highlight?: boolean
+  cta: string
+  to: string
+  perks: string[]
+}
+
+function PricingSection() {
+  const { t } = useTranslation()
+
+  const plans: Plan[] = [
+    {
+      id: 'free',
+      name: t('Gratis'),
+      price: '$0',
+      period: t('para siempre'),
+      cta: t('Crear cuenta gratis'),
+      to: '/login?mode=signup',
+      perks: [
+        t('Cuentas, tarjetas y transacciones'),
+        t('Presupuestos y reportes'),
+        t('Escaneo de recibos'),
+      ],
+    },
+    {
+      id: 'monthly',
+      name: t('Premium mensual'),
+      price: '$79',
+      period: t('al mes'),
+      note: t('7 días de prueba gratis'),
+      highlight: true,
+      cta: t('Empezar prueba gratis'),
+      to: '/login?mode=signup&plan=monthly',
+      perks: [
+        t('Todo lo del plan gratis'),
+        t('Plan familiar: comparte con tu familia'),
+        t('MSI y diferidos mes a mes'),
+        t('Rendimientos de tus cuentas'),
+      ],
+    },
+    {
+      id: 'yearly',
+      name: t('Premium anual'),
+      price: '$790',
+      period: t('al año'),
+      note: t('2 meses gratis'),
+      cta: t('Empezar prueba gratis'),
+      to: '/login?mode=signup&plan=yearly',
+      perks: [
+        t('Todo lo del plan mensual'),
+        t('Ahorras $158 al año'),
+        t('7 días de prueba gratis'),
+      ],
+    },
+  ]
+
+  return (
+    <section id="planes" className="mx-auto max-w-5xl px-6 py-12">
+      <h2 className="mb-2 text-center text-2xl font-bold">{t('Planes')}</h2>
+      <p className="mb-8 text-center text-sm text-slate-600 dark:text-slate-300">
+        {t('Empieza gratis. Cambia o cancela cuando quieras.')}
+      </p>
+      <div className="grid items-start gap-6 sm:grid-cols-3">
+        {plans.map((p) => (
+          <div
+            key={p.id}
+            className={`relative flex h-full flex-col rounded-xl border bg-white dark:bg-slate-800 p-6 shadow-sm ${
+              p.highlight
+                ? 'border-brand-600 ring-2 ring-brand-600/20 sm:-mt-3 sm:pb-8'
+                : 'border-slate-200 dark:border-slate-700'
+            }`}
+          >
+            {p.highlight && (
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-brand-600 px-3 py-1 text-xs font-semibold text-white">
+                {t('Más popular')}
+              </span>
+            )}
+            <h3 className="font-semibold">{p.name}</h3>
+            <p className="mt-3">
+              <span className="text-3xl font-bold">{p.price}</span>
+              <span className="ml-1 text-sm text-slate-500 dark:text-slate-400">
+                {p.period}
+              </span>
+            </p>
+            {p.note && (
+              <p className="mt-1 text-xs font-medium text-brand-600 dark:text-brand-400">
+                {p.note}
+              </p>
+            )}
+            <ul className="mt-4 flex-1 space-y-2 text-sm text-slate-600 dark:text-slate-300">
+              {p.perks.map((perk, i) => (
+                <li key={i} className="flex items-start gap-2">
+                  <span aria-hidden="true" className="text-green-600 dark:text-green-400">
+                    ✓
+                  </span>
+                  <span>{perk}</span>
+                </li>
+              ))}
+            </ul>
+            <Link to={p.to} className="mt-6 block">
+              <Button
+                className="w-full"
+                variant={p.highlight ? 'primary' : 'secondary'}
+              >
+                {p.cta}
+              </Button>
+            </Link>
+          </div>
+        ))}
+      </div>
+      <p className="mt-6 text-center text-xs text-slate-400 dark:text-slate-500">
+        {t('Los planes de pago se cobran en pesos mexicanos. Cancela desde la app en cualquier momento.')}
+      </p>
+    </section>
+  )
+}
 
 function LanguageToggle() {
   const { language, setLanguage } = useSettings()
@@ -155,7 +282,10 @@ export function LandingPage() {
           </Link>
         </div>
         <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">
-          {t('Todas las funciones gratuitas por el momento.')}
+          {t('Gratis para empezar. Premium desde $79 al mes con 7 días de prueba.')}{' '}
+          <a href="#planes" className="underline hover:text-slate-600 dark:hover:text-slate-300">
+            {t('Ver planes')}
+          </a>
         </p>
       </section>
 
@@ -194,6 +324,9 @@ export function LandingPage() {
           ))}
         </div>
       </section>
+
+      {/* Planes */}
+      <PricingSection />
 
       {/* Descargar app */}
       <section className="mx-auto max-w-5xl px-6 py-12">

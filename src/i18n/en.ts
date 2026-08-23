@@ -566,6 +566,33 @@ export const en: Record<string, string> = {
     '7-day free trial. Cancel anytime.',
   '2 meses gratis': '2 months free',
 
+  // Planes en la landing
+  Planes: 'Pricing',
+  'Empieza gratis. Cambia o cancela cuando quieras.':
+    'Start free. Change or cancel anytime.',
+  'Más popular': 'Most popular',
+  'Ver planes': 'See plans',
+  'Gratis para empezar. Premium desde $79 al mes con 7 días de prueba.':
+    'Free to start. Premium from $79/month with a 7-day trial.',
+  'para siempre': 'forever',
+  'Premium mensual': 'Premium monthly',
+  'al mes': 'per month',
+  'Premium anual': 'Premium yearly',
+  'al año': 'per year',
+  '7 días de prueba gratis': '7-day free trial',
+  'Empezar prueba gratis': 'Start free trial',
+  'Cuentas, tarjetas y transacciones': 'Accounts, cards and transactions',
+  'Presupuestos y reportes': 'Budgets and reports',
+  'Escaneo de recibos': 'Receipt scanning',
+  'Todo lo del plan gratis': 'Everything in the free plan',
+  'Plan familiar: comparte con tu familia': 'Family plan: share with your family',
+  'MSI y diferidos mes a mes': 'Installment plans, month by month',
+  'Rendimientos de tus cuentas': 'Yields on your accounts',
+  'Todo lo del plan mensual': 'Everything in the monthly plan',
+  'Ahorras $158 al año': 'Save $158 per year',
+  'Los planes de pago se cobran en pesos mexicanos. Cancela desde la app en cualquier momento.':
+    'Paid plans are billed in Mexican pesos. Cancel from the app at any time.',
+
   // Teléfono / SMS
   Cambiar: 'Change',
   'Número de teléfono': 'Phone number',

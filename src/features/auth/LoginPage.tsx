@@ -43,7 +43,15 @@ export function LoginPage() {
   const [info, setInfo] = useState<string | null>(null)
 
   // Si ya hay sesión (p. ej. tras iniciar sesión o verificar el código), salir.
-  if (session) return <Navigate to="/" replace />
+  // Si venía de un plan de la landing (/login?mode=signup&plan=…), se pasa a
+  // Configuración, que arranca el checkout de ese plan.
+  if (session) {
+    const plan = searchParams.get('plan')
+    const to = plan === 'monthly' || plan === 'yearly'
+      ? `/configuracion?plan=${plan}`
+      : '/'
+    return <Navigate to={to} replace />
+  }
 
   function resetFeedback() {
     setError(null)

@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useSettings, type ThemePref, type LanguagePref } from '@/store/useSettings'
@@ -80,6 +80,26 @@ export function SettingsPage() {
 
   const startCheckout = useStartCheckout()
   const openPortal = useOpenBillingPortal()
+
+  // Llegada desde un plan de la landing: /configuracion?plan=monthly|yearly
+  // abre el checkout de una vez, para no obligar a buscar el botón después de
+  // registrarse. Se dispara una sola vez y se limpia el parámetro para que
+  // recargar la página no vuelva a mandar al pago.
+  const [searchParams, setSearchParams] = useSearchParams()
+  const autoCheckoutDone = useRef(false)
+  useEffect(() => {
+    const plan = searchParams.get('plan')
+    if (plan !== 'monthly' && plan !== 'yearly') return
+    // Espera a tener el perfil: sin él no se sabe si ya es premium.
+    if (!profile) return
+
+    setSearchParams({}, { replace: true })
+    if (autoCheckoutDone.current || profile.is_premium) return
+    autoCheckoutDone.current = true
+    startCheckout.mutate(plan, {
+      onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
+    })
+  }, [searchParams, profile, setSearchParams, startCheckout, t])
   const updateMainCurrency = useUpdateMainCurrency()
   const mainCurrency = profile?.main_currency ?? 'MXN'
   const updateThreshold = useUpdateBudgetAlertThreshold()
