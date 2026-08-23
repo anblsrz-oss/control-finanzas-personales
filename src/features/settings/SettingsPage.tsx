@@ -12,8 +12,10 @@ import {
   useUpdateCalendarSubscriptionReminders,
   useUpdateCalendarCardPaymentReminders,
   useUpdateReportEmailSettings,
+  useMarkTutorialSeen,
   type ReportEmailSettings,
 } from '@/hooks/useProfile'
+import { useOnboarding } from '@/store/useOnboarding'
 import type { ReportEmailPeriod } from '@/types/db'
 import { EMAIL_SYNC_PROVIDER_KEY, getProviderToken, getProviderRefreshToken } from '@/hooks/useEmailSync'
 import {
@@ -74,6 +76,8 @@ export function SettingsPage() {
 
   const userId = session?.user?.id
   const email = session?.user?.email ?? profile?.email
+  const markTutorialSeen = useMarkTutorialSeen()
+  const setTourForceOpen = useOnboarding((s) => s.setTourForceOpen)
   const { data: families = [] } = useMyFamilies(userId)
   const { data: invitations = [] } = useMyInvitations(email)
   const family = families[0]
@@ -709,6 +713,37 @@ export function SettingsPage() {
             </div>
           </Card>
         )}
+
+        {/* Tutorial */}
+        <Card>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                🎓 {t('Tutorial')}
+              </p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {t('Vuelve a ver el recorrido guiado por las secciones de la app.')}
+              </p>
+            </div>
+            <Button
+              size="sm"
+              variant="secondary"
+              disabled={markTutorialSeen.isPending || !userId}
+              onClick={() => {
+                if (!userId) return
+                markTutorialSeen.mutate(
+                  { userId, seen: false },
+                  {
+                    onSuccess: () => setTourForceOpen(true),
+                    onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
+                  },
+                )
+              }}
+            >
+              {t('Ver tutorial de nuevo')}
+            </Button>
+          </div>
+        </Card>
 
         {/* Sesión */}
         <Card>

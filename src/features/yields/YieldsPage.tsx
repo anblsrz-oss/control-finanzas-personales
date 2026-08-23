@@ -39,6 +39,7 @@ export function YieldsPage() {
           title={t('Rendimientos')}
           subtitle={t('Compara el crecimiento calculado contra el real.')}
           helpId="rendimientos"
+          tourTarget="rendimientos"
         />
         <Card className="border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
           <p className="text-sm text-amber-800 dark:text-amber-200">
@@ -56,6 +57,7 @@ export function YieldsPage() {
           title={t('Rendimientos')}
           subtitle={t('Compara el crecimiento calculado contra el real.')}
           helpId="rendimientos"
+          tourTarget="rendimientos"
         />
         <Card className="border-dashed text-center">
           <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -72,6 +74,7 @@ export function YieldsPage() {
         title={t('Rendimientos')}
         subtitle={t('Compara el crecimiento calculado contra el real.')}
         helpId="rendimientos"
+        tourTarget="rendimientos"
       />
 
       <div className="space-y-6">

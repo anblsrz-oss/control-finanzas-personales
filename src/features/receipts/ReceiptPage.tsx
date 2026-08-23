@@ -636,7 +636,7 @@ export function ReceiptPage() {
                 ? t('Sube el PDF de tu estado de cuenta (banco o tarjeta). Vamos a leer los movimientos y podrás revisarlos antes de guardar.')
                 : t('Fotografía el ticket con buena luz y lo más plano posible, o sube un PDF o XML (factura CFDI) de tu recibo. Después podrás revisar y corregir los datos detectados.')}
             </p>
-            <label className="cursor-pointer">
+            <label className="cursor-pointer" data-tour="recibos">
               <span className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-brand-700">
                 📷 {t('Tomar foto')}
               </span>

@@ -182,6 +182,7 @@ export function CardsPage() {
             lockedTooltip={t('Plan gratis: máximo {{n}} tarjetas. Actualiza a Premium para agregar más.', { n: cardLimit })}
           >
             <Button
+              data-tour="tarjetas"
               onClick={() => {
                 setEditingCard(null)
                 setShowForm(!showForm)

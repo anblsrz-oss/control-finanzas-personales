@@ -217,6 +217,7 @@ export function ReportsPage() {
         title={t('Reportes')}
         subtitle={t('Gráficas de ingresos y gastos por período, cuenta y tarjeta.')}
         helpId="reportes"
+        tourTarget="reportes"
       />
 
       {/* Filtros (configurable como Premium) */}

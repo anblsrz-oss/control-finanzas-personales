@@ -13,60 +13,21 @@ import { BudgetAlertWatcher } from '@/components/budgets/BudgetAlertWatcher'
 import { SubscriptionAlertWatcher } from '@/components/subscriptions/SubscriptionAlertWatcher'
 import { CardPaymentAlertWatcher } from '@/components/cards/CardPaymentAlertWatcher'
 import { NotificationBell } from '@/components/layout/NotificationBell'
-import { OnboardingTour } from '@/features/onboarding/OnboardingTour'
+import { TourGate } from '@/features/onboarding/TourGate'
 import { WhatsNewButton } from '@/features/onboarding/WhatsNewModal'
 import { APK_URL } from '@/lib/appUpdate'
 import { isNative } from '@/lib/nativeAuth'
+import { PAGE_NAV_ITEMS, orderByPageOrder, type PageNavItem } from '@/lib/pageOrder'
 
-interface NavItem {
-  to: string
-  label: string
-  icon: string
-}
+type NavItem = PageNavItem
 
-const NAV: NavItem[] = [
-  { to: '/', label: 'Resumen', icon: '📊' },
-  { to: '/cuentas', label: 'Cuentas', icon: '🏦' },
-  { to: '/tarjetas', label: 'Tarjetas', icon: '💳' },
-  { to: '/lineas-credito', label: 'Líneas de crédito', icon: '💠' },
-  { to: '/transacciones', label: 'Transacciones', icon: '💸' },
-  { to: '/presupuestos', label: 'Presupuestos', icon: '🎯' },
-  { to: '/suscripciones', label: 'Suscripciones', icon: '🔁' },
-  { to: '/importar', label: 'Importar', icon: '📥' },
-  { to: '/recibos', label: 'Escanear recibo', icon: '🧾' },
-  { to: '/familia', label: 'Familia', icon: '👨‍👩‍👧‍👦' },
-  { to: '/correo', label: 'Sincronizar correo', icon: '📧' },
-  { to: '/sms', label: 'Sincronizar SMS', icon: '📱' },
-  { to: '/conectar', label: 'Conexión automática', icon: '🔗' },
-  { to: '/categorias', label: 'Categorías', icon: '🏷️' },
-  { to: '/rendimientos', label: 'Rendimientos', icon: '📈' },
-  { to: '/reportes', label: 'Reportes', icon: '📑' },
-  { to: '/configuracion', label: 'Configuración', icon: '⚙️' },
-]
-
-// Accesos principales para la barra inferior en móvil.
+// Accesos principales para la barra inferior en móvil — curación fija por
+// espacio limitado (4 espacios), no participa del reordenamiento de admin.
 const MOBILE_NAV: NavItem[] = [
   { to: '/', label: 'Resumen', icon: '📊' },
   { to: '/cuentas', label: 'Cuentas', icon: '🏦' },
   { to: '/transacciones', label: 'Movs.', icon: '💸' },
   { to: '/reportes', label: 'Reportes', icon: '📑' },
-]
-
-// Resto de secciones, accesibles desde el menú "Más" en móvil.
-const MORE_NAV: NavItem[] = [
-  { to: '/presupuestos', label: 'Presup.', icon: '🎯' },
-  { to: '/suscripciones', label: 'Suscrip.', icon: '🔁' },
-  { to: '/tarjetas', label: 'Tarjetas', icon: '💳' },
-  { to: '/lineas-credito', label: 'Crédito', icon: '💠' },
-  { to: '/recibos', label: 'Recibos', icon: '🧾' },
-  { to: '/familia', label: 'Familia', icon: '👨‍👩‍👧‍👦' },
-  { to: '/importar', label: 'Importar', icon: '📥' },
-  { to: '/categorias', label: 'Categorías', icon: '🏷️' },
-  { to: '/correo', label: 'Correo', icon: '📧' },
-  { to: '/sms', label: 'SMS', icon: '📱' },
-  { to: '/conectar', label: 'Conectar', icon: '🔗' },
-  { to: '/rendimientos', label: 'Rendim.', icon: '📈' },
-  { to: '/configuracion', label: 'Ajustes', icon: '⚙️' },
 ]
 
 // Insignia con un conteo (movimientos por revisar, avisos de presupuesto).
@@ -115,6 +76,14 @@ export function AppShell() {
     setMoreOpen(false)
   }, [location.pathname])
 
+  // Orden de páginas configurable por admin (null = orden por defecto). Se
+  // aplica al sidebar y a la hoja "Más" — la barra inferior móvil queda fija.
+  const orderedPages = orderByPageOrder(PAGE_NAV_ITEMS, appConfig?.page_order ?? null)
+  const NAV = orderedPages
+  const MORE_NAV = orderedPages.filter(
+    (item) => !MOBILE_NAV.some((m) => m.to === item.to),
+  )
+
   const moreNav: NavItem[] = profile?.is_admin
     ? [...MORE_NAV, { to: '/admin', label: 'Admin', icon: '🛠️' }]
     : MORE_NAV
@@ -125,7 +94,7 @@ export function AppShell() {
 
   return (
     <div className="flex min-h-screen bg-canvas">
-      <OnboardingTour />
+      <TourGate />
       {/* Sidebar */}
       <aside className="hidden w-60 flex-col border-r border-slate-200 dark:border-slate-700 bg-surface md:flex">
         <div className="flex h-16 items-center gap-2 border-b border-slate-200 dark:border-slate-700 px-5">

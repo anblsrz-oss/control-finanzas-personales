@@ -66,6 +66,7 @@ export function BudgetsPage() {
             )}
           >
             <Button
+              data-tour="presupuestos"
               onClick={() => {
                 setEditingBudget(null)
                 setShowForm(!showForm)

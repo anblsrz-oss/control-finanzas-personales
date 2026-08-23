@@ -1,5 +1,10 @@
-// Estado local del tutorial guiado y de "novedades" (localStorage, funciona
-// igual dentro del WebView de Capacitor). Mismo patrón que useSettings.ts.
+// Estado local del recorrido guiado y de "novedades". El "ya lo vio" del
+// tutorial ahora vive en profiles.has_seen_tutorial (Supabase, por cuenta,
+// no por dispositivo) — este store solo guarda el disparador transitorio
+// para reabrirlo al instante desde Configuración ("Ver tutorial de nuevo"),
+// sin esperar el round-trip de refrescar el perfil. lastSeenChangelogId
+// sigue en localStorage (zustand persist), es una función aparte (🆕
+// Novedades) y funciona igual dentro del WebView de Capacitor.
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
@@ -7,20 +12,28 @@ import { persist } from 'zustand/middleware'
 const ONBOARDING_KEY = 'finzen-onboarding'
 
 interface OnboardingState {
-  hasSeenTour: boolean
   lastSeenChangelogId: string | null
-  markTourSeen: () => void
   markChangelogSeen: (id: string) => void
+  tourForceOpen: boolean
+  setTourForceOpen: (open: boolean) => void
+  clearTourForceOpen: () => void
 }
 
 export const useOnboarding = create<OnboardingState>()(
   persist(
     (set) => ({
-      hasSeenTour: false,
       lastSeenChangelogId: null,
-      markTourSeen: () => set({ hasSeenTour: true }),
       markChangelogSeen: (id) => set({ lastSeenChangelogId: id }),
+      tourForceOpen: false,
+      setTourForceOpen: (open) => set({ tourForceOpen: open }),
+      clearTourForceOpen: () => set({ tourForceOpen: false }),
     }),
-    { name: ONBOARDING_KEY },
+    {
+      name: ONBOARDING_KEY,
+      // tourForceOpen es puramente transitorio: no tiene sentido persistirlo
+      // entre sesiones (si el usuario cierra a medio replay, no debe
+      // reabrirse solo la próxima vez que entre).
+      partialize: (state) => ({ lastSeenChangelogId: state.lastSeenChangelogId }),
+    },
   ),
 )

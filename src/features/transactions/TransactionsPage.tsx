@@ -220,6 +220,7 @@ export function TransactionsPage() {
                 lockedTooltip={t('Plan gratis: máximo {{n}} transacciones. Actualiza a Premium para registrar más.', { n: transactionLimit })}
               >
                 <Button
+                  data-tour="transacciones"
                   onClick={() => {
                     setEditingTx(null)
                     setShowForm(true)

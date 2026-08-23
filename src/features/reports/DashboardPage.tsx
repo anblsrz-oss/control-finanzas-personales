@@ -108,6 +108,7 @@ export function DashboardPage() {
         title={t('Resumen')}
         subtitle={t('Vista general de tus ingresos, egresos y balance.')}
         helpId="resumen"
+        tourTarget="resumen"
       />
 
       {canUseDashboardPeriodFilter ? (

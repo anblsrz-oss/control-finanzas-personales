@@ -83,6 +83,7 @@ export function CreditLinesPage() {
         helpId="credito"
         actions={
           <Button
+            data-tour="credito"
             onClick={() => {
               setEditingLine(null)
               setShowForm(!showForm)

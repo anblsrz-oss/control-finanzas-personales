@@ -87,6 +87,7 @@ export function AccountsPage() {
             lockedTooltip={t('Plan gratis: máximo {{n}} cuentas. Actualiza a Premium para agregar más.', { n: accountLimit })}
           >
             <Button
+              data-tour="cuentas"
               onClick={() => {
                 setEditingAccount(null)
                 setShowForm(!showForm)

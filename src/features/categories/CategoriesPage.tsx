@@ -95,6 +95,7 @@ export function CategoriesPage() {
         helpId="categorias"
         actions={
           <Button
+            data-tour="categorias"
             onClick={() => {
               if (showForm) {
                 resetForm()

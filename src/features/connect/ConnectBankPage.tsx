@@ -18,6 +18,7 @@ export function ConnectBankPage() {
         title={t('Conexión automática')}
         subtitle={t('Sincroniza tus movimientos directo del banco, sin subir archivos.')}
         helpId="conectar"
+        tourTarget="conectar"
       />
 
       <Card className="grid gap-3">

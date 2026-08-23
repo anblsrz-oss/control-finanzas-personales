@@ -40,6 +40,8 @@ export interface ProfileRow {
   /** Día del mes (1-28) de envío, para monthly/quarterly. */
   report_email_day_of_month: number | null
   report_email_last_sent_at: string | null
+  /** Si ya vio el recorrido guiado inicial (una vez por cuenta, no por dispositivo). */
+  has_seen_tutorial: boolean
   created_at: string
 }
 
@@ -411,6 +413,8 @@ export interface AppConfigRow {
   // Marca configurable (null = usar los valores por defecto de la app).
   app_title: string | null
   logo_url: string | null
+  // Orden de páginas del sidebar/menú "Más" y del tutorial (null = orden por defecto). Ver lib/pageOrder.ts.
+  page_order: string[] | null
   updated_at: string
 }
 

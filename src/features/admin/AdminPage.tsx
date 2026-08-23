@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/Badge'
 import type { AppConfigRow } from '@/types/db'
 import { DEFAULT_THEME_COLORS, applyThemeColors } from '@/lib/themeColors'
 import type { ThemeColors } from '@/lib/themeColors'
+import { PAGE_NAV_ITEMS, orderByPageOrder } from '@/lib/pageOrder'
 
 const DEFAULT_APP_TITLE = 'Mi Control de Finanzas Personales'
 const MAX_LOGO_BYTES = 2 * 1024 * 1024
@@ -352,6 +353,102 @@ function ConfigEditor() {
   )
 }
 
+// Editor del orden de páginas del sidebar/menú "Más" (y, de paso, del
+// recorrido guiado). Sin librería de drag-and-drop: para una lista corta de
+// uso admin-only poco frecuente, mover con ↑/↓ es más simple y accesible.
+function PageOrderEditor() {
+  const { t } = useTranslation()
+  const { data: config } = useAppConfig()
+  const updateConfig = useUpdateAppConfig()
+  const [order, setOrder] = useState<string[]>(PAGE_NAV_ITEMS.map((p) => p.to))
+
+  useEffect(() => {
+    const current = orderByPageOrder(PAGE_NAV_ITEMS, config?.page_order ?? null)
+    setOrder(current.map((p) => p.to))
+  }, [config?.page_order])
+
+  const items = order
+    .map((to) => PAGE_NAV_ITEMS.find((p) => p.to === to))
+    .filter((p): p is (typeof PAGE_NAV_ITEMS)[number] => !!p)
+
+  const move = (index: number, dir: -1 | 1) => {
+    const next = [...order]
+    const target = index + dir
+    if (target < 0 || target >= next.length) return
+    ;[next[index], next[target]] = [next[target], next[index]]
+    setOrder(next)
+  }
+
+  return (
+    <Card className="mb-6">
+      <p className="mb-1 text-sm font-semibold text-slate-800 dark:text-slate-100">
+        📋 {t('Orden de páginas')}
+      </p>
+      <p className="mb-4 text-xs text-slate-500 dark:text-slate-400">
+        {t('Define en qué orden aparecen las secciones en el menú y en el recorrido guiado.')}
+      </p>
+
+      <div className="divide-y divide-slate-200 dark:divide-slate-700 rounded-lg border border-slate-200 dark:border-slate-700">
+        {items.map((item, i) => (
+          <div key={item.to} className="flex items-center gap-3 px-3 py-2">
+            <span className="text-lg">{item.icon}</span>
+            <span className="flex-1 text-sm text-slate-700 dark:text-slate-200">{t(item.label)}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={i === 0}
+              onClick={() => move(i, -1)}
+              aria-label={t('Subir')}
+              title={t('Subir')}
+            >
+              ↑
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={i === items.length - 1}
+              onClick={() => move(i, 1)}
+              aria-label={t('Bajar')}
+              title={t('Bajar')}
+            >
+              ↓
+            </Button>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <Button
+          disabled={updateConfig.isPending}
+          onClick={() =>
+            updateConfig.mutate(
+              { page_order: order },
+              { onError: (e: any) => alert(`${t('Error:')} ${e.message}`) },
+            )
+          }
+        >
+          {updateConfig.isPending ? t('Guardando…') : t('Guardar orden')}
+        </Button>
+        <Button
+          variant="ghost"
+          disabled={updateConfig.isPending}
+          onClick={() =>
+            updateConfig.mutate(
+              { page_order: null },
+              { onError: (e: any) => alert(`${t('Error:')} ${e.message}`) },
+            )
+          }
+        >
+          {t('Restablecer')}
+        </Button>
+        {updateConfig.isSuccess && (
+          <span className="text-xs text-green-600 dark:text-green-400">{t('Guardado ✓')}</span>
+        )}
+      </div>
+    </Card>
+  )
+}
+
 export function AdminPage() {
   const { t } = useTranslation()
   const { session } = useAuth()
@@ -412,6 +509,8 @@ export function AdminPage() {
       <ConfigEditor />
 
       <ThemeEditor />
+
+      <PageOrderEditor />
 
       {error && (
         <Card className="mb-6 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">

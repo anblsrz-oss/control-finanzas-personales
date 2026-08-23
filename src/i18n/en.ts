@@ -555,6 +555,10 @@ export const en: Record<string, string> = {
   'No participas en ningún plan familiar.': 'You are not part of any family plan.',
   'Crearlo requiere Premium.': 'Creating one requires Premium.',
   'Saber más': 'Learn more',
+  Tutorial: 'Tutorial',
+  'Vuelve a ver el recorrido guiado por las secciones de la app.':
+    'Watch the guided tour of the app sections again.',
+  'Ver tutorial de nuevo': 'Watch tutorial again',
   Sesión: 'Session',
   'Cerrar sesión': 'Sign out',
 
@@ -837,6 +841,10 @@ export const en: Record<string, string> = {
   'Superficie (oscuro)': 'Surface (dark)',
   'Guardar colores': 'Save colors',
   Restablecer: 'Reset',
+  'Orden de páginas': 'Page order',
+  'Define en qué orden aparecen las secciones en el menú y en el recorrido guiado.':
+    'Sets the order sections appear in the menu and in the guided tour.',
+  'Guardar orden': 'Save order',
   'Categoría del sistema (editable por admin)': 'System category (admin editable)',
 
   // Recibos — ingreso o gasto

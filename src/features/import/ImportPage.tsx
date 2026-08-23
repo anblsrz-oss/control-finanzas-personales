@@ -180,6 +180,7 @@ export function ImportPage() {
         title={t('Importar movimientos')}
         subtitle={t('Sube el estado de cuenta (CSV) de tu banco y conviértelo en transacciones. Tus datos no salen a terceros.')}
         helpId="importar"
+        tourTarget="importar"
       />
 
       {accounts.length === 0 ? (

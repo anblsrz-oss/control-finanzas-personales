@@ -123,6 +123,23 @@ export function useUpdateReportEmailSettings() {
   })
 }
 
+// Tutorial guiado: marca (o reinicia, desde Configuración) has_seen_tutorial.
+export function useMarkTutorialSeen() {
+  const refreshProfile = useAuth((s) => s.refreshProfile)
+  return useMutation({
+    mutationFn: async (input: { userId: string; seen: boolean }) => {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ has_seen_tutorial: input.seen })
+        .eq('id', input.userId)
+      if (error) throw error
+    },
+    onSuccess: async () => {
+      await refreshProfile()
+    },
+  })
+}
+
 // Umbral de aviso por defecto para los presupuestos que no definen el suyo.
 export function useUpdateBudgetAlertThreshold() {
   const refreshProfile = useAuth((s) => s.refreshProfile)

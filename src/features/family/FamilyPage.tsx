@@ -59,6 +59,7 @@ export function FamilyPage() {
         title={t('Familia')}
         subtitle={t('Comparte tarjetas con tu familia y lleven los gastos juntos')}
         helpId="familia"
+        tourTarget="familia"
       />
 
       {/* Invitaciones pendientes (cualquier usuario) */}

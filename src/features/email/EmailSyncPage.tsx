@@ -470,7 +470,7 @@ export function EmailSyncPage() {
           )}
           <div className="flex flex-wrap gap-3">
             {!providerToken ? (
-              <Button onClick={handleConnectGmail}>{t('Conectar Gmail')}</Button>
+              <Button data-tour="correo" onClick={handleConnectGmail}>{t('Conectar Gmail')}</Button>
             ) : (
               <>
                 <span className="self-center text-sm text-green-600">

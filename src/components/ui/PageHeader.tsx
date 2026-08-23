@@ -7,11 +7,16 @@ interface PageHeaderProps {
   actions?: ReactNode
   /** Id de tourSteps.ts: si se da, muestra un botón "?" con la ayuda de esta sección. */
   helpId?: string
+  /** Id de tourSteps.ts: ancla del recorrido guiado cuando la página no tiene un botón/control estable que resaltar. */
+  tourTarget?: string
 }
 
-export function PageHeader({ title, subtitle, actions, helpId }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, actions, helpId, tourTarget }: PageHeaderProps) {
   return (
-    <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <div
+      className="mb-6 flex flex-wrap items-center justify-between gap-3"
+      data-tour={tourTarget}
+    >
       <div>
         <div className="flex items-center gap-2">
           <h1 className="text-2xl font-semibold text-slate-800 dark:text-slate-100">{title}</h1>

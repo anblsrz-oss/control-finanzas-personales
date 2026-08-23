@@ -280,7 +280,7 @@ export function SmsSyncPage() {
                 : t('Actívala para que los SMS se registren solos, sin abrir la app. Se pedirá permiso para leer y recibir SMS.')}
             </p>
             <div className="flex flex-wrap gap-3">
-              <Button onClick={handleToggle} disabled={busy}>
+              <Button data-tour="sms" onClick={handleToggle} disabled={busy}>
                 {busy
                   ? t('Un momento…')
                   : enabled

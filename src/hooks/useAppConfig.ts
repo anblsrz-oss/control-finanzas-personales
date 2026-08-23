@@ -20,6 +20,7 @@ const DEFAULT_CONFIG: AppConfigRow = {
   theme_colors: null,
   app_title: null,
   logo_url: null,
+  page_order: null,
   updated_at: '',
 }
 
