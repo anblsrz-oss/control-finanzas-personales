@@ -1,5 +1,5 @@
 {
-  "version": "0.9.0",
+  "version": "0.10.0",
   "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/latest/download/finzen.apk",
-  "notes": "Nuevo: escanea recibos y estados de cuenta con IA (detecta monto, fecha, cuenta/tarjeta y moneda automáticamente) en vez del OCR local."
+  "notes": "Nuevo: tutorial guiado que te lleva por cada sección real de la app y te señala qué tocar, y el admin ahora puede reordenar las páginas del menú."
 }
