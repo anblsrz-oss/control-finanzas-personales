@@ -30,15 +30,16 @@ import {
   countActiveFilters,
 } from './TransactionFilters'
 import type { FilterState } from './TransactionFilters'
-import { formatMoney, formatDate } from '@/lib/format'
+import { formatMoney, formatDate, CURRENCIES } from '@/lib/format'
 import { Money } from '@/components/ui/Money'
 import { monthStartISO, todayISO } from '@/lib/dates'
 import type { TransactionRow } from '@/types/db'
 
 export function TransactionsPage() {
   const { t } = useTranslation()
-  const { session } = useAuth()
+  const { session, profile } = useAuth()
   const userId = session?.user?.id
+  const mainCurrency = profile?.main_currency ?? 'MXN'
   const [showForm, setShowForm] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
   const [editingTx, setEditingTx] = useState<TransactionRow | null>(null)
@@ -76,6 +77,7 @@ export function TransactionsPage() {
       accountIds: filters.accountIds,
       cardIds: filters.cardIds,
       categoryIds: filters.categoryIds,
+      currency: filters.currency || undefined,
       startDate: filters.startDate || undefined,
       endDate: filters.endDate || undefined,
       search: debouncedSearch.trim() || undefined,
@@ -89,6 +91,7 @@ export function TransactionsPage() {
     filters.accountIds,
     filters.cardIds,
     filters.categoryIds,
+    filters.currency,
     filters.startDate,
     filters.endDate,
     filters.status,
@@ -139,6 +142,15 @@ export function TransactionsPage() {
     }
     return map
   }, [transactions])
+
+  // Monedas ofrecidas en el filtro: el catálogo + las que ya usan las cuentas
+  // y tarjetas del usuario + la principal (por si es exótica). Sin query extra.
+  const currencyOptions = useMemo(() => {
+    const set = new Set<string>([mainCurrency, ...CURRENCIES])
+    for (const a of accounts) if (a.currency) set.add(a.currency)
+    for (const c of cards) if (c.currency) set.add(c.currency)
+    return Array.from(set)
+  }, [accounts, cards, mainCurrency])
 
   const getAccountName = (id?: string) =>
     accounts.find((a) => a.id === id)?.name || '—'
@@ -317,6 +329,7 @@ export function TransactionsPage() {
         accounts={accounts}
         cards={cards}
         categories={categories}
+        currencyOptions={currencyOptions}
         resultCount={transactions.length}
         canUsePeriodFilter={canUseTransactionsPeriodFilter}
       />
@@ -381,6 +394,15 @@ export function TransactionsPage() {
                       : '-'}
                   <Money amount={tx.amount} currency={tx.currency} />
                 </p>
+                {tx.currency !== mainCurrency && (
+                  <span className="text-xs text-slate-400 dark:text-slate-500">
+                    ≈{' '}
+                    <Money
+                      amount={tx.base_amount ?? tx.amount}
+                      currency={mainCurrency}
+                    />
+                  </span>
+                )}
                 <div className="flex items-center gap-3">
                   {tx.pending && (
                     <button

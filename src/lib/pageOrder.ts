@@ -19,6 +19,7 @@ export const PAGE_NAV_ITEMS: PageNavItem[] = [
   { to: '/suscripciones', label: 'Suscripciones', icon: '🔁' },
   { to: '/importar', label: 'Importar', icon: '📥' },
   { to: '/recibos', label: 'Escanear recibo', icon: '🧾' },
+  { to: '/conciliacion', label: 'Conciliación', icon: '🧮' },
   { to: '/familia', label: 'Familia', icon: '👨‍👩‍👧‍👦' },
   { to: '/correo', label: 'Sincronizar correo', icon: '📧' },
   { to: '/sms', label: 'Sincronizar SMS', icon: '📱' },

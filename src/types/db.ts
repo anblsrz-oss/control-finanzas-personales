@@ -406,6 +406,7 @@ export interface AppConfigRow {
   reports_filters_is_premium: boolean
   dashboard_period_filter_is_premium: boolean
   transactions_period_filter_is_premium: boolean
+  reconcile_is_premium: boolean
   budgets_is_premium: boolean
   free_max_budgets: number
   // Colores de tema personalizados (null = tema por defecto). Ver ThemeColors.
@@ -568,5 +569,44 @@ export interface CardPaymentAlertRow {
   notified_calendar: boolean
   calendar_event_id: string | null
   read_at: string | null
+  created_at: string
+}
+
+// Conciliación de estados de cuenta ------------------------------------
+
+/** Una línea del estado de cuenta extraída por OCR (edge ocr-receipt, mode statement). */
+export interface StatementLine {
+  amount: number
+  currency: string | null
+  txDate: string
+  concept: string
+  kind: 'income' | 'expense'
+  isCardPayment: boolean
+  isInstallment: boolean
+}
+
+export interface ReconcileBuckets {
+  matched: { line: StatementLine; txId: string }[]
+  amountMismatch: { line: StatementLine; txId: string; diff: number }[]
+  missingInApp: StatementLine[]
+  missingInStatement: { id: string; concept: string; amount: number; currency: string; tx_date: string }[]
+}
+
+export interface StatementReconciliationRow {
+  id: string
+  user_id: string
+  card_id: string | null
+  account_id: string | null
+  period_start: string
+  period_end: string
+  currency: string
+  statement_total: number | null
+  app_total: number | null
+  matched_count: number
+  amount_mismatch_count: number
+  missing_in_app_count: number
+  missing_in_statement_count: number
+  /** Snapshot de los 4 buckets tal como se mostraron. Es una foto, no se recalcula. */
+  result: ReconcileBuckets | Record<string, never>
   created_at: string
 }

@@ -20,6 +20,7 @@ import { BudgetsPage } from '@/features/budgets/BudgetsPage'
 import { SubscriptionsPage } from '@/features/subscriptions/SubscriptionsPage'
 import { ImportPage } from '@/features/import/ImportPage'
 import { ReceiptPage } from '@/features/receipts/ReceiptPage'
+import { ReconcilePage } from '@/features/reconcile/ReconcilePage'
 import { FamilyPage } from '@/features/family/FamilyPage'
 import { SettingsPage } from '@/features/settings/SettingsPage'
 import { EmailSyncPage } from '@/features/email/EmailSyncPage'
@@ -77,6 +78,7 @@ export default function App() {
         <Route path="/suscripciones" element={<SubscriptionsPage />} />
         <Route path="/importar" element={<ImportPage />} />
         <Route path="/recibos" element={<ReceiptPage />} />
+        <Route path="/conciliacion" element={<ReconcilePage />} />
         <Route path="/familia" element={<FamilyPage />} />
         <Route path="/configuracion" element={<SettingsPage />} />
         <Route path="/correo" element={<EmailSyncPage />} />

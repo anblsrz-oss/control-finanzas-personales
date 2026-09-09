@@ -7,6 +7,10 @@ interface FxRateResult {
   base: string
   quote: string
   cached: boolean
+  /** Qué fuente dio la tasa: 'frankfurter' (histórica), 'erapi' (del día), 'cache', 'identity'. */
+  provider?: 'frankfurter' | 'erapi' | 'cache' | 'identity'
+  /** false = la tasa es la de hoy, no la del día de la transacción. */
+  historical?: boolean
 }
 
 // Obtiene el tipo de cambio base->quote vía la edge function fx-rate (cacheada

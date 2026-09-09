@@ -261,6 +261,7 @@ function ConfigEditor() {
     { key: 'reports_filters_is_premium', label: t('Filtros de reportes') },
     { key: 'dashboard_period_filter_is_premium', label: t('Selector de periodo en Resumen') },
     { key: 'transactions_period_filter_is_premium', label: t('Selector de periodo en Movimientos') },
+    { key: 'reconcile_is_premium', label: t('Conciliación con estados de cuenta') },
     { key: 'budgets_is_premium', label: t('Presupuestos') },
   ]
 
@@ -337,6 +338,7 @@ function ConfigEditor() {
                 reports_filters_is_premium: form.reports_filters_is_premium,
                 dashboard_period_filter_is_premium: form.dashboard_period_filter_is_premium,
                 transactions_period_filter_is_premium: form.transactions_period_filter_is_premium,
+                reconcile_is_premium: form.reconcile_is_premium,
                 budgets_is_premium: form.budgets_is_premium,
               },
               { onError: (e: any) => alert(`${t('Error:')} ${e.message}`) },

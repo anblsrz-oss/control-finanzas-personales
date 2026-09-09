@@ -696,6 +696,13 @@ export const en: Record<string, string> = {
     'The automatic exchange rate was not obtained. Enter it manually.',
   'Puedes ajustar el tipo de cambio si lo necesitas.':
     'You can adjust the exchange rate if you need to.',
+  'Tipo de cambio aproximado de hoy (no del día de la transacción). Ajústalo si lo necesitas.':
+    "Approximate rate for today (not the transaction's date). Adjust it if you need to.",
+  'Buscar moneda…': 'Search currency…',
+  'Usar «{{code}}»': 'Use "{{code}}"',
+  'Sin resultados. Escribe un código de 3 letras.':
+    'No results. Type a 3-letter code.',
+  Selecciona: 'Select',
   'Escribe un tipo de cambio válido.': 'Enter a valid exchange rate.',
   'Obteniendo tipo de cambio…': 'Fetching exchange rate…',
   '≈ {{base}} en tu moneda principal (tipo de cambio {{rate}}).':
@@ -1045,4 +1052,43 @@ export const en: Record<string, string> = {
   'Ayuda de esta sección': 'Help for this section',
   Novedades: 'What’s new',
   'No hay novedades por ahora.': 'No news yet.',
+
+  // Conciliación (comparador de estados de cuenta)
+  Conciliación: 'Reconciliation',
+  'Compara el estado de cuenta del banco con lo que registraste.':
+    "Compare the bank statement against what you recorded.",
+  'Tarjeta o cuenta': 'Card or account',
+  'Selecciona…': 'Select…',
+  'Estado de cuenta (PDF o imagen)': 'Statement (PDF or image)',
+  Comparar: 'Compare',
+  'Analizando…': 'Analyzing…',
+  'El estado de cuenta parece ser de otra tarjeta/cuenta (termina en {{last4}}). Revisa que elegiste la correcta.':
+    'The statement looks like it belongs to another card/account (ending in {{last4}}). Check that you picked the right one.',
+  'Tolerancia de monto': 'Amount tolerance',
+  'Días de margen': 'Days of leeway',
+  '{{lines}} movimientos en el estado de cuenta · comparando contra {{name}} ({{currency}})':
+    '{{lines}} movements in the statement · comparing against {{name}} ({{currency}})',
+  'Comparando…': 'Comparing…',
+  'Total estado de cuenta:': 'Statement total:',
+  'Total registrado:': 'Recorded total:',
+  'Diferencia:': 'Difference:',
+  'En el estado de cuenta, no en la app': 'In the statement, not in the app',
+  'Nada 🎉': 'Nothing 🎉',
+  'pago a tarjeta — regístralo desde Transacciones':
+    'card payment — record it from Transactions',
+  'meses sin intereses': 'installments',
+  'Agregar seleccionadas': 'Add selected',
+  'Monto distinto': 'Different amount',
+  'estado de cuenta': 'statement',
+  app: 'app',
+  'En la app, no en el estado de cuenta': 'In the app, not in the statement',
+  Coinciden: 'Match',
+  'Guardar conciliación': 'Save reconciliation',
+  'Conciliación guardada.': 'Reconciliation saved.',
+  'Agregadas: {{added}} · Ya existían: {{existed}} · Con error: {{failed}}':
+    'Added: {{added}} · Already existed: {{existed}} · Errors: {{failed}}',
+  'Conciliaciones guardadas': 'Saved reconciliations',
+  'Aún no guardas ninguna.': "You haven't saved any yet.",
+  'Cuenta/tarjeta eliminada': 'Deleted account/card',
+  'Conciliación con estados de cuenta': 'Statement reconciliation',
 }

@@ -116,6 +116,14 @@ export const TOUR_STEPS: TourStep[] = [
     target: 'recibos',
   },
   {
+    id: 'conciliacion',
+    icon: '🧮',
+    title: 'Conciliación',
+    body: 'Sube el estado de cuenta de una tarjeta o cuenta y compáralo, movimiento por movimiento, con lo que registraste: te dice qué falta, qué sobra y qué tiene un monto distinto.',
+    route: '/conciliacion',
+    target: 'conciliacion',
+  },
+  {
     id: 'familia',
     icon: '👨‍👩‍👧‍👦',
     title: 'Familia',

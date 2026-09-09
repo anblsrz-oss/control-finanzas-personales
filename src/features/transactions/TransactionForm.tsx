@@ -21,7 +21,7 @@ import { useFxRate } from '@/hooks/useFxRate'
 import { useEntitlements } from '@/hooks/useAppConfig'
 import { useRecordBudgetAlerts } from '@/hooks/useBudgets'
 import { toBaseAmount } from '@/lib/fx'
-import { CURRENCIES, formatMoney } from '@/lib/format'
+import { formatMoney } from '@/lib/format'
 import { todayISO, formatMonthLabel } from '@/lib/dates'
 import {
   monthlyPayment,
@@ -33,6 +33,7 @@ import {
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
+import { CurrencyCombobox } from '@/components/ui/CurrencyCombobox'
 import { Card } from '@/components/ui/Card'
 import { Money } from '@/components/ui/Money'
 import type {
@@ -50,7 +51,7 @@ import type {
 const schema = z.object({
   kind: z.enum(['income', 'expense', 'transfer', 'card_payment', 'cash_withdrawal', 'refund']),
   amount: z.coerce.number().positive('Monto debe ser mayor a 0'),
-  currency: z.string(),
+  currency: z.string().regex(/^[A-Z]{3}$/, 'Código de 3 letras'),
   concept: z.string().optional(),
   categoryId: z.string().optional(),
   accountId: z.string().optional(),
@@ -579,10 +580,11 @@ export function TransactionForm({
             {...form.register('amount')}
             error={form.formState.errors.amount?.message}
           />
-          <Select
+          <CurrencyCombobox
             label={t('Moneda')}
-            options={CURRENCIES.map((c) => ({ value: c, label: c }))}
-            {...form.register('currency')}
+            value={currency}
+            onChange={(c) => form.setValue('currency', c, { shouldValidate: true })}
+            error={form.formState.errors.currency?.message}
           />
           <Input
             label={t('Fecha')}
@@ -619,7 +621,9 @@ export function TransactionForm({
             <p className="text-xs text-sky-700 dark:text-sky-300">
               {fxQuery.isError
                 ? t('No se obtuvo el tipo de cambio automático. Escríbelo manualmente.')
-                : t('Puedes ajustar el tipo de cambio si lo necesitas.')}
+                : fxQuery.data?.historical === false
+                  ? t('Tipo de cambio aproximado de hoy (no del día de la transacción). Ajústalo si lo necesitas.')
+                  : t('Puedes ajustar el tipo de cambio si lo necesitas.')}
             </p>
           </div>
         )}

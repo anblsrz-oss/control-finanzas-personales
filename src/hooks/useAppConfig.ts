@@ -17,6 +17,7 @@ const DEFAULT_CONFIG: AppConfigRow = {
   reports_filters_is_premium: false,
   dashboard_period_filter_is_premium: false,
   transactions_period_filter_is_premium: false,
+  reconcile_is_premium: false,
   theme_colors: null,
   app_title: null,
   logo_url: null,
@@ -81,5 +82,6 @@ export function useEntitlements() {
     canUseReportsFilters: allow(config.reports_filters_is_premium),
     canUseDashboardPeriodFilter: allow(config.dashboard_period_filter_is_premium),
     canUseTransactionsPeriodFilter: allow(config.transactions_period_filter_is_premium),
+    canUseReconcile: allow(config.reconcile_is_premium),
   }
 }

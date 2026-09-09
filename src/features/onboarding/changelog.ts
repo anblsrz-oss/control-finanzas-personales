@@ -12,6 +12,20 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-09-conciliacion',
+    date: '2026-09-09',
+    title: 'Conciliación con estados de cuenta',
+    description:
+      'Nueva sección: sube el estado de cuenta (PDF o foto) de una tarjeta o cuenta y la app lo compara con tus movimientos registrados para detectar faltantes, sobrantes y montos distintos. Puedes agregar los faltantes con un clic.',
+  },
+  {
+    id: '2026-09-09-monedas',
+    date: '2026-09-09',
+    title: 'Más monedas y conversión visible',
+    description:
+      'El selector de moneda ahora tiene buscador e incluye monedas de Latinoamérica (DOP, ARS, COP, CLP, PEN y más). En el historial, cada movimiento en otra moneda muestra su equivalente en tu moneda principal, y puedes filtrar por moneda.',
+  },
+  {
     id: '2026-08-09-periodo-pagado',
     date: '2026-08-09',
     title: 'Panel de tarjeta pagada',

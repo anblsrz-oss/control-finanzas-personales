@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { MultiSelect } from '@/components/ui/MultiSelect'
 import { PeriodSelector } from '@/components/ui/PeriodSelector'
+import { CURRENCY_LABELS } from '@/lib/format'
 import type { AccountRow, CardRow, CategoryRow } from '@/types/db'
 
 // Estado crudo del formulario. Los montos viven como string porque un input
@@ -17,6 +18,7 @@ export interface FilterState {
   categoryIds: string[]
   kind: '' | 'income' | 'expense' | 'transfer' | 'card_payment' | 'refund'
   status: '' | 'pending' | 'settled'
+  currency: string
   minAmount: string
   maxAmount: string
   search: string
@@ -30,6 +32,7 @@ export const EMPTY_FILTERS: FilterState = {
   categoryIds: [],
   kind: '',
   status: '',
+  currency: '',
   minAmount: '',
   maxAmount: '',
   search: '',
@@ -44,6 +47,7 @@ export function countActiveFilters(f: FilterState): number {
   if (f.categoryIds.length) n++
   if (f.kind) n++
   if (f.status) n++
+  if (f.currency) n++
   if (f.minAmount) n++
   if (f.maxAmount) n++
   if (f.search.trim()) n++
@@ -56,6 +60,8 @@ interface TransactionFiltersProps {
   accounts: AccountRow[]
   cards: CardRow[]
   categories: CategoryRow[]
+  /** Monedas que se ofrecen en el filtro de moneda. */
+  currencyOptions: string[]
   /** Cuántas transacciones está mostrando la lista con estos filtros. */
   resultCount: number
   /** Si puede usar el selector de periodo (Hoy/Semana/Mes/Personalizado) o solo Desde/Hasta crudos. */
@@ -68,6 +74,7 @@ export function TransactionFilters({
   accounts,
   cards,
   categories,
+  currencyOptions,
   resultCount,
   canUsePeriodFilter,
 }: TransactionFiltersProps) {
@@ -190,6 +197,20 @@ export function TransactionFilters({
               { value: 'settled', label: t('Conciliadas') },
             ]}
           />
+          {currencyOptions.length > 1 && (
+            <Select
+              label={t('Moneda')}
+              value={value.currency}
+              onChange={(e) => set('currency', e.target.value)}
+              options={[
+                { value: '', label: t('Todas') },
+                ...currencyOptions.map((c) => ({
+                  value: c,
+                  label: CURRENCY_LABELS[c] ? `${c} — ${CURRENCY_LABELS[c]}` : c,
+                })),
+              ]}
+            />
+          )}
           <div className="grid grid-cols-2 gap-2">
             <Input
               label={t('Monto mín.')}

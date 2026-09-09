@@ -14,6 +14,8 @@ export interface TransactionFilter {
   accountIds?: string[]
   cardIds?: string[]
   categoryIds?: string[]
+  /** Código de moneda exacto (MXN, USD, DOP…). */
+  currency?: string
   startDate?: string
   endDate?: string
   /** Búsqueda libre sobre concepto y notas. */
@@ -61,6 +63,9 @@ export function useTransactions(
       }
       if (filter?.categoryIds?.length) {
         query = query.in('category_id', filter.categoryIds)
+      }
+      if (filter?.currency) {
+        query = query.eq('currency', filter.currency)
       }
       if (filter?.startDate) {
         query = query.gte('tx_date', filter.startDate)
