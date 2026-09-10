@@ -1,5 +1,5 @@
 {
-  "version": "0.10.0",
-  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/latest/download/finzen.apk",
-  "notes": "Nuevo: tutorial guiado que te lleva por cada sección real de la app y te señala qué tocar, y el admin ahora puede reordenar las páginas del menú."
+  "version": "0.11.0",
+  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.11.0/finzen-v0.11.0.apk",
+  "notes": "Nuevo: más monedas (DOP y otras de Latinoamérica) con buscador; cada movimiento en otra moneda muestra su equivalente en tu moneda principal; filtro por moneda en el historial; y la sección Conciliación para comparar el estado de cuenta del banco con lo que registraste."
 }
