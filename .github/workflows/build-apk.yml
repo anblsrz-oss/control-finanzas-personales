@@ -33,20 +33,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
 
       - name: Install dependencies
         run: npm ci
@@ -85,6 +85,8 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleRelease --no-daemon
 
+      # r0adkll/sign-android-release solo tiene v1 (aún en Node 20 y usa
+      # ::set-output::). No hay reemplazo directo; GitHub lo fuerza a Node 24.
       - name: Sign APK
         id: sign
         uses: r0adkll/sign-android-release@v1
@@ -108,7 +110,7 @@ jobs:
 
       # Descargable desde el run (útil para ejecuciones manuales).
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: finzen-apk
           path: finzen*.apk
@@ -117,7 +119,7 @@ jobs:
       # (el glob finzen*.apk toma finzen.apk y finzen-vX.Y.Z.apk).
       - name: Publish to GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: finzen*.apk
           tag_name: ${{ github.ref_name }}
