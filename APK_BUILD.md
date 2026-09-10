@@ -1,8 +1,10 @@
 ﻿# APK de Mi Control de Finanzas Personales (Android) — build, firma y publicación
 
-> Los nombres `Ahorbit.keystore`, el alias `Ahorbit`, el archivo `Ahorbit.apk` y
-> el repo `Ahorbit-frontend` que aparecen abajo son identificadores reales que
-> siguen en uso: no los renombres o se rompen la firma y las descargas.
+> `Ahorbit.keystore` y el alias `Ahorbit` son identificadores reales de la firma:
+> no los renombres o el APK ya instalado no podrá actualizarse.
+> El repo es `anblsrz-oss/control-finanzas-personales` y el Release publica dos
+> APKs idénticos: `finzen.apk` (nombre fijo, para `releases/latest/download`) y
+> `finzen-vX.Y.Z.apk` (con la versión en el nombre, para saber cuál tienes bajado).
 
 Hay dos caminos. **Recomendado: GitHub Actions** (compila y firma en la nube; tu
 equipo no necesita Android Studio). El proyecto `android/` ya está generado y
@@ -60,18 +62,20 @@ detecta que falta el archivo y sigue de largo en silencio.
   git tag v0.1.0
   git push origin v0.1.0
   ```
-  El workflow compila, firma y **publica el Release con `Ahorbit.apk`** adjunto.
-  El botón "Descargar app" de la landing ya apunta ahí
-  (`releases/latest/download/Ahorbit.apk`).
+  El workflow compila, firma y **publica el Release con `finzen.apk` y
+  `finzen-vX.Y.Z.apk`** adjuntos. El botón "Descargar app" de la landing apunta
+  al nombre fijo (`releases/latest/download/finzen.apk`).
 
 - **Manual (solo probar):** GitHub → **Actions → Build Android APK → Run workflow**.
   El APK firmado queda como *artifact* descargable del run (no crea Release).
 
 ### 4. Avisar de la actualización (opcional pero recomendado)
 En cada versión nueva, antes de etiquetar:
-1. Sube `version` en `package.json` (p. ej. `0.1.0` → `0.2.0`).
-2. Pon la misma `version` en `public/version.json`.
-3. Despliega la web (Vercel) y crea la etiqueta `vX.Y.Z`.
+1. Sube `version` en `package.json` (p. ej. `0.1.0` → `0.2.0`) y crea la etiqueta
+   `vX.Y.Z` (misma versión). El workflow toma el `versionName` del tag.
+2. Cuando el Release ya exista y `releases/latest/download/finzen.apk` responda
+   200, actualiza `public/version.json` (`version` + `notes`, y opcionalmente
+   `apkUrl` al asset con versión de ese Release) **en su propio commit**.
 
 - **Web/PWA:** al desplegar, los usuarios ven "Hay una nueva versión → Actualizar".
 - **App nativa:** al abrir, si `version.json` tiene una versión mayor, ven
@@ -89,13 +93,14 @@ cd android
 ```
 APK sin firmar en `android/app/build/outputs/apk/release/app-release-unsigned.apk`.
 Fírmalo con Android Studio (Build → Generate Signed Bundle / APK) o con
-`apksigner`, y súbelo al Release como `Ahorbit.apk`.
+`apksigner`, y súbelo al Release como `finzen.apk` (y una copia
+`finzen-vX.Y.Z.apk`).
 
 ---
 
 ## Notas
 - El APK se hospeda en **GitHub Releases** (no usamos Supabase Storage).
 - La URL del APK es configurable con la variable `VITE_APK_URL` (por defecto
-  `https://github.com/anblsrz-oss/Ahorbit-frontend/releases/latest/download/Ahorbit.apk`).
+  `https://github.com/anblsrz-oss/control-finanzas-personales/releases/latest/download/finzen.apk`).
 - `android/` está versionado; los archivos generados (build, assets web, plugins
   cordova) están en `.gitignore` y se regeneran con `cap sync` en cada build.
