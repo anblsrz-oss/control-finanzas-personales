@@ -46,7 +46,15 @@ jobs:
           java-version: 21
 
       - name: Set up Android SDK
+        # Google retiró el paquete legado "tools" del índice del SDK; el
+        # default de esta action ("tools platform-tools") ya no resuelve y
+        # tira "Failed to find package 'tools'" con exit code 1. Gradle no
+        # lo necesita (usa platform-tools + build-tools + la plataforma vía
+        # el runner de Android Studio ya preinstalado), así que basta con
+        # platform-tools.
         uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
 
       - name: Install dependencies
         run: npm ci
