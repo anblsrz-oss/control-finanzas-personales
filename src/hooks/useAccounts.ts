@@ -43,6 +43,7 @@ export function useCreateAccount() {
       isr_rate?: number | null
       is_scholarship?: boolean
       scholarship_name?: string
+      parent_account_id?: string | null
     }) => {
       const { data, error } = await supabase
         .from('accounts')
@@ -68,6 +69,7 @@ export function useCreateAccount() {
             isr_rate: input.isr_rate ?? null,
             is_scholarship: input.is_scholarship ?? false,
             scholarship_name: input.scholarship_name || null,
+            parent_account_id: input.parent_account_id ?? null,
           },
         ])
         .select()
@@ -106,6 +108,7 @@ export function useUpdateAccount() {
       isr_rate?: number | null
       is_scholarship?: boolean
       scholarship_name?: string | null
+      parent_account_id?: string | null
     }) => {
       const { id, userId, ...rest } = input
       const updates: Record<string, any> = {}
@@ -129,6 +132,7 @@ export function useUpdateAccount() {
       if (rest.isr_rate !== undefined) updates.isr_rate = rest.isr_rate
       if (rest.is_scholarship !== undefined) updates.is_scholarship = rest.is_scholarship
       if (rest.scholarship_name !== undefined) updates.scholarship_name = rest.scholarship_name
+      if (rest.parent_account_id !== undefined) updates.parent_account_id = rest.parent_account_id
 
       const { data, error } = await supabase
         .from('accounts')

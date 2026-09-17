@@ -15,6 +15,8 @@ export interface ReceiptExtraction {
    * captura automática por correo/SMS. */
   originLast4: string | null
   destinationLast4: string | null
+  /** Desglose por producto/servicio del ticket, si el documento lo muestra. */
+  items: { concept: string; amount: number }[]
 }
 
 export interface StatementExtraction {

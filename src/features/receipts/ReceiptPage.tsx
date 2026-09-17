@@ -8,8 +8,9 @@ import { useAuth } from '@/store/useAuth'
 import { useAccounts } from '@/hooks/useAccounts'
 import { useCards } from '@/hooks/useCards'
 import { useCategories } from '@/hooks/useCategories'
-import { useCreateTransaction } from '@/hooks/useTransactions'
+import { useCreateTransaction, useReplaceTransactionLines } from '@/hooks/useTransactions'
 import { useOcrReceipt, type ReceiptExtraction, type StatementExtraction } from '@/hooks/useOcrReceipt'
+import { TransactionLinesFields, type LineDraft } from '@/features/transactions/TransactionLinesFields'
 import { parseReceiptText } from '@/lib/receiptParser'
 import { hashRow } from '@/lib/importParser'
 import { extractFromPdf, extractPagesFromPdf } from '@/lib/pdfExtract'
@@ -81,6 +82,7 @@ export function ReceiptPage() {
   const { data: cards = [] } = useCards(userId)
   const { data: categories = [] } = useCategories(userId)
   const createTransaction = useCreateTransaction()
+  const replaceLines = useReplaceTransactionLines()
   const ocrReceipt = useOcrReceipt()
 
   const [docMode, setDocMode] = useState<DocMode>('receipt')
@@ -93,6 +95,11 @@ export function ReceiptPage() {
   const [noticeMsg, setNoticeMsg] = useState<string | null>(null)
   const [lastFailedFile, setLastFailedFile] = useState<File | null>(null)
   const fileRef = useRef<File | null>(null)
+
+  // Subpartidas del recibo (modo "receipt"): estado fuera del RHF form, igual
+  // que statementRows — el OCR las siembra si el ticket trae desglose, y el
+  // usuario puede agregar/editar/quitar antes de guardar.
+  const [lines, setLines] = useState<LineDraft[]>([])
 
   // Modo "estado de cuenta": lista editable de movimientos detectados.
   const [statementRows, setStatementRows] = useState<StatementRow[]>([])
@@ -188,6 +195,10 @@ export function ReceiptPage() {
         accountId: '',
         cardId: '',
       })
+      // El CFDI puede traer varios nodos Conceptos/Concepto, pero el parser
+      // actual (cfdiParser.ts) solo lee el primero — conectarlo a subpartidas
+      // queda para otra iteración.
+      setLines([])
       setStep('review')
     } catch (err: any) {
       setErrorMsg(
@@ -249,6 +260,9 @@ export function ReceiptPage() {
       accountId: match.accountId,
       cardId: extraction.kind === 'income' ? '' : match.cardId,
     })
+    setLines(
+      (extraction.items ?? []).map((i) => ({ concept: i.concept, amount: i.amount, categoryId: '' })),
+    )
     setStep('review')
   }
 
@@ -288,6 +302,7 @@ export function ReceiptPage() {
     setCommonAccountId(docMatch.cardId ? '' : docMatch.accountId)
     setCommonCardId(docMatch.cardId)
     setFxRates({})
+    setLines([])
     setStep('review')
 
     // Busca en segundo plano el tipo de cambio de cada moneda distinta a la
@@ -325,6 +340,8 @@ export function ReceiptPage() {
       accountId: '',
       cardId: '',
     })
+    // La heurística de regex no separa artículos individuales.
+    setLines([])
     setStep('review')
   }
 
@@ -418,7 +435,7 @@ export function ReceiptPage() {
     }
   }
 
-  function onSubmit(data: FormData) {
+  async function onSubmit(data: FormData) {
     if (!userId) return
     const income = data.kind === 'income'
     // Un ingreso entra a una cuenta: no tiene sentido (ni lo reflejan las
@@ -436,8 +453,21 @@ export function ReceiptPage() {
       alert(t('No se obtuvo el tipo de cambio. Intenta de nuevo o registra el gasto desde Transacciones.'))
       return
     }
-    createTransaction.mutate(
-      {
+    const validLines = lines.filter((l) => l.concept.trim() && l.amount > 0)
+    if (validLines.length > 0) {
+      const linesTotal = validLines.reduce((s, l) => s + l.amount, 0)
+      if (Math.abs(data.amount - linesTotal) > 0.01) {
+        alert(
+          t('La suma del detalle ({{sum}}) no cuadra con el total ({{total}}).', {
+            sum: formatMoney(linesTotal, data.currency),
+            total: formatMoney(data.amount, data.currency),
+          }),
+        )
+        return
+      }
+    }
+    try {
+      const tx = await createTransaction.mutateAsync({
         userId,
         kind: data.kind,
         amount: data.amount,
@@ -452,25 +482,27 @@ export function ReceiptPage() {
         source: 'receipt',
         // El tipo entra en el hash: un ingreso y un gasto del mismo día e
         // importe no deben considerarse duplicados entre sí.
-        externalId: hashRow([
-          'receipt',
-          data.kind,
-          data.txDate,
-          data.amount,
-          data.concept,
-        ]),
-      },
-      {
-        onSuccess: () => setStep('done'),
-        onError: (error: any) => {
-          if (error?.code === '23505') {
-            alert(t('Este recibo ya fue registrado (movimiento duplicado).'))
-          } else {
-            alert(`Error: ${error.message}`)
-          }
-        },
-      },
-    )
+        externalId: hashRow(['receipt', data.kind, data.txDate, data.amount, data.concept]),
+      })
+      if (validLines.length > 0) {
+        await replaceLines.mutateAsync({
+          userId,
+          transactionId: tx.id,
+          lines: validLines.map((l) => ({
+            concept: l.concept,
+            amount: l.amount,
+            categoryId: l.categoryId,
+          })),
+        })
+      }
+      setStep('done')
+    } catch (error: any) {
+      if (error?.code === '23505') {
+        alert(t('Este recibo ya fue registrado (movimiento duplicado).'))
+      } else {
+        alert(`Error: ${error.message}`)
+      }
+    }
   }
 
   function updateRow(id: string, patch: Partial<StatementRow>) {
@@ -561,6 +593,7 @@ export function ReceiptPage() {
     setCommonCardId('')
     setSaveSummary(null)
     setFxRates({})
+    setLines([])
     form.reset({
       kind: 'expense',
       currency: mainCurrency,
@@ -790,6 +823,19 @@ export function ReceiptPage() {
                 {...form.register('concept')}
                 error={form.formState.errors.concept?.message}
               />
+              {!isIncome && (
+                <TransactionLinesFields
+                  lines={lines}
+                  onChange={(i, patch) =>
+                    setLines((prev) => prev.map((l, idx) => (idx === i ? { ...l, ...patch } : l)))
+                  }
+                  onAdd={() => setLines((prev) => [...prev, { concept: '', amount: 0, categoryId: '' }])}
+                  onRemove={(i) => setLines((prev) => prev.filter((_, idx) => idx !== i))}
+                  categories={availableCategories}
+                  currency={currency}
+                  totalAmount={Number(amountRaw) || 0}
+                />
+              )}
               <div className={isIncome ? '' : 'grid grid-cols-2 gap-4'}>
                 <Select
                   label={isIncome ? t('Cuenta donde entró el dinero') : t('Cuenta')}

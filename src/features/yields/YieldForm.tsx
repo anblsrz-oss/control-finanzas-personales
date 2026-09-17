@@ -32,8 +32,11 @@ export function YieldForm({
   const createOrUpdate = useCreateOrUpdateYield()
   const deleteYield = useDeleteYield()
 
+  // Se precarga con el cálculo del sistema (con tramos y apartados ya
+  // aplicados): "Verificar" pasa a ser confirmar ese número, no capturarlo a
+  // mano — el usuario solo lo ajusta si su banco dio un monto distinto.
   const [actualGrowth, setActualGrowth] = useState(
-    currentRecord?.actual_growth?.toString() ?? '',
+    currentRecord?.actual_growth?.toString() ?? expectedGrowth.toFixed(2),
   )
   const [selectedMonth, setSelectedMonth] = useState(
     currentRecord?.period_month ?? monthStartISO(),
@@ -65,6 +68,7 @@ export function YieldForm({
     createOrUpdate.mutate({
       userId: session.user.id,
       accountId: account.id,
+      accountCurrency: account.currency,
       periodMonth,
       expectedGrowth,
       actualGrowth: parseFloat(actualGrowth),
@@ -90,8 +94,11 @@ export function YieldForm({
   return (
     <Card className="border-blue-200 bg-blue-50 dark:bg-blue-900/20">
       <p className="mb-3 text-xs font-semibold text-slate-700 dark:text-slate-200">
-        {t('Registra el crecimiento real')}{' '}
+        {t('Confirma el rendimiento calculado')}{' '}
         {currentRecord ? t('(Editar)') : t('de este mes')}
+      </p>
+      <p className="-mt-2 mb-3 text-xs text-slate-500 dark:text-slate-400">
+        {t('Ya viene precargado con el cálculo del sistema. Ajústalo solo si tu banco dio un monto distinto — al confirmar se registra como una transacción de ingreso.')}
       </p>
       <div className="space-y-3">
         <div className="flex gap-3">
@@ -112,7 +119,7 @@ export function YieldForm({
             </select>
           </div>
           <Input
-            label={t('Crecimiento real ($)')}
+            label={t('Monto a contabilizar ($)')}
             type="number"
             step="0.01"
             placeholder={formatMoney(expectedGrowth, account.currency)}
@@ -138,7 +145,11 @@ export function YieldForm({
             disabled={createOrUpdate.isPending || !actualGrowth.trim()}
             className="flex-1"
           >
-            {createOrUpdate.isPending ? t('Guardando…') : currentRecord ? t('Actualizar') : t('Verificar')}
+            {createOrUpdate.isPending
+              ? t('Guardando…')
+              : currentRecord
+                ? t('Actualizar')
+                : t('Verificar y contabilizar')}
           </Button>
           {currentRecord && (
             <Button

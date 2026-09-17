@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useAccounts, useAccountBalances } from '@/hooks/useAccounts'
+import { useAccountYieldTiers } from '@/hooks/useAccountYieldTiers'
 import { useEntitlements } from '@/hooks/useAppConfig'
 import { monthStartISO, formatMonthLabel } from '@/lib/dates'
 import { formatDate } from '@/lib/format'
@@ -24,12 +25,17 @@ export function YieldsPage() {
   const accountsQuery = useAccounts(userId)
   const balancesQuery = useAccountBalances(userId)
   const yieldsQuery = useYieldRecords(userId)
+  const tiersQuery = useAccountYieldTiers(userId)
 
   const accounts = accountsQuery.data || []
   const balances = balancesQuery.data || []
   const yields = yieldsQuery.data || []
+  const tiers = tiersQuery.data || []
 
-  // Filtrar solo cuentas con rendimiento
+  const accountById = new Map(accounts.map((a) => [a.id, a]))
+
+  // Filtrar solo cuentas con rendimiento (incluye apartados: son cuentas
+  // hijas con su propia configuración de rendimiento).
   const accountsWithYield = accounts.filter((a) => a.has_yield)
 
   if (!canUseYields) {
@@ -90,6 +96,9 @@ export function YieldsPage() {
           const thisMonthYield = accountYields.find(
             (y) => y.period_month === currentMonth,
           )
+          const accountTiers = tiers
+            .filter((tr) => tr.account_id === account.id)
+            .map((tr) => ({ minAmount: tr.min_amount, rate: tr.rate }))
           // Bruto → ISR → neto. El esperado que se compara contra el real es
           // el NETO, que es lo que de verdad abona el banco.
           const projection = expectedYield({
@@ -102,13 +111,25 @@ export function YieldsPage() {
             periodMonth: currentMonth,
             withholdIsr: account.withhold_isr,
             isrRate: account.isr_rate,
+            tiers: accountTiers,
           })
           const expectedGrowth = thisMonthYield?.expected_growth ?? projection.net
+          const parentAccount = account.parent_account_id
+            ? accountById.get(account.parent_account_id)
+            : undefined
 
           return (
             <div key={account.id} className="space-y-3">
               <Card className="bg-gradient-to-r from-green-50 to-emerald-50">
-                <h3 className="font-semibold text-slate-800 dark:text-slate-100">{account.name}</h3>
+                <h3 className="font-semibold text-slate-800 dark:text-slate-100">
+                  {parentAccount && <span className="text-slate-400">↳ </span>}
+                  {account.name}
+                  {parentAccount && (
+                    <span className="ml-1 text-xs font-normal text-slate-500 dark:text-slate-400">
+                      {t('(apartado de {{name}})', { name: parentAccount.name })}
+                    </span>
+                  )}
+                </h3>
                 <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
                   📈 {t('Rendimiento:')} {account.yield_rate}%{' '}
                   {account.yield_rate_period === 'annual' ? t('anual') : t('mensual')}

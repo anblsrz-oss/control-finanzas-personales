@@ -5,7 +5,7 @@ export type AccountType = 'checking' | 'savings' | 'investment' | 'cash' | 'vouc
 export type CardType = 'credit' | 'debit' | 'voucher'
 export type TxKind = 'income' | 'expense' | 'transfer' | 'card_payment' | 'refund'
 export type CategoryKind = 'income' | 'expense'
-export type TxSource = 'manual' | 'import' | 'email' | 'sms' | 'aggregator' | 'receipt'
+export type TxSource = 'manual' | 'import' | 'email' | 'sms' | 'aggregator' | 'receipt' | 'subscription' | 'yield'
 export type IngestChannel = 'csv' | 'pdf' | 'email' | 'sms'
 export type ImportStatus = 'parsing' | 'staged' | 'confirmed' | 'failed'
 export type StagingStatus = 'pending' | 'confirmed' | 'discarded' | 'duplicate'
@@ -76,6 +76,8 @@ export interface AccountRow {
   isr_rate: number | null
   is_scholarship: boolean
   scholarship_name: string | null
+  /** Cuenta madre si esta fila es un apartado (cajita) dentro de otra cuenta. */
+  parent_account_id: string | null
   created_at: string
 }
 
@@ -180,6 +182,17 @@ export interface TransactionRow {
   subscription_id: string | null
   /** Compra original que este reembolso cancela parcial o totalmente. */
   refund_of_transaction_id: string | null
+  created_at: string
+}
+
+export interface TransactionLineRow {
+  id: string
+  transaction_id: string
+  user_id: string
+  concept: string
+  amount: number
+  category_id: string | null
+  sort_order: number
   created_at: string
 }
 
@@ -529,6 +542,9 @@ export interface SubscriptionRow {
   detection_source: SubscriptionDetectionSource
   last_transaction_id: string | null
   confirmed_at: string | null
+  /** Si es true, el cron subscription-charges-daily registra el cargo solo
+   * cada ciclo (para comercios que no mandan correo/SMS parseable). */
+  auto_generate: boolean
   created_at: string
   updated_at: string
 }

@@ -30,6 +30,7 @@ export type ThemePref = 'light' | 'dark' | 'system'
 export type LanguagePref = 'es' | 'en'
 export type IncomeExpenseChartType = 'bar' | 'line'
 export type CategoryChartType = 'pie' | 'donut' | 'bar'
+export type TransactionsViewMode = 'cards' | 'table'
 
 // Personalización por gráfico (colores, series ocultas, si entra al Excel).
 export interface ChartConfig {
@@ -61,6 +62,9 @@ interface SettingsState {
   chartConfigs: Record<string, ChartConfig>
   // Orden de los gráficos en cada página.
   chartOrder: Record<ChartPage, ChartId[]>
+  // Vista de la lista de Transacciones: tarjetas (default) o tabla compacta.
+  transactionsViewMode: TransactionsViewMode
+  setTransactionsViewMode: (mode: TransactionsViewMode) => void
   setTheme: (theme: ThemePref) => void
   setLanguage: (language: LanguagePref) => void
   toggleHideAmounts: () => void
@@ -107,6 +111,8 @@ export const useSettings = create<SettingsState>()(
       savedCardColors: [],
       chartConfigs: {},
       chartOrder: { dashboard: [], reports: [] },
+      transactionsViewMode: 'cards',
+      setTransactionsViewMode: (transactionsViewMode) => set({ transactionsViewMode }),
       setTheme: (theme) => {
         set({ theme })
         applyTheme(theme)

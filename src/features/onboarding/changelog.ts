@@ -12,6 +12,34 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-17-rendimientos-tramos-apartados',
+    date: '2026-09-17',
+    title: 'Tramos, apartados y rendimientos que sí contabilizan',
+    description:
+      'En Cuentas, una cuenta con rendimiento ahora puede tener tramos por monto (ej. "primeros $50,000 a una tasa, el excedente a otra") y apartados con su propio saldo y tasa, como las cajitas. Además, "Verificar" en Rendimientos ya no es solo comparar: crea una transacción real de ingreso con la categoría "Rendimientos".',
+  },
+  {
+    id: '2026-09-16-vista-tabla-transacciones',
+    date: '2026-09-16',
+    title: 'Vista de tabla en Transacciones',
+    description:
+      'Alterna entre la vista de tarjetas y una vista de tabla compacta. Si un movimiento tiene subpartidas, haz clic para ver el detalle en una ventana superpuesta.',
+  },
+  {
+    id: '2026-09-16-subpartidas',
+    date: '2026-09-16',
+    title: 'Subpartidas en tus transacciones',
+    description:
+      'Desglosa un gasto (ej. el ticket del súper) en líneas con su propio concepto, monto y categoría. La suma debe cuadrar exacto con el total, y los reportes por categoría ahora usan el detalle si lo capturaste. El OCR de recibos también intenta detectar las líneas del ticket.',
+  },
+  {
+    id: '2026-09-16-suscripciones-auto',
+    date: '2026-09-16',
+    title: 'Cobro automático de suscripciones',
+    description:
+      'Para suscripciones que no llegan por correo/SMS, activa "Generar el cargo automáticamente" y la app registrará el cargo sola cada ciclo. Las que sí llegan por correo/SMS ahora se confirman solas si ya estaban activas.',
+  },
+  {
     id: '2026-09-09-conciliacion',
     date: '2026-09-09',
     title: 'Conciliación con estados de cuenta',

@@ -43,6 +43,7 @@ export function useCreateSubscription() {
       cardId?: string | null
       accountId?: string | null
       categoryId?: string | null
+      autoGenerate?: boolean
     }) => {
       const { data, error } = await supabase
         .from('subscriptions')
@@ -62,6 +63,7 @@ export function useCreateSubscription() {
             status: 'active',
             detection_source: 'manual',
             confirmed_at: new Date().toISOString(),
+            auto_generate: input.autoGenerate ?? false,
           },
         ])
         .select()
@@ -88,6 +90,7 @@ export function useUpdateSubscription() {
       accountId?: string | null
       categoryId?: string | null
       status?: SubscriptionStatus
+      autoGenerate?: boolean
     }) => {
       const updates: Record<string, any> = {}
       if (input.name !== undefined) updates.name = input.name
@@ -102,6 +105,7 @@ export function useUpdateSubscription() {
       if (input.accountId !== undefined && !input.cardId) updates.account_id = input.accountId
       if (input.categoryId !== undefined) updates.category_id = input.categoryId
       if (input.status !== undefined) updates.status = input.status
+      if (input.autoGenerate !== undefined) updates.auto_generate = input.autoGenerate
 
       const { error } = await supabase.from('subscriptions').update(updates).eq('id', input.id)
       if (error) throw error
@@ -150,6 +154,42 @@ export function useDeleteSubscription() {
       if (error) throw error
     },
     onSuccess: (_data, input) => invalidateSubscriptions(queryClient, input.userId),
+  })
+}
+
+export interface GeneratedSubscriptionCharge {
+  subscription_id: string
+  user_id: string
+  transaction_id: string
+  tx_date: string
+  amount: number
+}
+
+// Registra a mano el cobro vencido de una suscripción (botón "Registrar
+// cobro" en /suscripciones) — para no depender del cron subscription-charges-
+// daily. El RPC rechaza si next_charge_date todavía no llegó, así que nunca
+// duplica un cargo ya contabilizado; invalida también todo lo que depende de
+// transactions (mismo criterio que useCreateTransaction).
+export function useGenerateSubscriptionChargeNow() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (input: { subscriptionId: string; userId: string }) => {
+      const { data, error } = await supabase.rpc('generate_subscription_charge_now', {
+        p_subscription_id: input.subscriptionId,
+      })
+      if (error) throw error
+      return (data || []) as GeneratedSubscriptionCharge[]
+    },
+    onSuccess: (_data, input) => {
+      invalidateSubscriptions(queryClient, input.userId)
+      queryClient.invalidateQueries({ queryKey: ['transactions', input.userId] })
+      queryClient.invalidateQueries({ queryKey: ['transactions_count', input.userId] })
+      queryClient.invalidateQueries({ queryKey: ['transactions_summary', input.userId] })
+      queryClient.invalidateQueries({ queryKey: ['category_totals', input.userId] })
+      queryClient.invalidateQueries({ queryKey: ['account_balances', input.userId] })
+      queryClient.invalidateQueries({ queryKey: ['card_usage', input.userId] })
+      queryClient.invalidateQueries({ queryKey: ['budget_status', input.userId] })
+    },
   })
 }
 

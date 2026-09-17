@@ -84,6 +84,14 @@ export const TOUR_STEPS: TourStep[] = [
     target: 'presupuestos',
   },
   {
+    id: 'suscripciones',
+    icon: '🔁',
+    title: 'Suscripciones',
+    body: 'Detecta Netflix, Spotify y demás cargos recurrentes por SMS/correo, o agrégalos a mano. Si un comercio no manda correo/SMS, activa "Generar el cargo automáticamente" para que se registre solo cada ciclo.',
+    route: '/suscripciones',
+    target: 'suscripciones',
+  },
+  {
     id: 'categorias',
     icon: '🏷️',
     title: 'Categorías',
@@ -159,7 +167,7 @@ export const TOUR_STEPS: TourStep[] = [
     id: 'rendimientos',
     icon: '📈',
     title: 'Rendimientos',
-    body: 'Da seguimiento a cuentas de inversión o ahorro con rendimiento, y a lo que van generando con el tiempo.',
+    body: 'Da seguimiento a cuentas de inversión o ahorro con rendimiento (incluso por tramos de monto, y apartados con su propia tasa). Al verificar, se contabiliza como una transacción real.',
     route: '/rendimientos',
     target: 'rendimientos',
   },

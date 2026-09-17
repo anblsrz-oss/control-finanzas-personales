@@ -7,6 +7,7 @@ import type {
   TxSource,
   TransactionDeletionRow,
   InstallmentPlanPaymentRow,
+  TransactionLineRow,
 } from '@/types/db'
 
 export interface TransactionFilter {
@@ -402,6 +403,74 @@ export function useTransactionDeletions(userId?: string) {
       return (data || []) as TransactionDeletionRow[]
     },
     enabled: !!userId,
+  })
+}
+
+// Líneas de detalle (subpartidas) de una o varias transacciones, agrupadas
+// por transaction_id en un Map — mismo patrón que refundedTotalsByOriginal
+// en TransactionsPage (query separada + Map en el cliente).
+export function useTransactionLines(transactionIds: string[]) {
+  return useQuery({
+    queryKey: ['transaction_lines', [...transactionIds].sort()],
+    queryFn: async () => {
+      if (transactionIds.length === 0) return new Map<string, TransactionLineRow[]>()
+      const { data, error } = await supabase
+        .from('transaction_lines')
+        .select('*')
+        .in('transaction_id', transactionIds)
+        .order('sort_order', { ascending: true })
+      if (error) throw error
+      const map = new Map<string, TransactionLineRow[]>()
+      for (const line of (data || []) as TransactionLineRow[]) {
+        const list = map.get(line.transaction_id)
+        if (list) list.push(line)
+        else map.set(line.transaction_id, [line])
+      }
+      return map
+    },
+    enabled: transactionIds.length > 0,
+  })
+}
+
+// Reemplaza TODAS las líneas de una transacción (borra + inserta el set
+// nuevo completo). Dos llamadas secuenciales, mismo patrón que
+// useCreateInstallmentPlan: la transacción padre ya existe (recién creada o
+// editada) antes de llamar a esto.
+export function useReplaceTransactionLines() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (input: {
+      userId: string
+      transactionId: string
+      lines: { concept: string; amount: number; categoryId?: string | null }[]
+    }) => {
+      const { error: delErr } = await supabase
+        .from('transaction_lines')
+        .delete()
+        .eq('transaction_id', input.transactionId)
+      if (delErr) throw delErr
+      if (input.lines.length === 0) return []
+
+      const { data, error } = await supabase
+        .from('transaction_lines')
+        .insert(
+          input.lines.map((l, i) => ({
+            transaction_id: input.transactionId,
+            user_id: input.userId,
+            concept: l.concept,
+            amount: l.amount,
+            category_id: l.categoryId || null,
+            sort_order: i,
+          })),
+        )
+        .select()
+      if (error) throw error
+      return data as TransactionLineRow[]
+    },
+    onSuccess: (_data, input) => {
+      queryClient.invalidateQueries({ queryKey: ['transaction_lines'] })
+      queryClient.invalidateQueries({ queryKey: ['category_totals', input.userId] })
+    },
   })
 }
 

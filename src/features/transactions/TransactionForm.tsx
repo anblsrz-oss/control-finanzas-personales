@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
@@ -14,7 +14,10 @@ import {
   useConfirmInstallmentPayments,
   useTransactionRefunds,
   useCancelInstallmentPlan,
+  useTransactionLines,
+  useReplaceTransactionLines,
 } from '@/hooks/useTransactions'
+import { TransactionLinesFields } from './TransactionLinesFields'
 import { remainingRefundable, checkAndCancelMsiPlan } from '@/lib/refunds'
 import { useCreditLines } from '@/hooks/useCreditLines'
 import { useFxRate } from '@/hooks/useFxRate'
@@ -77,6 +80,31 @@ const schema = z.object({
   // Retiro de efectivo: ON = ya lo gastaste / es para un pago (cuenta como
   // egreso ya); OFF = solo lo tienes en la cartera (aún no es egreso).
   spentAsCash: z.boolean().default(false),
+  // Subpartidas (opcional, solo para kind='expense'): desglose del gasto en
+  // líneas con su propio concepto/monto/categoría.
+  lines: z
+    .array(
+      z.object({
+        concept: z.string().min(1, 'El concepto es obligatorio'),
+        amount: z.coerce.number().positive('El monto debe ser mayor a 0'),
+        categoryId: z.string().optional(),
+      }),
+    )
+    .default([]),
+}).superRefine((data, ctx) => {
+  if (data.kind !== 'expense' || data.lines.length === 0) return
+  const sum = data.lines.reduce((s, l) => s + (l.amount || 0), 0)
+  const diff = Math.round((data.amount - sum) * 100) / 100
+  if (Math.abs(diff) > 0.01) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['lines'],
+      message:
+        diff > 0
+          ? `Restan ${diff.toFixed(2)} ${data.currency} por asignar`
+          : `Te pasaste por ${Math.abs(diff).toFixed(2)} ${data.currency}`,
+    })
+  }
 })
 
 type FormData = z.infer<typeof schema>
@@ -147,6 +175,7 @@ export function TransactionForm({
           msiInterestFree: true,
           msiStartDate: todayISO(),
           msiPaidPrevious: false,
+          lines: [],
         }
       : {
           kind: initial?.kind ?? 'expense',
@@ -160,8 +189,31 @@ export function TransactionForm({
           msiInterestFree: true,
           msiStartDate: todayISO(),
           msiPaidPrevious: false,
+          lines: [],
         },
   })
+
+  const replaceLines = useReplaceTransactionLines()
+  const existingLinesQuery = useTransactionLines(transaction ? [transaction.id] : [])
+  const linesField = useFieldArray({ control: form.control, name: 'lines' })
+
+  // Precarga las líneas ya guardadas al editar (llegan por una query aparte,
+  // no por defaultValues, porque el formulario ya está montado con la
+  // transacción antes de que ese fetch resuelva).
+  useEffect(() => {
+    if (!transaction) return
+    const existing = existingLinesQuery.data?.get(transaction.id)
+    if (existing) {
+      linesField.replace(
+        existing.map((l) => ({
+          concept: l.concept,
+          amount: l.amount,
+          categoryId: l.category_id ?? '',
+        })),
+      )
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transaction?.id, existingLinesQuery.dataUpdatedAt])
 
   const txKind = form.watch('kind')
   const cardId = form.watch('cardId')
@@ -442,6 +494,20 @@ export function TransactionForm({
           txDate: data.txDate,
           notes: data.notes,
         })
+        // Reemplaza el desglose completo (borra + inserta el set nuevo). Si
+        // se editó a un kind distinto de 'expense', se limpia lo que hubiera.
+        await replaceLines.mutateAsync({
+          userId,
+          transactionId: transaction.id,
+          lines:
+            data.kind === 'expense'
+              ? data.lines.map((l) => ({
+                  concept: l.concept,
+                  amount: l.amount,
+                  categoryId: l.categoryId,
+                }))
+              : [],
+        })
         notifyBudgets()
         onSuccess?.()
         return
@@ -467,6 +533,18 @@ export function TransactionForm({
         notes: data.notes,
         familyId,
       })
+
+      if (data.kind === 'expense' && data.lines.length > 0) {
+        await replaceLines.mutateAsync({
+          userId,
+          transactionId: tx.id,
+          lines: data.lines.map((l) => ({
+            concept: l.concept,
+            amount: l.amount,
+            categoryId: l.categoryId,
+          })),
+        })
+      }
 
       // MSI/diferido (premium): crear el plan y sembrar el ledger de meses ya
       // pagados (en lugar del viejo ingreso de "Ajuste de saldo").
@@ -709,6 +787,25 @@ export function TransactionForm({
                   👨‍👩‍👧 {t('Gasto familiar (se registra en el plan familiar)')}
                 </span>
               </label>
+            )}
+            <TransactionLinesFields
+              lines={form.watch('lines') ?? []}
+              onChange={(i, patch) => {
+                if (patch.concept !== undefined) form.setValue(`lines.${i}.concept`, patch.concept)
+                if (patch.amount !== undefined) form.setValue(`lines.${i}.amount`, patch.amount)
+                if (patch.categoryId !== undefined)
+                  form.setValue(`lines.${i}.categoryId`, patch.categoryId)
+              }}
+              onAdd={() => linesField.append({ concept: '', amount: 0, categoryId: '' })}
+              onRemove={(i) => linesField.remove(i)}
+              categories={categories.filter((c) => c.kind === 'expense')}
+              currency={currency}
+              totalAmount={amountNum}
+            />
+            {form.formState.errors.lines?.message && (
+              <p className="text-xs text-red-600 dark:text-red-400">
+                {form.formState.errors.lines.message as string}
+              </p>
             )}
           </>
         )}

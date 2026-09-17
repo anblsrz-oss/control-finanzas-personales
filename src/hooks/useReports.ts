@@ -305,28 +305,63 @@ export function useCategoryTotals(userId?: string, filters?: ReportFilters) {
         (tx) => tx.kind !== 'transfer' || tx.is_external,
       )
 
+      // Subpartidas de los gastos en este rango: si una transacción tiene
+      // líneas, el reporte usa la categoría DE CADA LÍNEA (prorrateando
+      // base_amount, que es multimoneda a nivel de la transacción completa);
+      // si no tiene líneas, cae al comportamiento de siempre (categoría de la
+      // transacción).
+      const expenseIds = txs.filter((tx) => tx.kind === 'expense').map((tx) => tx.id)
+      const linesByTx = new Map<string, any[]>()
+      if (expenseIds.length > 0) {
+        const { data: lines, error: linesError } = await supabase
+          .from('transaction_lines')
+          .select('transaction_id, amount, categories(name, icon, color)')
+          .in('transaction_id', expenseIds)
+        if (linesError) throw linesError
+        for (const l of lines || []) {
+          const list = linesByTx.get(l.transaction_id)
+          if (list) list.push(l)
+          else linesByTx.set(l.transaction_id, [l])
+        }
+      }
+
       // Agrupar por categoría
       const byCategory: Record<
         string,
         { name: string; icon: string; total: number; color: string }
       > = {}
 
-      txs.forEach((tx) => {
-        const catName = tx.categories?.name || 'Sin categoría'
-        const catIcon = tx.categories?.icon || '•'
-        if (!byCategory[catName]) {
-          byCategory[catName] = {
-            name: catName,
-            icon: catIcon,
-            total: 0,
-            // Color propio de la categoría (editable en Categorías); si no tiene,
-            // la gráfica lo rellena con la paleta elegida por índice.
-            color: tx.categories?.color || '',
-          }
+      const addTo = (name: string, icon: string, color: string, value: number) => {
+        if (!byCategory[name]) {
+          byCategory[name] = { name, icon, total: 0, color }
         }
+        byCategory[name].total += value
+      }
+
+      txs.forEach((tx) => {
+        const lines = linesByTx.get(tx.id)
         const value = tx.base_amount ?? tx.amount
-        // Un reembolso resta: la categoría refleja el gasto neto.
-        byCategory[catName].total += tx.kind === 'refund' ? -value : value
+        if (lines?.length && Number(tx.amount) > 0) {
+          for (const l of lines) {
+            const share = value * (Number(l.amount) / Number(tx.amount))
+            addTo(
+              l.categories?.name || 'Sin categoría',
+              l.categories?.icon || '•',
+              l.categories?.color || '',
+              share,
+            )
+          }
+        } else {
+          // Un reembolso resta: la categoría refleja el gasto neto.
+          addTo(
+            tx.categories?.name || 'Sin categoría',
+            tx.categories?.icon || '•',
+            // Color propio de la categoría (editable en Categorías); si no
+            // tiene, la gráfica lo rellena con la paleta elegida por índice.
+            tx.categories?.color || '',
+            tx.kind === 'refund' ? -value : value,
+          )
+        }
       })
 
       return Object.values(byCategory)

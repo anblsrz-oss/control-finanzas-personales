@@ -1,14 +1,18 @@
-import { useForm } from 'react-hook-form'
+import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useCreateAccount, useUpdateAccount } from '@/hooks/useAccounts'
+import {
+  useAccountYieldTiers,
+  useSaveAccountYieldTiers,
+} from '@/hooks/useAccountYieldTiers'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Card } from '@/components/ui/Card'
-import { CURRENCIES_ARRAY, CURRENCIES } from '@/lib/format'
+import { CURRENCIES_ARRAY, CURRENCIES, formatMoney } from '@/lib/format'
 import { toMonthlyRate, toAnnualRate, daysInMonthOf } from '@/lib/yields'
 import type { AccountRow } from '@/types/db'
 
@@ -45,6 +49,16 @@ const schema = z.object({
   yield_term_end: z.string().optional(),
   withhold_isr: z.boolean().default(false),
   isr_rate: z.coerce.number().optional(),
+  // Tramos por monto (ej. SOFIPOs): primeros $X a una tasa, el excedente a
+  // otra. Solo aplica a rendimiento "a la vista"; opcional.
+  yield_tiers: z
+    .array(
+      z.object({
+        min_amount: z.coerce.number().min(0, 'Debe ser 0 o mayor'),
+        rate: z.coerce.number(),
+      }),
+    )
+    .default([]),
   is_scholarship: z.boolean().default(false),
   scholarship_name: z.string().optional(),
 })
@@ -53,16 +67,24 @@ type FormData = z.infer<typeof schema>
 
 interface AccountFormProps {
   account?: AccountRow
+  /** Al crear un apartado (cajita) dentro de esta cuenta: fija su moneda y oculta lo que no aplica. */
+  parentAccount?: AccountRow
   onSuccess?: () => void
   onCancel?: () => void
 }
 
-export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) {
+export function AccountForm({ account, parentAccount, onSuccess, onCancel }: AccountFormProps) {
   const { t } = useTranslation()
   const { session } = useAuth()
+  const userId = session?.user?.id
   const createAccount = useCreateAccount()
   const updateAccount = useUpdateAccount()
+  const tiersQuery = useAccountYieldTiers(userId)
+  const saveTiers = useSaveAccountYieldTiers()
   const isEdit = !!account
+  const isPocket = !!parentAccount
+
+  const existingTiers = (tiersQuery.data || []).filter((t) => t.account_id === account?.id)
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -74,8 +96,8 @@ export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) 
       account_last4: account?.account_last4 ?? '',
       account_number: account?.account_number ?? '',
       account_number_last4: account?.account_number_last4 ?? '',
-      type: account?.type ?? 'checking',
-      currency: (account?.currency as any) ?? 'MXN',
+      type: account?.type ?? (parentAccount ? parentAccount.type : 'checking'),
+      currency: ((account?.currency ?? parentAccount?.currency) as any) ?? 'MXN',
       initial_balance: account?.initial_balance ?? 0,
       has_yield: account?.has_yield ?? false,
       yield_rate: account?.yield_rate ?? undefined,
@@ -85,14 +107,26 @@ export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) 
       yield_term_end: account?.yield_term_end ?? '',
       withhold_isr: account?.withhold_isr ?? false,
       isr_rate: account?.isr_rate ?? DEFAULT_ISR_RATE,
+      yield_tiers: existingTiers.map((t) => ({ min_amount: t.min_amount, rate: t.rate })),
       is_scholarship: account?.is_scholarship ?? false,
       scholarship_name: account?.scholarship_name ?? '',
     },
   })
 
-  const pending = createAccount.isPending || updateAccount.isPending
+  const tiersField = useFieldArray({ control: form.control, name: 'yield_tiers' })
+
+  const pending = createAccount.isPending || updateAccount.isPending || saveTiers.isPending
   const ratePeriod = form.watch('yield_rate_period')
   const rateValue = Number(form.watch('yield_rate')) || 0
+  const formCurrency = form.watch('currency')
+
+  // Los tramos son marginales (como el ISR): se leen ordenados por "Desde",
+  // sin importar en qué orden los haya capturado el usuario. Esta vista
+  // previa muestra el rango real que le toca a cada uno para que no haya
+  // que adivinar el orden correcto.
+  const tiersPreview = [...(form.watch('yield_tiers') || [])]
+    .map((tier, fieldIndex) => ({ ...tier, fieldIndex }))
+    .sort((a, b) => (Number(a.min_amount) || 0) - (Number(b.min_amount) || 0))
 
   // Al capturar la CLABE completa, se autocompletan los últimos 4 para que
   // el usuario no tenga que escribirlos dos veces. Sigue editable a mano por
@@ -119,8 +153,36 @@ export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) 
       alert(t('No hay sesión activa'))
       return
     }
+    const userId = session.user.id
+    const { yield_tiers, ...rest } = data
+    // Los campos de plazo solo aplican a plazo fijo, y el ISR solo si se pidió
+    // descontarlo: si no, se limpian para no dejar datos que no significan nada.
+    const isTerm = rest.has_yield && rest.yield_kind === 'term'
+    // Los tramos por monto solo aplican a rendimiento a la vista.
+    const supportsTiers = rest.has_yield && rest.yield_kind === 'demand'
+    const payload = {
+      ...rest,
+      clabe: rest.clabe || null,
+      account_last4: rest.account_last4 || null,
+      account_number: rest.account_number || null,
+      account_number_last4: rest.account_number_last4 || null,
+      yield_term_days: isTerm ? (rest.yield_term_days ?? null) : null,
+      yield_term_end: isTerm ? (rest.yield_term_end || null) : null,
+      isr_rate: rest.has_yield && rest.withhold_isr ? (rest.isr_rate ?? null) : null,
+      withhold_isr: rest.has_yield && rest.withhold_isr,
+    }
+    const tiersToSave = supportsTiers ? yield_tiers : []
+
     const handlers = {
-      onSuccess: () => {
+      onSuccess: (saved: any) => {
+        const accountId = saved?.id ?? account?.id
+        if (accountId) {
+          saveTiers.mutate({
+            userId,
+            accountId,
+            tiers: tiersToSave.map((tier) => ({ min_amount: tier.min_amount, rate: tier.rate })),
+          })
+        }
         form.reset()
         onSuccess?.()
       },
@@ -129,33 +191,22 @@ export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) 
         alert(`Error: ${error.message || 'Error desconocido'}`)
       },
     }
-    // Los campos de plazo solo aplican a plazo fijo, y el ISR solo si se pidió
-    // descontarlo: si no, se limpian para no dejar datos que no significan nada.
-    const isTerm = data.has_yield && data.yield_kind === 'term'
-    const payload = {
-      ...data,
-      clabe: data.clabe || null,
-      account_last4: data.account_last4 || null,
-      account_number: data.account_number || null,
-      account_number_last4: data.account_number_last4 || null,
-      yield_term_days: isTerm ? (data.yield_term_days ?? null) : null,
-      yield_term_end: isTerm ? (data.yield_term_end || null) : null,
-      isr_rate: data.has_yield && data.withhold_isr ? (data.isr_rate ?? null) : null,
-      withhold_isr: data.has_yield && data.withhold_isr,
-    }
 
     if (isEdit) {
       updateAccount.mutate(
         {
           id: account!.id,
-          userId: session.user.id,
+          userId,
           ...payload,
           scholarship_name: data.is_scholarship ? data.scholarship_name || null : null,
         },
         handlers,
       )
     } else {
-      createAccount.mutate({ userId: session.user.id, ...payload }, handlers)
+      createAccount.mutate(
+        { userId, ...payload, parent_account_id: parentAccount?.id ?? null },
+        handlers,
+      )
     }
   }
 
@@ -176,47 +227,59 @@ export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) 
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <Input
-            label={t('CLABE (opcional)')}
-            placeholder="012345678901234567"
-            inputMode="numeric"
-            maxLength={18}
-            {...form.register('clabe')}
-            onChange={(e) => handleClabeChange(e.target.value)}
-            error={form.formState.errors.clabe?.message}
-          />
-          <Input
-            label={t('Últimos 4 de la CLABE (opcional)')}
-            placeholder="1234"
-            inputMode="numeric"
-            maxLength={4}
-            {...form.register('account_last4')}
-            error={form.formState.errors.account_last4?.message}
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <Input
-            label={t('Número de cuenta (opcional)')}
-            placeholder="01234567890"
-            inputMode="numeric"
-            maxLength={20}
-            {...form.register('account_number')}
-            onChange={(e) => handleAccountNumberChange(e.target.value)}
-            error={form.formState.errors.account_number?.message}
-          />
-          <Input
-            label={t('Últimos 4 de la cuenta (opcional)')}
-            placeholder="1234"
-            inputMode="numeric"
-            maxLength={4}
-            {...form.register('account_number_last4')}
-            error={form.formState.errors.account_number_last4?.message}
-          />
-        </div>
-        <p className="-mt-2 text-xs text-slate-400 dark:text-slate-500">
-          {t('Sirven para identificar automáticamente depósitos y transferencias por SMS o correo. Solo los últimos 4 dígitos se usan para eso, aunque guardes el número completo. La CLABE y el número de cuenta no comparten terminación, por eso van por separado.')}
-        </p>
+        {isPocket && (
+          <p className="-mt-2 text-xs text-slate-500 dark:text-slate-400">
+            {t('Apartado dentro de {{name}}. Comparte su moneda y tiene su propio saldo y rendimiento.', {
+              name: parentAccount!.name,
+            })}
+          </p>
+        )}
+
+        {!isPocket && (
+          <>
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label={t('CLABE (opcional)')}
+                placeholder="012345678901234567"
+                inputMode="numeric"
+                maxLength={18}
+                {...form.register('clabe')}
+                onChange={(e) => handleClabeChange(e.target.value)}
+                error={form.formState.errors.clabe?.message}
+              />
+              <Input
+                label={t('Últimos 4 de la CLABE (opcional)')}
+                placeholder="1234"
+                inputMode="numeric"
+                maxLength={4}
+                {...form.register('account_last4')}
+                error={form.formState.errors.account_last4?.message}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                label={t('Número de cuenta (opcional)')}
+                placeholder="01234567890"
+                inputMode="numeric"
+                maxLength={20}
+                {...form.register('account_number')}
+                onChange={(e) => handleAccountNumberChange(e.target.value)}
+                error={form.formState.errors.account_number?.message}
+              />
+              <Input
+                label={t('Últimos 4 de la cuenta (opcional)')}
+                placeholder="1234"
+                inputMode="numeric"
+                maxLength={4}
+                {...form.register('account_number_last4')}
+                error={form.formState.errors.account_number_last4?.message}
+              />
+            </div>
+            <p className="-mt-2 text-xs text-slate-400 dark:text-slate-500">
+              {t('Sirven para identificar automáticamente depósitos y transferencias por SMS o correo. Solo los últimos 4 dígitos se usan para eso, aunque guardes el número completo. La CLABE y el número de cuenta no comparten terminación, por eso van por separado.')}
+            </p>
+          </>
+        )}
 
         <div className="grid grid-cols-3 gap-4">
           <Select
@@ -232,6 +295,7 @@ export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) 
           />
           <Select
             label={t('Moneda')}
+            disabled={isPocket}
             options={Array.from(CURRENCIES).map((c) => ({ value: c, label: c }))}
             {...form.register('currency')}
           />
@@ -313,6 +377,89 @@ export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) 
                 </div>
               )}
 
+              {form.watch('yield_kind') === 'demand' && (
+                <div className="space-y-2 rounded-lg border border-dashed border-slate-300 p-3 dark:border-slate-600">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-medium text-slate-700 dark:text-slate-200">
+                      {t('Tramos por monto (opcional)')}
+                    </span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => tiersField.append({ min_amount: 0, rate: 0 })}
+                    >
+                      + {t('Agregar tramo')}
+                    </Button>
+                  </div>
+                  {tiersField.fields.length > 0 && (
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      {t('Son tramos MARGINALES: se ordenan solos por "Desde", sin importar en qué orden los captures. El primero (normalmente "Desde $0") cubre hasta el siguiente tramo, y así sucesivamente. Sustituyen a la tasa de arriba mientras haya al menos uno.')}
+                    </p>
+                  )}
+                  {tiersField.fields.map((field, index) => (
+                    <div key={field.id} className="grid grid-cols-[1fr_1fr_auto] items-end gap-2">
+                      <Input
+                        label={t('Desde ($)')}
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        {...form.register(`yield_tiers.${index}.min_amount` as const)}
+                        error={form.formState.errors.yield_tiers?.[index]?.min_amount?.message}
+                      />
+                      <Input
+                        label={t('Tasa (%)')}
+                        type="number"
+                        step="0.001"
+                        {...form.register(`yield_tiers.${index}.rate` as const)}
+                        error={form.formState.errors.yield_tiers?.[index]?.rate?.message}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-600"
+                        onClick={() => tiersField.remove(index)}
+                      >
+                        ✕
+                      </Button>
+                    </div>
+                  ))}
+
+                  {tiersPreview.length > 0 && (
+                    <div className="mt-2 space-y-1 rounded-md bg-slate-100 p-2 dark:bg-slate-800/60">
+                      <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
+                        {t('Así quedaría:')}
+                      </p>
+                      {tiersPreview.map((tier, i) => {
+                        const from = Number(tier.min_amount) || 0
+                        const rate = Number(tier.rate) || 0
+                        const next = tiersPreview[i + 1]
+                        const isDuplicate = next && (Number(next.min_amount) || 0) === from
+                        return (
+                          <p
+                            key={tier.fieldIndex}
+                            className={`text-xs ${isDuplicate ? 'font-medium text-amber-600 dark:text-amber-400' : 'text-slate-500 dark:text-slate-400'}`}
+                          >
+                            {next
+                              ? t('De {{from}} a {{to}}: {{rate}}%', {
+                                  from: formatMoney(from, formCurrency),
+                                  to: formatMoney(Number(next.min_amount) || 0, formCurrency),
+                                  rate,
+                                })
+                              : t('De {{from}} en adelante: {{rate}}%', {
+                                  from: formatMoney(from, formCurrency),
+                                  rate,
+                                })}
+                            {isDuplicate && ` — ${t('dos tramos empiezan en el mismo monto')}`}
+                          </p>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+
               <label className="flex items-start gap-2">
                 <input
                   type="checkbox"
@@ -339,25 +486,27 @@ export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) 
           )}
         </div>
 
-        <div className="space-y-2">
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              {...form.register('is_scholarship')}
-              className="cursor-pointer"
-            />
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-              🎓 {t('Es una cuenta de beca')}
-            </span>
-          </label>
-          {form.watch('is_scholarship') && (
-            <Input
-              label={t('Nombre de la beca (opcional)')}
-              placeholder={t('Ej: Beca Benito Juárez')}
-              {...form.register('scholarship_name')}
-            />
-          )}
-        </div>
+        {!isPocket && (
+          <div className="space-y-2">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                {...form.register('is_scholarship')}
+                className="cursor-pointer"
+              />
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                🎓 {t('Es una cuenta de beca')}
+              </span>
+            </label>
+            {form.watch('is_scholarship') && (
+              <Input
+                label={t('Nombre de la beca (opcional)')}
+                placeholder={t('Ej: Beca Benito Juárez')}
+                {...form.register('scholarship_name')}
+              />
+            )}
+          </div>
+        )}
 
         <div className="flex gap-2">
           <Button type="submit" disabled={pending}>
@@ -365,9 +514,11 @@ export function AccountForm({ account, onSuccess, onCancel }: AccountFormProps) 
               ? t('Guardando…')
               : isEdit
                 ? t('Guardar cambios')
-                : t('Crear cuenta')}
+                : isPocket
+                  ? t('Crear apartado')
+                  : t('Crear cuenta')}
           </Button>
-          {isEdit && onCancel && (
+          {onCancel && (
             <Button type="button" variant="ghost" onClick={onCancel}>
               {t('Cancelar')}
             </Button>

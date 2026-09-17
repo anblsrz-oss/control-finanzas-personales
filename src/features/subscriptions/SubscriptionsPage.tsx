@@ -10,6 +10,7 @@ import {
   useUpdateSubscription,
   useDeleteSubscription,
   useDetectSubscriptions,
+  useGenerateSubscriptionChargeNow,
 } from '@/hooks/useSubscriptions'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Button } from '@/components/ui/Button'
@@ -18,6 +19,8 @@ import { Money } from '@/components/ui/Money'
 import { Emoji } from '@/components/ui/Emoji'
 import { SubscriptionForm } from './SubscriptionForm'
 import { monthlyEquivalent } from '@/lib/subscriptionMerchants'
+import { formatMoney } from '@/lib/format'
+import { todayISO } from '@/lib/dates'
 import type { SubscriptionRow } from '@/types/db'
 
 const NO_DOMICILE_KEY = '__none__'
@@ -47,6 +50,7 @@ export function SubscriptionsPage() {
   const updateSubscription = useUpdateSubscription()
   const deleteSubscription = useDeleteSubscription()
   const detectSubscriptions = useDetectSubscriptions()
+  const generateChargeNow = useGenerateSubscriptionChargeNow()
 
   const subscriptions = subscriptionsQuery.data || []
   const cards = cardsQuery.data || []
@@ -98,13 +102,41 @@ export function SubscriptionsPage() {
     }
   }
 
+  // Solo aparece cuando next_charge_date ya venció — el RPC además lo
+  // rechaza del lado del servidor, así que nunca se puede duplicar un cargo
+  // ya contabilizado (al registrarlo, next_charge_date avanza y desaparece).
+  const isChargeDue = (s: SubscriptionRow) => !!s.next_charge_date && s.next_charge_date <= todayISO()
+
+  const handleRegisterCharge = async (s: SubscriptionRow) => {
+    if (!userId) return
+    try {
+      const created = await generateChargeNow.mutateAsync({ subscriptionId: s.id, userId })
+      if (created.length === 0) {
+        alert(t('No había ningún cobro pendiente por registrar.'))
+      } else if (created.length === 1) {
+        alert(
+          t('Cobro de {{amount}} registrado ({{date}}).', {
+            amount: formatMoney(created[0].amount, s.currency),
+            date: created[0].tx_date,
+          }),
+        )
+      } else {
+        alert(t('Se registraron {{n}} cobros pendientes.', { n: created.length }))
+      }
+    } catch (e: any) {
+      alert(e?.message || t('No se pudo registrar el cobro.'))
+    }
+  }
+
   return (
     <>
       <PageHeader
         title={t('Suscripciones')}
         subtitle={t('Cargos recurrentes domiciliados a tus tarjetas y cuentas.')}
+        helpId="suscripciones"
         actions={
           <Button
+            data-tour="suscripciones"
             onClick={() => {
               setEditing(null)
               setShowForm(!showForm)
@@ -213,7 +245,17 @@ export function SubscriptionsPage() {
                   <div className="flex items-center gap-3">
                     <span className="text-2xl"><Emoji emoji={s.icon ?? '🔁'} /></span>
                     <div>
-                      <p className="font-medium text-slate-800 dark:text-slate-100">{s.name}</p>
+                      <p className="flex items-center gap-1.5 font-medium text-slate-800 dark:text-slate-100">
+                        {s.name}
+                        {s.auto_generate && (
+                          <span
+                            className="rounded bg-teal-100 dark:bg-teal-900/40 px-1.5 py-0.5 text-[10px] font-medium text-teal-700 dark:text-teal-300"
+                            title={t('Se registra sola cada ciclo, sin esperar correo/SMS')}
+                          >
+                            🔁 {t('Automático')}
+                          </span>
+                        )}
+                      </p>
                       <p className="text-xs text-slate-500 dark:text-slate-400">
                         <Money amount={s.amount} currency={s.currency} /> ·{' '}
                         {t(
@@ -227,7 +269,17 @@ export function SubscriptionsPage() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
+                    {isChargeDue(s) && (
+                      <Button
+                        size="sm"
+                        onClick={() => handleRegisterCharge(s)}
+                        disabled={generateChargeNow.isPending}
+                        title={t('El próximo cobro ya venció y todavía no se ha contabilizado')}
+                      >
+                        💸 {t('Registrar cobro')}
+                      </Button>
+                    )}
                     <Button size="sm" variant="ghost" onClick={() => { setShowForm(false); setEditing(s) }}>
                       {t('Editar')}
                     </Button>

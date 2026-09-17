@@ -38,6 +38,7 @@ const schema = z.object({
   next_charge_date: z.string().optional(),
   domicile: z.string(),
   category_id: z.string(),
+  auto_generate: z.boolean().default(false),
 })
 
 type FormData = z.infer<typeof schema>
@@ -77,6 +78,7 @@ export function SubscriptionForm({ subscription, onSuccess, onCancel }: Subscrip
       next_charge_date: subscription?.next_charge_date ?? '',
       domicile: domicileDefault,
       category_id: subscription?.category_id ?? '',
+      auto_generate: subscription?.auto_generate ?? false,
     },
   })
 
@@ -157,6 +159,7 @@ export function SubscriptionForm({ subscription, onSuccess, onCancel }: Subscrip
           cardId,
           accountId,
           categoryId: data.category_id || null,
+          autoGenerate: data.auto_generate,
         },
         handlers,
       )
@@ -174,6 +177,7 @@ export function SubscriptionForm({ subscription, onSuccess, onCancel }: Subscrip
           cardId,
           accountId,
           categoryId: data.category_id || null,
+          autoGenerate: data.auto_generate,
         },
         handlers,
       )
@@ -237,6 +241,22 @@ export function SubscriptionForm({ subscription, onSuccess, onCancel }: Subscrip
           options={domicileOptions}
           {...form.register('domicile')}
         />
+
+        <label className="flex items-start gap-2">
+          <input
+            type="checkbox"
+            {...form.register('auto_generate')}
+            className="mt-0.5 cursor-pointer"
+          />
+          <span className="text-sm text-slate-700 dark:text-slate-200">
+            {t('Generar el cargo automáticamente')}
+            <span className="block text-xs text-slate-400 dark:text-slate-500">
+              {t(
+                'Úsalo si este comercio NO te manda un correo o SMS que la app pueda leer: se registrará solo cada ciclo, cargado a la tarjeta/cuenta de arriba.',
+              )}
+            </span>
+          </span>
+        </label>
 
         <Select
           label={t('Categoría')}

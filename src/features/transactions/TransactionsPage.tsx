@@ -8,9 +8,11 @@ import {
   useConfirmTransaction,
   useTransactionDeletions,
   useInstallmentPlans,
+  useTransactionLines,
 } from '@/hooks/useTransactions'
 import type { TransactionFilter } from '@/hooks/useTransactions'
 import { useDebouncedValue } from '@/hooks/useDebouncedValue'
+import { useSettings } from '@/store/useSettings'
 import { useAccounts } from '@/hooks/useAccounts'
 import { useCards } from '@/hooks/useCards'
 import { useCreditLines } from '@/hooks/useCreditLines'
@@ -47,7 +49,9 @@ export function TransactionsPage() {
   const [refunding, setRefunding] = useState<TransactionRow | null>(null)
   const [reason, setReason] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [viewingLinesTx, setViewingLinesTx] = useState<TransactionRow | null>(null)
   const formRef = useRef<HTMLDivElement>(null)
+  const { transactionsViewMode, setTransactionsViewMode } = useSettings()
 
   // En móvil, al editar hay que llevar al usuario hasta el formulario de arriba.
   useEffect(() => {
@@ -142,6 +146,12 @@ export function TransactionsPage() {
     }
     return map
   }, [transactions])
+
+  // Subpartidas de las transacciones visibles, agrupadas por transaction_id
+  // (una sola query para todo el listado, no una por fila).
+  const txIds = useMemo(() => transactions.map((t) => t.id), [transactions])
+  const linesByTxQuery = useTransactionLines(txIds)
+  const linesByTx = linesByTxQuery.data ?? new Map()
 
   // Monedas ofrecidas en el filtro: el catálogo + las que ya usan las cuentas
   // y tarjetas del usuario + la principal (por si es exótica). Sin query extra.
@@ -334,6 +344,35 @@ export function TransactionsPage() {
         canUsePeriodFilter={canUseTransactionsPeriodFilter}
       />
 
+      {transactions.length > 0 && (
+        <div className="mb-3 flex justify-end gap-1">
+          <button
+            type="button"
+            onClick={() => setTransactionsViewMode('cards')}
+            title={t('Vista de tarjetas')}
+            className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+              transactionsViewMode === 'cards'
+                ? 'bg-brand-600 text-white'
+                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+            }`}
+          >
+            🗂️ {t('Tarjetas')}
+          </button>
+          <button
+            type="button"
+            onClick={() => setTransactionsViewMode('table')}
+            title={t('Vista de tabla')}
+            className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+              transactionsViewMode === 'table'
+                ? 'bg-brand-600 text-white'
+                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+            }`}
+          >
+            📋 {t('Tabla')}
+          </button>
+        </div>
+      )}
+
       {transactions.length === 0 ? (
         <Card className="animate-empty-state-in border-dashed text-center">
           <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -344,6 +383,105 @@ export function TransactionsPage() {
               : t('Sin transacciones. Registra una para empezar.')}
           </p>
         </Card>
+      ) : transactionsViewMode === 'table' ? (
+        <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50 dark:bg-slate-900 text-xs text-slate-500 dark:text-slate-400">
+              <tr>
+                <th className="px-3 py-2">{t('Fecha')}</th>
+                <th className="px-3 py-2">{t('Concepto')}</th>
+                <th className="px-3 py-2">{t('Categoría')}</th>
+                <th className="px-3 py-2">{t('Cuenta / tarjeta')}</th>
+                <th className="px-3 py-2">{t('Tipo')}</th>
+                <th className="px-3 py-2 text-right">{t('Monto')}</th>
+                <th className="px-3 py-2"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.map((tx) => {
+                const lines = linesByTx.get(tx.id)
+                const hasLines = !!lines?.length
+                return (
+                  <tr
+                    key={tx.id}
+                    onClick={() => hasLines && setViewingLinesTx(tx)}
+                    className={`border-t border-slate-100 dark:border-slate-700 ${
+                      hasLines ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800' : ''
+                    } ${tx.pending ? 'opacity-70' : ''}`}
+                  >
+                    <td className="whitespace-nowrap px-3 py-2 text-slate-500 dark:text-slate-400">
+                      {formatDate(tx.tx_date)}
+                    </td>
+                    <td className="px-3 py-2">
+                      <span className="font-medium text-slate-800 dark:text-slate-100">
+                        {tx.concept || t('Sin concepto')}
+                      </span>
+                      {hasLines && (
+                        <span className="ml-1.5 rounded bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 text-[10px] font-medium text-slate-500 dark:text-slate-300">
+                          🧾 {t('{{n}} líneas', { n: lines!.length })}
+                        </span>
+                      )}
+                      {tx.pending && (
+                        <span className="ml-1.5 rounded bg-amber-100 dark:bg-amber-900/40 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-300">
+                          {t('Pendiente')}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2 text-slate-500 dark:text-slate-400">
+                      {getCategoryName(tx.category_id || undefined)}
+                    </td>
+                    <td className="px-3 py-2 text-slate-500 dark:text-slate-400">{flowLabel(tx)}</td>
+                    <td className="whitespace-nowrap px-3 py-2 text-slate-500 dark:text-slate-400">
+                      {kindLabel(tx.kind)}
+                    </td>
+                    <td
+                      className={`whitespace-nowrap px-3 py-2 text-right font-semibold ${
+                        tx.kind === 'income' || tx.kind === 'refund'
+                          ? 'text-green-600'
+                          : 'text-slate-800 dark:text-slate-100'
+                      }`}
+                    >
+                      {tx.kind === 'income' || tx.kind === 'refund'
+                        ? '+'
+                        : tx.kind === 'transfer' && !tx.is_external
+                          ? ''
+                          : '-'}
+                      <Money amount={tx.amount} currency={tx.currency} />
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-2 text-right">
+                      <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+                        {tx.pending && (
+                          <button
+                            onClick={() => confirmTx.mutate({ id: tx.id, userId: userId! })}
+                            disabled={confirmTx.isPending}
+                            className="text-xs font-medium text-green-600 transition-colors hover:text-green-700 disabled:opacity-50"
+                          >
+                            ✓
+                          </button>
+                        )}
+                        <button
+                          onClick={() => {
+                            setShowForm(false)
+                            setEditingTx(tx)
+                          }}
+                          className="text-xs font-medium text-brand-600 transition-colors hover:text-brand-800 dark:text-brand-400"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          onClick={() => openDelete(tx)}
+                          className="text-xs font-medium text-red-500 transition-colors hover:text-red-700"
+                        >
+                          🗑
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <div className="grid gap-3">
           {transactions.map((tx) => (
@@ -377,6 +515,14 @@ export function TransactionsPage() {
                     ↩️ {t('Reembolsado')}{' '}
                     {formatMoney(refundedTotalsByOriginal.get(tx.id)!, tx.currency)}
                   </p>
+                )}
+                {(linesByTx.get(tx.id)?.length ?? 0) > 0 && (
+                  <button
+                    onClick={() => setViewingLinesTx(tx)}
+                    className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400 underline transition-colors hover:text-brand-600"
+                  >
+                    🧾 {t('Ver detalle ({{n}} líneas)', { n: linesByTx.get(tx.id)!.length })}
+                  </button>
                 )}
               </div>
               <div className="flex flex-col items-end gap-2">
@@ -493,6 +639,39 @@ export function TransactionsPage() {
         plans={plans}
         onClose={() => setRefunding(null)}
       />
+
+      {/* Detalle de subpartidas: modal superpuesto, no un expandir hacia abajo
+          — al cerrarlo, la tabla/tarjetas quedan igual que antes. */}
+      <Modal
+        open={!!viewingLinesTx}
+        title={viewingLinesTx?.concept || t('Detalle')}
+        onClose={() => setViewingLinesTx(null)}
+      >
+        {viewingLinesTx && (
+          <div className="grid gap-2">
+            {(linesByTx.get(viewingLinesTx.id) ?? []).map((line: any) => (
+              <div
+                key={line.id}
+                className="flex items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-700 pb-2 text-sm last:border-0 last:pb-0"
+              >
+                <div>
+                  <p className="font-medium text-slate-800 dark:text-slate-100">{line.concept}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {getCategoryName(line.category_id || undefined)}
+                  </p>
+                </div>
+                <span className="whitespace-nowrap font-semibold text-slate-700 dark:text-slate-200">
+                  <Money amount={line.amount} currency={viewingLinesTx.currency} />
+                </span>
+              </div>
+            ))}
+            <div className="mt-1 flex items-center justify-between border-t border-slate-200 dark:border-slate-600 pt-2 text-sm font-semibold text-slate-800 dark:text-slate-100">
+              <span>{t('Total')}</span>
+              <Money amount={viewingLinesTx.amount} currency={viewingLinesTx.currency} />
+            </div>
+          </div>
+        )}
+      </Modal>
     </>
   )
 }
