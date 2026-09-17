@@ -1,5 +1,5 @@
 {
-  "version": "0.11.0",
-  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.11.0/finzen-v0.11.0.apk",
-  "notes": "Nuevo: más monedas (DOP y otras de Latinoamérica) con buscador; cada movimiento en otra moneda muestra su equivalente en tu moneda principal; filtro por moneda en el historial; y la sección Conciliación para comparar el estado de cuenta del banco con lo que registraste."
+  "version": "0.12.0",
+  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.12.0/finzen-v0.12.0.apk",
+  "notes": "Nuevo: rendimientos por tramos de monto (ej. primeros $50,000 a una tasa, el excedente a otra) y apartados (cajitas) dentro de una cuenta con su propio rendimiento; verificar un rendimiento ahora registra la transacción; suscripciones sin correo/SMS se pueden cobrar solas cada ciclo; y subpartidas para desglosar un gasto en varias líneas con su propia categoría."
 }
