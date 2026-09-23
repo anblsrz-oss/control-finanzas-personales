@@ -1,5 +1,5 @@
 {
-  "version": "0.12.0",
-  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.12.0/finzen-v0.12.0.apk",
-  "notes": "Nuevo: rendimientos por tramos de monto (ej. primeros $50,000 a una tasa, el excedente a otra) y apartados (cajitas) dentro de una cuenta con su propio rendimiento; verificar un rendimiento ahora registra la transacción; suscripciones sin correo/SMS se pueden cobrar solas cada ciclo; y subpartidas para desglosar un gasto en varias líneas con su propia categoría."
+  "version": "0.13.0",
+  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.13.0/finzen-v0.13.0.apk",
+  "notes": "Nuevo: \"Captura por notificaciones\" en Android — registra solos los cargos que avisan las apps de tu banco, wallet o tiendas, aun con la app cerrada. Si el mismo cargo llega también por SMS o correo, ahora se cuenta una sola vez; si hay duda, se marca como \"Posible duplicado\" para que lo revises."
 }
