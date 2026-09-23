@@ -167,6 +167,51 @@ Dos modos: **manual** (`sync-email`, siempre disponible) y **tiempo real**
   siempre los rechaza para finanzas personales → mantener distribución por **APK**.
 - En iOS/web la pantalla muestra "no disponible" automáticamente.
 
+## 6.1 Captura por notificaciones push — solo Android
+
+Para bancos/fintech que ya no mandan SMS: se leen las notificaciones de sus
+apps ("Compra aprobada por $250.00 en OXXO con tu tarjeta *1234").
+
+- Código: [src/lib/notificationSync.ts](src/lib/notificationSync.ts) +
+  [src/features/notification-capture/NotificationCapturePage.tsx](src/features/notification-capture/NotificationCapturePage.tsx)
+  (ruta `/captura-notificaciones`) + nativo `PaymentNotificationListener.java`
+  (`NotificationListenerService`), `NotificationCapturePlugin.java` (registrado
+  en `MainActivity.java`) e `IngestClient.java` (HTTP y avisos locales,
+  compartido con `SmsReceiver`). Backend: Edge Function `ingest-notification` +
+  migración `0071_notification_capture.sql`.
+- **Permiso especial**: "Acceso a notificaciones" no se pide con diálogo; la
+  página abre Ajustes (`ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS` en
+  Android 11+) y el usuario lo activa a mano. El `<service>` va declarado con
+  `BIND_NOTIFICATION_LISTENER_SERVICE`. Para listar las apps instaladas se usa
+  `<queries>` (intent MAIN/LAUNCHER), sin `QUERY_ALL_PACKAGES`.
+- **Qué sale del teléfono**: solo notificaciones de las apps marcadas
+  (Preferences `notif_packages`) y solo si traen un monto. Sin red se encolan
+  (SharedPreferences `finzen_notif_queue`, máx. 200) y se reenvían al
+  reconectarse el servicio o al reanudar la app.
+- **Token**: reutiliza el token de dispositivo de SMS (`sms_device_tokens`).
+  Cada captura tiene su interruptor (`sms_capture_on`, `notif_capture_on`); el
+  token solo se revoca cuando ambas están apagadas.
+- **Dedupe entre canales** (SMS, correo y notificaciones): todos insertan por la
+  RPC `ingest_signal_with_dedupe` (migración 0071). Mismo monto/moneda, cuentas
+  compatibles y ±10 min ⇒ se fusiona; ±24 h o cuentas distintas ⇒ entra
+  pendiente con `possible_duplicate_of`. Dos avisos del mismo canal nunca se
+  fusionan. Cada aviso queda en `ingest_signals`.
+- **Desplegar**:
+  ```bash
+  # aplicar 0071_notification_capture.sql
+  npx supabase functions deploy ingest-notification --no-verify-jwt
+  npx supabase functions deploy ingest-sms --no-verify-jwt
+  npx supabase functions deploy sync-email
+  npx supabase functions deploy gmail-push --no-verify-jwt
+  npx supabase functions deploy outlook-push --no-verify-jwt
+  ```
+- **Batería**: en Xiaomi/Huawei/Oppo/Vivo hay que permitir "inicio automático" y
+  quitar la optimización de batería, o el sistema desconecta el listener.
+- **Probar sin banco**: `adb shell cmd notification post -S bigtext -t "BBVA" prueba "Compra por \$123.45 en OXXO con tarjeta *1234"`
+  (el paquete será `com.android.shell`: márcalo temporalmente en la lista).
+- **Google Play**: el NotificationListener sí se permite, pero requiere
+  declararlo en el formulario de permisos; por ahora se distribuye por APK.
+
 ## 7. Base de datos
 
 Aplica la migración [0002_ingestion.sql](https://github.com/anblsrz-oss/finzen-backend/blob/main/supabase/migrations/0002_ingestion.sql)

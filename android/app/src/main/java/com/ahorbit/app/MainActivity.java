@@ -7,8 +7,10 @@ import com.getcapacitor.BridgeActivity;
 public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        // Registrar el plugin propio de permisos de SMS antes de crear el bridge.
+        // Registrar los plugins propios (permisos de SMS y acceso a
+        // notificaciones) antes de crear el bridge.
         registerPlugin(SmsCapturePlugin.class);
+        registerPlugin(NotificationCapturePlugin.class);
         super.onCreate(savedInstanceState);
     }
 }

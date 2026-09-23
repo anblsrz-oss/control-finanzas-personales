@@ -12,6 +12,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-22-captura-notificaciones',
+    date: '2026-09-22',
+    title: 'Captura por notificaciones (Android)',
+    description:
+      'Nueva sección "Captura por notificaciones": marca las apps de tu banco, wallet o tiendas y los cargos que te avisen se registran solos, aun con la app cerrada. Además, si el mismo cargo llega por notificación, SMS y correo ahora se registra una sola vez; si hay duda, se marca como "Posible duplicado" para que lo revises.',
+  },
+  {
     id: '2026-09-17-rendimientos-tramos-apartados',
     date: '2026-09-17',
     title: 'Tramos, apartados y rendimientos que sí contabilizan',

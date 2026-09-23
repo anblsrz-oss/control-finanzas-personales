@@ -5,8 +5,8 @@ export type AccountType = 'checking' | 'savings' | 'investment' | 'cash' | 'vouc
 export type CardType = 'credit' | 'debit' | 'voucher'
 export type TxKind = 'income' | 'expense' | 'transfer' | 'card_payment' | 'refund'
 export type CategoryKind = 'income' | 'expense'
-export type TxSource = 'manual' | 'import' | 'email' | 'sms' | 'aggregator' | 'receipt' | 'subscription' | 'yield'
-export type IngestChannel = 'csv' | 'pdf' | 'email' | 'sms'
+export type TxSource = 'manual' | 'import' | 'email' | 'sms' | 'aggregator' | 'receipt' | 'subscription' | 'yield' | 'notification'
+export type IngestChannel = 'csv' | 'pdf' | 'email' | 'sms' | 'notification'
 export type ImportStatus = 'parsing' | 'staged' | 'confirmed' | 'failed'
 export type StagingStatus = 'pending' | 'confirmed' | 'discarded' | 'duplicate'
 
@@ -182,7 +182,41 @@ export interface TransactionRow {
   subscription_id: string | null
   /** Compra original que este reembolso cancela parcial o totalmente. */
   refund_of_transaction_id: string | null
+  /** Hora exacta del aviso (SMS/correo/notificación), para el dedupe entre canales. */
+  occurred_at: string | null
+  /** Movimiento con el que probablemente está duplicado (revisión manual). */
+  possible_duplicate_of: string | null
+  /** Comercio aportado por una app de compras (Amazon, Rappi...). */
+  merchant_hint: string | null
   created_at: string
+}
+
+// Cada aviso procesado por un canal automático (migración 0071). Sirve para
+// "Recibido por: SMS · Notificación BBVA" y para ver qué se fusionó.
+export interface IngestSignalRow {
+  id: string
+  user_id: string
+  transaction_id: string | null
+  source: 'sms' | 'email' | 'notification'
+  channel_key: string
+  external_id: string
+  app_package: string | null
+  app_name: string | null
+  sender: string | null
+  amount: number | null
+  currency: string | null
+  occurred_at: string | null
+  outcome: 'inserted' | 'merged' | 'flagged'
+  created_at: string
+}
+
+export interface NotificationAppCatalogRow {
+  id: string
+  package_name: string | null
+  display_name: string
+  label_pattern: string | null
+  kind: 'bank' | 'fintech' | 'wallet' | 'shopping'
+  default_on: boolean
 }
 
 export interface TransactionLineRow {
@@ -376,6 +410,9 @@ export interface ParsingRuleConfig {
   // Categoría fija para este remitente (ej. PlayStation Store -> Videojuegos).
   // Gana siempre sobre la categoría adivinada por texto.
   categoryId?: string
+  // Notificaciones: la app es una tienda (Amazon, Rappi...). Sus avisos
+  // entran pendientes y aportan el comercio al fusionarse con el del banco.
+  shopping?: boolean
 }
 
 export interface TransactionDeletionRow {

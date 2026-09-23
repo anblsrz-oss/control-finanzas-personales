@@ -76,18 +76,72 @@ async function sha256hex(s: string): Promise<string> {
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('')
 }
 
-async function getStoredToken(): Promise<string | null> {
+export async function getStoredToken(): Promise<string | null> {
   const { value } = await Preferences.get({ key: PREF_TOKEN })
   return value ?? null
 }
 
+// El token de dispositivo lo comparten la captura de SMS y la de
+// notificaciones (src/lib/notificationSync.ts). Cada una tiene su propio
+// interruptor en Preferences; el token solo se revoca cuando las dos están
+// apagadas. Instalaciones previas no tienen PREF_SMS_ON: token = SMS activo.
+const PREF_SMS_ON = 'sms_capture_on'
+export const PREF_NOTIF_ON = 'notif_capture_on'
+
 export async function isSmsCaptureEnabled(): Promise<boolean> {
-  return (await getStoredToken()) !== null
+  if ((await getStoredToken()) === null) return false
+  const { value } = await Preferences.get({ key: PREF_SMS_ON })
+  return value !== 'false'
 }
 
-// Activa la captura automática: pide permisos, genera y registra un token de
-// dispositivo (hash en BD, token en claro en Preferences) y guarda la config
-// que el receptor nativo necesita para llamar a la Edge Function.
+// Devuelve el token de dispositivo, creándolo y registrándolo (hash en BD,
+// token en claro en Preferences) si todavía no existe, junto con la config
+// que los capturadores nativos necesitan para llamar a las Edge Functions.
+export async function ensureDeviceToken(userId: string): Promise<string> {
+  const existing = await getStoredToken()
+  if (existing) return existing
+
+  const token = randomToken()
+  const tokenHash = await sha256hex(token)
+  const label = `${Capacitor.getPlatform()} ${new Date().toISOString().slice(0, 10)}`
+
+  const { error } = await supabase
+    .from('sms_device_tokens')
+    .insert({ user_id: userId, token_hash: tokenHash, device_label: label })
+  if (error) throw error
+
+  // Recién creado: ninguna de las dos capturas está encendida todavía.
+  await Preferences.set({ key: PREF_SMS_ON, value: 'false' })
+  await Preferences.set({ key: PREF_TOKEN, value: token })
+  await Preferences.set({ key: PREF_URL, value: SUPABASE_URL })
+  await Preferences.set({ key: PREF_ANON, value: ANON_KEY })
+  return token
+}
+
+// Revoca el token (BD + Preferences) si ya ninguna captura lo usa.
+export async function releaseDeviceTokenIfUnused(userId: string): Promise<void> {
+  const [{ value: smsOn }, { value: notifOn }] = await Promise.all([
+    Preferences.get({ key: PREF_SMS_ON }),
+    Preferences.get({ key: PREF_NOTIF_ON }),
+  ])
+  if (smsOn !== 'false' || notifOn === 'true') return
+  const token = await getStoredToken()
+  if (token) {
+    const tokenHash = await sha256hex(token)
+    await supabase
+      .from('sms_device_tokens')
+      .delete()
+      .eq('user_id', userId)
+      .eq('token_hash', tokenHash)
+  }
+  await Preferences.remove({ key: PREF_TOKEN })
+  await Preferences.remove({ key: PREF_URL })
+  await Preferences.remove({ key: PREF_ANON })
+  await Preferences.remove({ key: PREF_SMS_ON })
+}
+
+// Activa la captura automática: pide permisos, asegura el token de
+// dispositivo y guarda los remitentes que filtra el receptor nativo.
 export async function enableSmsCapture(
   userId: string,
   senders: string[],
@@ -101,36 +155,17 @@ export async function enableSmsCapture(
     )
   }
 
-  const token = randomToken()
-  const tokenHash = await sha256hex(token)
-  const label = `${Capacitor.getPlatform()} ${new Date().toISOString().slice(0, 10)}`
-
-  const { error } = await supabase
-    .from('sms_device_tokens')
-    .insert({ user_id: userId, token_hash: tokenHash, device_label: label })
-  if (error) throw error
-
-  await Preferences.set({ key: PREF_TOKEN, value: token })
-  await Preferences.set({ key: PREF_URL, value: SUPABASE_URL })
-  await Preferences.set({ key: PREF_ANON, value: ANON_KEY })
+  await ensureDeviceToken(userId)
   await Preferences.set({ key: PREF_SENDERS, value: senders.join(',') })
+  await Preferences.set({ key: PREF_SMS_ON, value: 'true' })
 }
 
-// Desactiva la captura: revoca el token en BD y limpia Preferences.
+// Desactiva la captura de SMS; el token se revoca solo si la captura de
+// notificaciones tampoco lo usa.
 export async function disableSmsCapture(userId: string): Promise<void> {
-  const token = await getStoredToken()
-  if (token) {
-    const tokenHash = await sha256hex(token)
-    await supabase
-      .from('sms_device_tokens')
-      .delete()
-      .eq('user_id', userId)
-      .eq('token_hash', tokenHash)
-  }
-  await Preferences.remove({ key: PREF_TOKEN })
-  await Preferences.remove({ key: PREF_URL })
-  await Preferences.remove({ key: PREF_ANON })
+  await Preferences.set({ key: PREF_SMS_ON, value: 'false' })
   await Preferences.remove({ key: PREF_SENDERS })
+  await releaseDeviceTokenIfUnused(userId)
 }
 
 // Mantiene actualizada la lista de remitentes que el receptor nativo usa para

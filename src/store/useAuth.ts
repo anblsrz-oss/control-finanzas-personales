@@ -4,6 +4,7 @@ import { App } from '@capacitor/app'
 import { supabase } from '@/lib/supabase'
 import { initNativeAuthListener } from '@/lib/nativeAuth'
 import { autoSyncSmsSilently, isAndroidNative } from '@/lib/smsSync'
+import { flushNotificationQueueSilently } from '@/lib/notificationSync'
 import { registerPush, unregisterPush } from '@/lib/pushNotifications'
 import type { ProfileRow } from '@/types/db'
 
@@ -51,8 +52,12 @@ export const useAuth = create<AuthState>((set, get) => ({
     // sincronizamos los SMS pendientes. No-op si la captura no está activada.
     if (isAndroidNative()) {
       void autoSyncSmsSilently()
+      void flushNotificationQueueSilently()
       App.addListener('appStateChange', ({ isActive }) => {
-        if (isActive) void autoSyncSmsSilently()
+        if (!isActive) return
+        void autoSyncSmsSilently()
+        // Captura de notificaciones: reintentar lo que quedó sin red.
+        void flushNotificationQueueSilently()
       })
     }
 

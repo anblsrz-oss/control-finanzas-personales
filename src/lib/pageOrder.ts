@@ -23,6 +23,7 @@ export const PAGE_NAV_ITEMS: PageNavItem[] = [
   { to: '/familia', label: 'Familia', icon: '👨‍👩‍👧‍👦' },
   { to: '/correo', label: 'Sincronizar correo', icon: '📧' },
   { to: '/sms', label: 'Sincronizar SMS', icon: '📱' },
+  { to: '/captura-notificaciones', label: 'Captura por notificaciones', icon: '🔔' },
   { to: '/conectar', label: 'Conexión automática', icon: '🔗' },
   { to: '/categorias', label: 'Categorías', icon: '🏷️' },
   { to: '/rendimientos', label: 'Rendimientos', icon: '📈' },

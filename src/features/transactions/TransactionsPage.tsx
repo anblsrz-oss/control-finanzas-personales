@@ -26,6 +26,8 @@ import { Card } from '@/components/ui/Card'
 import { Modal } from '@/components/ui/Modal'
 import { TransactionForm } from './TransactionForm'
 import { RefundDialog } from './RefundDialog'
+import { PossibleDuplicateNotice, ReceivedVia } from './CaptureInfo'
+import { useDismissPossibleDuplicate, useSignalsByTransaction } from '@/hooks/useIngestSignals'
 import {
   TransactionFilters,
   EMPTY_FILTERS,
@@ -114,6 +116,7 @@ export function TransactionsPage() {
   const plansQuery = useInstallmentPlans(userId)
   const deleteTx = useDeleteTransaction()
   const confirmTx = useConfirmTransaction()
+  const dismissDuplicate = useDismissPossibleDuplicate()
   const { transactionLimit, canUseTransactionsPeriodFilter } = useEntitlements()
 
   // Tarjetas compartidas de mi familia (para registrar gastos familiares).
@@ -122,6 +125,15 @@ export function TransactionsPage() {
   const familyCardsQuery = useFamilyCards(familyId)
 
   const transactions = transactionsQuery.data || []
+  // Avisos (SMS/correo/notificación) de las transacciones visibles que
+  // vinieron de un canal automático, para "Recibido por ...".
+  const signalsQuery = useSignalsByTransaction(
+    userId,
+    transactions
+      .filter((tx) => tx.source === 'sms' || tx.source === 'email' || tx.source === 'notification')
+      .map((tx) => tx.id),
+  )
+  const signalsByTx = signalsQuery.data
   // Contra el límite del plan se mide el histórico completo, no lo filtrado.
   const totalCount = totalCountQuery.data ?? 0
   const accounts = accountsQuery.data || []
@@ -174,6 +186,25 @@ export function TransactionsPage() {
     setDeleting(tx)
     setReason('')
     setError(null)
+  }
+
+  // "Es duplicado": el mismo flujo de borrar con motivo, ya prellenado.
+  function deleteAsDuplicate(tx: TransactionRow) {
+    openDelete(tx)
+    setReason(t('Duplicado de otro aviso (SMS/correo/notificación)'))
+  }
+
+  function duplicateNotice(tx: TransactionRow, compact: boolean) {
+    return (
+      <PossibleDuplicateNotice
+        tx={tx}
+        original={transactions.find((o) => o.id === tx.possible_duplicate_of)}
+        onIsDuplicate={() => deleteAsDuplicate(tx)}
+        onDistinct={() => dismissDuplicate.mutate({ id: tx.id, userId: userId! })}
+        busy={dismissDuplicate.isPending}
+        compact={compact}
+      />
+    )
   }
 
   async function confirmDelete() {
@@ -426,6 +457,7 @@ export function TransactionsPage() {
                           {t('Pendiente')}
                         </span>
                       )}
+                      <span onClick={(e) => e.stopPropagation()}>{duplicateNotice(tx, true)}</span>
                     </td>
                     <td className="px-3 py-2 text-slate-500 dark:text-slate-400">
                       {getCategoryName(tx.category_id || undefined)}
@@ -510,6 +542,8 @@ export function TransactionsPage() {
                 {tx.notes && (
                   <p className="mt-1 text-xs italic text-slate-400 dark:text-slate-500">{tx.notes}</p>
                 )}
+                {duplicateNotice(tx, false)}
+                <ReceivedVia signals={signalsByTx?.get(tx.id)} />
                 {tx.kind === 'expense' && (refundedTotalsByOriginal.get(tx.id) ?? 0) > 0 && (
                   <p className="mt-1 text-xs font-medium text-brand-600 dark:text-brand-400">
                     ↩️ {t('Reembolsado')}{' '}

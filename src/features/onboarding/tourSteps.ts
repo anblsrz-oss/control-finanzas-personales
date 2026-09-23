@@ -156,6 +156,14 @@ export const TOUR_STEPS: TourStep[] = [
     target: 'sms',
   },
   {
+    id: 'notif-capture',
+    icon: '🔔',
+    title: 'Captura por notificaciones',
+    body: 'En Android, registra solos los cargos que te avisan las apps de tu banco, wallet o tiendas. Si el mismo cargo llega también por SMS o correo, se cuenta una sola vez.',
+    route: '/captura-notificaciones',
+    target: 'notif-capture',
+  },
+  {
     id: 'conectar',
     icon: '🔗',
     title: 'Conexión automática',

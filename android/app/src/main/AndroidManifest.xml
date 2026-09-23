@@ -56,7 +56,30 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
+
+        <!-- Captura de cargos leyendo las notificaciones push de las apps del
+             banco / fintech / tiendas que el usuario marque. Requiere que el
+             usuario dé "Acceso a notificaciones" en Ajustes. Ver
+             src/lib/notificationSync.ts y PaymentNotificationListener.java. -->
+        <service
+            android:name=".PaymentNotificationListener"
+            android:label="@string/app_name"
+            android:exported="true"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
     </application>
+
+    <!-- Android 11+: ver las apps con ícono en el lanzador (para que el
+         usuario elija cuáles escuchar) sin pedir QUERY_ALL_PACKAGES. -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
 
     <!-- Permissions -->
 

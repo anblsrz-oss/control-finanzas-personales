@@ -1091,4 +1091,86 @@ export const en: Record<string, string> = {
   'Aún no guardas ninguna.': "You haven't saved any yet.",
   'Cuenta/tarjeta eliminada': 'Deleted account/card',
   'Conciliación con estados de cuenta': 'Statement reconciliation',
+  'Captura por notificaciones':
+    'Notification capture',
+  'Registra solos los cargos que te avisan las apps de tu banco, wallet o tiendas. Disponible solo en la app de Android.':
+    'Automatically records the charges your bank, wallet or shopping apps notify you about. Available only in the Android app.',
+  '📵 Apple no permite que las apps lean las notificaciones de otras apps. En iPhone usa "Sincronizar correo" o "Importar" tu estado de cuenta.':
+    '📵 Apple doesn\'t allow apps to read other apps\' notifications. On iPhone use "Sync email" or "Import" your statement.',
+  'Esta función solo está disponible en la app instalada de Android.':
+    'This feature is only available in the installed Android app.',
+  '1. Acceso a notificaciones':
+    '1. Notification access',
+  '✅ Acceso concedido.':
+    '✅ Access granted.',
+  'Android pide activar este permiso a mano: se abrirá Ajustes, busca esta app y activa "Permitir acceso a notificaciones".':
+    'Android requires turning this permission on manually: Settings will open, find this app and enable "Allow notification access".',
+  'Dar acceso a notificaciones':
+    'Grant notification access',
+  'Privacidad: solo se leen las apps que marques abajo y solo se envían los avisos que traen un monto. El texto de la notificación no se guarda; solo el movimiento que se detecte.':
+    'Privacy: only the apps you check below are read, and only notifications with an amount are sent. The notification text is not stored; only the detected transaction.',
+  '2. Apps que se escuchan':
+    '2. Apps to listen to',
+  'Buscar app':
+    'Search app',
+  'Cargando apps…':
+    'Loading apps…',
+  'Fintech':
+    'Fintech',
+  'Wallet':
+    'Wallet',
+  '3. Captura automática':
+    '3. Automatic capture',
+  '✅ Activada para {{n}} apps.':
+    '✅ Enabled for {{n}} apps.',
+  'Actívala para que los cargos se registren solos, aun con la app cerrada.':
+    'Turn it on so charges are recorded automatically, even with the app closed.',
+  'Si el mismo cargo llega también por SMS o correo, se registra una sola vez. Los de apps de compras entran como pendientes. En Xiaomi, Huawei, Oppo y similares permite el "inicio automático" y quita la optimización de batería, o el sistema apaga la captura.':
+    'If the same charge also arrives by SMS or email, it is recorded only once. Charges from shopping apps come in as pending. On Xiaomi, Huawei, Oppo and similar phones, allow "autostart" and disable battery optimization, or the system will stop the capture.',
+  'Captura de notificaciones desactivada.':
+    'Notification capture disabled.',
+  'Marca al menos una app (tu banco, por ejemplo) antes de activar.':
+    'Check at least one app (your bank, for example) before enabling.',
+  'Captura activada. Los cargos que te avisen esas apps se registrarán solos.':
+    'Capture enabled. Charges those apps notify you about will be recorded automatically.',
+  'Captura activada. Falta darle a la app "Acceso a notificaciones" en Ajustes.':
+    'Capture enabled. You still need to give the app "Notification access" in Settings.',
+  'Registrado':
+    'Recorded',
+  'Unido a un cargo que ya existía':
+    'Merged into an existing charge',
+  'Posible duplicado, por revisar':
+    'Possible duplicate, needs review',
+  'Últimos avisos recibidos':
+    'Latest notices received',
+  'Aún no llega ninguno.':
+    'None received yet.',
+  'Cuenta por defecto':
+    'Default account',
+  'Según la terminación del aviso':
+    'Based on the card/account ending in the notice',
+  'Categoría fija (opcional)':
+    'Fixed category (optional)',
+  'Adivinar por el texto':
+    'Guess from the text',
+  'Es una app de compras (sus cargos entran pendientes y aportan el comercio)':
+    'It\'s a shopping app (its charges come in as pending and provide the merchant)',
+  'La cuenta por defecto se usa cuando el aviso no menciona la terminación de tu tarjeta o cuenta (por ejemplo, Mercado Pago).':
+    'The default account is used when the notice doesn\'t mention your card or account ending (e.g. Mercado Pago).',
+  'Posible duplicado':
+    'Possible duplicate',
+  'Es duplicado':
+    'It\'s a duplicate',
+  'Son distintos':
+    'They\'re different',
+  'Parecido a "{{concept}}" del {{date}}':
+    'Similar to "{{concept}}" from {{date}}',
+  'Recibido por: {{channels}}':
+    'Received via: {{channels}}',
+  'Notificación {{app}}':
+    '{{app}} notification',
+  'Duplicado de otro aviso (SMS/correo/notificación)':
+    'Duplicate of another notice (SMS/email/notification)',
+  'Datos de captura opcional por notificaciones (solo Android): si activas "Captura por notificaciones" y le das a la app el "Acceso a notificaciones" de Android, la app lee únicamente las notificaciones de las apps que tú marcas (por ejemplo, la de tu banco) y solo envía al servidor las que traen un monto, para extraer monto, fecha, comercio y terminación de tarjeta; el texto de la notificación no se guarda y las notificaciones de otras apps no se leen.':
+    'Optional notification capture data (Android only): if you enable "Notification capture" and grant the app Android\'s "Notification access", the app reads only the notifications of the apps you check (for example, your bank\'s) and only sends to the server those that contain an amount, to extract amount, date, merchant and card ending; the notification text is not stored and notifications from other apps are not read.',
 }
