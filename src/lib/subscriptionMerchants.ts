@@ -24,6 +24,7 @@ export const SUBSCRIPTION_MERCHANT_OPTIONS: SubscriptionMerchantOption[] = [
   { key: 'playstation_plus', name: 'PlayStation Plus', icon: '🎮', defaultCycle: 'monthly' },
   { key: 'xbox_game_pass', name: 'Xbox Game Pass', icon: '🎮', defaultCycle: 'monthly' },
   { key: 'canva', name: 'Canva', icon: '🎨', defaultCycle: 'monthly' },
+  { key: 'udemy', name: 'Udemy', icon: '🎓', defaultCycle: 'monthly' },
 ]
 
 export const SUBSCRIPTION_DEFAULT_ICON = '🔁'
