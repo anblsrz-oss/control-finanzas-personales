@@ -1173,4 +1173,50 @@ export const en: Record<string, string> = {
     'Duplicate of another notice (SMS/email/notification)',
   'Datos de captura opcional por notificaciones (solo Android): si activas "Captura por notificaciones" y le das a la app el "Acceso a notificaciones" de Android, la app lee únicamente las notificaciones de las apps que tú marcas (por ejemplo, la de tu banco) y solo envía al servidor las que traen un monto, para extraer monto, fecha, comercio y terminación de tarjeta; el texto de la notificación no se guarda y las notificaciones de otras apps no se leen.':
     'Optional notification capture data (Android only): if you enable "Notification capture" and grant the app Android\'s "Notification access", the app reads only the notifications of the apps you check (for example, your bank\'s) and only sends to the server those that contain an amount, to extract amount, date, merchant and card ending; the notification text is not stored and notifications from other apps are not read.',
+  'Si activaste todo y aun así no ves nada aquí después de un cargo real, el aviso ni siquiera llegó al teléfono a tiempo — revisa la guía de arriba.':
+    'If you turned everything on and still see nothing here after a real charge, the notice never even reached the phone in time — check the guide above.',
+  '🔧 ¿No te está funcionando?':
+    '🔧 Not working for you?',
+  '▲ Ocultar':
+    '▲ Hide',
+  '▼ Ver guía':
+    '▼ See guide',
+  'Si ya diste el permiso y marcaste tu banco pero un cargo real no aparece, casi siempre es el propio teléfono cerrando la app en segundo plano para "ahorrar batería". Busca tu marca y sigue los pasos.':
+    'If you already granted the permission and checked your bank but a real charge doesn\'t show up, it\'s almost always the phone itself closing the app in the background to "save battery". Find your brand and follow the steps.',
+  'Xiaomi, Redmi, POCO (MIUI o HyperOS)':
+    'Xiaomi, Redmi, POCO (MIUI or HyperOS)',
+  'Ajustes del teléfono → Aplicaciones → Gestionar aplicaciones → busca esta app → Ahorro de batería → elige "Sin restricciones".':
+    'Phone Settings → Apps → Manage apps → find this app → Battery saver → choose "No restrictions".',
+  'En esa misma pantalla, activa "Inicio automático".':
+    'On that same screen, turn on "Autostart".',
+  'Abre las apps recientes (botón cuadrado), mantén presionada la tarjeta de esta app hasta que aparezca un candado, y actívalo para que no se cierre sola.':
+    'Open recent apps (square button), long-press this app\'s card until a lock icon appears, and turn it on so it doesn\'t get closed on its own.',
+  'Si después de esto sigue sin registrar nada: desinstala la app y vuelve a instalarla. A veces el sistema deja el permiso en un estado raro que solo se arregla reinstalando.':
+    'If it still records nothing after this: uninstall the app and reinstall it. Sometimes the system leaves the permission in a stuck state that only reinstalling fixes.',
+  'Huawei, Honor (EMUI o MagicOS)':
+    'Huawei, Honor (EMUI or MagicOS)',
+  'Ajustes → Batería → Inicio de apps → busca esta app y desactiva la gestión automática.':
+    'Settings → Battery → App launch → find this app and turn off automatic management.',
+  'Activa a mano las tres opciones que aparecen: "Inicio automático", "Inicio secundario" y "Ejecutar en segundo plano".':
+    'Manually turn on the three options that appear: "Auto-launch", "Secondary launch", and "Run in background".',
+  'Oppo, Realme, OnePlus (ColorOS)':
+    'Oppo, Realme, OnePlus (ColorOS)',
+  'Ajustes → Batería → Uso de batería por app → busca esta app → permite "Actividad en segundo plano".':
+    'Settings → Battery → App battery usage → find this app → allow "Background activity".',
+  'Ajustes → Administración de apps (o "Inicio automático de apps") → actívalo para esta app.':
+    'Settings → App management (or "App auto-launch") → turn it on for this app.',
+  'Samsung (One UI)':
+    'Samsung (One UI)',
+  'Mantén presionado el ícono de la app → Info de la app → Batería → elige "Sin restricciones".':
+    'Long-press the app icon → App info → Battery → choose "Unrestricted".',
+  'Ajustes → Cuidado del dispositivo → Batería → Límites de uso en segundo plano → confirma que esta app NO esté en "Apps que no se usan" ni en "Apps en reposo profundo".':
+    'Settings → Device care → Battery → Background usage limits → make sure this app is NOT in "Unused apps" or "Deep sleeping apps".',
+  'Otra marca':
+    'Other brand',
+  'Busca en Ajustes algo como "Optimización de batería" o "Ahorro de energía" y pon esta app en "Sin restricciones" o "No optimizar".':
+    'Look in Settings for something like "Battery optimization" or "Power saving" and set this app to "No restrictions" or "Don\'t optimize".',
+  'Revisa que no tenga activado ningún modo de "suspender apps no usadas" para ella.':
+    'Check that no "suspend unused apps" mode is enabled for it.',
+  '¿Sigue sin funcionar después de todo esto? Mientras tanto, esos cargos no se pierden: sigue registrándolos con "Importar" o capturándolos a mano, y cuando puedas cuéntanos la marca y modelo de tu teléfono para revisarlo.':
+    'Still not working after all this? In the meantime those charges aren\'t lost: keep recording them with "Import" or by hand, and when you can, tell us your phone\'s brand and model so we can look into it.',
 }
