@@ -433,17 +433,6 @@ export interface TransactionDeletionRow {
   deleted_at: string
 }
 
-export interface BankConnectionRow {
-  id: string
-  user_id: string
-  provider: string
-  external_id: string | null
-  institution: string | null
-  status: 'pending' | 'active' | 'error' | 'revoked'
-  last_sync_at: string | null
-  created_at: string
-}
-
 // Configuración global (una sola fila). Editable por admin.
 export interface AppConfigRow {
   id: boolean
@@ -466,6 +455,10 @@ export interface AppConfigRow {
   logo_url: string | null
   // Orden de páginas del sidebar/menú "Más" y del tutorial (null = orden por defecto). Ver lib/pageOrder.ts.
   page_order: string[] | null
+  // Premium/límite de las funciones nuevas, por clave del registro lib/features.ts.
+  feature_flags: import('@/lib/features').FeatureFlags
+  // Rutas del menú ocultas para usuarios no admin.
+  hidden_pages: string[]
   updated_at: string
 }
 

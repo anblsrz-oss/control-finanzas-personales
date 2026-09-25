@@ -22,6 +22,8 @@ import { CURRENCIES, formatMoney } from '@/lib/format'
 import { todayISO } from '@/lib/dates'
 import { parseCfdiXml, isCfdiXml, cfdiIsIncome } from '@/lib/cfdiParser'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { PremiumLocked } from '@/components/ui/PremiumLocked'
+import { useMonthlyLimit } from '@/hooks/useAppConfig'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -84,6 +86,7 @@ export function ReceiptPage() {
   const createTransaction = useCreateTransaction()
   const replaceLines = useReplaceTransactionLines()
   const ocrReceipt = useOcrReceipt()
+  const receiptLimit = useMonthlyLimit('receipts')
 
   const [docMode, setDocMode] = useState<DocMode>('receipt')
   const [step, setStep] = useState<Step>('capture')
@@ -619,7 +622,9 @@ export function ReceiptPage() {
         helpId="recibos"
       />
 
-      {step === 'capture' && (
+      {step === 'capture' && receiptLimit.reached && <PremiumLocked message={t('Plan gratis: llegaste al límite de {{n}} movimientos escaneados este mes. Actualiza a Premium para escanear más.', { n: receiptLimit.limit })} />}
+
+      {step === 'capture' && !receiptLimit.reached && (
         <Card>
           {errorMsg && (
             <p className="mb-4 rounded-lg bg-red-50 dark:bg-red-900/20 p-3 text-sm text-red-700 dark:text-red-300">

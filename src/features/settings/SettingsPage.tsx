@@ -131,7 +131,7 @@ export function SettingsPage() {
       { onError: (err: any) => alert(`${t('Error:')} ${err.message}`) },
     )
   }
-  const { canUseFamily } = useEntitlements()
+  const { canUseFamily, canUse } = useEntitlements()
 
   const calendarConnQuery = useGoogleCalendarConnection(userId)
   const calendarConnected = !!calendarConnQuery.data
@@ -503,7 +503,11 @@ export function SettingsPage() {
           </p>
 
           <div className="flex flex-wrap items-center gap-3">
-            {!calendarConnected ? (
+            {!calendarConnected && !canUse('calendar_reminders') ? (
+              <p className="text-sm text-amber-700 dark:text-amber-300">
+                {t('Esta función es solo para Premium. Actualiza tu plan para usarla.')}
+              </p>
+            ) : !calendarConnected ? (
               !calendarProviderToken ? (
                 <Button onClick={() => void connectGoogleCalendar()}>
                   {t('Conectar Google Calendar')}

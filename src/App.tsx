@@ -4,6 +4,8 @@ import { useAuth } from '@/store/useAuth'
 import { useAppConfig } from '@/hooks/useAppConfig'
 import { applyThemeColors } from '@/lib/themeColors'
 import { AppShell } from '@/components/layout/AppShell'
+import { PageGuard } from '@/components/layout/PageGuard'
+import { FeatureGate } from '@/components/ui/FeatureGate'
 import { ProtectedRoute } from '@/features/auth/ProtectedRoute'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { ResetPasswordPage } from '@/features/auth/ResetPasswordPage'
@@ -27,7 +29,6 @@ import { EmailSyncPage } from '@/features/email/EmailSyncPage'
 import { SmsSyncPage } from '@/features/sms/SmsSyncPage'
 import { NotificationCapturePage } from '@/features/notification-capture/NotificationCapturePage'
 import { HelpFaqPage } from '@/features/help/HelpFaqPage'
-import { ConnectBankPage } from '@/features/connect/ConnectBankPage'
 import { CategoriesPage } from '@/features/categories/CategoriesPage'
 import { YieldsPage } from '@/features/yields/YieldsPage'
 import { ReportsPage } from '@/features/reports/ReportsPage'
@@ -58,11 +59,11 @@ export default function App() {
     <>
       {isNative() ? <NativeUpdatePrompt /> : <WebUpdatePrompt />}
     <Routes>
-      <Route path="/bienvenida" element={<LandingPage />} />
-      <Route path="/privacidad" element={<PrivacyPolicyPage />} />
-      <Route path="/terminos" element={<TermsPage />} />
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/bienvenida" element={<PageGuard to="/bienvenida"><LandingPage /></PageGuard>} />
+      <Route path="/privacidad" element={<PageGuard to="/privacidad"><PrivacyPolicyPage /></PageGuard>} />
+      <Route path="/terminos" element={<PageGuard to="/terminos"><TermsPage /></PageGuard>} />
+      <Route path="/login" element={<PageGuard to="/login"><LoginPage /></PageGuard>} />
+      <Route path="/reset-password" element={<PageGuard to="/reset-password"><ResetPasswordPage /></PageGuard>} />
       <Route
         element={
           <ProtectedRoute>
@@ -72,25 +73,24 @@ export default function App() {
       >
         <Route path="/" element={<DashboardPage />} />
         <Route path="/notificaciones" element={<NotificationsPage />} />
-        <Route path="/cuentas" element={<AccountsPage />} />
-        <Route path="/tarjetas" element={<CardsPage />} />
-        <Route path="/lineas-credito" element={<CreditLinesPage />} />
-        <Route path="/transacciones" element={<TransactionsPage />} />
-        <Route path="/presupuestos" element={<BudgetsPage />} />
-        <Route path="/suscripciones" element={<SubscriptionsPage />} />
-        <Route path="/importar" element={<ImportPage />} />
-        <Route path="/recibos" element={<ReceiptPage />} />
-        <Route path="/conciliacion" element={<ReconcilePage />} />
-        <Route path="/familia" element={<FamilyPage />} />
+        <Route path="/cuentas" element={<PageGuard to="/cuentas"><AccountsPage /></PageGuard>} />
+        <Route path="/tarjetas" element={<PageGuard to="/tarjetas"><CardsPage /></PageGuard>} />
+        <Route path="/lineas-credito" element={<PageGuard to="/lineas-credito"><FeatureGate feature="credit_lines"><CreditLinesPage /></FeatureGate></PageGuard>} />
+        <Route path="/transacciones" element={<PageGuard to="/transacciones"><TransactionsPage /></PageGuard>} />
+        <Route path="/presupuestos" element={<PageGuard to="/presupuestos"><FeatureGate feature="budgets"><BudgetsPage /></FeatureGate></PageGuard>} />
+        <Route path="/suscripciones" element={<PageGuard to="/suscripciones"><FeatureGate feature="subscriptions"><SubscriptionsPage /></FeatureGate></PageGuard>} />
+        <Route path="/importar" element={<PageGuard to="/importar"><FeatureGate feature="import"><ImportPage /></FeatureGate></PageGuard>} />
+        <Route path="/recibos" element={<PageGuard to="/recibos"><FeatureGate feature="receipts"><ReceiptPage /></FeatureGate></PageGuard>} />
+        <Route path="/conciliacion" element={<PageGuard to="/conciliacion"><ReconcilePage /></PageGuard>} />
+        <Route path="/familia" element={<PageGuard to="/familia"><FamilyPage /></PageGuard>} />
         <Route path="/configuracion" element={<SettingsPage />} />
-        <Route path="/correo" element={<EmailSyncPage />} />
-        <Route path="/sms" element={<SmsSyncPage />} />
-        <Route path="/captura-notificaciones" element={<NotificationCapturePage />} />
-        <Route path="/ayuda" element={<HelpFaqPage />} />
-        <Route path="/conectar" element={<ConnectBankPage />} />
-        <Route path="/categorias" element={<CategoriesPage />} />
-        <Route path="/rendimientos" element={<YieldsPage />} />
-        <Route path="/reportes" element={<ReportsPage />} />
+        <Route path="/correo" element={<PageGuard to="/correo"><FeatureGate feature="email_sync"><EmailSyncPage /></FeatureGate></PageGuard>} />
+        <Route path="/sms" element={<PageGuard to="/sms"><FeatureGate feature="sms_sync"><SmsSyncPage /></FeatureGate></PageGuard>} />
+        <Route path="/captura-notificaciones" element={<PageGuard to="/captura-notificaciones"><FeatureGate feature="notification_capture"><NotificationCapturePage /></FeatureGate></PageGuard>} />
+        <Route path="/ayuda" element={<PageGuard to="/ayuda"><HelpFaqPage /></PageGuard>} />
+        <Route path="/categorias" element={<PageGuard to="/categorias"><CategoriesPage /></PageGuard>} />
+        <Route path="/rendimientos" element={<PageGuard to="/rendimientos"><YieldsPage /></PageGuard>} />
+        <Route path="/reportes" element={<PageGuard to="/reportes"><ReportsPage /></PageGuard>} />
         <Route path="/admin" element={<AdminPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

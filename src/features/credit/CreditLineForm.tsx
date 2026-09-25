@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
+import { useEntitlements } from '@/hooks/useAppConfig'
 import { useAuth } from '@/store/useAuth'
 import { useCreateCreditLine, useUpdateCreditLine } from '@/hooks/useCreditLines'
 import { Button } from '@/components/ui/Button'
@@ -36,6 +37,8 @@ export function CreditLineForm({ line, onSuccess, onCancel }: CreditLineFormProp
   const createLine = useCreateCreditLine()
   const updateLine = useUpdateCreditLine()
   const isEdit = !!line
+  // Sin "multimoneda" en el plan, solo se ofrece la moneda que ya tiene.
+  const canUseMulticurrency = useEntitlements().canUse('multicurrency')
 
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -114,7 +117,7 @@ export function CreditLineForm({ line, onSuccess, onCancel }: CreditLineFormProp
           />
           <Select
             label={t('Moneda')}
-            options={Array.from(CURRENCIES).map((c) => ({ value: c, label: c }))}
+            options={(canUseMulticurrency ? Array.from(CURRENCIES) : [form.formState.defaultValues?.currency ?? 'MXN']).map((c) => ({ value: c, label: c }))}
             {...form.register('currency')}
           />
         </div>

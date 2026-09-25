@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAppConfig } from '@/hooks/useAppConfig'
+import { useAuth } from '@/store/useAuth'
 import { getTourSteps } from './tourSteps'
 import { TourOverlay } from './TourOverlay'
 
@@ -23,7 +24,13 @@ export function TourRunner({ onFinish }: TourRunnerProps) {
   const location = useLocation()
   const { data: appConfig } = useAppConfig()
   const appTitle = appConfig?.app_title || DEFAULT_APP_TITLE
-  const steps = useMemo(() => getTourSteps(appConfig?.page_order), [appConfig?.page_order])
+  const { profile } = useAuth()
+  // Los admins siguen viendo las secciones ocultas, también en el recorrido.
+  const hiddenPages = profile?.is_admin ? null : appConfig?.hidden_pages
+  const steps = useMemo(
+    () => getTourSteps(appConfig?.page_order, hiddenPages),
+    [appConfig?.page_order, hiddenPages],
+  )
   const [index, setIndex] = useState(0)
   const [rect, setRect] = useState<DOMRect | null>(null)
 

@@ -2,6 +2,7 @@ import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
+import { useEntitlements } from '@/hooks/useAppConfig'
 import { useAuth } from '@/store/useAuth'
 import { useCreateAccount, useUpdateAccount } from '@/hooks/useAccounts'
 import {
@@ -82,6 +83,8 @@ export function AccountForm({ account, parentAccount, onSuccess, onCancel }: Acc
   const tiersQuery = useAccountYieldTiers(userId)
   const saveTiers = useSaveAccountYieldTiers()
   const isEdit = !!account
+  // Sin "multimoneda" en el plan, solo se ofrece la moneda que ya tiene.
+  const canUseMulticurrency = useEntitlements().canUse('multicurrency')
   const isPocket = !!parentAccount
 
   const existingTiers = (tiersQuery.data || []).filter((t) => t.account_id === account?.id)
@@ -296,7 +299,7 @@ export function AccountForm({ account, parentAccount, onSuccess, onCancel }: Acc
           <Select
             label={t('Moneda')}
             disabled={isPocket}
-            options={Array.from(CURRENCIES).map((c) => ({ value: c, label: c }))}
+            options={(canUseMulticurrency ? Array.from(CURRENCIES) : [form.formState.defaultValues?.currency ?? 'MXN']).map((c) => ({ value: c, label: c }))}
             {...form.register('currency')}
           />
           <Input

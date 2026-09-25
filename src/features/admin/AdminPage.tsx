@@ -10,10 +10,18 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
-import type { AppConfigRow } from '@/types/db'
+import {
+  FEATURES,
+  FEATURE_GROUP_LABELS,
+  buildFeaturePatch,
+  getFreeLimit,
+  isFeaturePremium,
+  type FeatureDef,
+  type FeatureGroup,
+} from '@/lib/features'
 import { DEFAULT_THEME_COLORS, applyThemeColors } from '@/lib/themeColors'
 import type { ThemeColors } from '@/lib/themeColors'
-import { PAGE_NAV_ITEMS, orderByPageOrder } from '@/lib/pageOrder'
+import { PAGE_NAV_ITEMS, UNHIDEABLE_PAGES, orderByPageOrder } from '@/lib/pageOrder'
 
 const DEFAULT_APP_TITLE = 'Mi Control de Finanzas Personales'
 const MAX_LOGO_BYTES = 2 * 1024 * 1024
@@ -236,34 +244,34 @@ function ThemeEditor() {
   )
 }
 
-// Editor de límites del plan gratis y de qué funciones son premium.
+// Editor de límites del plan gratis y de qué funciones son premium. Se
+// construye desde el registro lib/features.ts: toda función registrada ahí
+// aparece aquí sin tocar este archivo.
 function ConfigEditor() {
   const { t } = useTranslation()
   const { data: config } = useAppConfig()
   const updateConfig = useUpdateAppConfig()
-  const [form, setForm] = useState<AppConfigRow | null>(null)
+  const [values, setValues] = useState<Record<string, { premium: boolean; limit: number }> | null>(null)
 
   useEffect(() => {
-    if (config) setForm(config)
+    if (!config) return
+    setValues(
+      Object.fromEntries(
+        FEATURES.map((f) => [
+          f.key,
+          { premium: isFeaturePremium(config, f.key), limit: getFreeLimit(config, f.key) },
+        ]),
+      ),
+    )
   }, [config])
 
-  if (!form) return null
+  if (!config || !values) return null
 
-  const setNum = (key: keyof AppConfigRow) => (v: string) =>
-    setForm({ ...form, [key]: Math.max(0, parseInt(v, 10) || 0) })
-  const setBool = (key: keyof AppConfigRow) => (v: boolean) =>
-    setForm({ ...form, [key]: v })
+  const set = (key: string, patch: Partial<{ premium: boolean; limit: number }>) =>
+    setValues({ ...values, [key]: { ...values[key], ...patch } })
 
-  const FEATURES: { key: keyof AppConfigRow; label: string }[] = [
-    { key: 'family_is_premium', label: t('Plan familiar') },
-    { key: 'yields_is_premium', label: t('Rendimientos') },
-    { key: 'installments_is_premium', label: t('Meses sin intereses / diferido') },
-    { key: 'reports_filters_is_premium', label: t('Filtros de reportes') },
-    { key: 'dashboard_period_filter_is_premium', label: t('Selector de periodo en Resumen') },
-    { key: 'transactions_period_filter_is_premium', label: t('Selector de periodo en Movimientos') },
-    { key: 'reconcile_is_premium', label: t('Conciliación con estados de cuenta') },
-    { key: 'budgets_is_premium', label: t('Presupuestos') },
-  ]
+  const groups = Object.keys(FEATURE_GROUP_LABELS) as FeatureGroup[]
+  const features = FEATURES as readonly FeatureDef[]
 
   return (
     <Card className="mb-6">
@@ -271,78 +279,57 @@ function ConfigEditor() {
         ⚙️ {t('Planes y límites')}
       </p>
       <p className="mb-4 text-xs text-slate-500 dark:text-slate-400">
-        {t('Define los límites del plan gratis (0 = ilimitado) y qué funciones requieren Premium.')}
+        {t('Marca qué funciones requieren Premium y el límite del plan gratis (0 = ilimitado).')}
       </p>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Input
-          label={t('Máx. cuentas (gratis)')}
-          type="number"
-          min="0"
-          value={form.free_max_accounts}
-          onChange={(e) => setNum('free_max_accounts')(e.target.value)}
-        />
-        <Input
-          label={t('Máx. tarjetas (gratis)')}
-          type="number"
-          min="0"
-          value={form.free_max_cards}
-          onChange={(e) => setNum('free_max_cards')(e.target.value)}
-        />
-        <Input
-          label={t('Máx. transacciones (gratis)')}
-          type="number"
-          min="0"
-          value={form.free_max_transactions}
-          onChange={(e) => setNum('free_max_transactions')(e.target.value)}
-        />
-        <Input
-          label={t('Máx. presupuestos (gratis)')}
-          type="number"
-          min="0"
-          value={form.free_max_budgets}
-          onChange={(e) => setNum('free_max_budgets')(e.target.value)}
-        />
-      </div>
-
-      <p className="mb-2 mt-4 text-xs font-semibold text-slate-600 dark:text-slate-300">
-        {t('Funciones que requieren Premium')}
-      </p>
-      <div className="grid gap-2 sm:grid-cols-2">
-        {FEATURES.map((f) => (
-          <label key={f.key} className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200">
-            <input
-              type="checkbox"
-              className="cursor-pointer"
-              checked={!!form[f.key]}
-              onChange={(e) => setBool(f.key)(e.target.checked)}
-            />
-            {f.label}
-          </label>
-        ))}
-      </div>
+      {groups.map((group) => (
+        <div key={group} className="mb-4">
+          <p className="mb-2 text-xs font-semibold text-slate-600 dark:text-slate-300">
+            {t(FEATURE_GROUP_LABELS[group])}
+          </p>
+          <div className="divide-y divide-slate-200 dark:divide-slate-700 rounded-lg border border-slate-200 dark:border-slate-700">
+            {features
+              .filter((f) => f.group === group)
+              .map((f) => (
+                <div key={f.key} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-3 py-2">
+                  <span className="min-w-0 flex-1 text-sm text-slate-700 dark:text-slate-200">{t(f.label)}</span>
+                  {f.premium && (
+                    <label className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300">
+                      <input
+                        type="checkbox"
+                        className="cursor-pointer"
+                        checked={values[f.key].premium}
+                        onChange={(e) => set(f.key, { premium: e.target.checked })}
+                      />
+                      Premium
+                    </label>
+                  )}
+                  {f.limit && (
+                    <label className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300">
+                      {t('Límite gratis')}
+                      <input
+                        type="number"
+                        min="0"
+                        className="w-16 rounded border border-slate-300 dark:border-slate-600 bg-transparent px-1.5 py-0.5 text-sm"
+                        value={values[f.key].limit}
+                        onChange={(e) => set(f.key, { limit: Math.max(0, parseInt(e.target.value, 10) || 0) })}
+                      />
+                      {f.limit.kind === 'monthly' ? t('/mes') : t('total')}
+                    </label>
+                  )}
+                </div>
+              ))}
+          </div>
+        </div>
+      ))}
 
       <div className="mt-4 flex items-center gap-3">
         <Button
           disabled={updateConfig.isPending}
           onClick={() =>
-            updateConfig.mutate(
-              {
-                free_max_accounts: form.free_max_accounts,
-                free_max_cards: form.free_max_cards,
-                free_max_transactions: form.free_max_transactions,
-                free_max_budgets: form.free_max_budgets,
-                family_is_premium: form.family_is_premium,
-                yields_is_premium: form.yields_is_premium,
-                installments_is_premium: form.installments_is_premium,
-                reports_filters_is_premium: form.reports_filters_is_premium,
-                dashboard_period_filter_is_premium: form.dashboard_period_filter_is_premium,
-                transactions_period_filter_is_premium: form.transactions_period_filter_is_premium,
-                reconcile_is_premium: form.reconcile_is_premium,
-                budgets_is_premium: form.budgets_is_premium,
-              },
-              { onError: (e: any) => alert(`${t('Error:')} ${e.message}`) },
-            )
+            updateConfig.mutate(buildFeaturePatch(config, values), {
+              onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
+            })
           }
         >
           {updateConfig.isPending ? t('Guardando…') : t('Guardar configuración')}
@@ -363,11 +350,19 @@ function PageOrderEditor() {
   const { data: config } = useAppConfig()
   const updateConfig = useUpdateAppConfig()
   const [order, setOrder] = useState<string[]>(PAGE_NAV_ITEMS.map((p) => p.to))
+  const [hidden, setHidden] = useState<string[]>([])
 
   useEffect(() => {
     const current = orderByPageOrder(PAGE_NAV_ITEMS, config?.page_order ?? null)
     setOrder(current.map((p) => p.to))
   }, [config?.page_order])
+
+  useEffect(() => {
+    setHidden(config?.hidden_pages ?? [])
+  }, [config?.hidden_pages])
+
+  const toggleHidden = (to: string) =>
+    setHidden(hidden.includes(to) ? hidden.filter((h) => h !== to) : [...hidden, to])
 
   const items = order
     .map((to) => PAGE_NAV_ITEMS.find((p) => p.to === to))
@@ -384,17 +379,36 @@ function PageOrderEditor() {
   return (
     <Card className="mb-6">
       <p className="mb-1 text-sm font-semibold text-slate-800 dark:text-slate-100">
-        📋 {t('Orden de páginas')}
+        📋 {t('Orden y visibilidad de páginas')}
       </p>
       <p className="mb-4 text-xs text-slate-500 dark:text-slate-400">
-        {t('Define en qué orden aparecen las secciones en el menú y en el recorrido guiado.')}
+        {t('Define en qué orden aparecen las secciones en el menú y en el recorrido guiado, y oculta las que no quieras mostrar. Los admins siguen viendo las secciones ocultas.')}
       </p>
 
       <div className="divide-y divide-slate-200 dark:divide-slate-700 rounded-lg border border-slate-200 dark:border-slate-700">
         {items.map((item, i) => (
           <div key={item.to} className="flex items-center gap-3 px-3 py-2">
             <span className="text-lg">{item.icon}</span>
-            <span className="flex-1 text-sm text-slate-700 dark:text-slate-200">{t(item.label)}</span>
+            <span
+              className={`flex-1 text-sm ${
+                hidden.includes(item.to)
+                  ? 'text-slate-400 line-through dark:text-slate-500'
+                  : 'text-slate-700 dark:text-slate-200'
+              }`}
+            >
+              {t(item.label)}
+            </span>
+            {!UNHIDEABLE_PAGES.includes(item.to) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => toggleHidden(item.to)}
+                aria-label={hidden.includes(item.to) ? t('Mostrar') : t('Ocultar')}
+                title={hidden.includes(item.to) ? t('Mostrar') : t('Ocultar')}
+              >
+                {hidden.includes(item.to) ? '🙈' : '👁️'}
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="sm"
@@ -424,7 +438,7 @@ function PageOrderEditor() {
           disabled={updateConfig.isPending}
           onClick={() =>
             updateConfig.mutate(
-              { page_order: order },
+              { page_order: order, hidden_pages: hidden },
               { onError: (e: any) => alert(`${t('Error:')} ${e.message}`) },
             )
           }
@@ -436,7 +450,7 @@ function PageOrderEditor() {
           disabled={updateConfig.isPending}
           onClick={() =>
             updateConfig.mutate(
-              { page_order: null },
+              { page_order: null, hidden_pages: [] },
               { onError: (e: any) => alert(`${t('Error:')} ${e.message}`) },
             )
           }

@@ -112,6 +112,7 @@ export function useSaveReconciliation() {
       queryClient.invalidateQueries({
         queryKey: ['statement_reconciliations', input.userId],
       })
+      queryClient.invalidateQueries({ queryKey: ['monthly_usage', 'reconcile'] })
     },
   })
 }

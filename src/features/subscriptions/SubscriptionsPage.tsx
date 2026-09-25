@@ -13,6 +13,9 @@ import {
   useGenerateSubscriptionChargeNow,
 } from '@/hooks/useSubscriptions'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { PremiumGate } from '@/components/ui/PremiumGate'
+import { PremiumLocked } from '@/components/ui/PremiumLocked'
+import { useEntitlements } from '@/hooks/useAppConfig'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Money } from '@/components/ui/Money'
@@ -51,6 +54,7 @@ export function SubscriptionsPage() {
   const deleteSubscription = useDeleteSubscription()
   const detectSubscriptions = useDetectSubscriptions()
   const generateChargeNow = useGenerateSubscriptionChargeNow()
+  const subscriptionLimit = useEntitlements().limitFor('subscriptions')
 
   const subscriptions = subscriptionsQuery.data || []
   const cards = cardsQuery.data || []
@@ -135,17 +139,30 @@ export function SubscriptionsPage() {
         subtitle={t('Cargos recurrentes domiciliados a tus tarjetas y cuentas.')}
         helpId="suscripciones"
         actions={
-          <Button
-            data-tour="suscripciones"
-            onClick={() => {
-              setEditing(null)
-              setShowForm(!showForm)
-            }}
+          <PremiumGate
+            count={active.length}
+            limit={showForm ? Infinity : subscriptionLimit}
+            lockedTooltip={t('Plan gratis: máximo {{n}} suscripciones. Actualiza a Premium para agregar más.', { n: subscriptionLimit })}
           >
-            {showForm ? t('Cancelar') : t('+ Agregar manualmente')}
-          </Button>
+            <Button
+              data-tour="suscripciones"
+              onClick={() => {
+                setEditing(null)
+                setShowForm(!showForm)
+              }}
+            >
+              {showForm ? t('Cancelar') : t('+ Agregar manualmente')}
+            </Button>
+          </PremiumGate>
         }
       />
+
+      {active.length >= subscriptionLimit && (
+        <PremiumLocked
+          className="mb-4"
+          message={t('Plan gratis: máximo {{n}} suscripciones. Actualiza a Premium para agregar más.', { n: subscriptionLimit })}
+        />
+      )}
 
       {showForm && !editing && <SubscriptionForm onSuccess={() => setShowForm(false)} />}
 

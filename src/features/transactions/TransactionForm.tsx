@@ -143,7 +143,7 @@ export function TransactionForm({
   const confirmInstallments = useConfirmInstallmentPayments()
   const cancelInstallmentPlan = useCancelInstallmentPlan()
   const recordBudgetAlerts = useRecordBudgetAlerts()
-  const { canUseInstallments } = useEntitlements()
+  const { canUseInstallments, canUse } = useEntitlements()
   const mainCurrency = profile?.main_currency ?? 'MXN'
 
   const creditLinesQuery = useCreditLines(userId)
@@ -788,20 +788,22 @@ export function TransactionForm({
                 </span>
               </label>
             )}
-            <TransactionLinesFields
-              lines={form.watch('lines') ?? []}
-              onChange={(i, patch) => {
-                if (patch.concept !== undefined) form.setValue(`lines.${i}.concept`, patch.concept)
-                if (patch.amount !== undefined) form.setValue(`lines.${i}.amount`, patch.amount)
-                if (patch.categoryId !== undefined)
-                  form.setValue(`lines.${i}.categoryId`, patch.categoryId)
-              }}
-              onAdd={() => linesField.append({ concept: '', amount: 0, categoryId: '' })}
-              onRemove={(i) => linesField.remove(i)}
-              categories={categories.filter((c) => c.kind === 'expense')}
-              currency={currency}
-              totalAmount={amountNum}
-            />
+            {canUse('transaction_lines') && (
+              <TransactionLinesFields
+                lines={form.watch('lines') ?? []}
+                onChange={(i, patch) => {
+                  if (patch.concept !== undefined) form.setValue(`lines.${i}.concept`, patch.concept)
+                  if (patch.amount !== undefined) form.setValue(`lines.${i}.amount`, patch.amount)
+                  if (patch.categoryId !== undefined)
+                    form.setValue(`lines.${i}.categoryId`, patch.categoryId)
+                }}
+                onAdd={() => linesField.append({ concept: '', amount: 0, categoryId: '' })}
+                onRemove={(i) => linesField.remove(i)}
+                categories={categories.filter((c) => c.kind === 'expense')}
+                currency={currency}
+                totalAmount={amountNum}
+              />
+            )}
             {form.formState.errors.lines?.message && (
               <p className="text-xs text-red-600 dark:text-red-400">
                 {form.formState.errors.lines.message as string}

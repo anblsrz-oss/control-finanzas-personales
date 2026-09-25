@@ -17,7 +17,7 @@ import { TourGate } from '@/features/onboarding/TourGate'
 import { WhatsNewButton } from '@/features/onboarding/WhatsNewModal'
 import { APK_URL } from '@/lib/appUpdate'
 import { isNative } from '@/lib/nativeAuth'
-import { PAGE_NAV_ITEMS, orderByPageOrder, type PageNavItem } from '@/lib/pageOrder'
+import { PAGE_NAV_ITEMS, isPageHidden, orderByPageOrder, type PageNavItem } from '@/lib/pageOrder'
 
 type NavItem = PageNavItem
 
@@ -36,6 +36,16 @@ function PendingBadge({ count }: { count: number }) {
   return (
     <span className="ml-auto inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-amber-500 px-1.5 text-[11px] font-semibold leading-5 text-white">
       {count > 99 ? '99+' : count}
+    </span>
+  )
+}
+
+// Etiqueta para el admin: la sección está oculta para el resto de usuarios.
+function HiddenTag() {
+  const { t } = useTranslation()
+  return (
+    <span className="rounded bg-slate-200 dark:bg-slate-700 px-1 text-[10px] font-semibold uppercase leading-4 text-slate-500 dark:text-slate-400">
+      {t('Oculta')}
     </span>
   )
 }
@@ -78,10 +88,18 @@ export function AppShell() {
 
   // Orden de páginas configurable por admin (null = orden por defecto). Se
   // aplica al sidebar y a la hoja "Más" — la barra inferior móvil queda fija.
-  const orderedPages = orderByPageOrder(PAGE_NAV_ITEMS, appConfig?.page_order ?? null)
+  // Las secciones ocultas por el admin desaparecen para el resto; el admin
+  // las sigue viendo con la etiqueta "Oculta".
+  const isAdmin = !!profile?.is_admin
+  const hiddenPages = appConfig?.hidden_pages ?? []
+  const isHidden = (to: string) => isPageHidden(to, hiddenPages)
+  const orderedPages = orderByPageOrder(PAGE_NAV_ITEMS, appConfig?.page_order ?? null).filter(
+    (item) => isAdmin || !isHidden(item.to),
+  )
   const NAV = orderedPages
+  const mobileNav = MOBILE_NAV.filter((item) => isAdmin || !isHidden(item.to))
   const MORE_NAV = orderedPages.filter(
-    (item) => !MOBILE_NAV.some((m) => m.to === item.to),
+    (item) => !mobileNav.some((m) => m.to === item.to),
   )
 
   const moreNav: NavItem[] = profile?.is_admin
@@ -121,6 +139,7 @@ export function AppShell() {
               {item.to === '/presupuestos' && <PendingBadge count={budgetAlertCount} />}
               {item.to === '/suscripciones' && <PendingBadge count={subscriptionAlertCount} />}
               {item.to === '/tarjetas' && <PendingBadge count={cardPaymentAlertCount} />}
+              {isHidden(item.to) && <HiddenTag />}
             </NavLink>
           ))}
           {profile?.is_admin && (
@@ -226,6 +245,7 @@ export function AppShell() {
                 >
                   <span className="text-2xl">{item.icon}</span>
                   {t(item.label)}
+                  {isHidden(item.to) && <HiddenTag />}
                 </NavLink>
               ))}
               {/* Enlace externo, no una ruta: va aparte de moreNav. Dentro del
@@ -249,7 +269,7 @@ export function AppShell() {
 
       {/* Barra de navegación inferior (solo móvil) */}
       <nav className="safe-bottom fixed inset-x-0 bottom-0 z-20 flex justify-around border-t border-slate-200 dark:border-slate-700 bg-surface md:hidden">
-        {MOBILE_NAV.map((item) => (
+        {mobileNav.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}

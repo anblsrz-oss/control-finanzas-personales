@@ -41,7 +41,9 @@ export function AccountsPage() {
   const accountsQuery = useAccounts(userId)
   const deleteAccount = useDeleteAccount()
   const updateAccount = useUpdateAccount()
-  const { accountLimit } = useEntitlements()
+  const { accountLimit, canUse, limitFor } = useEntitlements()
+  const canUsePockets = canUse('pockets')
+  const pocketLimit = limitFor('pockets')
 
   // Consultar la vista account_balances para saldos actuales
   const balancesQuery = useQuery({
@@ -104,6 +106,8 @@ export function AccountsPage() {
   // Los apartados (cajitas) se anidan bajo su cuenta madre; no cuentan como
   // cuentas "raíz" para el límite del plan.
   const rootAccounts = accounts.filter((a) => !a.parent_account_id)
+  const pocketCount = accounts.length - rootAccounts.length
+  const pocketTooltip = t('Plan gratis: máximo {{n}} apartados. Actualiza a Premium para agregar más.', { n: pocketLimit })
   const pocketsByParent = accounts.reduce<Record<string, AccountRow[]>>((acc, a) => {
     if (a.parent_account_id) {
       ;(acc[a.parent_account_id] ??= []).push(a)
@@ -219,31 +223,37 @@ export function AccountsPage() {
                       <Money amount={balance} currency={acc.currency} />
                     </p>
                     <div className="mt-3 flex flex-wrap justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setShowForm(false)
-                          setEditingAccount(null)
-                          setPocketParent(acc)
-                        }}
-                      >
-                        {t('+ Apartado')}
-                      </Button>
-                      {rootAccounts.length > 1 && pockets.length === 0 && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setShowForm(false)
-                            setEditingAccount(null)
-                            setPocketParent(null)
-                            setMovingAccount(acc)
-                            setMoveTargetId('')
-                          }}
-                        >
-                          {t('Mover a apartado')}
-                        </Button>
+                      {canUsePockets && (
+                        <PremiumGate count={pocketCount} limit={pocketLimit} lockedTooltip={pocketTooltip}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setShowForm(false)
+                              setEditingAccount(null)
+                              setPocketParent(acc)
+                            }}
+                          >
+                            {t('+ Apartado')}
+                          </Button>
+                        </PremiumGate>
+                      )}
+                      {canUsePockets && rootAccounts.length > 1 && pockets.length === 0 && (
+                        <PremiumGate count={pocketCount} limit={pocketLimit} lockedTooltip={pocketTooltip}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setShowForm(false)
+                              setEditingAccount(null)
+                              setPocketParent(null)
+                              setMovingAccount(acc)
+                              setMoveTargetId('')
+                            }}
+                          >
+                            {t('Mover a apartado')}
+                          </Button>
+                        </PremiumGate>
                       )}
                       <Button
                         variant="ghost"

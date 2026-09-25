@@ -8,6 +8,9 @@ import {
   useDeleteCategory,
 } from '@/hooks/useCategories'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { PremiumGate } from '@/components/ui/PremiumGate'
+import { PremiumLocked } from '@/components/ui/PremiumLocked'
+import { useEntitlements } from '@/hooks/useAppConfig'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
@@ -41,6 +44,7 @@ export function CategoriesPage() {
   const createCategory = useCreateCategory()
   const updateCategory = useUpdateCategory()
   const deleteCategory = useDeleteCategory()
+  const categoryLimit = useEntitlements().limitFor('categories_custom')
 
   const allCategories = categoriesQuery.data || []
   const userCategories = allCategories.filter((c) => c.user_id === userId)
@@ -94,25 +98,38 @@ export function CategoriesPage() {
         subtitle={t('Clasifica tus ingresos y gastos.')}
         helpId="categorias"
         actions={
-          <Button
-            data-tour="categorias"
-            onClick={() => {
-              if (showForm) {
-                resetForm()
-              } else {
-                setEditingId(null)
-                setName('')
-                setIcon('')
-                setColor('')
-                setKind('expense')
-                setShowForm(true)
-              }
-            }}
+          <PremiumGate
+            count={userCategories.length}
+            limit={showForm ? Infinity : categoryLimit}
+            lockedTooltip={t('Plan gratis: máximo {{n}} categorías propias. Actualiza a Premium para agregar más.', { n: categoryLimit })}
           >
-            {showForm ? t('Cancelar') : t('+ Agregar categoría')}
-          </Button>
+            <Button
+              data-tour="categorias"
+              onClick={() => {
+                if (showForm) {
+                  resetForm()
+                } else {
+                  setEditingId(null)
+                  setName('')
+                  setIcon('')
+                  setColor('')
+                  setKind('expense')
+                  setShowForm(true)
+                }
+              }}
+            >
+              {showForm ? t('Cancelar') : t('+ Agregar categoría')}
+            </Button>
+          </PremiumGate>
         }
       />
+
+      {userCategories.length >= categoryLimit && (
+        <PremiumLocked
+          className="mb-4"
+          message={t('Plan gratis: máximo {{n}} categorías propias. Actualiza a Premium para agregar más.', { n: categoryLimit })}
+        />
+      )}
 
       {showForm && (
         <div ref={formRef} className="scroll-mt-4">

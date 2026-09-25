@@ -16,6 +16,9 @@ import { PeriodConfirmBanner } from '@/features/cards/PeriodConfirmBanner'
 import { LinePeriodInfo } from '@/features/cards/LinePeriodInfo'
 import { LineStatement } from '@/features/cards/LineStatement'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { PremiumGate } from '@/components/ui/PremiumGate'
+import { PremiumLocked } from '@/components/ui/PremiumLocked'
+import { useEntitlements } from '@/hooks/useAppConfig'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Modal } from '@/components/ui/Modal'
@@ -51,6 +54,7 @@ export function CreditLinesPage() {
   const plansQuery = useInstallmentPlans(userId)
   const paymentsQuery = useInstallmentPayments(userId)
   const deleteLine = useDeleteCreditLine()
+  const lineLimit = useEntitlements().limitFor('credit_lines')
 
   const cards = cardsQuery.data || []
   const accounts = accountsQuery.data || []
@@ -82,17 +86,30 @@ export function CreditLinesPage() {
         subtitle={t('Límites, fechas de corte y pago que comparten tus tarjetas de crédito.')}
         helpId="credito"
         actions={
-          <Button
-            data-tour="credito"
-            onClick={() => {
-              setEditingLine(null)
-              setShowForm(!showForm)
-            }}
+          <PremiumGate
+            count={creditLines.length}
+            limit={showForm ? Infinity : lineLimit}
+            lockedTooltip={t('Plan gratis: máximo {{n}} líneas de crédito. Actualiza a Premium para agregar más.', { n: lineLimit })}
           >
-            {showForm ? t('Cancelar') : t('+ Agregar línea')}
-          </Button>
+            <Button
+              data-tour="credito"
+              onClick={() => {
+                setEditingLine(null)
+                setShowForm(!showForm)
+              }}
+            >
+              {showForm ? t('Cancelar') : t('+ Agregar línea')}
+            </Button>
+          </PremiumGate>
         }
       />
+
+      {creditLines.length >= lineLimit && (
+        <PremiumLocked
+          className="mb-4"
+          message={t('Plan gratis: máximo {{n}} líneas de crédito. Actualiza a Premium para agregar más.', { n: lineLimit })}
+        />
+      )}
 
       {showForm && !editingLine && (
         <CreditLineForm onSuccess={() => setShowForm(false)} />

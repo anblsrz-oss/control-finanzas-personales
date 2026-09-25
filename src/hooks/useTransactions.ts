@@ -245,6 +245,10 @@ export function useCreateTransaction() {
       // El consumo de los presupuestos sale de las transacciones: cualquier
       // alta, edición, borrado o confirmación lo mueve.
       queryClient.invalidateQueries({ queryKey: ['budget_status', input.userId] })
+      // Los escaneos cuentan para el límite mensual del plan gratis.
+      if (input.source === 'receipt') {
+        queryClient.invalidateQueries({ queryKey: ['monthly_usage', 'receipts'] })
+      }
       if (input.familyId) {
         queryClient.invalidateQueries({
           queryKey: ['family_transactions', input.familyId],

@@ -24,7 +24,6 @@ export const PAGE_NAV_ITEMS: PageNavItem[] = [
   { to: '/correo', label: 'Sincronizar correo', icon: '📧' },
   { to: '/sms', label: 'Sincronizar SMS', icon: '📱' },
   { to: '/captura-notificaciones', label: 'Captura por notificaciones', icon: '🔔' },
-  { to: '/conectar', label: 'Conexión automática', icon: '🔗' },
   { to: '/categorias', label: 'Categorías', icon: '🏷️' },
   { to: '/rendimientos', label: 'Rendimientos', icon: '📈' },
   { to: '/reportes', label: 'Reportes', icon: '📑' },
@@ -33,6 +32,15 @@ export const PAGE_NAV_ITEMS: PageNavItem[] = [
 ]
 
 export const PAGE_IDS: string[] = PAGE_NAV_ITEMS.map((item) => item.to)
+
+// Páginas que el admin no puede ocultar (la app no tendría a dónde volver).
+export const UNHIDEABLE_PAGES = ['/', '/configuracion']
+
+/** ¿La ruta está oculta por el admin (appConfig.hidden_pages)? */
+export function isPageHidden(to: string, hidden: string[] | null | undefined): boolean {
+  if (!hidden || UNHIDEABLE_PAGES.includes(to)) return false
+  return hidden.includes(to)
+}
 
 /**
  * Reordena `items` según `order` (array de rutas, típicamente

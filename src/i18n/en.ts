@@ -17,7 +17,6 @@ export const en: Record<string, string> = {
   Correo: 'Email',
   'Sincronizar SMS': 'Sync SMS',
   SMS: 'SMS',
-  'Conexión automática': 'Auto connection',
   Conectar: 'Connect',
   Categorías: 'Categories',
   Presupuestos: 'Budgets',
@@ -411,22 +410,6 @@ export const en: Record<string, string> = {
   'vs esperado': 'vs expected',
   Actualizar: 'Update',
   Verificar: 'Verify',
-
-  // Conexión
-  'Sincroniza tus movimientos directo del banco, sin subir archivos.':
-    'Sync your transactions straight from the bank, without uploading files.',
-  'Premium · Próximamente': 'Premium · Coming soon',
-  'Estamos preparando la conexión directa con bancos y SOFIPOs mediante un agregador de Open Finance. Mientras tanto, puedes traer tus movimientos gratis por dos vías:':
-    'We are preparing direct connection with banks and SOFIPOs via an Open Finance aggregator. Meanwhile, you can bring your transactions for free in two ways:',
-  'tu estado de cuenta (CSV) — todas las plataformas.':
-    'your statement (CSV) — all platforms.',
-  'de alertas del banco — casi en tiempo real.':
-    "from your bank's alerts — near real time.",
-  'de alerta — solo en la app de Android.':
-    'alerts — only in the Android app.',
-  'Leer SMS': 'Read SMS',
-  'La conexión automática estará disponible en el plan Premium.':
-    'Auto connection will be available on the Premium plan.',
 
   // Admin
   'Panel Admin': 'Admin Panel',
@@ -1292,4 +1275,63 @@ export const en: Record<string, string> = {
     'Cannot find what you are looking for? Each section of the app has a "?" button with a short explanation of what it does.',
   'Volver al resumen':
     'Back to summary',
+  // Admin — funciones configurables y secciones ocultas
+  'Cuentas y crédito':
+    'Accounts and credit',
+  'Captura de movimientos':
+    'Transaction capture',
+  'Análisis':
+    'Analysis',
+  'Apartados (cajitas)':
+    'Pockets',
+  'Líneas de crédito':
+    'Credit lines',
+  'Cuentas en otras monedas':
+    'Accounts in other currencies',
+  'Subpartidas':
+    'Line items',
+  'Importar estados de cuenta':
+    'Import statements',
+  'Suscripciones':
+    'Subscriptions',
+  'Cobro automático de suscripciones':
+    'Automatic subscription charges',
+  'Categorías propias':
+    'Custom categories',
+  'Selector de periodo en Resumen':
+    'Period selector in Summary',
+  'Selector de periodo en Movimientos':
+    'Period selector in Transactions',
+  'Recordatorios en Google Calendar':
+    'Google Calendar reminders',
+  'Marca qué funciones requieren Premium y el límite del plan gratis (0 = ilimitado).':
+    'Choose which features require Premium and the free plan limit (0 = unlimited).',
+  'Límite gratis':
+    'Free limit',
+  '/mes':
+    '/month',
+  'total':
+    'total',
+  'Oculta':
+    'Hidden',
+  'Ocultar':
+    'Hide',
+  'Orden y visibilidad de páginas':
+    'Page order and visibility',
+  'Define en qué orden aparecen las secciones en el menú y en el recorrido guiado, y oculta las que no quieras mostrar. Los admins siguen viendo las secciones ocultas.':
+    'Set the order of sections in the menu and guided tour, and hide the ones you do not want to show. Admins still see hidden sections.',
+  'Plan gratis: máximo {{n}} líneas de crédito. Actualiza a Premium para agregar más.':
+    'Free plan: up to {{n}} credit lines. Upgrade to Premium to add more.',
+  'Plan gratis: máximo {{n}} suscripciones. Actualiza a Premium para agregar más.':
+    'Free plan: up to {{n}} subscriptions. Upgrade to Premium to add more.',
+  'Plan gratis: máximo {{n}} categorías propias. Actualiza a Premium para agregar más.':
+    'Free plan: up to {{n}} custom categories. Upgrade to Premium to add more.',
+  'Plan gratis: máximo {{n}} apartados. Actualiza a Premium para agregar más.':
+    'Free plan: up to {{n}} pockets. Upgrade to Premium to add more.',
+  'Plan gratis: llegaste al límite de {{n}} importaciones este mes. Actualiza a Premium para importar más.':
+    'Free plan: you reached the limit of {{n}} imports this month. Upgrade to Premium to import more.',
+  'Plan gratis: llegaste al límite de {{n}} movimientos escaneados este mes. Actualiza a Premium para escanear más.':
+    'Free plan: you reached the limit of {{n}} scanned transactions this month. Upgrade to Premium to scan more.',
+  'Plan gratis: llegaste al límite de {{n}} conciliaciones este mes. Actualiza a Premium para conciliar más.':
+    'Free plan: you reached the limit of {{n}} reconciliations this month. Upgrade to Premium to reconcile more.',
 }

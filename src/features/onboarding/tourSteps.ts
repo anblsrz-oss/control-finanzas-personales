@@ -13,7 +13,7 @@
 // getSectionHelp()/SectionHelpButton ignoran estos dos campos — solo leen
 // icon/title/body, así que no les afecta.
 
-import { orderByPageOrder } from '@/lib/pageOrder'
+import { isPageHidden, orderByPageOrder } from '@/lib/pageOrder'
 
 export interface TourStep {
   id: string
@@ -164,14 +164,6 @@ export const TOUR_STEPS: TourStep[] = [
     target: 'notif-capture',
   },
   {
-    id: 'conectar',
-    icon: '🔗',
-    title: 'Conexión automática',
-    body: 'Conecta tu banco directamente para traer tus movimientos sin capturarlos ni leer correos/SMS.',
-    route: '/conectar',
-    target: 'conectar',
-  },
-  {
     id: 'rendimientos',
     icon: '📈',
     title: 'Rendimientos',
@@ -208,10 +200,16 @@ export const TOUR_STEPS: TourStep[] = [
  * appConfig.page_order que reordena el sidebar/"Más" — ver lib/pageOrder.ts)
  * cuando se da. "bienvenida" no tiene route, así que el orden lo deja al
  * principio (posición relativa original); configuracion/admin quedan
- * excluidos por inTour: false, sin cambios.
+ * excluidos por inTour: false, sin cambios. Las secciones que el admin ocultó
+ * (hiddenPages) se saltan.
  */
-export function getTourSteps(pageOrder?: string[] | null): TourStep[] {
-  const steps = TOUR_STEPS.filter((s) => s.inTour !== false)
+export function getTourSteps(
+  pageOrder?: string[] | null,
+  hiddenPages?: string[] | null,
+): TourStep[] {
+  const steps = TOUR_STEPS.filter(
+    (s) => s.inTour !== false && !(s.route && isPageHidden(s.route, hiddenPages)),
+  )
   if (!pageOrder || pageOrder.length === 0) return steps
   // orderByPageOrder necesita un campo `to` — bienvenida no tiene route, se
   // le da un id único para que el sort estable lo deje en su posición inicial.

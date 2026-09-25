@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
+import { useEntitlements } from '@/hooks/useAppConfig'
 import { useAuth } from '@/store/useAuth'
 import { useCreateCard, useUpdateCard } from '@/hooks/useCards'
 import {
@@ -126,6 +127,8 @@ export function CardForm({ accounts, card, onSuccess, onCancel }: CardFormProps)
   const updateCreditLine = useUpdateCreditLine()
   const { data: creditLines = [] } = useCreditLines(session?.user?.id)
   const isEdit = !!card
+  // Sin "multimoneda" en el plan, solo se ofrece la moneda que ya tiene.
+  const canUseMulticurrency = useEntitlements().canUse('multicurrency')
 
   // La marca guardada puede venir de OCR o de captura libre anterior: se
   // reconoce si es una de las conocidas, si no cae en "Otro".
@@ -445,7 +448,7 @@ export function CardForm({ accounts, card, onSuccess, onCancel }: CardFormProps)
           />
           <Select
             label={t('Moneda')}
-            options={Array.from(CURRENCIES).map((c) => ({ value: c, label: c }))}
+            options={(canUseMulticurrency ? Array.from(CURRENCIES) : [form.formState.defaultValues?.currency ?? 'MXN']).map((c) => ({ value: c, label: c }))}
             {...form.register('currency')}
           />
         </div>

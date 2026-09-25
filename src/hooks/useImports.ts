@@ -120,6 +120,7 @@ export function useConfirmImport() {
       queryClient.invalidateQueries({ queryKey: ['transactions', input.userId] })
       queryClient.invalidateQueries({ queryKey: ['statement_imports', input.userId] })
       queryClient.invalidateQueries({ queryKey: ['account_balances', input.userId] })
+      queryClient.invalidateQueries({ queryKey: ['monthly_usage', 'import'] })
     },
   })
 }

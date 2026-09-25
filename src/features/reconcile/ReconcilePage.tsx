@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useAccounts } from '@/hooks/useAccounts'
 import { useCards } from '@/hooks/useCards'
-import { useEntitlements } from '@/hooks/useAppConfig'
+import { useEntitlements, useMonthlyLimit } from '@/hooks/useAppConfig'
 import { useCreateTransaction } from '@/hooks/useTransactions'
 import { useOcrReceipt, type StatementExtraction } from '@/hooks/useOcrReceipt'
 import {
@@ -22,6 +22,7 @@ import {
 } from '@/lib/statementReconcile'
 import { monthStartISO, todayISO } from '@/lib/dates'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { PremiumLocked } from '@/components/ui/PremiumLocked'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -52,6 +53,7 @@ export function ReconcilePage() {
   const { session } = useAuth()
   const userId = session?.user?.id
   const { canUseReconcile } = useEntitlements()
+  const reconcileLimit = useMonthlyLimit('reconcile')
 
   const accounts = useAccounts(userId).data || []
   const cards = useCards(userId).data || []
@@ -264,11 +266,7 @@ export function ReconcilePage() {
           helpId="conciliacion"
           tourTarget="conciliacion"
         />
-        <Card className="border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
-            {t('Esta función es solo para Premium. Actualiza tu plan para usarla.')}
-          </p>
-        </Card>
+        <PremiumLocked />
       </>
     )
   }
@@ -281,6 +279,8 @@ export function ReconcilePage() {
         helpId="conciliacion"
         tourTarget="conciliacion"
       />
+
+      {reconcileLimit.reached && <PremiumLocked className="mb-4" message={t('Plan gratis: llegaste al límite de {{n}} conciliaciones este mes. Actualiza a Premium para conciliar más.', { n: reconcileLimit.limit })} />}
 
       <Card className="mb-4">
         <div className="grid gap-3 sm:grid-cols-2">
@@ -329,7 +329,7 @@ export function ReconcilePage() {
           <Button
             data-tour="conciliacion"
             onClick={runComparison}
-            disabled={!file || !target || ocr.isPending}
+            disabled={!file || !target || ocr.isPending || reconcileLimit.reached}
           >
             {ocr.isPending ? t('Analizando…') : t('Comparar')}
           </Button>

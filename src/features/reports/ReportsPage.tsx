@@ -67,7 +67,7 @@ export function ReportsPage() {
   const categories = categoryQuery.data || []
   const subscriptionTotals = subscriptionQuery.data || []
   const mainCurrency = profile?.main_currency ?? 'MXN'
-  const { canUseReportsFilters } = useEntitlements()
+  const { canUseReportsFilters, canUse } = useEntitlements()
 
   const savedOrder = useSettings((s) => s.chartOrder.reports)
   const chartConfigs = useSettings((s) => s.chartConfigs)
@@ -322,21 +322,23 @@ export function ReportsPage() {
         {hasData && (
           <Card className="space-y-4">
             <ChartControls />
-            <div className="flex flex-wrap items-end gap-3 border-t border-slate-200 dark:border-slate-700 pt-4">
-              <Select
-                label={t('Exportar a Excel')}
-                options={[
-                  { value: 'both', label: t('Tablas y gráficos') },
-                  { value: 'tables', label: t('Solo tablas') },
-                  { value: 'charts', label: t('Solo gráficos') },
-                ]}
-                value={exportMode}
-                onChange={(e) => setExportMode(e.target.value as ExportMode)}
-              />
-              <Button onClick={handleExport} disabled={exporting}>
-                {exporting ? t('Exportando…') : `📊 ${t('Descargar Excel')}`}
-              </Button>
-            </div>
+            {canUse('excel_export') && (
+              <div className="flex flex-wrap items-end gap-3 border-t border-slate-200 dark:border-slate-700 pt-4">
+                <Select
+                  label={t('Exportar a Excel')}
+                  options={[
+                    { value: 'both', label: t('Tablas y gráficos') },
+                    { value: 'tables', label: t('Solo tablas') },
+                    { value: 'charts', label: t('Solo gráficos') },
+                  ]}
+                  value={exportMode}
+                  onChange={(e) => setExportMode(e.target.value as ExportMode)}
+                />
+                <Button onClick={handleExport} disabled={exporting}>
+                  {exporting ? t('Exportando…') : `📊 ${t('Descargar Excel')}`}
+                </Button>
+              </div>
+            )}
           </Card>
         )}
 

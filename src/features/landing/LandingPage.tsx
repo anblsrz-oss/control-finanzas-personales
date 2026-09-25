@@ -1,4 +1,5 @@
 ﻿import { useState } from 'react'
+import { FEATURES, isFeaturePremium, type FeatureDef, type FeatureKey } from '@/lib/features'
 import { Link, Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/Button'
@@ -50,7 +51,7 @@ function PricingSection() {
     maxBudgets
       ? t('Hasta {{n}} presupuestos', { n: maxBudgets })
       : t('Presupuestos ilimitados'),
-    t('Escaneo de recibos y reportes'),
+    ...(config && isFeaturePremium(config, 'receipts') ? [t('Reportes')] : [t('Escaneo de recibos y reportes')]),
   ]
 
   const premiumPerks = [
@@ -60,6 +61,12 @@ function PricingSection() {
     ...(config?.yields_is_premium ? [t('Rendimientos de tus cuentas')] : []),
     ...(config?.budgets_is_premium ? [t('Presupuestos')] : []),
     ...(config?.reports_filters_is_premium ? [t('Filtros avanzados de reportes')] : []),
+    // Funciones nuevas del registro (lib/features.ts) marcadas como premium.
+    ...(config
+      ? (FEATURES as readonly FeatureDef[])
+          .filter((f) => f.premium && 'flag' in f.premium && isFeaturePremium(config, f.key as FeatureKey))
+          .map((f) => t(f.label))
+      : []),
   ]
 
   const plans: Plan[] = [

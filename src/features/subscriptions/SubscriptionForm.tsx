@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
+import { useEntitlements } from '@/hooks/useAppConfig'
 import { useCards } from '@/hooks/useCards'
 import { useAccounts } from '@/hooks/useAccounts'
 import { useCategories } from '@/hooks/useCategories'
@@ -59,6 +60,7 @@ export function SubscriptionForm({ subscription, onSuccess, onCancel }: Subscrip
   const createSubscription = useCreateSubscription()
   const updateSubscription = useUpdateSubscription()
   const isEdit = !!subscription
+  const { canUse } = useEntitlements()
   const [error, setError] = useState<string | null>(null)
 
   const domicileDefault = subscription?.card_id
@@ -242,21 +244,23 @@ export function SubscriptionForm({ subscription, onSuccess, onCancel }: Subscrip
           {...form.register('domicile')}
         />
 
-        <label className="flex items-start gap-2">
-          <input
-            type="checkbox"
-            {...form.register('auto_generate')}
-            className="mt-0.5 cursor-pointer"
-          />
-          <span className="text-sm text-slate-700 dark:text-slate-200">
-            {t('Generar el cargo automáticamente')}
-            <span className="block text-xs text-slate-400 dark:text-slate-500">
-              {t(
-                'Úsalo si este comercio NO te manda un correo o SMS que la app pueda leer: se registrará solo cada ciclo, cargado a la tarjeta/cuenta de arriba.',
-              )}
+        {canUse('subscriptions_auto') && (
+          <label className="flex items-start gap-2">
+            <input
+              type="checkbox"
+              {...form.register('auto_generate')}
+              className="mt-0.5 cursor-pointer"
+            />
+            <span className="text-sm text-slate-700 dark:text-slate-200">
+              {t('Generar el cargo automáticamente')}
+              <span className="block text-xs text-slate-400 dark:text-slate-500">
+                {t(
+                  'Úsalo si este comercio NO te manda un correo o SMS que la app pueda leer: se registrará solo cada ciclo, cargado a la tarjeta/cuenta de arriba.',
+                )}
+              </span>
             </span>
-          </span>
-        </label>
+          </label>
+        )}
 
         <Select
           label={t('Categoría')}

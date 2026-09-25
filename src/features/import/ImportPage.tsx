@@ -13,6 +13,8 @@ import {
 import { mapCsvRows } from '@/lib/importParser'
 import type { ParsingRuleConfig } from '@/types/db'
 import { PageHeader } from '@/components/ui/PageHeader'
+import { PremiumLocked } from '@/components/ui/PremiumLocked'
+import { useMonthlyLimit } from '@/hooks/useAppConfig'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -31,6 +33,7 @@ export function ImportPage() {
   const rulesQuery = useParsingRules(userId, 'csv')
   const confirmImport = useConfirmImport()
   const saveRule = useSaveParsingRule()
+  const importLimit = useMonthlyLimit('import')
 
   const accounts = accountsQuery.data || []
   const categories = categoriesQuery.data || []
@@ -183,7 +186,9 @@ export function ImportPage() {
         tourTarget="importar"
       />
 
-      {accounts.length === 0 ? (
+      {importLimit.reached ? (
+        <PremiumLocked message={t('Plan gratis: llegaste al límite de {{n}} importaciones este mes. Actualiza a Premium para importar más.', { n: importLimit.limit })} />
+      ) : accounts.length === 0 ? (
         <Card className="border-dashed text-center">
           <p className="text-sm text-slate-500 dark:text-slate-400">
             {t('Primero crea una cuenta para poder importar movimientos.')}
