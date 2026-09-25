@@ -10,10 +10,10 @@ import { activeLocale } from '@/i18n'
 // OAuth de Google. Incluye la cláusula de "Limited Use" que Google exige
 // cuando una app pide scopes de Gmail (gmail.readonly).
 
-const LAST_UPDATED_ISO = '2026-08-09'
+const LAST_UPDATED_ISO = '2026-09-24'
 const CONTACT_EMAIL = 'anbl.srz@gmail.com'
 
-type Section = { heading: string; paragraphs: string[] }
+type Section = { heading: string; paragraphs: string[]; link?: { to: string; label: string } }
 
 const SECTIONS: Section[] = [
   {
@@ -30,6 +30,9 @@ const SECTIONS: Section[] = [
       'Datos de sincronización opcional por correo: si activas "Sincronizar correo" y conectas tu cuenta de Gmail, la app lee únicamente los mensajes que coinciden con reglas de remitente que tú configuras (por ejemplo, notificaciones de tu banco o de servicios como Xsolla/EBANX), extrae de ellos los datos de una transacción (monto, fecha, concepto) y no guarda el contenido completo del correo.',
       'Datos de sincronización opcional por SMS (solo Android): si activas "Sincronizar SMS", la app lee los mensajes de texto entrantes para detectar avisos de transacciones bancarias y extraer monto, fecha y concepto; no se sube ni se comparte el contenido completo del SMS ni los mensajes que no correspondan a movimientos financieros.',
       'Datos de captura opcional por notificaciones (solo Android): si activas "Captura por notificaciones" y le das a la app el "Acceso a notificaciones" de Android, la app lee únicamente las notificaciones de las apps que tú marcas (por ejemplo, la de tu banco) y solo envía al servidor las que traen un monto, para extraer monto, fecha, comercio y terminación de tarjeta; el texto de la notificación no se guarda y las notificaciones de otras apps no se leen.',
+      'Datos de sincronización opcional por Outlook: si conectas tu cuenta de Microsoft (Outlook/Hotmail) en "Sincronizar correo", la app la usa con permiso de solo lectura, con las mismas reglas de remitente y el mismo tratamiento que Gmail.',
+      'Datos de Google Calendar: si conectas Google Calendar, la app crea eventos de recordatorio (cobros de suscripciones y pagos de tarjeta) en tu calendario; no lee tus otros eventos.',
+      'Datos de pago: si contratas Premium, el pago lo procesa Stripe. Nosotros solo guardamos el identificador de cliente de Stripe y el estado de tu suscripción (plan, vigencia, periodo de prueba); nunca vemos ni guardamos el número de tu tarjeta.',
       'Datos de uso: información técnica básica para el funcionamiento de la app (por ejemplo, idioma preferido, tema claro/oscuro, y registros de error para poder corregir fallas).',
     ],
   },
@@ -53,6 +56,8 @@ const SECTIONS: Section[] = [
     paragraphs: [
       'Usamos Supabase como proveedor de infraestructura (base de datos, autenticación y funciones del servidor) para operar la app; Supabase procesa los datos en nuestro nombre bajo sus propias medidas de seguridad, y no los usa para sus propios fines.',
       'Cuando inicias sesión con Google, o conectas Gmail, compartimos información con Google únicamente en la medida necesaria para autenticarte o para leer los correos que tú autorizas, conforme a esta política.',
+      'Si conectas Outlook, compartimos información con Microsoft únicamente en la medida necesaria para leer los correos que tú autorizas.',
+      'Si contratas Premium, Stripe recibe los datos necesarios para cobrarte (correo, datos de la tarjeta que capturas directamente en su página) y los trata conforme a su propia política de privacidad.',
       'No compartimos tus datos financieros con anunciantes ni los vendemos a terceros.',
     ],
   },
@@ -68,6 +73,13 @@ const SECTIONS: Section[] = [
     paragraphs: [
       'Tus datos se transmiten mediante conexiones cifradas (HTTPS) y se almacenan con controles de acceso a nivel de fila (row-level security), de modo que cada usuario solo puede ver su propia información o la de una familia/cuenta compartida a la que fue invitado explícitamente.',
     ],
+  },
+  {
+    heading: 'Cookies y almacenamiento local',
+    paragraphs: [
+      'La app no usa cookies de rastreo, publicidad ni analítica. Solo guarda en tu navegador lo necesario para funcionar (tu sesión y tus preferencias). Los detalles están en la Política de Cookies.',
+    ],
+    link: { to: '/cookies', label: 'Ver la Política de Cookies' },
   },
   {
     heading: 'Tus derechos',
@@ -112,7 +124,7 @@ export function PrivacyPolicyPage() {
           <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
             {t('Última actualización: {{date}}', {
               date: new Intl.DateTimeFormat(activeLocale(), { dateStyle: 'long' }).format(
-                new Date(LAST_UPDATED_ISO),
+                new Date(`${LAST_UPDATED_ISO}T12:00:00`),
               ),
             })}
           </p>
@@ -125,6 +137,13 @@ export function PrivacyPolicyPage() {
                   {section.paragraphs.map((p) => (
                     <p key={p}>{t(p, { email: CONTACT_EMAIL })}</p>
                   ))}
+                  {section.link && (
+                    <p>
+                      <Link to={section.link.to} className="underline text-brand-700 dark:text-brand-500">
+                        {t(section.link.label)}
+                      </Link>
+                    </p>
+                  )}
                 </div>
               </section>
             ))}

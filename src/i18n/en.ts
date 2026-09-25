@@ -915,6 +915,7 @@ export const en: Record<string, string> = {
   // Legal (Términos y Privacidad)
   'Términos y Condiciones': 'Terms and Conditions',
   'Política de Privacidad': 'Privacy Policy',
+  'Política de Cookies': 'Cookie Policy',
   'Última actualización: {{date}}': 'Last updated: {{date}}',
 
   // Términos — encabezados
@@ -922,8 +923,8 @@ export const en: Record<string, string> = {
   'Qué es (y qué no es) la app': 'What the app is (and is not)',
   'Tu cuenta': 'Your account',
   'Uso aceptable': 'Acceptable use',
-  'Sincronización con Google y captura de SMS': 'Syncing with Google and SMS capture',
-  Precios: 'Pricing',
+  'Sincronización de correo, SMS y notificaciones': 'Email, SMS and notification sync',
+  'Planes y pagos': 'Plans and payments',
   'Propiedad intelectual': 'Intellectual property',
   'Limitación de responsabilidad': 'Limitation of liability',
   'Cancelación de tu cuenta': 'Cancelling your account',
@@ -944,16 +945,30 @@ export const en: Record<string, string> = {
     'The information you record (accounts, cards, amounts) must be information you have the right to share; do not use the app to record third parties\' financial data without their consent, except within a shared family plan that you manage yourself.',
   'No debes usar la app para actividades ilegales, para intentar acceder a cuentas de otros usuarios sin autorización, ni para interferir con el funcionamiento del servicio.':
     'You must not use the app for illegal activities, to attempt to access other users\' accounts without authorization, or to interfere with the operation of the service.',
-  'Las funciones de "Sincronizar correo" (Gmail, solo lectura) y "Sincronizar SMS" (solo Android) son opcionales y requieren tu autorización explícita. Puedes desactivarlas en cualquier momento desde la app. El tratamiento de estos datos se rige por la Política de Privacidad.':
-    'The "Sync email" (Gmail, read-only) and "Sync SMS" (Android only) features are optional and require your explicit authorization. You can turn them off at any time from within the app. The handling of this data is governed by the Privacy Policy.',
+  'Las funciones de "Sincronizar correo" (Gmail u Outlook, solo lectura), "Sincronizar SMS" (solo Android) y "Captura por notificaciones" (solo Android) son opcionales y requieren tu autorización explícita. Puedes desactivarlas en cualquier momento desde la app. El tratamiento de estos datos se rige por la Política de Privacidad.':
+    'The "Sync email" (Gmail or Outlook, read-only), "Sync SMS" (Android only) and "Notification capture" (Android only) features are optional and require your explicit authorization. You can turn them off at any time from within the app. The handling of this data is governed by the Privacy Policy.',
+  'La captura por notificaciones funciona solo si le das a la app el "Acceso a notificaciones" en los ajustes de Android, y solo lee las notificaciones de las apps que tú marcas (por ejemplo, la de tu banco o de una tienda). Puedes quitar ese permiso en cualquier momento desde los ajustes de Android. Los avisos que traen un monto se procesan en nuestro servidor para crear una transacción o un pendiente por confirmar.':
+    'Notification capture only works if you grant the app "Notification access" in Android settings, and it only reads notifications from the apps you select (for example, your bank\'s or a store\'s app). You can remove that permission at any time from Android settings. Alerts that include an amount are processed on our server to create a transaction or a pending item to confirm.',
+  'Cuando un mismo cargo llega por más de un canal (SMS, correo o notificación), la app descarta el aviso repetido si es seguro que es el mismo movimiento y, si no lo es, lo marca como "Posible duplicado" para que tú decidas. Aun así, revisa las transacciones capturadas automáticamente: pueden contener errores de lectura.':
+    'When the same charge arrives through more than one channel (SMS, email or notification), the app discards the repeated alert if it is certain it is the same transaction; otherwise it marks it as "Possible duplicate" so you can decide. Even so, review automatically captured transactions: they may contain reading errors.',
+  'La captura por notificaciones depende de tu teléfono: algunos fabricantes (por ejemplo, Xiaomi, Huawei o Samsung) detienen las apps en segundo plano para ahorrar batería. No garantizamos que se capture cada aviso; si falta alguno, puedes registrarlo a mano.':
+    'Notification capture depends on your phone: some manufacturers (for example, Xiaomi, Huawei or Samsung) stop background apps to save battery. We do not guarantee that every alert will be captured; if one is missing, you can add it manually.',
   'Mientras la conexión con Gmail esté en modo de prueba ante Google, solo los correos agregados como "usuarios de prueba" en la consola de Google Cloud podrán usar esa función; esta limitación es de Google, no de la app.':
     'While the Gmail connection is in testing mode with Google, only email addresses added as "test users" in the Google Cloud console can use that feature; this limitation comes from Google, not from the app.',
-  'Todas las funciones de la app son gratuitas por el momento. Si en el futuro se introducen planes de pago, se te avisará con anticipación antes de que se te cobre algo.':
-    'All app features are free for now. If paid plans are introduced in the future, you will be notified in advance before anything is charged.',
+  'Si conectas Google Calendar, la app crea en tu calendario recordatorios de cobros de suscripciones y de pagos de tarjeta. Puedes desconectarlo en cualquier momento desde "Configuración".':
+    'If you connect Google Calendar, the app creates reminders in your calendar for subscription charges and card payments. You can disconnect it at any time from "Settings".',
+  'La app tiene un plan gratuito y un plan Premium con funciones adicionales. Premium cuesta $79 MXN al mes o $790 MXN al año; el precio final es el que se muestra al momento de pagar. Al suscribirte tienes 7 días de prueba gratis: si cancelas antes de que termine la prueba, no se te cobra.':
+    'The app has a free plan and a Premium plan with additional features. Premium costs $79 MXN per month or $790 MXN per year; the final price is the one shown at checkout. When you subscribe you get a 7-day free trial: if you cancel before the trial ends, you are not charged.',
+  'Los pagos se procesan a través de Stripe. Nosotros no vemos ni guardamos el número de tu tarjeta.':
+    'Payments are processed through Stripe. We never see or store your card number.',
+  'La suscripción se renueva automáticamente al final de cada periodo (mensual o anual) hasta que la canceles. Puedes cancelarla en cualquier momento desde "Configuración → Gestionar suscripción"; la cancelación surte efecto al terminar el periodo que ya pagaste, y hasta entonces conservas Premium.':
+    'The subscription renews automatically at the end of each period (monthly or yearly) until you cancel it. You can cancel at any time from "Settings → Manage subscription"; cancellation takes effect at the end of the period you already paid for, and you keep Premium until then.',
+  'Podemos cambiar los precios o las funciones incluidas en cada plan. Si un cambio de precio te afecta, te avisaremos antes de tu siguiente renovación para que puedas cancelar si no estás de acuerdo.':
+    'We may change prices or the features included in each plan. If a price change affects you, we will notify you before your next renewal so you can cancel if you do not agree.',
   'La app, su diseño, código y marca nos pertenecen. Tú conservas la propiedad de los datos financieros que capturas; nos das permiso únicamente para almacenarlos y procesarlos con el fin de prestarte el servicio.':
     'The app, its design, code and brand belong to us. You retain ownership of the financial data you enter; you grant us permission only to store and process it in order to provide you the service.',
-  'La app se ofrece "tal cual", sin garantías de que esté libre de errores o interrupciones. En la medida permitida por la ley, no somos responsables de decisiones financieras que tomes con base en la información mostrada por la app, ni de pérdidas derivadas de errores de sincronización, del correo o del SMS, o de fallas de servicios de terceros (Google, Supabase, tu banco).':
-    'The app is provided "as is", without guarantees that it is free of errors or interruptions. To the extent permitted by law, we are not responsible for financial decisions you make based on information shown by the app, nor for losses arising from sync errors, email or SMS, or failures of third-party services (Google, Supabase, your bank).',
+  'La app se ofrece "tal cual", sin garantías de que esté libre de errores o interrupciones. En la medida permitida por la ley, no somos responsables de decisiones financieras que tomes con base en la información mostrada por la app, ni de pérdidas derivadas de errores de sincronización, del correo, del SMS o de las notificaciones, o de fallas de servicios de terceros (Google, Microsoft, Stripe, Supabase, tu banco).':
+    'The app is provided "as is", without guarantees that it is free of errors or interruptions. To the extent permitted by law, we are not responsible for financial decisions you make based on information shown by the app, nor for losses arising from sync errors, email, SMS or notifications, or failures of third-party services (Google, Microsoft, Stripe, Supabase, your bank).',
   'Puedes dejar de usar la app y solicitar la eliminación de tu cuenta y tus datos en cualquier momento escribiendo a {{email}}. Podemos suspender o cancelar cuentas que incumplan estos términos.':
     'You can stop using the app and request deletion of your account and data at any time by writing to {{email}}. We may suspend or cancel accounts that violate these terms.',
   'Podemos actualizar estos términos ocasionalmente. Publicaremos cualquier cambio en esta misma página con la fecha de actualización correspondiente.':
@@ -974,6 +989,7 @@ export const en: Record<string, string> = {
   'Tus derechos': 'Your rights',
   'Menores de edad': 'Minors',
   'Cambios a esta política': 'Changes to this policy',
+  'Cookies y almacenamiento local': 'Cookies and local storage',
 
   // Privacidad — párrafos
   'Mi Control de Finanzas Personales ("la app", "nosotros") es una aplicación de finanzas personales que te ayuda a organizar ingresos, gastos, cuentas, tarjetas y presupuestos. Esta política explica qué datos recopilamos, cómo los usamos y qué derechos tienes sobre ellos.':
@@ -986,6 +1002,12 @@ export const en: Record<string, string> = {
     'Optional email sync data: if you turn on "Sync email" and connect your Gmail account, the app only reads messages that match sender rules you configure (for example, notifications from your bank or services like Xsolla/EBANX), extracts transaction data from them (amount, date, description), and does not store the full email content.',
   'Datos de sincronización opcional por SMS (solo Android): si activas "Sincronizar SMS", la app lee los mensajes de texto entrantes para detectar avisos de transacciones bancarias y extraer monto, fecha y concepto; no se sube ni se comparte el contenido completo del SMS ni los mensajes que no correspondan a movimientos financieros.':
     'Optional SMS sync data (Android only): if you turn on "Sync SMS", the app reads incoming text messages to detect bank transaction alerts and extract amount, date and description; the full SMS content is not uploaded or shared, nor are messages that are not financial transactions.',
+  'Datos de sincronización opcional por Outlook: si conectas tu cuenta de Microsoft (Outlook/Hotmail) en "Sincronizar correo", la app la usa con permiso de solo lectura, con las mismas reglas de remitente y el mismo tratamiento que Gmail.':
+    'Optional Outlook sync data: if you connect your Microsoft account (Outlook/Hotmail) in "Sync email", the app uses it with read-only permission, with the same sender rules and the same handling as Gmail.',
+  'Datos de Google Calendar: si conectas Google Calendar, la app crea eventos de recordatorio (cobros de suscripciones y pagos de tarjeta) en tu calendario; no lee tus otros eventos.':
+    'Google Calendar data: if you connect Google Calendar, the app creates reminder events (subscription charges and card payments) in your calendar; it does not read your other events.',
+  'Datos de pago: si contratas Premium, el pago lo procesa Stripe. Nosotros solo guardamos el identificador de cliente de Stripe y el estado de tu suscripción (plan, vigencia, periodo de prueba); nunca vemos ni guardamos el número de tu tarjeta.':
+    'Payment data: if you purchase Premium, the payment is processed by Stripe. We only store your Stripe customer ID and your subscription status (plan, validity, trial period); we never see or store your card number.',
   'Datos de uso: información técnica básica para el funcionamiento de la app (por ejemplo, idioma preferido, tema claro/oscuro, y registros de error para poder corregir fallas).':
     'Usage data: basic technical information needed to run the app (for example, preferred language, light/dark theme, and error logs so we can fix bugs).',
   'El uso y la transferencia de información recibida desde las APIs de Google por parte de Mi Control de Finanzas Personales se ajustará a la Política de Datos de Usuario de los Servicios de API de Google (Google API Services User Data Policy), incluidos los requisitos de Uso Limitado ("Limited Use").':
@@ -1002,6 +1024,10 @@ export const en: Record<string, string> = {
     'We use Supabase as our infrastructure provider (database, authentication and server functions) to run the app; Supabase processes data on our behalf under its own security measures, and does not use it for its own purposes.',
   'Cuando inicias sesión con Google, o conectas Gmail, compartimos información con Google únicamente en la medida necesaria para autenticarte o para leer los correos que tú autorizas, conforme a esta política.':
     'When you sign in with Google, or connect Gmail, we share information with Google only to the extent necessary to authenticate you or to read the emails you authorize, in accordance with this policy.',
+  'Si conectas Outlook, compartimos información con Microsoft únicamente en la medida necesaria para leer los correos que tú autorizas.':
+    'If you connect Outlook, we share information with Microsoft only to the extent necessary to read the emails you authorize.',
+  'Si contratas Premium, Stripe recibe los datos necesarios para cobrarte (correo, datos de la tarjeta que capturas directamente en su página) y los trata conforme a su propia política de privacidad.':
+    'If you purchase Premium, Stripe receives the data needed to charge you (email, and the card details you enter directly on its page) and handles it under its own privacy policy.',
   'No compartimos tus datos financieros con anunciantes ni los vendemos a terceros.':
     'We do not share your financial data with advertisers, nor do we sell it to third parties.',
   'Conservamos tus datos mientras tu cuenta esté activa. Puedes exportar tus transacciones a Excel en cualquier momento desde la app.':
@@ -1016,6 +1042,40 @@ export const en: Record<string, string> = {
     'The app is not directed at anyone under 18 and we do not knowingly collect data from minors.',
   'Podemos actualizar esta política ocasionalmente. Publicaremos cualquier cambio en esta misma página con la fecha de actualización correspondiente.':
     'We may update this policy from time to time. We will publish any changes on this same page with the corresponding update date.',
+  'La app no usa cookies de rastreo, publicidad ni analítica. Solo guarda en tu navegador lo necesario para funcionar (tu sesión y tus preferencias). Los detalles están en la Política de Cookies.':
+    'The app does not use tracking, advertising or analytics cookies. It only stores in your browser what it needs to work (your session and your preferences). Details are in the Cookie Policy.',
+  'Ver la Política de Cookies': 'View the Cookie Policy',
+
+  // Política de Cookies
+  'Qué guardamos en tu navegador': 'What we store in your browser',
+  'Sitios de terceros': 'Third-party sites',
+  'Cómo borrar estos datos': 'How to delete this data',
+  'Mi Control de Finanzas Personales no usa cookies propias, ni cookies de rastreo, publicidad o analítica. Tampoco usamos herramientas que sigan lo que haces en otros sitios.':
+    'Mi Control de Finanzas Personales does not use its own cookies, nor tracking, advertising or analytics cookies. We also do not use tools that follow what you do on other sites.',
+  'Para funcionar, la app guarda algunos datos en el almacenamiento local de tu navegador (localStorage y sessionStorage), que no se envían a otros sitios:':
+    'To work, the app stores some data in your browser\'s local storage (localStorage and sessionStorage), which is not sent to other sites:',
+  'Tu sesión: el token de inicio de sesión, para que no tengas que volver a entrar cada vez que abres la app.':
+    'Your session: the sign-in token, so you do not have to sign in again every time you open the app.',
+  'Tus preferencias: tema claro/oscuro, idioma, tipo de gráficas, si ocultas los montos y otras opciones de la app.':
+    'Your preferences: light/dark theme, language, chart type, whether you hide amounts, and other app options.',
+  'El progreso del tutorial y de las novedades que ya viste.':
+    'Your progress in the tutorial and the "What\'s new" items you have already seen.',
+  'Un dato temporal mientras conectas tu correo o tu calendario, que se borra al cerrar la pestaña.':
+    'A temporary value while you connect your email or calendar, which is deleted when you close the tab.',
+  'Todo esto es necesario para que la app funcione, así que no pedimos consentimiento para guardarlo. No lo usamos para identificarte fuera de la app ni para publicidad.':
+    'All of this is necessary for the app to work, so we do not ask for consent to store it. We do not use it to identify you outside the app or for advertising.',
+  'Cuando pagas Premium te llevamos a la página de pago de Stripe, y cuando conectas Google o Microsoft, a sus páginas de inicio de sesión. Esos sitios pueden usar sus propias cookies, que se rigen por sus políticas de privacidad, no por esta.':
+    'When you pay for Premium we send you to Stripe\'s checkout page, and when you connect Google or Microsoft, to their sign-in pages. Those sites may use their own cookies, which are governed by their privacy policies, not this one.',
+  'Al cerrar sesión se borra tu sesión. Para borrar todo lo demás, elimina los datos de este sitio desde la configuración de tu navegador; ten en cuenta que perderás tus preferencias y tendrás que volver a iniciar sesión.':
+    'Signing out deletes your session. To delete everything else, clear this site\'s data from your browser settings; keep in mind you will lose your preferences and will need to sign in again.',
+  'Si en el futuro usamos cookies que no sean necesarias (por ejemplo, de analítica), actualizaremos esta página y te pediremos tu consentimiento antes de usarlas.':
+    'If in the future we use non-essential cookies (for example, for analytics), we will update this page and ask for your consent before using them.',
+
+  // Página 404
+  'Página no encontrada': 'Page not found',
+  'La página que buscas no existe o cambió de dirección.': 'The page you are looking for does not exist or has moved.',
+  'Ir al Resumen': 'Go to Summary',
+
   '¿Dudas sobre esta política? Escríbenos a {{email}}.':
     'Questions about this policy? Write to us at {{email}}.',
 

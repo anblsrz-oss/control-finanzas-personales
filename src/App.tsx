@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import { useAuth } from '@/store/useAuth'
 import { useAppConfig } from '@/hooks/useAppConfig'
 import { applyThemeColors } from '@/lib/themeColors'
@@ -12,6 +12,8 @@ import { ResetPasswordPage } from '@/features/auth/ResetPasswordPage'
 import { LandingPage } from '@/features/landing/LandingPage'
 import { PrivacyPolicyPage } from '@/features/legal/PrivacyPolicyPage'
 import { TermsPage } from '@/features/legal/TermsPage'
+import { CookiePolicyPage } from '@/features/legal/CookiePolicyPage'
+import { NotFoundPage } from '@/features/legal/NotFoundPage'
 import { DashboardPage } from '@/features/reports/DashboardPage'
 import { NotificationsPage } from '@/features/notifications/NotificationsPage'
 import { AccountsPage } from '@/features/accounts/AccountsPage'
@@ -62,6 +64,7 @@ export default function App() {
       <Route path="/bienvenida" element={<PageGuard to="/bienvenida"><LandingPage /></PageGuard>} />
       <Route path="/privacidad" element={<PageGuard to="/privacidad"><PrivacyPolicyPage /></PageGuard>} />
       <Route path="/terminos" element={<PageGuard to="/terminos"><TermsPage /></PageGuard>} />
+      <Route path="/cookies" element={<PageGuard to="/cookies"><CookiePolicyPage /></PageGuard>} />
       <Route path="/login" element={<PageGuard to="/login"><LoginPage /></PageGuard>} />
       <Route path="/reset-password" element={<PageGuard to="/reset-password"><ResetPasswordPage /></PageGuard>} />
       <Route
@@ -93,7 +96,7 @@ export default function App() {
         <Route path="/reportes" element={<PageGuard to="/reportes"><ReportsPage /></PageGuard>} />
         <Route path="/admin" element={<AdminPage />} />
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
     </>
   )

@@ -400,6 +400,10 @@ export function LandingPage() {
           <Link to="/privacidad" className="underline hover:text-slate-600 dark:hover:text-slate-300">
             {t('Política de Privacidad')}
           </Link>
+          <span aria-hidden="true">·</span>
+          <Link to="/cookies" className="underline hover:text-slate-600 dark:hover:text-slate-300">
+            {t('Política de Cookies')}
+          </Link>
         </p>
       </footer>
     </div>

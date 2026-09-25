@@ -9,7 +9,7 @@ import { activeLocale } from '@/i18n'
 // LoginPage y desde la pantalla de consentimiento OAuth de Google
 // (App domain → Terms of Service link).
 
-const LAST_UPDATED_ISO = '2026-08-09'
+const LAST_UPDATED_ISO = '2026-09-24'
 const CONTACT_EMAIL = 'anbl.srz@gmail.com'
 
 type Section = { heading: string; paragraphs: string[] }
@@ -42,16 +42,23 @@ const SECTIONS: Section[] = [
     ],
   },
   {
-    heading: 'Sincronización con Google y captura de SMS',
+    heading: 'Sincronización de correo, SMS y notificaciones',
     paragraphs: [
-      'Las funciones de "Sincronizar correo" (Gmail, solo lectura) y "Sincronizar SMS" (solo Android) son opcionales y requieren tu autorización explícita. Puedes desactivarlas en cualquier momento desde la app. El tratamiento de estos datos se rige por la Política de Privacidad.',
+      'Las funciones de "Sincronizar correo" (Gmail u Outlook, solo lectura), "Sincronizar SMS" (solo Android) y "Captura por notificaciones" (solo Android) son opcionales y requieren tu autorización explícita. Puedes desactivarlas en cualquier momento desde la app. El tratamiento de estos datos se rige por la Política de Privacidad.',
+      'La captura por notificaciones funciona solo si le das a la app el "Acceso a notificaciones" en los ajustes de Android, y solo lee las notificaciones de las apps que tú marcas (por ejemplo, la de tu banco o de una tienda). Puedes quitar ese permiso en cualquier momento desde los ajustes de Android. Los avisos que traen un monto se procesan en nuestro servidor para crear una transacción o un pendiente por confirmar.',
+      'Cuando un mismo cargo llega por más de un canal (SMS, correo o notificación), la app descarta el aviso repetido si es seguro que es el mismo movimiento y, si no lo es, lo marca como "Posible duplicado" para que tú decidas. Aun así, revisa las transacciones capturadas automáticamente: pueden contener errores de lectura.',
+      'La captura por notificaciones depende de tu teléfono: algunos fabricantes (por ejemplo, Xiaomi, Huawei o Samsung) detienen las apps en segundo plano para ahorrar batería. No garantizamos que se capture cada aviso; si falta alguno, puedes registrarlo a mano.',
       'Mientras la conexión con Gmail esté en modo de prueba ante Google, solo los correos agregados como "usuarios de prueba" en la consola de Google Cloud podrán usar esa función; esta limitación es de Google, no de la app.',
+      'Si conectas Google Calendar, la app crea en tu calendario recordatorios de cobros de suscripciones y de pagos de tarjeta. Puedes desconectarlo en cualquier momento desde "Configuración".',
     ],
   },
   {
-    heading: 'Precios',
+    heading: 'Planes y pagos',
     paragraphs: [
-      'Todas las funciones de la app son gratuitas por el momento. Si en el futuro se introducen planes de pago, se te avisará con anticipación antes de que se te cobre algo.',
+      'La app tiene un plan gratuito y un plan Premium con funciones adicionales. Premium cuesta $79 MXN al mes o $790 MXN al año; el precio final es el que se muestra al momento de pagar. Al suscribirte tienes 7 días de prueba gratis: si cancelas antes de que termine la prueba, no se te cobra.',
+      'Los pagos se procesan a través de Stripe. Nosotros no vemos ni guardamos el número de tu tarjeta.',
+      'La suscripción se renueva automáticamente al final de cada periodo (mensual o anual) hasta que la canceles. Puedes cancelarla en cualquier momento desde "Configuración → Gestionar suscripción"; la cancelación surte efecto al terminar el periodo que ya pagaste, y hasta entonces conservas Premium.',
+      'Podemos cambiar los precios o las funciones incluidas en cada plan. Si un cambio de precio te afecta, te avisaremos antes de tu siguiente renovación para que puedas cancelar si no estás de acuerdo.',
     ],
   },
   {
@@ -63,7 +70,7 @@ const SECTIONS: Section[] = [
   {
     heading: 'Limitación de responsabilidad',
     paragraphs: [
-      'La app se ofrece "tal cual", sin garantías de que esté libre de errores o interrupciones. En la medida permitida por la ley, no somos responsables de decisiones financieras que tomes con base en la información mostrada por la app, ni de pérdidas derivadas de errores de sincronización, del correo o del SMS, o de fallas de servicios de terceros (Google, Supabase, tu banco).',
+      'La app se ofrece "tal cual", sin garantías de que esté libre de errores o interrupciones. En la medida permitida por la ley, no somos responsables de decisiones financieras que tomes con base en la información mostrada por la app, ni de pérdidas derivadas de errores de sincronización, del correo, del SMS o de las notificaciones, o de fallas de servicios de terceros (Google, Microsoft, Stripe, Supabase, tu banco).',
     ],
   },
   {
@@ -109,7 +116,7 @@ export function TermsPage() {
           <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
             {t('Última actualización: {{date}}', {
               date: new Intl.DateTimeFormat(activeLocale(), { dateStyle: 'long' }).format(
-                new Date(LAST_UPDATED_ISO),
+                new Date(`${LAST_UPDATED_ISO}T12:00:00`),
               ),
             })}
           </p>
