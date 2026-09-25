@@ -25,7 +25,7 @@ export function WhatsNewButton({ className = '' }: { className?: string }) {
         onClick={openModal}
         title={t('Novedades')}
         aria-label={t('Novedades')}
-        className={`relative rounded-lg p-2 text-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-700 ${className}`}
+        className={`relative rounded-lg p-1.5 text-lg transition-colors sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-700 ${className}`}
       >
         🆕
         {hasUnseen && (

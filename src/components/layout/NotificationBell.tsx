@@ -13,7 +13,7 @@ export function NotificationBell({ count }: { count: number }) {
       to="/notificaciones"
       title={t('Notificaciones')}
       aria-label={t('Notificaciones')}
-      className="relative rounded-lg p-2 text-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+      className="relative rounded-lg p-1.5 text-lg transition-colors sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-700"
     >
       🔔
       {count > 0 && (

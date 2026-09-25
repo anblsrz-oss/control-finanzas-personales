@@ -93,7 +93,7 @@ export function AppShell() {
   )
 
   return (
-    <div className="flex min-h-screen bg-canvas">
+    <div className="flex min-h-screen w-full overflow-x-clip bg-canvas">
       <TourGate />
       {/* Sidebar */}
       <aside className="hidden w-60 flex-col border-r border-slate-200 dark:border-slate-700 bg-surface md:flex">
@@ -142,16 +142,16 @@ export function AppShell() {
       </aside>
 
       {/* Main */}
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col">
         {/* Topbar */}
-        <header className="safe-top flex items-center justify-between border-b border-slate-200 dark:border-slate-700 bg-surface px-6 py-3">
-          <div className="flex items-center gap-2 md:hidden">
+        <header className="safe-top sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-700 bg-surface px-3 py-3 sm:px-6">
+          <div className="flex min-w-0 items-center gap-2 md:hidden">
             <BrandLogo logoUrl={appConfig?.logo_url} />
-            <span className="font-semibold text-slate-800 dark:text-slate-100">{appTitle}</span>
+            <span className="truncate font-semibold text-slate-800 dark:text-slate-100">{appTitle}</span>
           </div>
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-3">
             {profile?.is_premium && (
-              <span className="rounded-full bg-amber-100 dark:bg-amber-900/40 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:text-amber-300">
+              <span className="hidden rounded-full bg-amber-100 dark:bg-amber-900/40 px-2.5 py-1 sm:inline text-xs font-semibold text-amber-700 dark:text-amber-300">
                 Premium
               </span>
             )}
@@ -165,14 +165,14 @@ export function AppShell() {
               onClick={toggleHideAmounts}
               title={hideAmounts ? t('Mostrar montos') : t('Ocultar montos')}
               aria-label={hideAmounts ? t('Mostrar montos') : t('Ocultar montos')}
-              className="rounded-lg p-2 text-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+              className="rounded-lg p-1.5 text-lg transition-colors sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-700"
             >
               {hideAmounts ? '🙈' : '👁️'}
             </button>
             <NavLink
               to="/configuracion"
               title={t('Configuración')}
-              className="rounded-lg p-2 text-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+              className="rounded-lg p-1.5 text-lg transition-colors sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-700"
             >
               ⚙️
             </NavLink>
@@ -180,7 +180,7 @@ export function AppShell() {
         </header>
 
         {/* pb-nav deja hueco para la barra inferior fija + área segura */}
-        <main className="pb-nav flex-1 p-4 md:p-6">
+        <main className="pb-nav min-w-0 flex-1 p-4 md:p-6">
           {/* Los watchers generan los avisos en segundo plano sin importar en
               qué pantalla esté el usuario (el gasto/cobro que los dispara
               puede llegar solo por SMS/correo). Ya no se muestran como
