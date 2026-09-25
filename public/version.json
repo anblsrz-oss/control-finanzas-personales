@@ -1,5 +1,5 @@
 {
-  "version": "0.13.1",
-  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.13.1/finzen-v0.13.1.apk",
-  "notes": "Nuevo: sección de Preguntas frecuentes en el menú, con una guía por marca de teléfono (Xiaomi, Huawei, Oppo, Samsung…) para que la captura por notificaciones siga registrando tus cargos con la app cerrada. Además, la pantalla ya no se sale del ancho en el teléfono y la captura por notificaciones registra menos datos técnicos en el teléfono."
+  "version": "0.13.2",
+  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.13.2/finzen-v0.13.2.apk",
+  "notes": "Novedades ahora muestra solo lo reciente (con \"Ver anteriores\" para lo demás) y las ventanas ya no quedan tapadas por la barra inferior. Las tarjetas de movimientos ya no se salen de la pantalla en el teléfono. Además, actualizamos los Términos y la Política de Privacidad, y agregamos una Política de Cookies."
 }
