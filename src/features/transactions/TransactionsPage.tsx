@@ -517,10 +517,10 @@ export function TransactionsPage() {
       ) : (
         <div className="grid gap-3">
           {transactions.map((tx) => (
-            <Card key={tx.id} className="flex items-start justify-between gap-3">
-              <div className="flex-1">
+            <Card key={tx.id} className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+                  <span className="min-w-0 break-words text-lg font-semibold text-slate-800 dark:text-slate-100">
                     {tx.concept || t('Sin concepto')}
                   </span>
                   <span className="rounded bg-slate-100 dark:bg-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-300">
@@ -559,7 +559,7 @@ export function TransactionsPage() {
                   </button>
                 )}
               </div>
-              <div className="flex flex-col items-end gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-2 sm:flex-col sm:flex-nowrap sm:items-end">
                 <p
                   className={`text-lg font-semibold ${
                     tx.kind === 'income' || tx.kind === 'refund'
@@ -583,7 +583,7 @@ export function TransactionsPage() {
                     />
                   </span>
                 )}
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                   {tx.pending && (
                     <button
                       onClick={() => confirmTx.mutate({ id: tx.id, userId: userId! })}
