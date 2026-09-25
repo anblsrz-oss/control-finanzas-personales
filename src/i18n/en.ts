@@ -1219,4 +1219,76 @@ export const en: Record<string, string> = {
     'Check that no "suspend unused apps" mode is enabled for it.',
   '¿Sigue sin funcionar después de todo esto? Mientras tanto, esos cargos no se pierden: sigue registrándolos con "Importar" o capturándolos a mano, y cuando puedas cuéntanos la marca y modelo de tu teléfono para revisarlo.':
     'Still not working after all this? In the meantime those charges aren\'t lost: keep recording them with "Import" or by hand, and when you can, tell us your phone\'s brand and model so we can look into it.',
+  'Ver todas las preguntas frecuentes de esta función →':
+    'See all FAQs for this feature →',
+  '¿Por qué? Ver preguntas frecuentes →':
+    'Why? See FAQs →',
+  'Preguntas frecuentes':
+    'FAQ',
+  'Respuestas rápidas y guías paso a paso para sacarle provecho a la app.':
+    'Quick answers and step-by-step guides to get the most out of the app.',
+  '▼ Mostrar':
+    '▼ Show',
+  'Registra solos los cargos que te avisan las apps de tu banco, wallet o tiendas. Solo en Android.':
+    'Automatically records the charges your bank, wallet or shopping apps notify you about. Android only.',
+  '¿Qué es y cómo funciona?':
+    'What is it and how does it work?',
+  'Cuando tu banco o una app como Mercado Pago te avisa de una compra con una notificación en el teléfono, la app puede leer ese aviso y registrar el movimiento sola, sin que tengas que abrirla ni capturarlo a mano. Es el mismo principio que la captura por SMS, pero para bancos y fintechs que ya no mandan mensajes de texto y solo avisan por su propia app.':
+    'When your bank or an app like Mercado Pago notifies you of a purchase with a phone notification, the app can read that notice and record the transaction on its own, without you opening it or entering it by hand. It is the same idea as SMS capture, but for banks and fintechs that no longer send text messages and only notify through their own app.',
+  '¿Cómo la activo?':
+    'How do I turn it on?',
+  '1. Entra a "Captura por notificaciones" desde el menú.':
+    '1. Go to "Notification capture" from the menu.',
+  '2. En "Acceso a notificaciones", dale a "Dar acceso a notificaciones". Se abre una pantalla de Ajustes de Android: busca esta app en la lista y actívala ahí.':
+    '2. Under "Notification access", tap "Grant notification access". An Android Settings screen opens: find this app in the list and turn it on there.',
+  '3. En "Apps que se escuchan", marca tu banco, tu wallet o las tiendas cuyos avisos quieres capturar. Los bancos conocidos ya vienen premarcados.':
+    '3. Under "Apps to listen to", check your bank, wallet or the shops whose notices you want captured. Known banks come pre-checked.',
+  '4. Dale a "Activar captura automática".':
+    '4. Tap "Enable automatic capture".',
+  'Ojo: en la mayoría de los teléfonos esto no basta. Revisa la pregunta "No se registró un cargo" de abajo: casi todos necesitan un ajuste extra de batería.':
+    'Heads up: on most phones this is not enough. See the "A charge was not recorded" question below: almost all of them need an extra battery setting.',
+  '¿Qué datos se leen y cuáles se guardan?':
+    'What data is read and what is stored?',
+  'Solo se leen las notificaciones de las apps que tú marques, y solo se envían al servidor las que traen un monto.':
+    'Only notifications from the apps you check are read, and only those with an amount are sent to the server.',
+  'No se leen las de apps que no marcaste (WhatsApp, redes sociales…) ni los avisos sin monto.':
+    'Notifications from apps you did not check (WhatsApp, social media…) and notices without an amount are not read.',
+  'Se guarda el movimiento detectado: monto, fecha, comercio y de qué app vino. El texto original de la notificación no se guarda.':
+    'The detected transaction is stored: amount, date, merchant and which app it came from. The original notification text is not stored.',
+  '¿Qué pasa si el mismo cargo llega por notificación, SMS y correo?':
+    'What if the same charge arrives by notification, SMS and email?',
+  'La app compara monto, moneda y hora entre los tres canales:':
+    'The app compares amount, currency and time across the three channels:',
+  'Si coincide todo y llegan con menos de 10 minutos de diferencia, se registra una sola vez y se juntan los datos (el banco aporta la cuenta, la tienda aporta el comercio).':
+    'If everything matches and they arrive less than 10 minutes apart, it is recorded once and the data is combined (the bank provides the account, the shop provides the merchant).',
+  'Si coincide pero con más diferencia de tiempo o entre cuentas distintas, se registra igual pero marcado como "Posible duplicado" en Transacciones, con botones para decir si es el mismo cargo o no.':
+    'If it matches but with a larger time gap or across different accounts, it is still recorded but flagged as "Possible duplicate" in Transactions, with buttons to say whether it is the same charge or not.',
+  'Dos avisos de la misma app con el mismo monto (dos cafés del mismo precio) nunca se fusionan: se registran como dos movimientos.':
+    'Two notices from the same app with the same amount (two coffees at the same price) are never merged: they are recorded as two transactions.',
+  'No se registró un cargo. ¿Qué hago?':
+    'A charge was not recorded. What do I do?',
+  'Para saber si es el teléfono o algo más: en "Captura por notificaciones" mira "Últimos avisos recibidos". Si está vacío después de un cargo real, el aviso ni siquiera llegó al servidor: es un ajuste del teléfono, no un error de la app.':
+    'To tell whether it is the phone or something else: in "Notification capture" look at "Latest notices received". If it is empty after a real charge, the notice never even reached the server: it is a phone setting, not an app error.',
+  'Ya hice los ajustes de batería y sigue sin funcionar':
+    'I did the battery settings and it still does not work',
+  'El truco que más veces lo resuelve, incluso después de ajustar la batería, es desinstalar la app y volver a instalarla: fuerza al sistema a registrar el permiso desde cero. Mientras tanto, esos cargos no se pierden: puedes seguir registrándolos con "Importar" o capturándolos a mano.':
+    'The trick that fixes it most often, even after adjusting the battery, is to uninstall the app and install it again: it forces the system to register the permission from scratch. In the meantime those charges are not lost: you can keep recording them with "Import" or by hand.',
+  '¿Funciona en iPhone?':
+    'Does it work on iPhone?',
+  'No. Por un lado, Apple no permite que una app lea las notificaciones de otras apps. Por otro, en iPhone solo se pueden instalar apps desde la App Store y esta app todavía no está publicada ahí, así que no hay una app que descargar para iPhone.':
+    'No. First, Apple does not allow an app to read notifications from other apps. Second, iPhone only allows installing apps from the App Store and this app is not published there yet, so there is no app to download for iPhone.',
+  'Lo que sí puedes hacer en iPhone es usar la versión web desde Safari (puedes agregarla a tu pantalla de inicio con Compartir → "Agregar a inicio") y, desde ahí, usar "Sincronizar correo" o "Importar" tu estado de cuenta.':
+    'What you can do on iPhone is use the web version from Safari (you can add it to your home screen with Share → "Add to Home Screen") and, from there, use "Sync email" or "Import" your statement.',
+  '¿Y las apps de compras, como Amazon o Rappi?':
+    'What about shopping apps, like Amazon or Rappi?',
+  'Sus avisos siempre entran como pendientes, porque por sí solos no confirman que el cobro ya se hizo. Si después llega el aviso del banco por ese mismo monto, se juntan: el banco aporta la cuenta y la tienda aporta el nombre del comercio.':
+    'Their notices always come in as pending, because on their own they do not confirm the charge went through. If the bank notice for that same amount arrives later, they are merged: the bank provides the account and the shop provides the merchant name.',
+  '¿Puedo cambiar la cuenta o la categoría con la que entra un cargo?':
+    'Can I change the account or category a charge comes in with?',
+  'Sí. En "Apps que se escuchan", dale a "Ajustes" junto a cualquier app marcada para fijar una cuenta por defecto (para cuando el aviso no menciona la terminación de tu tarjeta) y una categoría fija.':
+    'Yes. Under "Apps to listen to", tap "Settings" next to any checked app to set a default account (for when the notice does not mention your card ending) and a fixed category.',
+  '¿No encuentras lo que buscas? Cada sección de la app tiene un botón "?" con una explicación corta de lo que hace.':
+    'Cannot find what you are looking for? Each section of the app has a "?" button with a short explanation of what it does.',
+  'Volver al resumen':
+    'Back to summary',
 }

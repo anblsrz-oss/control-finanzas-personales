@@ -28,6 +28,7 @@ export const PAGE_NAV_ITEMS: PageNavItem[] = [
   { to: '/categorias', label: 'Categorías', icon: '🏷️' },
   { to: '/rendimientos', label: 'Rendimientos', icon: '📈' },
   { to: '/reportes', label: 'Reportes', icon: '📑' },
+  { to: '/ayuda', label: 'Preguntas frecuentes', icon: '❓' },
   { to: '/configuracion', label: 'Configuración', icon: '⚙️' },
 ]
 

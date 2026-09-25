@@ -12,6 +12,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-24-preguntas-frecuentes',
+    date: '2026-09-24',
+    title: 'Preguntas frecuentes',
+    description:
+      'Nueva sección "Preguntas frecuentes" en el menú, empezando por la captura por notificaciones: qué activar en tu teléfono (Xiaomi, Huawei, Oppo, Samsung…) para que registre tus cargos con la app cerrada, cómo se manejan los duplicados y qué hacer si algo no funciona.',
+  },
+  {
     id: '2026-09-22-captura-notificaciones',
     date: '2026-09-22',
     title: 'Captura por notificaciones (Android)',

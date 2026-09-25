@@ -26,6 +26,7 @@ import { SettingsPage } from '@/features/settings/SettingsPage'
 import { EmailSyncPage } from '@/features/email/EmailSyncPage'
 import { SmsSyncPage } from '@/features/sms/SmsSyncPage'
 import { NotificationCapturePage } from '@/features/notification-capture/NotificationCapturePage'
+import { HelpFaqPage } from '@/features/help/HelpFaqPage'
 import { ConnectBankPage } from '@/features/connect/ConnectBankPage'
 import { CategoriesPage } from '@/features/categories/CategoriesPage'
 import { YieldsPage } from '@/features/yields/YieldsPage'
@@ -85,6 +86,7 @@ export default function App() {
         <Route path="/correo" element={<EmailSyncPage />} />
         <Route path="/sms" element={<SmsSyncPage />} />
         <Route path="/captura-notificaciones" element={<NotificationCapturePage />} />
+        <Route path="/ayuda" element={<HelpFaqPage />} />
         <Route path="/conectar" element={<ConnectBankPage />} />
         <Route path="/categorias" element={<CategoriesPage />} />
         <Route path="/rendimientos" element={<YieldsPage />} />

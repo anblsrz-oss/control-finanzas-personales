@@ -180,6 +180,14 @@ export const TOUR_STEPS: TourStep[] = [
     target: 'rendimientos',
   },
   {
+    id: 'ayuda',
+    icon: '❓',
+    title: 'Preguntas frecuentes',
+    body: '¿Algo no funciona o tienes una duda? Aquí hay respuestas rápidas y guías paso a paso, empezando por la captura por notificaciones (qué activar en tu teléfono para que funcione).',
+    route: '/ayuda',
+    target: 'ayuda',
+  },
+  {
     id: 'configuracion',
     icon: '⚙️',
     title: 'Configuración',
