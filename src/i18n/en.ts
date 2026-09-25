@@ -17,7 +17,6 @@ export const en: Record<string, string> = {
   Correo: 'Email',
   'Sincronizar SMS': 'Sync SMS',
   SMS: 'SMS',
-  'Conexión automática': 'Auto connection',
   Conectar: 'Connect',
   Categorías: 'Categories',
   Presupuestos: 'Budgets',
@@ -411,22 +410,6 @@ export const en: Record<string, string> = {
   'vs esperado': 'vs expected',
   Actualizar: 'Update',
   Verificar: 'Verify',
-
-  // Conexión
-  'Sincroniza tus movimientos directo del banco, sin subir archivos.':
-    'Sync your transactions straight from the bank, without uploading files.',
-  'Premium · Próximamente': 'Premium · Coming soon',
-  'Estamos preparando la conexión directa con bancos y SOFIPOs mediante un agregador de Open Finance. Mientras tanto, puedes traer tus movimientos gratis por dos vías:':
-    'We are preparing direct connection with banks and SOFIPOs via an Open Finance aggregator. Meanwhile, you can bring your transactions for free in two ways:',
-  'tu estado de cuenta (CSV) — todas las plataformas.':
-    'your statement (CSV) — all platforms.',
-  'de alertas del banco — casi en tiempo real.':
-    "from your bank's alerts — near real time.",
-  'de alerta — solo en la app de Android.':
-    'alerts — only in the Android app.',
-  'Leer SMS': 'Read SMS',
-  'La conexión automática estará disponible en el plan Premium.':
-    'Auto connection will be available on the Premium plan.',
 
   // Admin
   'Panel Admin': 'Admin Panel',
@@ -1052,6 +1035,7 @@ export const en: Record<string, string> = {
   'Ayuda de esta sección': 'Help for this section',
   Novedades: 'What’s new',
   'No hay novedades por ahora.': 'No news yet.',
+  'Ver anteriores ({{n}})': 'Show older ({{n}})',
 
   // Conciliación (comparador de estados de cuenta)
   Conciliación: 'Reconciliation',
