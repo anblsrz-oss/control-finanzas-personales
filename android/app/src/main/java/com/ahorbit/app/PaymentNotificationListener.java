@@ -60,7 +60,7 @@ public class PaymentNotificationListener extends NotificationListenerService {
     @Override
     public void onListenerConnected() {
         super.onListenerConnected();
-        Log.i(TAG, "onListenerConnected"); // DIAGNÓSTICO TEMPORAL
+        Log.i(TAG, "onListenerConnected");
         // Al (re)conectarse, mandar lo que quedó pendiente sin red.
         final Context ctx = getApplicationContext();
         EXECUTOR.execute(() -> flushQueueBlocking(ctx));
@@ -69,7 +69,7 @@ public class PaymentNotificationListener extends NotificationListenerService {
     @Override
     public void onListenerDisconnected() {
         super.onListenerDisconnected();
-        Log.w(TAG, "onListenerDisconnected"); // DIAGNÓSTICO TEMPORAL
+        Log.w(TAG, "onListenerDisconnected");
     }
 
     @Override
@@ -84,21 +84,12 @@ public class PaymentNotificationListener extends NotificationListenerService {
     private void handle(StatusBarNotification sbn) throws Exception {
         final Context ctx = getApplicationContext();
         String pkg = sbn.getPackageName();
-        // DIAGNÓSTICO TEMPORAL (quitar cuando se confirme la causa de que
-        // Mercado Pago/Nu no se capturan): confirma en logcat que el sistema
-        // SÍ nos está entregando cada notificación, sin importar el filtro.
-        Log.i(TAG, "onNotificationPosted pkg=" + pkg);
         if (pkg == null || pkg.equals(ctx.getPackageName())) return;
 
         SharedPreferences prefs = ctx.getSharedPreferences(IngestClient.PREFS, MODE_PRIVATE);
-        if (!"true".equals(prefs.getString("notif_capture_on", null))) {
-            Log.i(TAG, "descartada (" + pkg + "): captura apagada");
-            return;
-        }
-        if (!csvContains(prefs.getString("notif_packages", ""), pkg)) {
-            Log.i(TAG, "descartada (" + pkg + "): app no marcada");
-            return;
-        }
+        if (!"true".equals(prefs.getString("notif_capture_on", null))) return;
+        // Apps no marcadas: se ignoran sin dejar rastro (ni su nombre en el log).
+        if (!csvContains(prefs.getString("notif_packages", ""), pkg)) return;
 
         Notification n = sbn.getNotification();
         if (n == null) {
@@ -114,25 +105,14 @@ public class PaymentNotificationListener extends NotificationListenerService {
             return;
         }
 
+        // Los Log.i de aquí en adelante solo aplican a apps que el usuario
+        // marcó y nunca escriben el texto de la notificación (privacidad);
+        // sirven para diagnosticar con `adb logcat -s PaymentNotifListener`.
         Bundle extras = n.extras;
         if (extras == null) {
             Log.i(TAG, "descartada (" + pkg + "): sin extras");
             return;
         }
-        // DIAGNÓSTICO TEMPORAL: algunas apps (Mercado Pago, wallets) arman su
-        // notificación con un layout propio (RemoteViews/estilo personalizado)
-        // y NO llenan EXTRA_TITLE/EXTRA_TEXT como una notificación normal — en
-        // ese caso el texto sale vacío aquí aunque en pantalla se vea bien.
-        // Dump completo de llaves+tipos+valor para confirmarlo o descartarlo.
-        StringBuilder dump = new StringBuilder();
-        for (String k : extras.keySet()) {
-            Object v = extras.get(k);
-            dump.append(k).append('=')
-                .append(v == null ? "null" : (v.getClass().getSimpleName() + ":" + v))
-                .append(" | ");
-        }
-        Log.i(TAG, "extras (" + pkg + "): " + dump);
-
         String title = str(extras.getCharSequence(Notification.EXTRA_TITLE));
         String text = str(extras.getCharSequence(Notification.EXTRA_BIG_TEXT));
         if (text.isEmpty()) text = str(extras.getCharSequence(Notification.EXTRA_TEXT));
@@ -154,7 +134,6 @@ public class PaymentNotificationListener extends NotificationListenerService {
             text = str(extras.getCharSequence("android.summaryText")); // EXTRA_SUMMARY_TEXT
         }
         String full = (title + "\n" + text).trim();
-        Log.i(TAG, "texto extraido (" + pkg + "): \"" + full.replace("\n", "\\n") + "\"");
         if (full.isEmpty() || !MONEY.matcher(full).find()) {
             Log.i(TAG, "descartada (" + pkg + "): sin texto o sin monto detectable");
             return;
@@ -181,7 +160,7 @@ public class PaymentNotificationListener extends NotificationListenerService {
         EXECUTOR.execute(() -> {
             enqueue(ctx, item);
             String response = flushQueueBlocking(ctx);
-            Log.i(TAG, "respuesta del servidor: " + response);
+            if (response == null) Log.w(TAG, "envio fallido, queda en cola (" + pkg + ")");
             if (IngestClient.insertedCount(response) > 0) {
                 IngestClient.notifyPending(ctx, CHANNEL_ID, "Captura de notificaciones", preview);
             }
