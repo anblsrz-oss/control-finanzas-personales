@@ -1,5 +1,5 @@
 {
-  "version": "0.14.0",
-  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.14.0/finzen-v0.14.0.apk",
-  "notes": "Al tocar la notificación de un movimiento pendiente se abre ese movimiento, listo para confirmarlo; el aviso de presupuesto abre Presupuestos. Nuevo ícono con el logo de la app, textos que ya se leen en modo oscuro (Rendimientos, Resumen, Reportes) y arreglos de pantalla en Sincronizar correo. También puedes eliminar tu cuenta desde Configuración."
+  "version": "0.15.0",
+  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.15.0/finzen-v0.15.0.apk",
+  "notes": "Premium se puede contratar desde Google Play dentro de la app (Configuración → Suscripción) y el recorrido de bienvenida vuelve a empezar por el saludo. Nuevos precios de Premium en la web: $107 al mes o $1,037 al año; quien ya está suscrito conserva su precio."
 }
