@@ -16,7 +16,7 @@ export const CHANGELOG: ChangelogEntry[] = [
     date: '2026-09-26',
     title: 'Las notificaciones te llevan al lugar correcto',
     description:
-      'Al tocar "Movimiento pendiente por revisar" se abre Transacciones con ese movimiento resaltado, listo para confirmarlo. Los avisos de presupuesto abren Presupuestos. Además se arreglaron las vistas de Sincronizar correo y del panel de administración en el celular.',
+      'Al tocar "Movimiento pendiente por revisar" se abre Transacciones con ese movimiento resaltado, listo para confirmarlo. Los avisos de presupuesto abren Presupuestos. Además se arreglaron las vistas de Sincronizar correo y del panel de administración en el celular, los textos que no se leían en modo oscuro (Rendimientos, Resumen, Reportes, Suscripciones) y la app ya usa el logo nuevo como ícono.',
   },
   {
     id: '2026-09-24-preguntas-frecuentes',

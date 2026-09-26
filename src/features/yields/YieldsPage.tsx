@@ -120,7 +120,7 @@ export function YieldsPage() {
 
           return (
             <div key={account.id} className="space-y-3">
-              <Card className="bg-gradient-to-r from-green-50 to-emerald-50">
+              <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:border-emerald-900/60 dark:from-emerald-950/60 dark:to-green-950/40">
                 <h3 className="font-semibold text-slate-800 dark:text-slate-100">
                   {parentAccount && <span className="text-slate-400">↳ </span>}
                   {account.name}
@@ -155,7 +155,7 @@ export function YieldsPage() {
                   </div>
                   <div>
                     <p className="text-xs text-slate-500 dark:text-slate-400">{t('Crecimiento esperado')}</p>
-                    <p className="text-lg font-semibold text-green-600">
+                    <p className="text-lg font-semibold text-green-600 dark:text-green-400">
                       +{formatMoney(expectedGrowth, account.currency)}
                     </p>
                   </div>
@@ -184,7 +184,9 @@ export function YieldsPage() {
                     >
                       <Card
                         className={`flex items-center justify-between ${
-                          y.verified ? 'border-green-200 bg-green-50' : ''
+                          y.verified
+                            ? 'border-green-200 bg-green-50 dark:border-green-900/60 dark:bg-green-950/30'
+                            : ''
                         } ${
                           editingAccountId === y.id ? 'border-blue-300 bg-blue-50 dark:bg-blue-900/20' : ''
                         } hover:border-slate-300`}

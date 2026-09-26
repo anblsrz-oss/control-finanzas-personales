@@ -246,13 +246,13 @@ export function ReportsPage() {
       {/* Resumen: ingresos, egresos y crédito usado. */}
       {summary && (
         <div className="mb-3 grid gap-3 sm:grid-cols-3">
-          <Card className="bg-gradient-to-br from-green-50 to-emerald-50">
+          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/30 dark:border-green-900/50">
             <p className="text-xs text-slate-600 dark:text-slate-300">{t('Total Ingresos')}</p>
-            <p className="text-2xl font-semibold text-green-600">
+            <p className="text-2xl font-semibold text-green-600 dark:text-green-400">
               <Money amount={summary.totalIncome} currency={mainCurrency} />
             </p>
           </Card>
-          <Card className="bg-gradient-to-br from-red-50 to-rose-50">
+          <Card className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/50 dark:to-rose-950/30 dark:border-red-900/50">
             <p className="text-xs text-slate-600 dark:text-slate-300">{t('Total Egresos')}</p>
             <p className="text-2xl font-semibold text-red-600 dark:text-red-400">
               <Money amount={summary.totalExpense} currency={mainCurrency} />
@@ -261,7 +261,7 @@ export function ReportsPage() {
               {t('Efectivo que salió (incluye pagos de tarjeta)')}
             </p>
           </Card>
-          <Card className="bg-gradient-to-br from-indigo-50 to-violet-50">
+          <Card className="bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950/50 dark:to-violet-950/30 dark:border-indigo-900/50">
             <p className="text-xs text-slate-600 dark:text-slate-300">{t('Crédito usado')}</p>
             <p className="text-2xl font-semibold text-indigo-600 dark:text-indigo-400">
               <Money amount={summary.creditUsed} currency={mainCurrency} />
@@ -278,7 +278,7 @@ export function ReportsPage() {
         <div className="mb-6 grid gap-3 sm:grid-cols-2">
           <Card
             className={`bg-gradient-to-br ${
-              summary.balanceCash >= 0 ? 'from-blue-50 to-cyan-50' : 'from-orange-50 to-yellow-50'
+              summary.balanceCash >= 0 ? 'from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/30 dark:border-blue-900/50' : 'from-orange-50 to-yellow-50 dark:from-orange-950/50 dark:to-yellow-950/30 dark:border-orange-900/50'
             }`}
           >
             <p className="text-xs text-slate-600 dark:text-slate-300">
@@ -286,7 +286,7 @@ export function ReportsPage() {
             </p>
             <p
               className={`text-2xl font-semibold ${
-                summary.balanceCash >= 0 ? 'text-blue-600' : 'text-orange-600'
+                summary.balanceCash >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'
               }`}
             >
               <Money amount={summary.balanceCash} currency={mainCurrency} />
@@ -297,7 +297,7 @@ export function ReportsPage() {
           </Card>
           <Card
             className={`bg-gradient-to-br ${
-              summary.balanceEconomic >= 0 ? 'from-blue-50 to-cyan-50' : 'from-orange-50 to-yellow-50'
+              summary.balanceEconomic >= 0 ? 'from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/30 dark:border-blue-900/50' : 'from-orange-50 to-yellow-50 dark:from-orange-950/50 dark:to-yellow-950/30 dark:border-orange-900/50'
             }`}
           >
             <p className="text-xs text-slate-600 dark:text-slate-300">
@@ -305,7 +305,7 @@ export function ReportsPage() {
             </p>
             <p
               className={`text-2xl font-semibold ${
-                summary.balanceEconomic >= 0 ? 'text-blue-600' : 'text-orange-600'
+                summary.balanceEconomic >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'
               }`}
             >
               <Money amount={summary.balanceEconomic} currency={mainCurrency} />

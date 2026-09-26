@@ -15,7 +15,7 @@ export default defineConfig({
     VitePWA({
       // 'prompt': no recarga sola; mostramos un aviso "Actualizar" al usuario.
       registerType: 'prompt',
-      includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
+      includeAssets: ['favicon.png', 'apple-touch-icon.png'],
       manifest: {
         name: 'Mi Control de Finanzas Personales',
         short_name: 'Mi Control Finanzas',

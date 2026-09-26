@@ -179,13 +179,13 @@ export function SubscriptionsPage() {
 
       {active.length > 0 && (
         <div className="mb-6 grid gap-3 sm:grid-cols-2">
-          <Card className="bg-gradient-to-br from-teal-50 to-cyan-50">
+          <Card className="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-950/50 dark:to-cyan-950/30 dark:border-teal-900/50">
             <p className="text-xs text-slate-600 dark:text-slate-300">{t('Gasto mensual equivalente')}</p>
             <p className="text-2xl font-semibold text-teal-600 dark:text-teal-400">
               <Money amount={monthlyTotal} currency={mainCurrency} />
             </p>
           </Card>
-          <Card className="bg-gradient-to-br from-indigo-50 to-violet-50">
+          <Card className="bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950/50 dark:to-violet-950/30 dark:border-indigo-900/50">
             <p className="text-xs text-slate-600 dark:text-slate-300">{t('Gasto anual equivalente')}</p>
             <p className="text-2xl font-semibold text-indigo-600 dark:text-indigo-400">
               <Money amount={annualTotal} currency={mainCurrency} />

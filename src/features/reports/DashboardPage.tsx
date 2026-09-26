@@ -133,13 +133,13 @@ export function DashboardPage() {
       {/* Tarjetas de resumen */}
       {summary && (
         <div className="mb-6 grid gap-3 sm:grid-cols-3">
-          <Card className="bg-gradient-to-br from-green-50 to-emerald-50">
+          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/30 dark:border-green-900/50">
             <p className="text-xs text-slate-600 dark:text-slate-300">{t('Total Ingresos')}</p>
-            <p className="text-2xl font-semibold text-green-600">
+            <p className="text-2xl font-semibold text-green-600 dark:text-green-400">
               <Money amount={summary.totalIncome} currency={mainCurrency} />
             </p>
           </Card>
-          <Card className="bg-gradient-to-br from-red-50 to-rose-50">
+          <Card className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/50 dark:to-rose-950/30 dark:border-red-900/50">
             <p className="text-xs text-slate-600 dark:text-slate-300">{t('Total Egresos')}</p>
             <p className="text-2xl font-semibold text-red-600 dark:text-red-400">
               <Money amount={summary.totalExpense} currency={mainCurrency} />
@@ -148,14 +148,14 @@ export function DashboardPage() {
           <Card
             className={`bg-gradient-to-br ${
               summary.balanceCash >= 0
-                ? 'from-blue-50 to-cyan-50'
-                : 'from-orange-50 to-yellow-50'
+                ? 'from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/30 dark:border-blue-900/50'
+                : 'from-orange-50 to-yellow-50 dark:from-orange-950/50 dark:to-yellow-950/30 dark:border-orange-900/50'
             }`}
           >
             <p className="text-xs text-slate-600 dark:text-slate-300">{t('Balance efectivo')}</p>
             <p
               className={`text-2xl font-semibold ${
-                summary.balanceCash >= 0 ? 'text-blue-600' : 'text-orange-600'
+                summary.balanceCash >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'
               }`}
             >
               <Money amount={summary.balanceCash} currency={mainCurrency} />
