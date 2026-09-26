@@ -269,10 +269,10 @@ export function ImportPage() {
                   value={dateFormat}
                   onChange={(e) => setDateFormat(e.target.value)}
                   options={[
-                    { value: 'DD/MM/YYYY', label: 'DD/MM/AAAA' },
-                    { value: 'MM/DD/YYYY', label: 'MM/DD/AAAA' },
-                    { value: 'YYYY-MM-DD', label: 'AAAA-MM-DD' },
-                    { value: 'YYYY/MM/DD', label: 'AAAA/MM/DD' },
+                    { value: 'DD/MM/YYYY', label: t('DD/MM/AAAA') },
+                    { value: 'MM/DD/YYYY', label: t('MM/DD/AAAA') },
+                    { value: 'YYYY-MM-DD', label: t('AAAA-MM-DD') },
+                    { value: 'YYYY/MM/DD', label: t('AAAA/MM/DD') },
                   ]}
                 />
                 <Select

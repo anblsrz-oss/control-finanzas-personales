@@ -1449,4 +1449,720 @@ export const en: Record<string, string> = {
     'It works even with the app closed. You can remove access anytime from Android Settings.',
   'No, gracias': 'No, thanks',
   'Acepto, continuar': 'I agree, continue',
+  // Traducciones completadas antes de la verificación de Google (2026-09-26)
+  'Crédito usado':
+    'Credit used',
+  'Notificaciones':
+    'Notifications',
+  'Hoy':
+    'Today',
+  'Esta semana':
+    'This week',
+  'Este mes':
+    'This month',
+  'Personalizado':
+    'Custom',
+  'Apartado dentro de {{name}}. Comparte su moneda y tiene su propio saldo y rendimiento.':
+    'Pocket inside {{name}}. It shares its currency and has its own balance and yield.',
+  'CLABE (opcional)':
+    'CLABE (optional)',
+  'Últimos 4 de la CLABE (opcional)':
+    'Last 4 digits of the CLABE (optional)',
+  'Número de cuenta (opcional)':
+    'Account number (optional)',
+  'Últimos 4 de la cuenta (opcional)':
+    'Last 4 digits of the account (optional)',
+  'Sirven para identificar automáticamente depósitos y transferencias por SMS o correo. Solo los últimos 4 dígitos se usan para eso, aunque guardes el número completo. La CLABE y el número de cuenta no comparten terminación, por eso van por separado.':
+    'They are used to automatically identify deposits and transfers from SMS or email. Only the last 4 digits are used for that, even if you store the full number. The CLABE and the account number don\'t share the same ending, which is why they are separate.',
+  'Vales de despensa':
+    'Meal vouchers',
+  'Tramos por monto (opcional)':
+    'Tiers by amount (optional)',
+  'Agregar tramo':
+    'Add tier',
+  'Son tramos MARGINALES: se ordenan solos por "Desde", sin importar en qué orden los captures. El primero (normalmente "Desde $0") cubre hasta el siguiente tramo, y así sucesivamente. Sustituyen a la tasa de arriba mientras haya al menos uno.':
+    'These are MARGINAL tiers: they sort themselves by "From", regardless of the order you enter them. The first one (usually "From $0") covers up to the next tier, and so on. They replace the rate above as long as there is at least one.',
+  'Desde ($)':
+    'From ($)',
+  'Tasa (%)':
+    'Rate (%)',
+  'Así quedaría:':
+    'It would look like this:',
+  'De {{from}} a {{to}}: {{rate}}%':
+    'From {{from}} to {{to}}: {{rate}}%',
+  'De {{from}} en adelante: {{rate}}%':
+    'From {{from}} and up: {{rate}}%',
+  'dos tramos empiezan en el mismo monto':
+    'two tiers start at the same amount',
+  'Crear apartado':
+    'Create pocket',
+  '+ Apartado':
+    '+ Pocket',
+  'Mover a apartado':
+    'Move to pocket',
+  'Convertir "{{name}}" en apartado de…':
+    'Turn "{{name}}" into a pocket of…',
+  'Sus transacciones no se tocan: solo pasa a mostrarse anidada bajo la cuenta que elijas.':
+    'Its transactions are untouched: it is only shown nested under the account you choose.',
+  'Elige una cuenta…':
+    'Choose an account…',
+  'Confirmar':
+    'Confirm',
+  'Ojo: quedará en {{cur1}} dentro de una cuenta en {{cur2}}.':
+    'Heads up: it will be in {{cur1}} inside an account in {{cur2}}.',
+  'Apartado':
+    'Pocket',
+  'El logo debe ser una imagen.':
+    'The logo must be an image.',
+  'La imagen no debe superar 2 MB.':
+    'The image must not exceed 2 MB.',
+  'Error al subir el logo.':
+    'Error uploading the logo.',
+  'Marca de la app':
+    'App branding',
+  'Personaliza el nombre y el logo que se ven en la barra lateral y la pestaña del navegador.':
+    'Customize the name and logo shown in the sidebar and the browser tab.',
+  'Subiendo…':
+    'Uploading…',
+  'Cambiar logo':
+    'Change logo',
+  'Nombre de la app':
+    'App name',
+  'Guardar nombre':
+    'Save name',
+  'Escribe tu nombre y apellido.':
+    'Enter your first and last name.',
+  'La contraseña debe tener al menos 6 caracteres.':
+    'The password must be at least 6 characters long.',
+  'Este correo ya tiene una cuenta. Inicia sesión o usa "¿Olvidaste tu contraseña?".':
+    'This email already has an account. Sign in or use "Forgot your password?".',
+  'Te enviamos un correo a {{email}} para confirmar que es tuyo. Abre el enlace para activar tu cuenta.':
+    'We sent an email to {{email}} to confirm it\'s yours. Open the link to activate your account.',
+  'Escribe tu correo y contraseña.':
+    'Enter your email and password.',
+  'Correo o contraseña incorrectos.':
+    'Incorrect email or password.',
+  'Te enviamos un enlace a {{email}} para restablecer tu contraseña.':
+    'We sent a link to {{email}} to reset your password.',
+  'Contraseña':
+    'Password',
+  'Código':
+    'Code',
+  'Apellido':
+    'Last name',
+  'Entrando…':
+    'Signing in…',
+  '¿Olvidaste tu contraseña?':
+    'Forgot your password?',
+  'Creando cuenta…':
+    'Creating account…',
+  'Ya tengo cuenta, iniciar sesión':
+    'I already have an account, sign in',
+  'Enviar enlace de recuperación':
+    'Send recovery link',
+  '← Volver a iniciar sesión':
+    '← Back to sign in',
+  'Las contraseñas no coinciden.':
+    'The passwords don\'t match.',
+  'Nueva contraseña':
+    'New password',
+  '¡Listo! Tu contraseña se actualizó. Entrando…':
+    'Done! Your password was updated. Signing you in…',
+  'Abre esta página desde el enlace que te enviamos por correo.':
+    'Open this page from the link we emailed you.',
+  'Confirmar contraseña':
+    'Confirm password',
+  'Guardar contraseña':
+    'Save password',
+  '← Ir a iniciar sesión':
+    '← Go to sign in',
+  'Ej: Nu, BBVA':
+    'e.g. Nu, BBVA',
+  '🍎 Vales de despensa':
+    '🍎 Meal vouchers',
+  'Cuenta de vales':
+    'Voucher account',
+  'Vales':
+    'Vouchers',
+  'Física':
+    'Physical',
+  'Tus tarjetas de crédito, débito y vales. Los límites y pagos están en Líneas de crédito.':
+    'Your credit, debit and voucher cards. Limits and payments are under Credit lines.',
+  'Agrupar por':
+    'Group by',
+  'Formato (física/virtual)':
+    'Format (physical/virtual)',
+  'Ver línea':
+    'View line',
+  'Guardar':
+    'Save',
+  'editar':
+    'edit',
+  'Saldo confirmado:':
+    'Confirmed balance:',
+  '¿Coincide con tu estado de cuenta?':
+    'Does it match your statement?',
+  'confirmar saldo':
+    'confirm balance',
+  'A pagar de este periodo':
+    'Due this period',
+  'Consumos del {{start}} al {{end}}':
+    'Purchases from {{start}} to {{end}}',
+  'ya abonado':
+    'already paid',
+  'Pagar':
+    'Pay',
+  'Meses sin intereses activos':
+    'Active interest-free installments',
+  '{{paid}}/{{total}} pagadas · faltan':
+    '{{paid}}/{{total}} paid · remaining',
+  'sigue {{month}}':
+    'next: {{month}}',
+  'Ej: Nu México':
+    'e.g. Nu Mexico',
+  'Crear línea':
+    'Create line',
+  '¿Eliminar la línea "{{name}}"? Sus {{n}} tarjetas quedarán sin línea asignada.':
+    'Delete the line "{{name}}"? Its {{n}} cards will be left without an assigned line.',
+  '¿Eliminar la línea "{{name}}"?':
+    'Delete the line "{{name}}"?',
+  'Límites, fechas de corte y pago que comparten tus tarjetas de crédito.':
+    'Limits, statement and due dates shared by your credit cards.',
+  '+ Agregar línea':
+    '+ Add line',
+  'Sin líneas de crédito. Crea una para asignarle tus tarjetas.':
+    'No credit lines. Create one to assign your cards to it.',
+  'Sin tarjetas asignadas':
+    'No cards assigned',
+  'Tarjetas:':
+    'Cards:',
+  'Pagar {{name}}':
+    'Pay {{name}}',
+  'Captura automática de correo activada. Los correos nuevos se registrarán solos.':
+    'Automatic email capture enabled. New emails will be recorded automatically.',
+  'Activada, pero Google no entregó el permiso offline. Desconecta y vuelve a conectar Gmail para que la captura se mantenga.':
+    'Enabled, but Google did not grant offline access. Disconnect and reconnect Gmail to keep the capture running.',
+  'Captura automática de correo desactivada.':
+    'Automatic email capture disabled.',
+  'Activada, pero Microsoft no entregó el permiso offline. Desconecta y vuelve a conectar Outlook para que la captura se mantenga.':
+    'Enabled, but Microsoft did not grant offline access. Disconnect and reconnect Outlook to keep the capture running.',
+  '¿Borrar el remitente "{{name}}"?':
+    'Delete the sender "{{name}}"?',
+  'Captura automática activa: los correos nuevos de tu banco se registran solos, en tiempo real, como pendientes.':
+    'Automatic capture is on: new emails from your bank are recorded on their own, in real time, as pending.',
+  'Lee alertas de tu banco y correos de proveedores (facturas, tickets, domiciliados) desde Gmail u Outlook y crea movimientos pendientes.':
+    'Reads alerts from your bank and emails from vendors (invoices, receipts, direct debits) from Gmail or Outlook and creates pending transactions.',
+  'Editando: {{name}}':
+    'Editing: {{name}}',
+  '1. Remitentes (banco o proveedor)':
+    '1. Senders (bank or vendor)',
+  'Indica de qué correos llegan las alertas o tickets (ej.':
+    'Indicate which emails the alerts or receipts come from (e.g.',
+  'Solo se leen esos correos. Las facturas CFDI (XML) se leen automáticamente sin configurar regex.':
+    'Only those emails are read. CFDI invoices (XML) are read automatically without configuring a regex.',
+  'ingreso':
+    'income',
+  'Borrar':
+    'Delete',
+  'Banco o proveedor':
+    'Bank or vendor',
+  '▲ Ocultar opciones avanzadas':
+    '▲ Hide advanced options',
+  '▼ Opciones avanzadas (moneda, tipo, concepto, tarjeta)':
+    '▼ Advanced options (currency, type, description, card)',
+  'Tipo de movimiento':
+    'Transaction type',
+  'Moneda (opcional, ej. MXN, USD)':
+    'Currency (optional, e.g. MXN, USD)',
+  'Regex de concepto (opcional)':
+    'Description regex (optional)',
+  'Regex de terminación de tarjeta (opcional)':
+    'Card ending regex (optional)',
+  'Si el correo trae la terminación de la tarjeta, se asignará automáticamente la tarjeta que coincida (y su cuenta ligada).':
+    'If the email includes the card\'s last digits, the matching card (and its linked account) is assigned automatically.',
+  'Cuenta por defecto (opcional)':
+    'Default account (optional)',
+  'Sin cuenta por defecto':
+    'No default account',
+  'Se usa solo cuando el correo no trae ninguna terminación de tarjeta/cuenta (ej. pagos vía wallet de un gateway como EBANX/Xsolla).':
+    'Used only when the email has no card/account ending (e.g. wallet payments through a gateway such as EBANX/Xsolla).',
+  'Sin categoría fija':
+    'No fixed category',
+  'Se asigna siempre a los movimientos de este remitente (ej. PlayStation Store → Videojuegos), sin importar qué se haya comprado.':
+    'Always assigned to transactions from this sender (e.g. PlayStation Store → Video games), regardless of what was purchased.',
+  'Reconectar (forzar permisos)':
+    'Reconnect (force permissions)',
+  'Si iniciaste sesión con Google normalmente (no con este botón), el token guardado no trae permiso de Gmail. Pulsa "Reconectar" para autorizarlo, incluso si ya dice conectado.':
+    'If you signed in with Google normally (not with this button), the saved token has no Gmail permission. Press "Reconnect" to authorize it, even if it already says connected.',
+  '¿Error 403 / "Acceso bloqueado" al conectar? Tu correo debe estar añadido como usuario de prueba en la pantalla de consentimiento de OAuth en Google Cloud.':
+    'Getting a 403 error / "Access blocked" when connecting? Your email must be added as a test user on the OAuth consent screen in Google Cloud.',
+  '3. Captura automática en tiempo real (Gmail)':
+    '3. Automatic real-time capture (Gmail)',
+  '✅ Activada. Google avisa a la app en cuanto llega un correo y se registra solo.':
+    '✅ Enabled. Google notifies the app as soon as an email arrives and it is recorded automatically.',
+  'Actívala para no tener que pulsar "Sincronizar": los correos nuevos se registran solos en cuanto llegan.':
+    'Turn it on so you don\'t have to press "Sync": new emails are recorded automatically as soon as they arrive.',
+  'Se renueva automáticamente cada semana.':
+    'Renews automatically every week.',
+  'Activando…':
+    'Enabling…',
+  'Activar tiempo real':
+    'Enable real time',
+  'Desactivar tiempo real':
+    'Disable real time',
+  'Requiere conectar Gmail arriba. En modo de prueba de Google, cada cuenta debe reconectar Gmail cada 7 días.':
+    'Requires connecting Gmail above. In Google\'s testing mode, each account must reconnect Gmail every 7 days.',
+  '4. Conecta Outlook y sincroniza':
+    '4. Connect Outlook and sync',
+  'Conectar Outlook':
+    'Connect Outlook',
+  'Outlook conectado':
+    'Outlook connected',
+  'Usa los mismos remitentes configurados arriba: no hace falta duplicarlos por proveedor.':
+    'Uses the same senders configured above: no need to duplicate them per provider.',
+  '5. Captura automática en tiempo real (Outlook)':
+    '5. Automatic real-time capture (Outlook)',
+  '✅ Activada. Microsoft avisa a la app en cuanto llega un correo y se registra solo.':
+    '✅ Enabled. Microsoft notifies the app as soon as an email arrives and it is recorded automatically.',
+  'Se renueva automáticamente antes de vencer.':
+    'Renews automatically before it expires.',
+  'Requiere conectar Outlook arriba.':
+    'Requires connecting Outlook above.',
+  'Invitación enviada por correo.':
+    'Invitation sent by email.',
+  'Invitación creada, pero no se pudo enviar el correo. La persona la verá igual al entrar a Mi Control de Finanzas Personales.':
+    'Invitation created, but the email could not be sent. The person will still see it when they sign in to Mi Control de Finanzas Personales.',
+  'Un momento…':
+    'One moment…',
+  'Desactivar captura':
+    'Disable capture',
+  'Activar captura automática':
+    'Enable automatic capture',
+  'tu tarjeta':
+    'your card',
+  'Avisos pendientes de presupuestos, suscripciones y pagos de tarjeta.':
+    'Pending alerts for budgets, subscriptions and card payments.',
+  'No tienes notificaciones pendientes.':
+    'You have no pending notifications.',
+  'Pagos de tarjeta':
+    'Card payments',
+  'Mensualidad de {{name}}{{amount}} vence el {{date}}.':
+    'The installment for {{name}}{{amount}} is due on {{date}}.',
+  'El pago de {{name}}{{amount}} vence el {{date}}.':
+    'The payment for {{name}}{{amount}} is due on {{date}}.',
+  'tu suscripción':
+    'your subscription',
+  '{{name}} subió de {{old}} a {{new}}.':
+    '{{name}} went up from {{old}} to {{new}}.',
+  '{{name}} te cobrará {{amount}} el {{date}}.':
+    '{{name}} will charge you {{amount}} on {{date}}.',
+  'No se detectaron movimientos en el documento. Intenta con otro archivo.':
+    'No transactions were detected in the document. Try another file.',
+  'No se pudo leer el documento con IA: {{error}}.':
+    'Could not read the document with AI: {{error}}.',
+  'El PDF tiene más de 8 páginas; solo se analizaron las primeras 8.':
+    'The PDF has more than 8 pages; only the first 8 were analyzed.',
+  'No se pudo leer el PDF con IA: {{error}}. Intenta con otro archivo o con una foto.':
+    'Could not read the PDF with AI: {{error}}. Try another file or a photo.',
+  'No se pudo leer el ticket: {{error}}.':
+    'Could not read the receipt: {{error}}.',
+  'La suma del detalle ({{sum}}) no cuadra con el total ({{total}}).':
+    'The sum of the details ({{sum}}) doesn\'t match the total ({{total}}).',
+  'Selecciona al menos un movimiento':
+    'Select at least one transaction',
+  'Cada movimiento marcado necesita una cuenta o tarjeta':
+    'Each selected transaction needs an account or card',
+  'Falta el tipo de cambio de {{currency}} → {{main}}. Complétalo arriba antes de guardar.':
+    'The {{currency}} → {{main}} exchange rate is missing. Fill it in above before saving.',
+  'Toma una foto del ticket o sube un estado de cuenta y registra los movimientos automáticamente':
+    'Take a photo of the receipt or upload a statement and record the transactions automatically',
+  '¿Quieres intentar con el OCR local (más lento y menos preciso)?':
+    'Do you want to try local OCR (slower and less accurate)?',
+  'Intentar':
+    'Try',
+  'Recibo':
+    'Receipt',
+  'Estado de cuenta':
+    'Statement',
+  'Sube el PDF de tu estado de cuenta (banco o tarjeta). Vamos a leer los movimientos y podrás revisarlos antes de guardar.':
+    'Upload the PDF of your statement (bank or card). We\'ll read the transactions and you can review them before saving.',
+  'o subir un PDF':
+    'or upload a PDF',
+  'Analizando el documento con IA…':
+    'Analyzing the document with AI…',
+  'Se toma el tipo de cambio de la fecha del movimiento. Puedes ajustarlo si lo necesitas.':
+    'The exchange rate for the transaction date is used. You can adjust it if needed.',
+  'Revisa los movimientos detectados ({{count}})':
+    'Review the detected transactions ({{count}})',
+  'Los marcados 💳 (pago a tarjeta) y 🔁 (compra a meses) se detectaron pero se dejaron sin seleccionar: regístralos desde "Nueva transacción" para que se contabilicen correctamente (línea de crédito, plazo, etc.).':
+    'Those marked 💳 (card payment) and 🔁 (installment purchase) were detected but left unselected: record them from "New transaction" so they are counted correctly (credit line, term, etc.).',
+  'Cuenta para todos los movimientos':
+    'Account for all transactions',
+  'O tarjeta para todos los movimientos':
+    'Or card for all transactions',
+  'Tipo de cambio hacia {{main}} (se autocompleta, puedes corregirlo)':
+    'Exchange rate to {{main}} (auto-filled, you can correct it)',
+  'Cuenta / tarjeta':
+    'Account / card',
+  'Pago a tarjeta detectado':
+    'Card payment detected',
+  'Compra a meses (MSI) detectada':
+    'Installment purchase (MSI) detected',
+  'Selecciona cuenta o tarjeta':
+    'Select account or card',
+  'Guardar seleccionadas ({{count}})':
+    'Save selected ({{count}})',
+  'Cada movimiento usa la moneda que detectó la IA; corrígela por fila si hace falta.':
+    'Each transaction uses the currency the AI detected; correct it per row if needed.',
+  'Se guardaron {{saved}} movimientos.':
+    '{{saved}} transactions were saved.',
+  '{{n}} ya estaban registrados (duplicados).':
+    '{{n}} were already recorded (duplicates).',
+  '{{n}} no se pudieron guardar.':
+    '{{n}} could not be saved.',
+  'Premium: elige el periodo del resumen (hoy, semana, mes o personalizado). Actualiza tu plan para más análisis.':
+    'Premium: choose the summary period (today, week, month or custom). Upgrade your plan for more analysis.',
+  'Balance efectivo':
+    'Cash balance',
+  'Sin transacciones en este periodo.':
+    'No transactions in this period.',
+  'Gasto por Suscripción':
+    'Spending by Subscription',
+  'Efectivo que salió (incluye pagos de tarjeta)':
+    'Cash that went out (includes card payments)',
+  'Deuda generada con tarjeta en el periodo':
+    'Debt generated with cards in the period',
+  'Ingresos − egresos de efectivo. El consumo a crédito no cuenta hasta que lo pagas.':
+    'Income − cash expenses. Credit spending doesn\'t count until you pay it.',
+  'Balance económico':
+    'Economic balance',
+  'Reconoce el gasto al consumir con tarjeta (resta el crédito usado).':
+    'Recognizes the expense when you spend with a card (subtracts the credit used).',
+  '¿Desconectar Google Calendar? Los recordatorios ya creados se quedan en tu calendario.':
+    'Disconnect Google Calendar? Reminders already created will stay in your calendar.',
+  'Reporte financiero por correo':
+    'Financial report by email',
+  'Un resumen de ingresos, egresos y categorías, con un Excel adjunto, con la frecuencia que elijas.':
+    'A summary of income, expenses and categories, with an Excel attachment, at the frequency you choose.',
+  'Día del mes':
+    'Day of the month',
+  'Cada':
+    'Every',
+  'Crea un evento en tu calendario cuando se acerca el próximo cobro de una suscripción o la fecha de pago de una tarjeta/MSI.':
+    'Creates an event in your calendar when the next subscription charge or a card/MSI payment date is coming up.',
+  'Conectar Google Calendar':
+    'Connect Google Calendar',
+  'Activar recordatorios':
+    'Enable reminders',
+  'Conectado{{email}}':
+    'Connected{{email}}',
+  'Desconectar':
+    'Disconnect',
+  'Próximo cobro de suscripciones':
+    'Upcoming subscription charge',
+  'Pago de tarjeta / MSI':
+    'Card payment / MSI',
+  'Captura automática desactivada.':
+    'Automatic capture disabled.',
+  'Agrega al menos un remitente de tu banco antes de activar.':
+    'Add at least one bank sender before enabling.',
+  'Captura automática activada. Los SMS de tus bancos se registrarán solos como pendientes.':
+    'Automatic capture enabled. SMS messages from your banks will be recorded on their own as pending.',
+  'Captura automática de SMS':
+    'Automatic SMS capture',
+  'Registra solo las alertas de compra y transferencia por SMS de tu banco. Disponible solo en la app de Android.':
+    'Records only purchase and transfer alerts sent by SMS from your bank. Available only in the Android app.',
+  'Palabras de ingreso (coma, opcional)':
+    'Income words (comma-separated, optional)',
+  'Palabras de gasto (coma, opcional)':
+    'Expense words (comma-separated, optional)',
+  'Si el SMS contiene una palabra de ingreso se registra como ingreso (ej. transferencias recibidas); si no, como gasto. Si lo dejas vacío se usan listas por defecto en español.':
+    'If the SMS contains an income word it is recorded as income (e.g. received transfers); otherwise as an expense. If left empty, default Spanish lists are used.',
+  '2. Captura automática':
+    '2. Automatic capture',
+  '✅ Activada. Los SMS de tus bancos se registran solos como pendientes en cuanto llegan.':
+    '✅ Enabled. SMS messages from your banks are recorded on their own as pending as soon as they arrive.',
+  'Actívala para que los SMS se registren solos, sin abrir la app. Se pedirá permiso para leer y recibir SMS.':
+    'Turn it on so SMS messages are recorded automatically, without opening the app. Permission to read and receive SMS will be requested.',
+  'Los movimientos se crean como pendientes; confírmalos en Transacciones para que cuenten en tus saldos. Para que funcione con la app cerrada, excluye la app de la optimización de batería.':
+    'Transactions are created as pending; confirm them in Transactions so they count toward your balances. For it to work with the app closed, exclude the app from battery optimization.',
+  'Otro (escribir nombre)':
+    'Other (type a name)',
+  'Sin tarjeta / cuenta asignada':
+    'No card / account assigned',
+  'Comercio':
+    'Merchant',
+  'Ciclo de cobro':
+    'Billing cycle',
+  'Próximo cobro':
+    'Next charge',
+  'Generar el cargo automáticamente':
+    'Generate the charge automatically',
+  'Úsalo si este comercio NO te manda un correo o SMS que la app pueda leer: se registrará solo cada ciclo, cargado a la tarjeta/cuenta de arriba.':
+    'Use it if this merchant does NOT send an email or SMS the app can read: it will be recorded on its own each cycle, charged to the card/account above.',
+  'Agregar suscripción':
+    'Add subscription',
+  'Sin tarjeta / cuenta':
+    'No card / account',
+  '¿"{{name}}" no es una suscripción? No se volverá a sugerir.':
+    'Is "{{name}}" not a subscription? It won\'t be suggested again.',
+  '¿Cancelar "{{name}}"? Si vuelve a cobrar, se sugerirá de nuevo.':
+    'Cancel "{{name}}"? If it charges again, it will be suggested again.',
+  '¿Eliminar "{{name}}" definitivamente?':
+    'Permanently delete "{{name}}"?',
+  'No había ningún cobro pendiente por registrar.':
+    'There were no pending charges to record.',
+  'Cobro de {{amount}} registrado ({{date}}).':
+    'Charge of {{amount}} recorded ({{date}}).',
+  'Se registraron {{n}} cobros pendientes.':
+    '{{n}} pending charges were recorded.',
+  'No se pudo registrar el cobro.':
+    'The charge could not be recorded.',
+  'Cargos recurrentes domiciliados a tus tarjetas y cuentas.':
+    'Recurring charges billed to your cards and accounts.',
+  '+ Agregar manualmente':
+    '+ Add manually',
+  'Gasto mensual equivalente':
+    'Equivalent monthly spending',
+  'Gasto anual equivalente':
+    'Equivalent yearly spending',
+  'Sugeridas':
+    'Suggested',
+  'No es suscripción':
+    'Not a subscription',
+  'Buscando…':
+    'Searching…',
+  'Buscar más suscripciones':
+    'Find more subscriptions',
+  'Sin suscripciones todavía. Se detectan solas cuando llega un cargo de Netflix, Spotify, etc. por SMS o correo, o agrégalas manualmente.':
+    'No subscriptions yet. They are detected automatically when a Netflix, Spotify, etc. charge arrives by SMS or email, or add them manually.',
+  'Se registra sola cada ciclo, sin esperar correo/SMS':
+    'Recorded automatically each cycle, without waiting for an email/SMS',
+  'Automático':
+    'Automatic',
+  'próximo cobro':
+    'next charge',
+  'El próximo cobro ya venció y todavía no se ha contabilizado':
+    'The next charge is overdue and has not been recorded yet',
+  'Registrar cobro':
+    'Record charge',
+  'Pausar':
+    'Pause',
+  'Ver historial ({{n}})':
+    'View history ({{n}})',
+  'Reactivar':
+    'Reactivate',
+  'Escribe un monto válido.':
+    'Enter a valid amount.',
+  'Reembolso: {{concept}}':
+    'Refund: {{concept}}',
+  'Reembolso':
+    'Refund',
+  'Reembolsar compra':
+    'Refund purchase',
+  'Reembolso registrado. Este plan de MSI se canceló: ya no se te cobrarán las mensualidades restantes.':
+    'Refund recorded. This installment plan was cancelled: you will no longer be charged the remaining installments.',
+  'Ya reembolsado':
+    'Already refunded',
+  'de':
+    'of',
+  'Esta compra ya se reembolsó por completo.':
+    'This purchase has already been fully refunded.',
+  'Monto a reembolsar':
+    'Amount to refund',
+  'Ej: Cancelación del pedido, artículo devuelto…':
+    'e.g. Order cancelled, item returned…',
+  'Reembolsar':
+    'Refund',
+  'Pago de tarjeta':
+    'Card payment',
+  'Selecciona la cuenta origen':
+    'Select the source account',
+  'Selecciona la cuenta origen y la línea de crédito a pagar':
+    'Select the source account and the credit line to pay',
+  'Selecciona la compra a reembolsar':
+    'Select the purchase to refund',
+  'Selecciona la cuenta de la que retiras el efectivo':
+    'Select the account you withdraw the cash from',
+  'Selecciona la cuenta de efectivo a la que va el retiro':
+    'Select the cash account the withdrawal goes to',
+  '💳 Pago de tarjeta':
+    '💳 Card payment',
+  '🏧 Retiro de efectivo':
+    '🏧 Cash withdrawal',
+  '↩️ Reembolso':
+    '↩️ Refund',
+  'La cuenta destino no es mía (cuenta externa)':
+    'The destination account isn\'t mine (external account)',
+  'Sale dinero de verdad: se contará como egreso en tus reportes.':
+    'Money really leaves: it will count as an expense in your reports.',
+  'Retiras de':
+    'Withdraw from',
+  'Selecciona la cuenta':
+    'Select the account',
+  'Ya lo gastaste o es para un pago':
+    'Already spent or meant for a payment',
+  'Actívalo si el efectivo ya se usó: contará como egreso ahora. Déjalo apagado si solo lo tienes en la cartera.':
+    'Turn it on if the cash has already been used: it will count as an expense now. Leave it off if you\'re just holding it in your wallet.',
+  'Se registrará como egreso desde la cuenta de la que retiras.':
+    'It will be recorded as an expense from the account you withdraw from.',
+  'Efectivo va a (cartera)':
+    'Cash goes to (wallet)',
+  'Selecciona la cuenta de efectivo':
+    'Select the cash account',
+  'No tienes una cuenta de tipo Efectivo. Crea una en Cuentas para guardar el efectivo de la cartera.':
+    'You don\'t have a Cash account. Create one in Accounts to hold your wallet cash.',
+  'Solo pasa a tu cartera: aún no es egreso. Lo será cuando registres el gasto de ese efectivo.':
+    'It only moves to your wallet: it isn\'t an expense yet. It will be once you record spending that cash.',
+  'Línea de crédito a pagar':
+    'Credit line to pay',
+  'Selecciona la línea':
+    'Select the line',
+  'Meses sin intereses de esta línea':
+    'Interest-free installments on this line',
+  'Marca las mensualidades que cubre este pago.':
+    'Mark the installments this payment covers.',
+  'mensualidad de {{month}}; van {{paid}}/{{total}})':
+    '{{month}} installment; {{paid}}/{{total}} paid)',
+  'Compra a reembolsar':
+    'Purchase to refund',
+  'Selecciona una compra':
+    'Select a purchase',
+  'Monto de la compra':
+    'Purchase amount',
+  'Se marcarán {{n}} mensualidades ({{amount}}) como ya pagadas.':
+    '{{n}} installments ({{amount}}) will be marked as paid.',
+  'Detalle (opcional)':
+    'Details (optional)',
+  'Agregar línea':
+    'Add line',
+  'Quitar línea':
+    'Remove line',
+  'La suma cuadra con el total.':
+    'The sum matches the total.',
+  'Restan {{amount}} por asignar':
+    '{{amount}} left to assign',
+  'Te pasaste por {{amount}}':
+    'You went over by {{amount}}',
+  'cuenta externa':
+    'external account',
+  'Vista de tarjetas':
+    'Card view',
+  'Vista de tabla':
+    'Table view',
+  'Tabla':
+    'Table',
+  '{{n}} líneas':
+    '{{n}} lines',
+  'Reembolsado':
+    'Refunded',
+  'Ver detalle ({{n}} líneas)':
+    'View details ({{n}} lines)',
+  'Detalle':
+    'Details',
+  'Confirma el rendimiento calculado':
+    'Confirm the calculated yield',
+  'Ya viene precargado con el cálculo del sistema. Ajústalo solo si tu banco dio un monto distinto — al confirmar se registra como una transacción de ingreso.':
+    'It comes pre-filled with the system\'s calculation. Adjust it only if your bank gave a different amount — confirming records it as an income transaction.',
+  'Monto a contabilizar ($)':
+    'Amount to record ($)',
+  'Verificar y contabilizar':
+    'Verify and record',
+  '(apartado de {{name}})':
+    '(pocket of {{name}})',
+  // Traducciones completadas antes de la verificación de Google (2026-09-26)
+  'Tu panorama general: saldo total, gastos e ingresos del mes y gráficas rápidas de tus finanzas.':
+    'Your big picture: total balance, this month\'s expenses and income, and quick charts of your finances.',
+  'Registra tus cuentas de efectivo, débito o ahorro. Cada transacción que agregues se descuenta o suma aquí. Dentro de una cuenta puedes separar dinero en apartados (cajitas) con "Mover a apartado".':
+    'Register your cash, debit or savings accounts. Every transaction you add is subtracted from or added to them here. Inside an account you can set money aside in pockets with "Move to pocket".',
+  'Tus tarjetas de crédito o débito. Las de crédito se agrupan en una línea de crédito (siguiente sección) para calcular su estado de cuenta.':
+    'Your credit or debit cards. Credit cards are grouped into a credit line (next section) to calculate their statement.',
+  'Fechas de corte y pago, cuánto llevas gastado del periodo y cuánto debes pagar. Cada cargo nuevo actualiza el monto a pagar automáticamente.':
+    'Statement and due dates, how much you\'ve spent this period and how much you owe. Every new charge updates the amount due automatically.',
+  'Todos tus movimientos: gastos, ingresos, pagos de tarjeta y transferencias. Aquí puedes editarlos o corregir su categoría.':
+    'All your transactions: expenses, income, card payments and transfers. Here you can edit them or fix their category.',
+  'Define un límite mensual por categoría y recibe un aviso cuando estés por pasarte.':
+    'Set a monthly limit per category and get an alert when you\'re about to go over.',
+  'Detecta Netflix, Spotify y demás cargos recurrentes por SMS/correo, o agrégalos a mano. Si un comercio no manda correo/SMS, activa "Generar el cargo automáticamente" para que se registre solo cada ciclo.':
+    'Detects Netflix, Spotify and other recurring charges from SMS/email, or add them by hand. If a merchant doesn\'t send an email/SMS, turn on "Generate the charge automatically" so it is recorded on its own each cycle.',
+  'Sube un archivo (Excel/CSV) con movimientos ya existentes para no capturarlos uno por uno.':
+    'Upload a file (Excel/CSV) with existing transactions so you don\'t have to enter them one by one.',
+  'Toma una foto de un ticket o sube un PDF/XML y la app detecta los datos del gasto por ti.':
+    'Take a photo of a receipt or upload a PDF/XML and the app detects the expense data for you.',
+  'Sube el estado de cuenta de una tarjeta o cuenta y compáralo, movimiento por movimiento, con lo que registraste: te dice qué falta, qué sobra y qué tiene un monto distinto.':
+    'Upload the statement of a card or account and compare it, transaction by transaction, with what you\'ve recorded: it tells you what\'s missing, what\'s extra and what has a different amount.',
+  'Invita a otras personas a compartir cuentas o líneas de crédito y ver las finanzas familiares juntos.':
+    'Invite other people to share accounts or credit lines and see the family finances together.',
+  'Conecta tu Gmail para detectar cargos y pagos automáticamente desde los correos de tu banco.':
+    'Connect your Gmail to detect charges and payments automatically from your bank emails.',
+  'En Android, captura tus movimientos en tiempo real desde los SMS que te manda tu banco.':
+    'On Android, capture your transactions in real time from the SMS your bank sends you.',
+  'En Android, registra solos los cargos que te avisan las apps de tu banco, wallet o tiendas. Si el mismo cargo llega también por SMS o correo, se cuenta una sola vez.':
+    'On Android, automatically record the charges notified by your bank, wallet or store apps. If the same charge also arrives by SMS or email, it is counted only once.',
+  'Organiza tus gastos e ingresos en categorías propias, con color e ícono, para que tus reportes tengan sentido.':
+    'Organize your expenses and income into your own categories, with color and icon, so your reports make sense.',
+  'Da seguimiento a cuentas de inversión o ahorro con rendimiento (incluso por tramos de monto, y apartados con su propia tasa). Al verificar, se contabiliza como una transacción real.':
+    'Track investment or savings accounts with yield (including tiers by amount, and pockets with their own rate). When you verify, it is recorded as a real transaction.',
+  'Gráficas a fondo de tus finanzas por periodo: ingresos vs. gastos, gasto por categoría y más, exportables a Excel.':
+    'In-depth charts of your finances by period: income vs. expenses, spending by category and more, exportable to Excel.',
+  '¿Algo no funciona o tienes una duda? Aquí hay respuestas rápidas y guías paso a paso, empezando por la captura por notificaciones (qué activar en tu teléfono para que funcione).':
+    'Something not working or have a question? Here are quick answers and step-by-step guides, starting with notification capture (what to enable on your phone for it to work).',
+  'Tema, moneda principal, privacidad (ocultar montos), tu suscripción Premium y demás preferencias de tu cuenta. Aquí también puedes eliminar tu cuenta y tus datos.':
+    'Theme, main currency, privacy (hide amounts), your Premium subscription and other account preferences. You can also delete your account and data here.',
+  'Panel exclusivo de administración: límites del plan gratis, apariencia de la app y configuración global.':
+    'Admin-only panel: free plan limits, app appearance and global settings.',
+  'Premium desde Google Play y recorrido corregido':
+    'Premium from Google Play and a fixed tour',
+  'Si instalaste la app desde Google Play, ya puedes suscribirte a Premium dentro de la app (Configuración → Suscripción) y gestionarla desde Google Play. Los nuevos precios de Premium son $107 al mes o $1,037 al año en la web (Google Play muestra su propio precio con impuestos); quien ya está suscrito conserva su precio. También se corrigió el recorrido de bienvenida: siempre empieza por el saludo y termina con las secciones más nuevas.':
+    'If you installed the app from Google Play, you can now subscribe to Premium inside the app (Settings → Subscription) and manage it from Google Play. The new Premium prices are $107 per month or $1,037 per year on the web (Google Play shows its own price with taxes); anyone already subscribed keeps their price. The welcome tour was also fixed: it now always starts with the greeting and ends with the newest sections.',
+  'Las notificaciones te llevan al lugar correcto':
+    'Notifications take you to the right place',
+  'Al tocar "Movimiento pendiente por revisar" se abre Transacciones con ese movimiento resaltado, listo para confirmarlo. Los avisos de presupuesto abren Presupuestos. Además se arreglaron las vistas de Sincronizar correo y del panel de administración en el celular, los textos que no se leían en modo oscuro (Rendimientos, Resumen, Reportes, Suscripciones) y la app ya usa el logo nuevo como ícono.':
+    'Tapping "Pending transaction to review" opens Transactions with that transaction highlighted, ready to confirm. Budget alerts open Budgets. We also fixed the Email Sync and admin panel views on mobile, the text that was unreadable in dark mode (Yields, Summary, Reports, Subscriptions), and the app now uses the new logo as its icon.',
+  'Nueva sección "Preguntas frecuentes" en el menú, empezando por la captura por notificaciones: qué activar en tu teléfono (Xiaomi, Huawei, Oppo, Samsung…) para que registre tus cargos con la app cerrada, cómo se manejan los duplicados y qué hacer si algo no funciona.':
+    'New "Frequently asked questions" section in the menu, starting with notification capture: what to enable on your phone (Xiaomi, Huawei, Oppo, Samsung…) so it records your charges with the app closed, how duplicates are handled and what to do if something doesn\'t work.',
+  'Captura por notificaciones (Android)':
+    'Notification capture (Android)',
+  'Nueva sección "Captura por notificaciones": marca las apps de tu banco, wallet o tiendas y los cargos que te avisen se registran solos, aun con la app cerrada. Además, si el mismo cargo llega por notificación, SMS y correo ahora se registra una sola vez; si hay duda, se marca como "Posible duplicado" para que lo revises.':
+    'New "Notification capture" section: select the apps of your bank, wallet or stores and the charges they notify you about are recorded on their own, even with the app closed. Also, if the same charge arrives by notification, SMS and email, it is now recorded only once; if in doubt, it is marked "Possible duplicate" for you to review.',
+  'Tramos, apartados y rendimientos que sí contabilizan':
+    'Tiers, pockets and yields that actually count',
+  'En Cuentas, una cuenta con rendimiento ahora puede tener tramos por monto (ej. "primeros $50,000 a una tasa, el excedente a otra") y apartados con su propio saldo y tasa, como las cajitas. Además, "Verificar" en Rendimientos ya no es solo comparar: crea una transacción real de ingreso con la categoría "Rendimientos".':
+    'In Accounts, an account with yield can now have tiers by amount (e.g. "first $50,000 at one rate, the rest at another") and pockets with their own balance and rate, like savings jars. Also, "Verify" in Yields is no longer just a comparison: it creates a real income transaction with the "Yields" category.',
+  'Vista de tabla en Transacciones':
+    'Table view in Transactions',
+  'Alterna entre la vista de tarjetas y una vista de tabla compacta. Si un movimiento tiene subpartidas, haz clic para ver el detalle en una ventana superpuesta.':
+    'Switch between card view and a compact table view. If a transaction has line items, click to see the details in a pop-up window.',
+  'Subpartidas en tus transacciones':
+    'Line items in your transactions',
+  'Desglosa un gasto (ej. el ticket del súper) en líneas con su propio concepto, monto y categoría. La suma debe cuadrar exacto con el total, y los reportes por categoría ahora usan el detalle si lo capturaste. El OCR de recibos también intenta detectar las líneas del ticket.':
+    'Break down an expense (e.g. a grocery receipt) into lines with their own description, amount and category. The sum must match the total exactly, and category reports now use the breakdown if you entered it. Receipt OCR also tries to detect the receipt\'s lines.',
+  'Para suscripciones que no llegan por correo/SMS, activa "Generar el cargo automáticamente" y la app registrará el cargo sola cada ciclo. Las que sí llegan por correo/SMS ahora se confirman solas si ya estaban activas.':
+    'For subscriptions that don\'t arrive by email/SMS, turn on "Generate the charge automatically" and the app will record the charge on its own each cycle. Those that do arrive by email/SMS are now confirmed automatically if they were already active.',
+  'Nueva sección: sube el estado de cuenta (PDF o foto) de una tarjeta o cuenta y la app lo compara con tus movimientos registrados para detectar faltantes, sobrantes y montos distintos. Puedes agregar los faltantes con un clic.':
+    'New section: upload the statement (PDF or photo) of a card or account and the app compares it with your recorded transactions to detect missing items, extra items and different amounts. You can add the missing ones with one click.',
+  'Más monedas y conversión visible':
+    'More currencies and visible conversion',
+  'El selector de moneda ahora tiene buscador e incluye monedas de Latinoamérica (DOP, ARS, COP, CLP, PEN y más). En el historial, cada movimiento en otra moneda muestra su equivalente en tu moneda principal, y puedes filtrar por moneda.':
+    'The currency selector now has a search box and includes Latin American currencies (DOP, ARS, COP, CLP, PEN and more). In the history, every transaction in another currency shows its equivalent in your main currency, and you can filter by currency.',
+  'Panel de tarjeta pagada':
+    'Paid card panel',
+  'Cuando ya pagaste el periodo de una línea de crédito, ahora se muestra el gasto que llevas acumulado para el periodo siguiente en vez del saldo ya confirmado.':
+    'Once you\'ve paid a credit line\'s period, the spending accumulated for the next period is now shown instead of the already confirmed balance.',
+  'Tutorial guiado':
+    'Guided tutorial',
+  'Los usuarios nuevos ven un recorrido inicial por las secciones principales. Puedes volver a consultarlo en cualquier momento con el botón "?" de cada sección.':
+    'New users see an initial tour of the main sections. You can revisit it at any time with the "?" button in each section.',
+  Trimestral: 'Quarterly',
+  Domingo: 'Sunday',
+  Lunes: 'Monday',
+  Martes: 'Tuesday',
+  'Miércoles': 'Wednesday',
+  Jueves: 'Thursday',
+  Viernes: 'Friday',
+  'Sábado': 'Saturday',
+  'DD/MM/AAAA': 'DD/MM/YYYY',
+  'MM/DD/AAAA': 'MM/DD/YYYY',
+  'AAAA-MM-DD': 'YYYY-MM-DD',
+  'AAAA/MM/DD': 'YYYY/MM/DD',
 }
