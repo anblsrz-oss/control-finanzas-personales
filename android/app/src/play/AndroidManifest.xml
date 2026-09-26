@@ -8,6 +8,9 @@
 
     <application>
         <receiver android:name=".SmsReceiver" tools:node="remove" />
+        <!-- El plugin @ao627515/capacitor-sms-vault declara su propio receptor
+             de SMS_RECEIVED; sin RECEIVE_SMS no hace nada, pero se quita igual. -->
+        <receiver android:name="com.oaalab.capacitorsmsvault.SmsReceiver" tools:node="remove" />
     </application>
 
     <uses-permission android:name="android.permission.RECEIVE_SMS" tools:node="remove" />
