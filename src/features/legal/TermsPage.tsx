@@ -9,7 +9,7 @@ import { activeLocale } from '@/i18n'
 // LoginPage y desde la pantalla de consentimiento OAuth de Google
 // (App domain → Terms of Service link).
 
-const LAST_UPDATED_ISO = '2026-09-24'
+const LAST_UPDATED_ISO = '2026-09-26'
 const CONTACT_EMAIL = 'anbl.srz@gmail.com'
 
 type Section = { heading: string; paragraphs: string[] }
@@ -48,7 +48,6 @@ const SECTIONS: Section[] = [
       'La captura por notificaciones funciona solo si le das a la app el "Acceso a notificaciones" en los ajustes de Android, y solo lee las notificaciones de las apps que tú marcas (por ejemplo, la de tu banco o de una tienda). Puedes quitar ese permiso en cualquier momento desde los ajustes de Android. Los avisos que traen un monto se procesan en nuestro servidor para crear una transacción o un pendiente por confirmar.',
       'Cuando un mismo cargo llega por más de un canal (SMS, correo o notificación), la app descarta el aviso repetido si es seguro que es el mismo movimiento y, si no lo es, lo marca como "Posible duplicado" para que tú decidas. Aun así, revisa las transacciones capturadas automáticamente: pueden contener errores de lectura.',
       'La captura por notificaciones depende de tu teléfono: algunos fabricantes (por ejemplo, Xiaomi, Huawei o Samsung) detienen las apps en segundo plano para ahorrar batería. No garantizamos que se capture cada aviso; si falta alguno, puedes registrarlo a mano.',
-      'Mientras la conexión con Gmail esté en modo de prueba ante Google, solo los correos agregados como "usuarios de prueba" en la consola de Google Cloud podrán usar esa función; esta limitación es de Google, no de la app.',
       'Si conectas Google Calendar, la app crea en tu calendario recordatorios de cobros de suscripciones y de pagos de tarjeta. Puedes desconectarlo en cualquier momento desde "Configuración".',
     ],
   },
