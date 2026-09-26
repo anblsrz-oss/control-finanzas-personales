@@ -13,7 +13,7 @@
 //  - El permiso es especial ("Acceso a notificaciones"): no hay diálogo, se
 //    abre la pantalla de Ajustes y el usuario lo activa a mano.
 
-import { registerPlugin } from '@capacitor/core'
+import { registerPlugin, type PluginListenerHandle } from '@capacitor/core'
 import { Preferences } from '@capacitor/preferences'
 import {
   ensureDeviceToken,
@@ -35,8 +35,28 @@ interface NotificationCapturePlugin {
   openAccessSettings(): Promise<void>
   listInstalledApps(): Promise<{ apps: InstalledApp[] }>
   flushQueue(): Promise<{ pending: number }>
+  addListener(
+    event: 'notificationTap',
+    cb: (data: { route: string }) => void,
+  ): Promise<PluginListenerHandle>
 }
 const NotificationCapture = registerPlugin<NotificationCapturePlugin>('NotificationCapture')
+
+/**
+ * Se dispara cuando el usuario toca una notificación propia de la app
+ * ("Movimiento pendiente", aviso de presupuesto). El lado nativo retiene el
+ * evento hasta que haya listener, así que sirve también en arranque en frío.
+ */
+export async function onNotificationTap(
+  cb: (route: string) => void,
+): Promise<PluginListenerHandle | null> {
+  if (!isAndroidNative()) return null
+  try {
+    return await NotificationCapture.addListener('notificationTap', (d) => cb(d.route))
+  } catch {
+    return null
+  }
+}
 
 export async function isNotificationAccessGranted(): Promise<boolean> {
   if (!isAndroidNative()) return false

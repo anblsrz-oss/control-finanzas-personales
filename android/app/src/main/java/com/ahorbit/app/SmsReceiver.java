@@ -67,7 +67,7 @@ public class SmsReceiver extends BroadcastReceiver {
                 // Solo avisar si de verdad entró algo nuevo: si el cargo ya había
                 // llegado por notificación/correo se fusionó y no hay nada que revisar.
                 if (IngestClient.insertedCount(response) > 0) {
-                    IngestClient.notifyPending(context, CHANNEL_ID, "Captura de SMS", body);
+                    IngestClient.notifyPending(context, CHANNEL_ID, "Captura de SMS", body, response);
                 }
                 IngestClient.notifyBudget(context, response);
             } catch (Exception ignored) {

@@ -22,6 +22,21 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    // Dos canales de distribución con el MISMO applicationId y la misma llave,
+    // para que se pueda pasar de uno a otro actualizando:
+    //  - github: APK del Release de GitHub (con captura de SMS).
+    //  - play:   AAB para Google Play. src/play/AndroidManifest.xml quita los
+    //            permisos de SMS (Play los rechaza) y src/play/res el nombre
+    //            corto. El web se compila con VITE_DISTRIBUTION=play.
+    flavorDimensions = ["distribution"]
+    productFlavors {
+        github {
+            dimension "distribution"
+        }
+        play {
+            dimension "distribution"
+        }
+    }
 }
 
 repositories {

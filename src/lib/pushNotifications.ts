@@ -42,16 +42,9 @@ export async function registerPush(userId: string): Promise<void> {
       console.warn('Registro de push falló:', err.error)
     })
 
-    // pushNotificationActionPerformed = el usuario tocó la notificación
-    // (app en segundo plano o cerrada). En primer plano no hace falta
-    // manejarlo aparte: el aviso ya vive en budget_alerts y el banner/badge
-    // in-app lo recogen solos en el siguiente refresco.
-    await PushNotifications.addListener('pushNotificationActionPerformed', (action) => {
-      const url = action.notification.data?.url
-      if (typeof url === 'string' && url.startsWith('/')) {
-        window.location.assign(url)
-      }
-    })
+    // El toque en la notificación (pushNotificationActionPerformed) lo maneja
+    // NotificationTapRouter desde el arranque, no aquí: registerPush corre
+    // hasta después del login y el evento de un arranque en frío se perdía.
 
     await PushNotifications.register()
   } catch (e) {

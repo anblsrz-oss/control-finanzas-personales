@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Build de Google Play: Play solo permite RECEIVE_SMS/READ_SMS a la app de
+     mensajes predeterminada, así que aquí se quitan los permisos y el receptor
+     de SMS del manifest de main. La captura por notificaciones sí se queda.
+     El web de este build oculta /sms (VITE_DISTRIBUTION=play). -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application>
+        <receiver android:name=".SmsReceiver" tools:node="remove" />
+    </application>
+
+    <uses-permission android:name="android.permission.RECEIVE_SMS" tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_SMS" tools:node="remove" />
+</manifest>

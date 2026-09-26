@@ -14,6 +14,7 @@ import { PrivacyPolicyPage } from '@/features/legal/PrivacyPolicyPage'
 import { TermsPage } from '@/features/legal/TermsPage'
 import { CookiePolicyPage } from '@/features/legal/CookiePolicyPage'
 import { NotFoundPage } from '@/features/legal/NotFoundPage'
+import { DeleteAccountPage } from '@/features/legal/DeleteAccountPage'
 import { DashboardPage } from '@/features/reports/DashboardPage'
 import { NotificationsPage } from '@/features/notifications/NotificationsPage'
 import { AccountsPage } from '@/features/accounts/AccountsPage'
@@ -37,7 +38,9 @@ import { ReportsPage } from '@/features/reports/ReportsPage'
 import { AdminPage } from '@/features/admin/AdminPage'
 import { WebUpdatePrompt } from '@/components/WebUpdatePrompt'
 import { NativeUpdatePrompt } from '@/components/NativeUpdatePrompt'
+import { NotificationTapRouter } from '@/components/NotificationTapRouter'
 import { isNative } from '@/lib/nativeAuth'
+import { isPlayBuild } from '@/lib/distribution'
 
 export default function App() {
   const init = useAuth((s) => s.init)
@@ -59,12 +62,16 @@ export default function App() {
 
   return (
     <>
-      {isNative() ? <NativeUpdatePrompt /> : <WebUpdatePrompt />}
+      {/* En Play la app solo se actualiza desde la tienda (ver lib/distribution.ts). */}
+      {isNative() ? !isPlayBuild() && <NativeUpdatePrompt /> : <WebUpdatePrompt />}
+      <NotificationTapRouter />
     <Routes>
       <Route path="/bienvenida" element={<PageGuard to="/bienvenida"><LandingPage /></PageGuard>} />
       <Route path="/privacidad" element={<PageGuard to="/privacidad"><PrivacyPolicyPage /></PageGuard>} />
       <Route path="/terminos" element={<PageGuard to="/terminos"><TermsPage /></PageGuard>} />
       <Route path="/cookies" element={<PageGuard to="/cookies"><CookiePolicyPage /></PageGuard>} />
+      {/* Sin PageGuard: Google Play exige que esta URL esté siempre disponible. */}
+      <Route path="/eliminar-cuenta" element={<DeleteAccountPage />} />
       <Route path="/login" element={<PageGuard to="/login"><LoginPage /></PageGuard>} />
       <Route path="/reset-password" element={<PageGuard to="/reset-password"><ResetPasswordPage /></PageGuard>} />
       <Route

@@ -5,8 +5,9 @@ name: Build Android APK
 #
 # Disparadores:
 #  - Empujar una etiqueta vX.Y.Z  -> compila, firma y publica un Release con
-#    finzen.apk (nombre fijo, para releases/latest/download) y
-#    finzen-vX.Y.Z.apk (nombre con versión, para saber qué APK tienes bajado)
+#    finzen.apk (nombre fijo, para releases/latest/download),
+#    finzen-vX.Y.Z.apk (nombre con versión, para saber qué APK tienes bajado) y
+#    finzen-play-vX.Y.Z.aab (para subir a Google Play Console)
 #  - Ejecutar manualmente (Actions -> Build Android APK -> Run workflow)
 #    -> compila y firma; el APK queda como "artifact" descargable del run
 #
@@ -32,6 +33,23 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Dos variantes con la misma llave y el mismo versionCode (ver
+    # android/app/build.gradle, productFlavors):
+    #  - github: APK para el Release de GitHub (con captura de SMS).
+    #  - play:   AAB para subir a Google Play Console (sin SMS, sin compra
+    #            con Stripe, sin aviso de actualización por APK).
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - flavor: github
+            distribution: ''
+            gradle_task: assembleGithubRelease
+            output_dir: android/app/build/outputs/apk/github/release
+          - flavor: play
+            distribution: play
+            gradle_task: bundlePlayRelease
+            output_dir: android/app/build/outputs/bundle/playRelease
     steps:
       - uses: actions/checkout@v5
 
@@ -69,6 +87,7 @@ jobs:
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_DISTRIBUTION: ${{ matrix.distribution }}
 
       - name: Capacitor sync (Android)
         run: npx cap sync android
@@ -87,19 +106,20 @@ jobs:
           # Disponible para los pasos siguientes (nombre del APK, Release).
           echo "VERSION_NAME=${VERSION_NAME}" >> "$GITHUB_ENV"
 
-      - name: Build unsigned release APK
+      - name: Build unsigned release (${{ matrix.flavor }})
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease --no-daemon
+          ./gradlew ${{ matrix.gradle_task }} --no-daemon
 
       # r0adkll/sign-android-release solo tiene v1 (aún en Node 20 y usa
       # ::set-output::). No hay reemplazo directo; GitHub lo fuerza a Node 24.
-      - name: Sign APK
+      # Firma tanto .apk (zipalign + apksigner) como .aab (jarsigner).
+      - name: Sign ${{ matrix.flavor }}
         id: sign
         uses: r0adkll/sign-android-release@v1
         with:
-          releaseDirectory: android/app/build/outputs/apk/release
+          releaseDirectory: ${{ matrix.output_dir }}
           signingKeyBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           alias: ${{ secrets.ANDROID_KEY_ALIAS }}
           keyStorePassword: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -111,24 +131,36 @@ jobs:
       #  - finzen.apk           nombre fijo -> releases/latest/download/finzen.apk
       #  - finzen-vX.Y.Z.apk    nombre con versión -> se ve en el archivo bajado
       - name: Name APK files
+        if: matrix.flavor == 'github'
         run: |
           SIGNED="${{ steps.sign.outputs.signedReleaseFile }}"
           cp "$SIGNED" finzen.apk
           cp "$SIGNED" "finzen-v${VERSION_NAME}.apk"
 
+      # El AAB se sube a mano en Play Console (Prueba interna / cerrada /
+      # Producción). finzen-play-vX.Y.Z.aab
+      - name: Name AAB file
+        if: matrix.flavor == 'play'
+        run: cp "${{ steps.sign.outputs.signedReleaseFile }}" "finzen-play-v${VERSION_NAME}.aab"
+
       # Descargable desde el run (útil para ejecuciones manuales).
-      - name: Upload APK artifact
+      - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: finzen-apk
-          path: finzen*.apk
+          name: finzen-${{ matrix.flavor }}
+          path: |
+            finzen*.apk
+            finzen-play-*.aab
 
       # Solo al empujar una etiqueta: publica el Release con ambos APKs
-      # (el glob finzen*.apk toma finzen.apk y finzen-vX.Y.Z.apk).
+      # (finzen.apk y finzen-vX.Y.Z.apk) y el AAB de Play. Cada variante de la
+      # matriz agrega sus archivos al mismo Release.
       - name: Publish to GitHub Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v3
         with:
-          files: finzen*.apk
+          files: |
+            finzen*.apk
+            finzen-play-*.aab
           tag_name: ${{ github.ref_name }}
           generate_release_notes: true

@@ -12,6 +12,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-26-notificacion-abre-movimiento',
+    date: '2026-09-26',
+    title: 'Las notificaciones te llevan al lugar correcto',
+    description:
+      'Al tocar "Movimiento pendiente por revisar" se abre Transacciones con ese movimiento resaltado, listo para confirmarlo. Los avisos de presupuesto abren Presupuestos. Además se arreglaron las vistas de Sincronizar correo y del panel de administración en el celular.',
+  },
+  {
     id: '2026-09-24-preguntas-frecuentes',
     date: '2026-09-24',
     title: 'Preguntas frecuentes',

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!-- Nombre del build de Google Play: el mismo título de la ficha de Play
+     (máx. 30 caracteres). El APK de GitHub conserva el de src/main. -->
+<resources>
+    <string name="app_name">Control Finanzas Personales</string>
+    <string name="title_activity_main">Control Finanzas Personales</string>
+</resources>

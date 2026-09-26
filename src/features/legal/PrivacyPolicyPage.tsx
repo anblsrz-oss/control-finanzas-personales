@@ -10,7 +10,7 @@ import { activeLocale } from '@/i18n'
 // OAuth de Google. Incluye la cláusula de "Limited Use" que Google exige
 // cuando una app pide scopes de Gmail (gmail.readonly).
 
-const LAST_UPDATED_ISO = '2026-09-24'
+const LAST_UPDATED_ISO = '2026-09-26'
 const CONTACT_EMAIL = 'anbl.srz@gmail.com'
 
 type Section = { heading: string; paragraphs: string[]; link?: { to: string; label: string } }
@@ -65,8 +65,9 @@ const SECTIONS: Section[] = [
     heading: 'Retención y eliminación de datos',
     paragraphs: [
       'Conservamos tus datos mientras tu cuenta esté activa. Puedes exportar tus transacciones a Excel en cualquier momento desde la app.',
-      'Si quieres eliminar tu cuenta y tus datos, escríbenos a {{email}} y lo haremos en un plazo razonable, salvo la información que debamos conservar por obligación legal.',
+      'Puedes eliminar tu cuenta y todos tus datos en cualquier momento desde la app (Configuración → Eliminar mi cuenta). El borrado es inmediato y definitivo: se eliminan tus movimientos, cuentas, tarjetas, presupuestos, reglas y conexiones de correo o calendario, se revoca el acceso a Google y se cancela tu suscripción Premium si la tienes. También puedes pedirlo escribiéndonos a {{email}}.',
     ],
+    link: { to: '/eliminar-cuenta', label: 'Cómo eliminar tu cuenta' },
   },
   {
     heading: 'Seguridad',

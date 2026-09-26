@@ -162,7 +162,7 @@ public class PaymentNotificationListener extends NotificationListenerService {
             String response = flushQueueBlocking(ctx);
             if (response == null) Log.w(TAG, "envio fallido, queda en cola (" + pkg + ")");
             if (IngestClient.insertedCount(response) > 0) {
-                IngestClient.notifyPending(ctx, CHANNEL_ID, "Captura de notificaciones", preview);
+                IngestClient.notifyPending(ctx, CHANNEL_ID, "Captura de notificaciones", preview, response);
             }
             IngestClient.notifyBudget(ctx, response);
         });

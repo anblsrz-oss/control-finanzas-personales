@@ -2,13 +2,17 @@ package com.ahorbit.app;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -95,6 +99,33 @@ final class IngestClient {
         return sb.toString();
     }
 
+    /**
+     * Ruta de la app para "Movimiento pendiente": si entró uno solo, abre ese
+     * movimiento resaltado; si fueron varios, la lista de pendientes.
+     */
+    static String pendingRoute(String response) {
+        String route = "/transacciones?status=pending";
+        try {
+            if (response == null || response.isEmpty()) return route;
+            JSONArray ids = new JSONObject(response).optJSONArray("insertedIds");
+            if (ids != null && ids.length() == 1) {
+                return route + "&tx=" + Uri.encode(ids.optString(0, ""));
+            }
+        } catch (Exception ignored) {
+        }
+        return route;
+    }
+
+    // Al tocar la notificación abre la app en `route`: NotificationCapturePlugin
+    // lee el extra (arranque en frío o app ya abierta) y avisa al JS.
+    private static PendingIntent openAppIntent(Context context, String route, int requestCode) {
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra(NotificationCapturePlugin.EXTRA_ROUTE, route);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        return PendingIntent.getActivity(context, requestCode, intent,
+            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
     /** Cuántos movimientos nuevos se insertaron según la respuesta. */
     static int insertedCount(String response) {
         try {
@@ -123,22 +154,26 @@ final class IngestClient {
                 nm.createNotificationChannel(new NotificationChannel(
                     BUDGET_CHANNEL_ID, "Presupuestos", NotificationManager.IMPORTANCE_DEFAULT));
             }
+            int id = (int) ((System.currentTimeMillis() + 1) & 0x7fffffff);
             NotificationCompat.Builder b =
                 new NotificationCompat.Builder(context, BUDGET_CHANNEL_ID)
                     .setSmallIcon(android.R.drawable.stat_notify_chat)
                     .setContentTitle(title)
                     .setContentText(text)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                    .setContentIntent(openAppIntent(context, "/presupuestos", id))
                     .setAutoCancel(true)
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
-            nm.notify((int) ((System.currentTimeMillis() + 1) & 0x7fffffff), b.build());
+            nm.notify(id, b.build());
         } catch (Exception e) {
             Log.w(TAG, "No se pudo mostrar el aviso de presupuesto", e);
         }
     }
 
     // "Movimiento pendiente por revisar", en un canal de baja importancia.
-    static void notifyPending(Context context, String channelId, String channelName, String text) {
+    // `response` es la respuesta de la ingesta: de ahí sale el movimiento a abrir.
+    static void notifyPending(Context context, String channelId, String channelName, String text,
+                              String response) {
         try {
             NotificationManager nm =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -147,13 +182,15 @@ final class IngestClient {
                 nm.createNotificationChannel(new NotificationChannel(
                     channelId, channelName, NotificationManager.IMPORTANCE_LOW));
             }
+            int id = (int) (System.currentTimeMillis() & 0x7fffffff);
             NotificationCompat.Builder b = new NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(android.R.drawable.stat_notify_chat)
                 .setContentTitle("Movimiento pendiente por revisar")
                 .setContentText(text.length() > 80 ? text.substring(0, 80) + "…" : text)
+                .setContentIntent(openAppIntent(context, pendingRoute(response), id))
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW);
-            nm.notify((int) (System.currentTimeMillis() & 0x7fffffff), b.build());
+            nm.notify(id, b.build());
         } catch (Exception e) {
             Log.w(TAG, "No se pudo mostrar la notificación", e);
         }

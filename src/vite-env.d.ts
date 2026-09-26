@@ -9,6 +9,8 @@ interface ImportMetaEnv {
   readonly VITE_SUPABASE_URL: string
   readonly VITE_SUPABASE_ANON_KEY: string
   readonly VITE_APK_URL?: string
+  // 'play' en el build de Google Play (ver src/lib/distribution.ts).
+  readonly VITE_DISTRIBUTION?: string
 }
 
 interface ImportMeta {

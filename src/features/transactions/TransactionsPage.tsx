@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import {
@@ -62,11 +63,25 @@ export function TransactionsPage() {
     }
   }, [editingTx])
 
+  // Al tocar la notificación "Movimiento pendiente" se llega con
+  // ?status=pending&tx=<id>: se filtran los pendientes y se resalta ese.
+  const [searchParams, setSearchParams] = useSearchParams()
+  const urlStatus = searchParams.get('status')
+  const focusTxId = searchParams.get('tx')
+  const [highlightId, setHighlightId] = useState<string | null>(null)
+  const [focusMissing, setFocusMissing] = useState(false)
+
   const [filters, setFilters] = useState<FilterState>({
     ...EMPTY_FILTERS,
+    status: urlStatus === 'pending' ? 'pending' : '',
     startDate: monthStartISO(),
     endDate: todayISO(),
   })
+
+  // La app ya estaba en esta página cuando se tocó la notificación.
+  useEffect(() => {
+    if (urlStatus === 'pending') setFilters((f) => ({ ...f, status: 'pending' }))
+  }, [urlStatus, focusTxId])
 
   // El texto se debounce; el resto de los filtros se aplican de inmediato.
   const debouncedSearch = useDebouncedValue(filters.search, 300)
@@ -125,6 +140,43 @@ export function TransactionsPage() {
   const familyCardsQuery = useFamilyCards(familyId)
 
   const transactions = transactionsQuery.data || []
+
+  // Lleva la vista al movimiento de la notificación y lo resalta unos segundos.
+  // Se espera a que la lista ya venga con el filtro de pendientes aplicado.
+  useEffect(() => {
+    if (!focusTxId || transactionsQuery.isFetching || txFilter.pending !== true) return
+    const found = transactions.some((tx) => tx.id === focusTxId)
+    setFocusMissing(!found)
+    const clearParam = () =>
+      setSearchParams(
+        (p) => {
+          p.delete('tx')
+          return p
+        },
+        { replace: true },
+      )
+    if (!found) {
+      clearParam()
+      return
+    }
+    setHighlightId(focusTxId)
+    requestAnimationFrame(() =>
+      document
+        .getElementById(`tx-${focusTxId}`)
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' }),
+    )
+    clearParam()
+  }, [focusTxId, transactionsQuery.isFetching, txFilter.pending, transactions, setSearchParams])
+
+  useEffect(() => {
+    if (!highlightId) return
+    const timer = window.setTimeout(() => setHighlightId(null), 4000)
+    return () => window.clearTimeout(timer)
+  }, [highlightId])
+
+  const highlightClass = (id: string) =>
+    highlightId === id ? 'ring-2 ring-amber-400 ring-offset-2 dark:ring-offset-slate-900' : ''
+
   // Avisos (SMS/correo/notificación) de las transacciones visibles que
   // vinieron de un canal automático, para "Recibido por ...".
   const signalsQuery = useSignalsByTransaction(
@@ -375,6 +427,23 @@ export function TransactionsPage() {
         canUsePeriodFilter={canUseTransactionsPeriodFilter}
       />
 
+      {focusMissing && (
+        <Card className="mb-3 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-900/20">
+          <div className="flex items-start justify-between gap-3">
+            <p className="text-sm text-amber-800 dark:text-amber-200">
+              {t('Ese movimiento ya no está pendiente o es de otro periodo. Aquí tienes los pendientes que quedan.')}
+            </p>
+            <button
+              type="button"
+              onClick={() => setFocusMissing(false)}
+              className="shrink-0 text-xs font-medium text-amber-700 hover:underline dark:text-amber-300"
+            >
+              {t('Entendido')}
+            </button>
+          </div>
+        </Card>
+      )}
+
       {transactions.length > 0 && (
         <div className="mb-3 flex justify-end gap-1">
           <button
@@ -435,10 +504,13 @@ export function TransactionsPage() {
                 return (
                   <tr
                     key={tx.id}
+                    id={`tx-${tx.id}`}
                     onClick={() => hasLines && setViewingLinesTx(tx)}
                     className={`border-t border-slate-100 dark:border-slate-700 ${
                       hasLines ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800' : ''
-                    } ${tx.pending ? 'opacity-70' : ''}`}
+                    } ${tx.pending && highlightId !== tx.id ? 'opacity-70' : ''} ${
+                      highlightId === tx.id ? 'bg-amber-50 dark:bg-amber-900/20' : ''
+                    }`}
                   >
                     <td className="whitespace-nowrap px-3 py-2 text-slate-500 dark:text-slate-400">
                       {formatDate(tx.tx_date)}
@@ -517,7 +589,11 @@ export function TransactionsPage() {
       ) : (
         <div className="grid gap-3">
           {transactions.map((tx) => (
-            <Card key={tx.id} className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <Card
+              key={tx.id}
+              id={`tx-${tx.id}`}
+              className={`flex flex-col gap-3 transition-shadow sm:flex-row sm:items-start sm:justify-between ${highlightClass(tx.id)}`}
+            >
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="min-w-0 break-words text-lg font-semibold text-slate-800 dark:text-slate-100">

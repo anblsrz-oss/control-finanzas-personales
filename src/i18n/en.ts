@@ -1032,8 +1032,9 @@ export const en: Record<string, string> = {
     'We do not share your financial data with advertisers, nor do we sell it to third parties.',
   'Conservamos tus datos mientras tu cuenta esté activa. Puedes exportar tus transacciones a Excel en cualquier momento desde la app.':
     'We keep your data while your account is active. You can export your transactions to Excel at any time from the app.',
-  'Si quieres eliminar tu cuenta y tus datos, escríbenos a {{email}} y lo haremos en un plazo razonable, salvo la información que debamos conservar por obligación legal.':
-    'If you want to delete your account and your data, write to us at {{email}} and we will do so within a reasonable time, except for information we must retain due to legal obligations.',
+  'Puedes eliminar tu cuenta y todos tus datos en cualquier momento desde la app (Configuración → Eliminar mi cuenta). El borrado es inmediato y definitivo: se eliminan tus movimientos, cuentas, tarjetas, presupuestos, reglas y conexiones de correo o calendario, se revoca el acceso a Google y se cancela tu suscripción Premium si la tienes. También puedes pedirlo escribiéndonos a {{email}}.':
+    'You can delete your account and all your data at any time from the app (Settings → Delete my account). Deletion is immediate and permanent: your transactions, accounts, cards, budgets, rules and email or calendar connections are deleted, Google access is revoked and your Premium subscription is canceled if you have one. You can also request it by writing to us at {{email}}.',
+  'Cómo eliminar tu cuenta': 'How to delete your account',
   'Tus datos se transmiten mediante conexiones cifradas (HTTPS) y se almacenan con controles de acceso a nivel de fila (row-level security), de modo que cada usuario solo puede ver su propia información o la de una familia/cuenta compartida a la que fue invitado explícitamente.':
     'Your data is transmitted over encrypted connections (HTTPS) and stored with row-level security access controls, so each user can only see their own information or that of a shared family/account they were explicitly invited to.',
   'Puedes acceder, corregir, exportar o solicitar la eliminación de tus datos personales en cualquier momento, ya sea desde la propia app (sección "Configuración") o escribiéndonos a {{email}}.':
@@ -1394,4 +1395,48 @@ export const en: Record<string, string> = {
     'Free plan: you reached the limit of {{n}} scanned transactions this month. Upgrade to Premium to scan more.',
   'Plan gratis: llegaste al límite de {{n}} conciliaciones este mes. Actualiza a Premium para conciliar más.':
     'Free plan: you reached the limit of {{n}} reconciliations this month. Upgrade to Premium to reconcile more.',
+  'Ese movimiento ya no está pendiente o es de otro periodo. Aquí tienes los pendientes que quedan.':
+    'That transaction is no longer pending or is from another period. Here are the remaining pending ones.',
+  // Eliminar cuenta
+  'Eliminar mi cuenta': 'Delete my account',
+  'Borra tu cuenta y todos tus datos de forma permanente.': 'Permanently delete your account and all your data.',
+  'Se borrarán para siempre tus movimientos, cuentas, tarjetas, presupuestos, reglas y conexiones de correo o calendario. Si tienes Premium, la suscripción se cancela. Esto no se puede deshacer.':
+    'Your transactions, accounts, cards, budgets, rules and email or calendar connections will be deleted forever. If you have Premium, the subscription is canceled. This cannot be undone.',
+  'Si quieres conservar tus movimientos, expórtalos a Excel antes (Reportes).':
+    'If you want to keep your transactions, export them to Excel first (Reports).',
+  'Escribe ELIMINAR para confirmar': 'Type ELIMINAR to confirm',
+  'Eliminar definitivamente': 'Delete permanently',
+  'Eliminar tu cuenta': 'Delete your account',
+  'Puedes borrar tu cuenta de Mi Control de Finanzas Personales y todos tus datos cuando quieras. El borrado es inmediato y no se puede deshacer.':
+    'You can delete your Mi Control de Finanzas Personales account and all your data whenever you want. Deletion is immediate and cannot be undone.',
+  'Qué se borra': 'What gets deleted',
+  'Tu perfil y tu inicio de sesión.': 'Your profile and your login.',
+  'Movimientos, cuentas, tarjetas, líneas de crédito, presupuestos, suscripciones y categorías.':
+    'Transactions, accounts, cards, credit lines, budgets, subscriptions and categories.',
+  'Reglas y conexiones de correo (Gmail/Outlook), Google Calendar y captura en el teléfono. Se revoca el acceso a Google.':
+    'Email rules and connections (Gmail/Outlook), Google Calendar and phone capture. Google access is revoked.',
+  'Tu suscripción Premium, que se cancela en ese momento.': 'Your Premium subscription, which is canceled right away.',
+  'No conservamos copias de tus datos financieros después del borrado. El procesador de pagos (Stripe) puede conservar el registro de cobros que exige la ley.':
+    'We keep no copies of your financial data after deletion. The payment processor (Stripe) may keep the charge records required by law.',
+  'Sesión iniciada como {{email}}.': 'Signed in as {{email}}.',
+  'Cómo hacerlo': 'How to do it',
+  'Inicia sesión (en la app o aquí mismo).': 'Sign in (in the app or right here).',
+  'Ve a Configuración → Eliminar mi cuenta.': 'Go to Settings → Delete my account.',
+  'Escribe ELIMINAR y confirma.': 'Type ELIMINAR and confirm.',
+  '¿No puedes entrar? Escríbenos desde el correo de tu cuenta a {{email}} y la borramos por ti.':
+    "Can't sign in? Email us from your account's address at {{email}} and we'll delete it for you.",
+  // Aviso previo al acceso a notificaciones
+  'Antes de dar acceso a notificaciones': 'Before granting notification access',
+  'Para registrar tus cargos automáticamente, esta app necesita leer las notificaciones que llegan a tu teléfono.':
+    'To record your charges automatically, this app needs to read the notifications that arrive on your phone.',
+  'Solo lee las notificaciones de las apps que tú marques (tu banco, wallet o tiendas).':
+    'It only reads notifications from the apps you select (your bank, wallet or stores).',
+  'Solo envía a nuestro servidor las que traen un monto, para sacar monto, fecha, comercio y terminación de tarjeta.':
+    'It only sends the ones with an amount to our server, to extract amount, date, merchant and card ending.',
+  'No guarda el texto de la notificación ni lee las de otras apps. No se usa para publicidad ni se comparte.':
+    "It doesn't store the notification text or read other apps' notifications. It's not used for ads or shared.",
+  'Funciona aun con la app cerrada. Puedes quitar el acceso cuando quieras desde Ajustes de Android.':
+    'It works even with the app closed. You can remove access anytime from Android Settings.',
+  'No, gracias': 'No, thanks',
+  'Acepto, continuar': 'I agree, continue',
 }

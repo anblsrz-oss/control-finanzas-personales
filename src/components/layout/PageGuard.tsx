@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '@/store/useAuth'
 import { useAppConfig } from '@/hooks/useAppConfig'
-import { isPageHidden } from '@/lib/pageOrder'
+import { isPageHidden, isPageUnavailable } from '@/lib/pageOrder'
 
 /**
  * Redirige al Resumen si el admin ocultó esta sección (app_config.hidden_pages).
@@ -11,7 +11,7 @@ import { isPageHidden } from '@/lib/pageOrder'
 export function PageGuard({ to, children }: { to: string; children: ReactNode }) {
   const { profile } = useAuth()
   const { data: config } = useAppConfig()
-  if (!profile?.is_admin && isPageHidden(to, config?.hidden_pages)) {
+  if (isPageUnavailable(to) || (!profile?.is_admin && isPageHidden(to, config?.hidden_pages))) {
     return <Navigate to="/" replace />
   }
   return <>{children}</>

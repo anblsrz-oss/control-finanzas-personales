@@ -89,9 +89,17 @@ Requiere **Android Studio / SDK** + **JDK 17**.
 npm run build
 npx cap sync android
 cd android
-./gradlew assembleRelease        # Windows: .\gradlew.bat assembleRelease
+./gradlew assembleGithubRelease  # Windows: .\gradlew.bat assembleGithubRelease
 ```
-APK sin firmar en `android/app/build/outputs/apk/release/app-release-unsigned.apk`.
+APK sin firmar en `android/app/build/outputs/apk/github/release/app-github-release-unsigned.apk`.
+
+Hay dos variantes (`productFlavors` en `android/app/build.gradle`):
+- `github`: el APK de siempre (con captura de SMS).
+- `play`: AAB para Google Play. Compilar el web con `VITE_DISTRIBUTION=play npm run build`,
+  luego `npx cap sync android` y `./gradlew bundlePlayRelease` →
+  `android/app/build/outputs/bundle/playRelease/app-play-release.aab`. Sin permisos de
+  SMS, sin compra con Stripe y sin aviso de actualización por APK (ver `src/lib/distribution.ts`).
+  El CI lo genera solo con cada tag (`finzen-play-vX.Y.Z.aab` en el Release).
 Fírmalo con Android Studio (Build → Generate Signed Bundle / APK) o con
 `apksigner`, y súbelo al Release como `finzen.apk` (y una copia
 `finzen-vX.Y.Z.apk`).

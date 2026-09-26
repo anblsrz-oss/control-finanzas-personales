@@ -9,6 +9,7 @@ import { useSettings } from '@/store/useSettings'
 import { useAppConfig } from '@/hooks/useAppConfig'
 import { useSendFeedback } from '@/hooks/useFeedback'
 import { APK_URL } from '@/lib/appUpdate'
+import { isPlayBuild } from '@/lib/distribution'
 
 // Página pública de bienvenida (pre-login). Presenta la app, los planes,
 // permite iniciar sesión / crear cuenta, cambiar de idioma, descargar la app y
@@ -252,6 +253,7 @@ function FeedbackForm() {
 
 export function LandingPage() {
   const { t } = useTranslation()
+  const playBuild = isPlayBuild()
   const { session } = useAuth()
   const { data: appConfig } = useAppConfig()
 
@@ -308,12 +310,16 @@ export function LandingPage() {
             </Button>
           </Link>
         </div>
-        <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">
-          {t('Gratis para empezar. Premium desde $79 al mes con 7 días de prueba.')}{' '}
-          <a href="#planes" className="underline hover:text-slate-600 dark:hover:text-slate-300">
-            {t('Ver planes')}
-          </a>
-        </p>
+        {/* En Google Play no se muestran precios ni la descarga del APK
+            (ver lib/distribution.ts). */}
+        {!playBuild && (
+          <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">
+            {t('Gratis para empezar. Premium desde $79 al mes con 7 días de prueba.')}{' '}
+            <a href="#planes" className="underline hover:text-slate-600 dark:hover:text-slate-300">
+              {t('Ver planes')}
+            </a>
+          </p>
+        )}
       </section>
 
       {/* Cómo funciona */}
@@ -353,9 +359,10 @@ export function LandingPage() {
       </section>
 
       {/* Planes */}
-      <PricingSection />
+      {!playBuild && <PricingSection />}
 
       {/* Descargar app */}
+      {!playBuild && (
       <section className="mx-auto max-w-5xl px-6 py-12">
         <div className="rounded-2xl bg-brand-600 px-6 py-10 text-center text-white">
           <h2 className="text-2xl font-bold">{t('Llévala en tu celular')}</h2>
@@ -379,6 +386,7 @@ export function LandingPage() {
           </p>
         </div>
       </section>
+      )}
 
       {/* Comentarios */}
       <section className="mx-auto max-w-2xl px-6 py-12">

@@ -289,9 +289,9 @@ export function EmailSyncPage() {
         }
       />
 
-      <div className="grid gap-4">
+      <div className="grid grid-cols-1 gap-4">
         {/* Reglas por banco */}
-        <Card className="grid gap-3">
+        <Card className="grid min-w-0 grid-cols-1 gap-3">
           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
             {editingId
               ? t('Editando: {{name}}', { name: bankName })
@@ -299,22 +299,22 @@ export function EmailSyncPage() {
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             {t('Indica de qué correos llegan las alertas o tickets (ej.')}{' '}
-            <code>notificaciones@bbva.mx</code>). {t('Solo se leen esos correos. Las facturas CFDI (XML) se leen automáticamente sin configurar regex.')}
+            <code className="break-all">notificaciones@bbva.mx</code>). {t('Solo se leen esos correos. Las facturas CFDI (XML) se leen automáticamente sin configurar regex.')}
           </p>
           {rules.length > 0 && (
-            <ul className="grid gap-1 text-sm text-slate-600 dark:text-slate-300">
+            <ul className="grid min-w-0 grid-cols-1 gap-1 text-sm text-slate-600 dark:text-slate-300">
               {rules.map((r) => (
                 <li
                   key={r.id}
-                  className="flex items-center justify-between gap-2 rounded-md px-1 py-0.5 hover:bg-slate-100 dark:hover:bg-slate-800/60"
+                  className="flex min-w-0 flex-col gap-1 rounded-md px-1 py-1 hover:bg-slate-100 dark:hover:bg-slate-800/60 sm:flex-row sm:items-center sm:justify-between sm:gap-2"
                 >
-                  <span className="min-w-0 truncate">
+                  <span className="min-w-0 break-words">
                     <strong>{r.bank_name}:</strong>{' '}
-                    {(r.config.senders ?? []).join(', ')}
+                    <span className="break-all">{(r.config.senders ?? []).join(', ')}</span>
                     {r.config.kind === 'income' && ` · ${t('ingreso')}`}
                     {r.config.currency && ` · ${r.config.currency}`}
                   </span>
-                  <span className="flex shrink-0 gap-2">
+                  <span className="flex shrink-0 gap-3">
                     <button
                       type="button"
                       onClick={() => handleEditRule(r)}
@@ -433,7 +433,7 @@ export function EmailSyncPage() {
             </div>
           )}
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button
               variant="secondary"
               onClick={handleSaveRule}
@@ -450,7 +450,7 @@ export function EmailSyncPage() {
         </Card>
 
         {/* Conectar + sincronizar */}
-        <Card className="grid gap-3">
+        <Card className="grid min-w-0 grid-cols-1 gap-3">
           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
             {t('2. Conecta Gmail y sincroniza')}
           </h3>
@@ -505,7 +505,7 @@ export function EmailSyncPage() {
         </Card>
 
         {/* Captura automática en tiempo real (Gmail push) */}
-        <Card className="grid gap-3">
+        <Card className="grid min-w-0 grid-cols-1 gap-3">
           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
             {t('3. Captura automática en tiempo real (Gmail)')}
           </h3>
@@ -543,7 +543,7 @@ export function EmailSyncPage() {
         </Card>
 
         {/* Conectar + sincronizar Outlook */}
-        <Card className="grid gap-3">
+        <Card className="grid min-w-0 grid-cols-1 gap-3">
           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
             {t('4. Conecta Outlook y sincroniza')}
           </h3>
@@ -581,7 +581,7 @@ export function EmailSyncPage() {
         </Card>
 
         {/* Captura automática en tiempo real (Outlook push) */}
-        <Card className="grid gap-3">
+        <Card className="grid min-w-0 grid-cols-1 gap-3">
           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
             {t('5. Captura automática en tiempo real (Outlook)')}
           </h3>
@@ -622,7 +622,7 @@ export function EmailSyncPage() {
 
         {msg && (
           <Card className="border-brand-200 bg-brand-50 dark:bg-brand-800/40">
-            <p className="text-sm font-medium text-brand-700 dark:text-brand-500">{msg}</p>
+            <p className="break-words text-sm font-medium text-brand-700 dark:text-brand-500">{msg}</p>
           </Card>
         )}
       </div>

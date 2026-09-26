@@ -195,7 +195,7 @@ function ThemeEditor() {
 
       <div className="grid gap-3 sm:grid-cols-2">
         {swatch(t('Acento (marca)'), colors.brand, (v) => update({ ...colors, brand: v }))}
-        <div />
+        <div className="hidden sm:block" />
         {swatch(t('Fondo (claro)'), colors.light.bg, (v) =>
           update({ ...colors, light: { ...colors.light, bg: v } }),
         )}
@@ -292,7 +292,10 @@ function ConfigEditor() {
               .filter((f) => f.group === group)
               .map((f) => (
                 <div key={f.key} className="flex flex-wrap items-center gap-x-4 gap-y-2 px-3 py-2">
-                  <span className="min-w-0 flex-1 text-sm text-slate-700 dark:text-slate-200">{t(f.label)}</span>
+                  <span className="min-w-0 basis-full break-words text-sm text-slate-700 dark:text-slate-200 sm:basis-auto sm:flex-1">
+                    {t(f.label)}
+                  </span>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                   {f.premium && (
                     <label className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-300">
                       <input
@@ -317,6 +320,7 @@ function ConfigEditor() {
                       {f.limit.kind === 'monthly' ? t('/mes') : t('total')}
                     </label>
                   )}
+                  </div>
                 </div>
               ))}
           </div>
@@ -387,10 +391,10 @@ function PageOrderEditor() {
 
       <div className="divide-y divide-slate-200 dark:divide-slate-700 rounded-lg border border-slate-200 dark:border-slate-700">
         {items.map((item, i) => (
-          <div key={item.to} className="flex items-center gap-3 px-3 py-2">
-            <span className="text-lg">{item.icon}</span>
+          <div key={item.to} className="flex items-center gap-1 px-2 py-2 sm:gap-3 sm:px-3">
+            <span className="shrink-0 text-lg">{item.icon}</span>
             <span
-              className={`flex-1 text-sm ${
+              className={`min-w-0 flex-1 break-words text-sm ${
                 hidden.includes(item.to)
                   ? 'text-slate-400 line-through dark:text-slate-500'
                   : 'text-slate-700 dark:text-slate-200'
@@ -512,6 +516,51 @@ export function AdminPage() {
     )
   }
 
+  const statusBadges = (user: NonNullable<typeof users>[number]) => (
+    <div className="flex flex-wrap gap-2">
+      {user.is_premium && (
+        <Badge className="bg-green-100 text-green-800">Premium</Badge>
+      )}
+      {user.is_admin && (
+        <Badge className="bg-blue-100 dark:bg-blue-900/40 text-blue-800">Admin</Badge>
+      )}
+      {!user.is_premium && !user.is_admin && (
+        <Badge className="bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-100">{t('Gratis')}</Badge>
+      )}
+    </div>
+  )
+
+  const userActions = (user: NonNullable<typeof users>[number]) => (
+    <div className="flex flex-wrap gap-2">
+      <Button
+        size="sm"
+        variant={user.is_premium ? 'danger' : 'primary'}
+        onClick={() => handleTogglePremium(user.id, user.is_premium)}
+        disabled={isPending || isAdminPending || loadingId === user.id}
+      >
+        {loadingId === user.id ? t('Actualizando...') : user.is_premium ? t('Quitar Premium') : t('Dar Premium')}
+      </Button>
+      <Button
+        size="sm"
+        variant={user.is_admin ? 'danger' : 'secondary'}
+        onClick={() => handleToggleAdmin(user.id, user.is_admin)}
+        disabled={
+          isPending ||
+          isAdminPending ||
+          loadingId === user.id ||
+          (user.id === currentUserId && user.is_admin)
+        }
+        title={
+          user.id === currentUserId && user.is_admin
+            ? t('No puedes quitarte admin a ti mismo')
+            : undefined
+        }
+      >
+        {user.is_admin ? t('Quitar Admin') : t('Hacer Admin')}
+      </Button>
+    </div>
+  )
+
   return (
     <>
       <PageHeader
@@ -542,7 +591,21 @@ export function AdminPage() {
         ) : !users || users.length === 0 ? (
           <p className="py-8 text-center text-slate-500 dark:text-slate-400">{t('Sin usuarios.')}</p>
         ) : (
-          <div className="overflow-x-auto">
+          <>
+          {/* Celular: una tarjeta por usuario */}
+          <div className="divide-y divide-slate-200 dark:divide-slate-700 md:hidden">
+            {users.map((user) => (
+              <div key={user.id} className="grid gap-2 py-3 text-sm">
+                <div className="min-w-0">
+                  <p className="break-all font-medium text-slate-800 dark:text-slate-100">{user.email}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{user.full_name || '—'}</p>
+                </div>
+                {statusBadges(user)}
+                {userActions(user)}
+              </div>
+            ))}
+          </div>
+          <div className="hidden overflow-x-auto md:block">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-700">
@@ -568,54 +631,14 @@ export function AdminPage() {
                   >
                     <td className="px-4 py-3">{user.email}</td>
                     <td className="px-4 py-3">{user.full_name || '—'}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex gap-2">
-                        {user.is_premium && (
-                          <Badge className="bg-green-100 text-green-800">Premium</Badge>
-                        )}
-                        {user.is_admin && (
-                          <Badge className="bg-blue-100 dark:bg-blue-900/40 text-blue-800">Admin</Badge>
-                        )}
-                        {!user.is_premium && !user.is_admin && (
-                          <Badge className="bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-100">{t('Gratis')}</Badge>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-wrap gap-2">
-                        <Button
-                          size="sm"
-                          variant={user.is_premium ? 'danger' : 'primary'}
-                          onClick={() => handleTogglePremium(user.id, user.is_premium)}
-                          disabled={isPending || isAdminPending || loadingId === user.id}
-                        >
-                          {loadingId === user.id ? t('Actualizando...') : user.is_premium ? t('Quitar Premium') : t('Dar Premium')}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant={user.is_admin ? 'danger' : 'secondary'}
-                          onClick={() => handleToggleAdmin(user.id, user.is_admin)}
-                          disabled={
-                            isPending ||
-                            isAdminPending ||
-                            loadingId === user.id ||
-                            (user.id === currentUserId && user.is_admin)
-                          }
-                          title={
-                            user.id === currentUserId && user.is_admin
-                              ? t('No puedes quitarte admin a ti mismo')
-                              : undefined
-                          }
-                        >
-                          {user.is_admin ? t('Quitar Admin') : t('Hacer Admin')}
-                        </Button>
-                      </div>
-                    </td>
+                    <td className="px-4 py-3">{statusBadges(user)}</td>
+                    <td className="px-4 py-3">{userActions(user)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+          </>
         )}
       </Card>
     </>

@@ -32,6 +32,35 @@ import java.util.Set;
 @CapacitorPlugin(name = "NotificationCapture")
 public class NotificationCapturePlugin extends Plugin {
 
+    // Extra que ponen las notificaciones propias (IngestClient) con la ruta de
+    // la app a abrir al tocarlas, p. ej. "/transacciones?status=pending&tx=…".
+    static final String EXTRA_ROUTE = "finzen_route";
+
+    // Arranque en frío: la app se abrió desde la notificación.
+    @Override
+    public void load() {
+        if (getActivity() != null) deliverRoute(getActivity().getIntent());
+    }
+
+    // App ya abierta (MainActivity es singleTask): llega por onNewIntent.
+    @Override
+    protected void handleOnNewIntent(Intent intent) {
+        super.handleOnNewIntent(intent);
+        deliverRoute(intent);
+    }
+
+    private void deliverRoute(Intent intent) {
+        if (intent == null) return;
+        String route = intent.getStringExtra(EXTRA_ROUTE);
+        if (route == null || !route.startsWith("/")) return;
+        // Consumirla para que recrear la Activity (rotación) no vuelva a navegar.
+        intent.removeExtra(EXTRA_ROUTE);
+        JSObject data = new JSObject();
+        data.put("route", route);
+        // retainUntilConsumed: en arranque en frío el JS aún no escucha.
+        notifyListeners("notificationTap", data, true);
+    }
+
     @PluginMethod
     public void isAccessGranted(PluginCall call) {
         JSObject ret = new JSObject();

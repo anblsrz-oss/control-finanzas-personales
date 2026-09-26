@@ -91,6 +91,9 @@ export function NotificationCapturePage() {
   const [busy, setBusy] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
   const [settingsFor, setSettingsFor] = useState<InstalledApp | null>(null)
+  // Aviso destacado previo al permiso (Google Play lo exige para el acceso a
+  // notificaciones): explicar qué se lee y para qué ANTES de abrir Ajustes.
+  const [showDisclosure, setShowDisclosure] = useState(false)
 
   const refreshAccess = useCallback(async () => {
     setGranted(await isNotificationAccessGranted())
@@ -235,7 +238,7 @@ export function NotificationCapturePage() {
             </p>
             {!granted && (
               <div>
-                <Button onClick={() => void openNotificationAccessSettings()}>
+                <Button onClick={() => setShowDisclosure(true)}>
                   {t('Dar acceso a notificaciones')}
                 </Button>
               </div>
@@ -366,6 +369,37 @@ export function NotificationCapturePage() {
           </Card>
         </div>
       )}
+
+      <Modal
+        open={showDisclosure}
+        title={t('Antes de dar acceso a notificaciones')}
+        onClose={() => setShowDisclosure(false)}
+      >
+        <div className="grid gap-3 text-sm text-slate-600 dark:text-slate-300">
+          <p>
+            {t('Para registrar tus cargos automáticamente, esta app necesita leer las notificaciones que llegan a tu teléfono.')}
+          </p>
+          <ul className="list-disc space-y-1 pl-5">
+            <li>{t('Solo lee las notificaciones de las apps que tú marques (tu banco, wallet o tiendas).')}</li>
+            <li>{t('Solo envía a nuestro servidor las que traen un monto, para sacar monto, fecha, comercio y terminación de tarjeta.')}</li>
+            <li>{t('No guarda el texto de la notificación ni lee las de otras apps. No se usa para publicidad ni se comparte.')}</li>
+            <li>{t('Funciona aun con la app cerrada. Puedes quitar el acceso cuando quieras desde Ajustes de Android.')}</li>
+          </ul>
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button variant="ghost" onClick={() => setShowDisclosure(false)}>
+              {t('No, gracias')}
+            </Button>
+            <Button
+              onClick={() => {
+                setShowDisclosure(false)
+                void openNotificationAccessSettings()
+              }}
+            >
+              {t('Acepto, continuar')}
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       <AppSettingsModal
         app={settingsFor}

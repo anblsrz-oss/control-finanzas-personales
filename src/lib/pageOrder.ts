@@ -3,13 +3,15 @@
 // única para que los tres no se desincronicen. /admin queda fuera: solo es
 // visible para admins y siempre va al final, no es reordenable.
 
+import { isPlayBuild, PLAY_HIDDEN_PAGES } from '@/lib/distribution'
+
 export interface PageNavItem {
   to: string
   label: string
   icon: string
 }
 
-export const PAGE_NAV_ITEMS: PageNavItem[] = [
+const ALL_PAGE_NAV_ITEMS: PageNavItem[] = [
   { to: '/', label: 'Resumen', icon: '📊' },
   { to: '/cuentas', label: 'Cuentas', icon: '🏦' },
   { to: '/tarjetas', label: 'Tarjetas', icon: '💳' },
@@ -31,13 +33,23 @@ export const PAGE_NAV_ITEMS: PageNavItem[] = [
   { to: '/configuracion', label: 'Configuración', icon: '⚙️' },
 ]
 
+/** ¿La página no existe en este build? (p. ej. /sms en Google Play). Aplica también a admins. */
+export function isPageUnavailable(to: string): boolean {
+  return isPlayBuild() && PLAY_HIDDEN_PAGES.includes(to)
+}
+
+export const PAGE_NAV_ITEMS: PageNavItem[] = ALL_PAGE_NAV_ITEMS.filter(
+  (item) => !isPageUnavailable(item.to),
+)
+
 export const PAGE_IDS: string[] = PAGE_NAV_ITEMS.map((item) => item.to)
 
 // Páginas que el admin no puede ocultar (la app no tendría a dónde volver).
 export const UNHIDEABLE_PAGES = ['/', '/configuracion']
 
-/** ¿La ruta está oculta por el admin (appConfig.hidden_pages)? */
+/** ¿La ruta está oculta por el admin (appConfig.hidden_pages) o no existe en este build? */
 export function isPageHidden(to: string, hidden: string[] | null | undefined): boolean {
+  if (isPageUnavailable(to)) return true
   if (!hidden || UNHIDEABLE_PAGES.includes(to)) return false
   return hidden.includes(to)
 }

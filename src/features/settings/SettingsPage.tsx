@@ -29,7 +29,9 @@ import { useEntitlements } from '@/hooks/useAppConfig'
 import { CURRENCIES } from '@/lib/format'
 import { APK_URL, APP_VERSION } from '@/lib/appUpdate'
 import { isNative } from '@/lib/nativeAuth'
+import { isPlayBuild } from '@/lib/distribution'
 import { PhoneSection } from './PhoneSection'
+import { DeleteAccountSection } from './DeleteAccountSection'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
@@ -84,6 +86,9 @@ export function SettingsPage() {
 
   const startCheckout = useStartCheckout()
   const openPortal = useOpenBillingPortal()
+  // En Google Play no se puede comprar con Stripe ni mandar a comprar a la web:
+  // solo se muestra el estado del plan (ver lib/distribution.ts).
+  const playBuild = isPlayBuild()
 
   // Llegada desde un plan de la landing: /configuracion?plan=monthly|yearly
   // abre el checkout de una vez, para no obligar a buscar el botón después de
@@ -94,6 +99,10 @@ export function SettingsPage() {
   useEffect(() => {
     const plan = searchParams.get('plan')
     if (plan !== 'monthly' && plan !== 'yearly') return
+    if (playBuild) {
+      setSearchParams({}, { replace: true })
+      return
+    }
     // Espera a tener el perfil: sin él no se sabe si ya es premium.
     if (!profile) return
 
@@ -103,7 +112,7 @@ export function SettingsPage() {
     startCheckout.mutate(plan, {
       onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
     })
-  }, [searchParams, profile, setSearchParams, startCheckout, t])
+  }, [searchParams, profile, setSearchParams, startCheckout, t, playBuild])
   const updateMainCurrency = useUpdateMainCurrency()
   const mainCurrency = profile?.main_currency ?? 'MXN'
   const updateThreshold = useUpdateBudgetAlertThreshold()
@@ -600,19 +609,25 @@ export function SettingsPage() {
                   {t('Tienes acceso a todas las funciones.')}
                 </p>
               </div>
-              <Button
-                size="sm"
-                variant="secondary"
-                disabled={openPortal.isPending}
-                onClick={() =>
-                  openPortal.mutate(undefined, {
-                    onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
-                  })
-                }
-              >
-                {t('Gestionar suscripción')}
-              </Button>
+              {!playBuild && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  disabled={openPortal.isPending}
+                  onClick={() =>
+                    openPortal.mutate(undefined, {
+                      onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
+                    })
+                  }
+                >
+                  {t('Gestionar suscripción')}
+                </Button>
+              )}
             </div>
+          ) : playBuild ? (
+            <p className="text-sm text-slate-500 dark:text-slate-400">
+              {t('Plan gratuito. Premium desbloquea plan familiar, MSI/diferidos y rendimientos.')}
+            </p>
           ) : (
             <div className="flex flex-col gap-3">
               <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -759,6 +774,14 @@ export function SettingsPage() {
               {t('Cerrar sesión')}
             </Button>
           </div>
+        </Card>
+
+        {/* Eliminar cuenta (requisito de Google Play) */}
+        <Card className="border-red-200 dark:border-red-900/60">
+          <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
+            🗑️ {t('Eliminar mi cuenta')}
+          </p>
+          <DeleteAccountSection />
         </Card>
       </div>
     </div>

@@ -164,7 +164,9 @@ Dos modos: **manual** (`sync-email`, siempre disponible) y **tiempo real**
 - **Batería**: pide al usuario **excluir la app de la optimización de batería**
   para que el receptor no se mate con la app cerrada.
 - **Google Play**: `READ_SMS`/`RECEIVE_SMS` son permisos restringidos y Play casi
-  siempre los rechaza para finanzas personales → mantener distribución por **APK**.
+  siempre los rechaza para finanzas personales. Por eso la variante `play`
+  (`android/app/src/play/AndroidManifest.xml`) los quita junto con el receptor, y el
+  web de esa variante oculta `/sms`. La captura por SMS solo existe en el APK de GitHub.
 - En iOS/web la pantalla muestra "no disponible" automáticamente.
 
 ## 6.1 Captura por notificaciones push — solo Android

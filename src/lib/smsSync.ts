@@ -27,6 +27,7 @@ import { Capacitor, registerPlugin } from '@capacitor/core'
 import { Preferences } from '@capacitor/preferences'
 import { SmsVault } from '@ao627515/capacitor-sms-vault'
 import { supabase } from '@/lib/supabase'
+import { isPlayBuild } from '@/lib/distribution'
 
 // Claves en Preferences (SharedPreferences "CapacitorStorage"), que también lee
 // el receptor nativo SmsReceiver.java.
@@ -234,7 +235,8 @@ export async function syncSmsNow(sinceDays = 30): Promise<SyncResult> {
 // Auto-sync silencioso (al reanudar la app). No lanza: solo registra en consola.
 export async function autoSyncSmsSilently(sinceDays = 7): Promise<void> {
   try {
-    if (!(await isSmsCaptureEnabled())) return
+    // En Play no hay permisos de SMS (ver lib/distribution.ts).
+    if (isPlayBuild() || !(await isSmsCaptureEnabled())) return
     await syncSmsNow(sinceDays)
   } catch (e) {
     console.warn('auto-sync SMS falló:', e)
