@@ -1,5 +1,5 @@
 {
-  "version": "0.13.2",
-  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.13.2/finzen-v0.13.2.apk",
-  "notes": "Novedades ahora muestra solo lo reciente (con \"Ver anteriores\" para lo demás) y las ventanas ya no quedan tapadas por la barra inferior. Las tarjetas de movimientos ya no se salen de la pantalla en el teléfono. Además, actualizamos los Términos y la Política de Privacidad, y agregamos una Política de Cookies."
+  "version": "0.14.0",
+  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.14.0/finzen-v0.14.0.apk",
+  "notes": "Al tocar la notificación de un movimiento pendiente se abre ese movimiento, listo para confirmarlo; el aviso de presupuesto abre Presupuestos. Nuevo ícono con el logo de la app, textos que ya se leen en modo oscuro (Rendimientos, Resumen, Reportes) y arreglos de pantalla en Sincronizar correo. También puedes eliminar tu cuenta desde Configuración."
 }
