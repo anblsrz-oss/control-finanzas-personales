@@ -12,6 +12,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-26-transferencias-sin-monto',
+    date: '2026-09-26',
+    title: 'Transferencias sin monto (Mercado Pago)',
+    description:
+      'Algunas apps avisan "Enviamos tu transferencia" sin decir cuánto. Ahora esos avisos ya no se pierden: te llega "Falta el monto" y al tocarlo se abre el formulario prellenado para que solo escribas la cantidad. Si el correo o SMS del banco trae el monto, se completa solo. Los que falten aparecen arriba en Transacciones.',
+  },
+  {
     id: '2026-09-26-premium-google-play',
     date: '2026-09-26',
     title: 'Premium desde Google Play y recorrido corregido',

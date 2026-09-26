@@ -15,6 +15,7 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.Normalizer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TimeZone;
@@ -30,8 +31,9 @@ import java.util.regex.Pattern;
 // pide con un diálogo normal). Ver src/lib/notificationSync.ts.
 //
 // Privacidad: solo sale del teléfono el texto de las apps marcadas y solo si
-// parece hablar de dinero (tiene un monto). Nada se guarda en el teléfono salvo
-// la cola de reintento cuando no hay red.
+// parece hablar de dinero (tiene un monto o confirma un envío/pago, como el
+// "¡Enviamos tu transferencia!" de Mercado Pago, que no trae monto). Nada se
+// guarda en el teléfono salvo la cola de reintento cuando no hay red.
 public class PaymentNotificationListener extends NotificationListenerService {
     private static final String TAG = "PaymentNotifListener";
     private static final String CHANNEL_ID = "notif_capture";
@@ -43,6 +45,14 @@ public class PaymentNotificationListener extends NotificationListenerService {
     // Monto: "$250", "$ 1,299.50", "250.00 MXN", "USD 12.99", "359,00".
     private static final Pattern MONEY = Pattern.compile(
         "(\\$|mxn|usd|eur|pesos)\\s?\\d|\\d[\\d.,]*\\s?(mxn|usd|eur|pesos)|\\d+[.,]\\d{2}\\b",
+        Pattern.CASE_INSENSITIVE);
+
+    // Salidas que no dicen cuánto (se comparan sin acentos). El servidor las
+    // registra como "falta el monto" y aquí se avisa para completarlas.
+    private static final Pattern SENT_NO_AMOUNT = Pattern.compile(
+        "enviamos tu transferencia|transferencia (enviada|realizada|exitosa)|tu transferencia"
+            + "|transferiste|enviaste|spei enviado|pagaste|pago (realizado|exitoso|aprobado|enviado)"
+            + "|tu pago (fue|se)",
         Pattern.CASE_INSENSITIVE);
 
     // Un solo hilo: los envíos y la cola se procesan en orden, sin carreras.
@@ -134,7 +144,8 @@ public class PaymentNotificationListener extends NotificationListenerService {
             text = str(extras.getCharSequence("android.summaryText")); // EXTRA_SUMMARY_TEXT
         }
         String full = (title + "\n" + text).trim();
-        if (full.isEmpty() || !MONEY.matcher(full).find()) {
+        if (full.isEmpty()
+            || (!MONEY.matcher(full).find() && !SENT_NO_AMOUNT.matcher(stripAccents(full)).find())) {
             Log.i(TAG, "descartada (" + pkg + "): sin texto o sin monto detectable");
             return;
         }
@@ -164,6 +175,7 @@ public class PaymentNotificationListener extends NotificationListenerService {
             if (IngestClient.insertedCount(response) > 0) {
                 IngestClient.notifyPending(ctx, CHANNEL_ID, "Captura de notificaciones", preview, response);
             }
+            IngestClient.notifyAmountless(ctx, CHANNEL_ID, "Captura de notificaciones", response);
             IngestClient.notifyBudget(ctx, response);
         });
     }
@@ -248,6 +260,10 @@ public class PaymentNotificationListener extends NotificationListenerService {
             if (s.trim().equalsIgnoreCase(value)) return true;
         }
         return false;
+    }
+
+    private static String stripAccents(String s) {
+        return Normalizer.normalize(s, Normalizer.Form.NFD).replaceAll("\\p{M}", "");
     }
 
     private static String str(CharSequence cs) {

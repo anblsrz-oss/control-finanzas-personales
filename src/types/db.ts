@@ -195,6 +195,27 @@ export interface TransactionRow {
 
 // Cada aviso procesado por un canal automático (migración 0071). Sirve para
 // "Recibido por: SMS · Notificación BBVA" y para ver qué se fusionó.
+// Aviso de salida SIN monto ("¡Enviamos tu transferencia!" de Mercado Pago):
+// espera a que el usuario capture el monto o a que el correo/SMS lo complete.
+export interface AmountlessSignalRow {
+  id: string
+  user_id: string
+  source: 'sms' | 'email' | 'notification'
+  external_id: string
+  app_package: string | null
+  app_name: string | null
+  kind: 'transfer' | 'expense'
+  concept: string | null
+  counterparty: string | null
+  account_id: string | null
+  currency: string
+  occurred_at: string
+  status: 'open' | 'completed' | 'dismissed'
+  transaction_id: string | null
+  completed_at: string | null
+  created_at: string
+}
+
 export interface IngestSignalRow {
   id: string
   user_id: string

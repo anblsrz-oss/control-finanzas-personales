@@ -117,9 +117,20 @@ interface TransactionFormProps {
   familyCards?: FamilyCardRow[]
   // Si viene, el formulario edita esa transacción en lugar de crear una nueva.
   transaction?: TransactionRow
-  // Prefill (p. ej. botón "Pagar" de una línea de crédito).
-  initial?: { kind?: FormData['kind']; toCreditLineId?: string; amount?: number }
-  onSuccess?: () => void
+  // Prefill (p. ej. botón "Pagar" de una línea de crédito, o un aviso de
+  // transferencia al que le falta el monto).
+  initial?: {
+    kind?: FormData['kind']
+    toCreditLineId?: string
+    amount?: number
+    concept?: string
+    accountId?: string
+    isExternal?: boolean
+    txDate?: string
+    currency?: string
+  }
+  // Al crear recibe el id de la transacción nueva.
+  onSuccess?: (createdId?: string) => void
   onCancel?: () => void
 }
 
@@ -179,12 +190,14 @@ export function TransactionForm({
         }
       : {
           kind: initial?.kind ?? 'expense',
-          currency: mainCurrency,
+          currency: initial?.currency ?? mainCurrency,
           amount: initial?.amount as any,
+          concept: initial?.concept ?? '',
+          accountId: initial?.accountId ?? '',
           toCreditLineId: initial?.toCreditLineId ?? '',
           refundOfTransactionId: '',
-          txDate: todayISO(),
-          isExternal: false,
+          txDate: initial?.txDate ?? todayISO(),
+          isExternal: initial?.isExternal ?? false,
           msi: false,
           msiInterestFree: true,
           msiStartDate: todayISO(),
@@ -622,7 +635,7 @@ export function TransactionForm({
       form.reset()
       setMsiToPay({})
       notifyBudgets()
-      onSuccess?.()
+      onSuccess?.(tx.id)
     } catch (error: any) {
       alert(`Error: ${error.message}`)
     }

@@ -244,7 +244,7 @@ export function NotificationCapturePage() {
               </div>
             )}
             <p className="text-xs text-slate-400 dark:text-slate-500">
-              {t('Privacidad: solo se leen las apps que marques abajo y solo se envían los avisos que traen un monto. El texto de la notificación no se guarda; solo el movimiento que se detecte.')}
+              {t('Privacidad: solo se leen las apps que marques abajo y solo se envían los avisos que traen un monto o confirman un envío o pago. El texto de la notificación no se guarda; solo el movimiento que se detecte.')}
             </p>
           </Card>
 
@@ -381,7 +381,7 @@ export function NotificationCapturePage() {
           </p>
           <ul className="list-disc space-y-1 pl-5">
             <li>{t('Solo lee las notificaciones de las apps que tú marques (tu banco, wallet o tiendas).')}</li>
-            <li>{t('Solo envía a nuestro servidor las que traen un monto, para sacar monto, fecha, comercio y terminación de tarjeta.')}</li>
+            <li>{t('Solo envía a nuestro servidor las que traen un monto o confirman un envío o pago, para sacar monto, fecha, comercio y terminación de tarjeta.')}</li>
             <li>{t('No guarda el texto de la notificación ni lee las de otras apps. No se usa para publicidad ni se comparte.')}</li>
             <li>{t('Funciona aun con la app cerrada. Puedes quitar el acceso cuando quieras desde Ajustes de Android.')}</li>
           </ul>

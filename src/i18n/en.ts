@@ -955,8 +955,8 @@ export const en: Record<string, string> = {
     'You must not use the app for illegal activities, to attempt to access other users\' accounts without authorization, or to interfere with the operation of the service.',
   'Las funciones de "Sincronizar correo" (Gmail u Outlook, solo lectura), "Sincronizar SMS" (solo Android) y "Captura por notificaciones" (solo Android) son opcionales y requieren tu autorización explícita. Puedes desactivarlas en cualquier momento desde la app. El tratamiento de estos datos se rige por la Política de Privacidad.':
     'The "Sync email" (Gmail or Outlook, read-only), "Sync SMS" (Android only) and "Notification capture" (Android only) features are optional and require your explicit authorization. You can turn them off at any time from within the app. The handling of this data is governed by the Privacy Policy.',
-  'La captura por notificaciones funciona solo si le das a la app el "Acceso a notificaciones" en los ajustes de Android, y solo lee las notificaciones de las apps que tú marcas (por ejemplo, la de tu banco o de una tienda). Puedes quitar ese permiso en cualquier momento desde los ajustes de Android. Los avisos que traen un monto se procesan en nuestro servidor para crear una transacción o un pendiente por confirmar.':
-    'Notification capture only works if you grant the app "Notification access" in Android settings, and it only reads notifications from the apps you select (for example, your bank\'s or a store\'s app). You can remove that permission at any time from Android settings. Alerts that include an amount are processed on our server to create a transaction or a pending item to confirm.',
+  'La captura por notificaciones funciona solo si le das a la app el "Acceso a notificaciones" en los ajustes de Android, y solo lee las notificaciones de las apps que tú marcas (por ejemplo, la de tu banco o de una tienda). Puedes quitar ese permiso en cualquier momento desde los ajustes de Android. Los avisos que traen un monto, o que confirman un envío o pago aunque no digan cuánto, se procesan en nuestro servidor para crear una transacción, un pendiente por confirmar o un aviso de monto faltante.':
+    'Notification capture only works if you grant the app "Notification access" in Android settings, and it only reads notifications from the apps you select (for example, your bank\'s or a store\'s app). You can remove that permission at any time from Android settings. Alerts that include an amount, or that confirm a transfer or payment without saying how much, are processed on our server to create a transaction, a pending item to confirm or a missing-amount reminder.',
   'Cuando un mismo cargo llega por más de un canal (SMS, correo o notificación), la app descarta el aviso repetido si es seguro que es el mismo movimiento y, si no lo es, lo marca como "Posible duplicado" para que tú decidas. Aun así, revisa las transacciones capturadas automáticamente: pueden contener errores de lectura.':
     'When the same charge arrives through more than one channel (SMS, email or notification), the app discards the repeated alert if it is certain it is the same transaction; otherwise it marks it as "Possible duplicate" so you can decide. Even so, review automatically captured transactions: they may contain reading errors.',
   'La captura por notificaciones depende de tu teléfono: algunos fabricantes (por ejemplo, Xiaomi, Huawei o Samsung) detienen las apps en segundo plano para ahorrar batería. No garantizamos que se capture cada aviso; si falta alguno, puedes registrarlo a mano.':
@@ -1160,8 +1160,8 @@ export const en: Record<string, string> = {
     'Android requires turning this permission on manually: Settings will open, find this app and enable "Allow notification access".',
   'Dar acceso a notificaciones':
     'Grant notification access',
-  'Privacidad: solo se leen las apps que marques abajo y solo se envían los avisos que traen un monto. El texto de la notificación no se guarda; solo el movimiento que se detecte.':
-    'Privacy: only the apps you check below are read, and only notifications with an amount are sent. The notification text is not stored; only the detected transaction.',
+  'Privacidad: solo se leen las apps que marques abajo y solo se envían los avisos que traen un monto o confirman un envío o pago. El texto de la notificación no se guarda; solo el movimiento que se detecte.':
+    'Privacy: only the apps you check below are read, and only notifications with an amount or that confirm a transfer or payment are sent. The notification text is not stored; only the detected transaction.',
   '2. Apps que se escuchan':
     '2. Apps to listen to',
   'Buscar app':
@@ -1224,8 +1224,8 @@ export const en: Record<string, string> = {
     '{{app}} notification',
   'Duplicado de otro aviso (SMS/correo/notificación)':
     'Duplicate of another notice (SMS/email/notification)',
-  'Datos de captura opcional por notificaciones (solo Android): si activas "Captura por notificaciones" y le das a la app el "Acceso a notificaciones" de Android, la app lee únicamente las notificaciones de las apps que tú marcas (por ejemplo, la de tu banco) y solo envía al servidor las que traen un monto, para extraer monto, fecha, comercio y terminación de tarjeta; el texto de la notificación no se guarda y las notificaciones de otras apps no se leen.':
-    'Optional notification capture data (Android only): if you enable "Notification capture" and grant the app Android\'s "Notification access", the app reads only the notifications of the apps you check (for example, your bank\'s) and only sends to the server those that contain an amount, to extract amount, date, merchant and card ending; the notification text is not stored and notifications from other apps are not read.',
+  'Datos de captura opcional por notificaciones (solo Android): si activas "Captura por notificaciones" y le das a la app el "Acceso a notificaciones" de Android, la app lee únicamente las notificaciones de las apps que tú marcas (por ejemplo, la de tu banco) y solo envía al servidor las que traen un monto o confirman un envío o pago (por ejemplo, "Enviamos tu transferencia"), para extraer monto, fecha, comercio, destinatario y terminación de tarjeta; el texto de la notificación no se guarda y las notificaciones de otras apps no se leen.':
+    'Optional notification capture data (Android only): if you enable "Notification capture" and grant the app Android\'s "Notification access", the app reads only the notifications of the apps you check (for example, your bank\'s) and only sends to the server those that contain an amount or confirm a transfer or payment (for example, "We sent your transfer"), to extract amount, date, merchant, recipient and card ending; the notification text is not stored and notifications from other apps are not read.',
   'Si activaste todo y aun así no ves nada aquí después de un cargo real, el aviso ni siquiera llegó al teléfono a tiempo — revisa la guía de arriba.':
     'If you turned everything on and still see nothing here after a real charge, the notice never even reached the phone in time — check the guide above.',
   '🔧 ¿No te está funcionando?':
@@ -1302,8 +1302,8 @@ export const en: Record<string, string> = {
     'Heads up: on most phones this is not enough. See the "A charge was not recorded" question below: almost all of them need an extra battery setting.',
   '¿Qué datos se leen y cuáles se guardan?':
     'What data is read and what is stored?',
-  'Solo se leen las notificaciones de las apps que tú marques, y solo se envían al servidor las que traen un monto.':
-    'Only notifications from the apps you check are read, and only those with an amount are sent to the server.',
+  'Solo se leen las notificaciones de las apps que tú marques, y solo se envían al servidor las que traen un monto o confirman un envío o pago.':
+    'Only notifications from the apps you check are read, and only those with an amount or that confirm a transfer or payment are sent to the server.',
   'No se leen las de apps que no marcaste (WhatsApp, redes sociales…) ni los avisos sin monto.':
     'Notifications from apps you did not check (WhatsApp, social media…) and notices without an amount are not read.',
   'Se guarda el movimiento detectado: monto, fecha, comercio y de qué app vino. El texto original de la notificación no se guarda.':
@@ -1439,8 +1439,8 @@ export const en: Record<string, string> = {
     'To record your charges automatically, this app needs to read the notifications that arrive on your phone.',
   'Solo lee las notificaciones de las apps que tú marques (tu banco, wallet o tiendas).':
     'It only reads notifications from the apps you select (your bank, wallet or stores).',
-  'Solo envía a nuestro servidor las que traen un monto, para sacar monto, fecha, comercio y terminación de tarjeta.':
-    'It only sends the ones with an amount to our server, to extract amount, date, merchant and card ending.',
+  'Solo envía a nuestro servidor las que traen un monto o confirman un envío o pago, para sacar monto, fecha, comercio y terminación de tarjeta.':
+    'It only sends the ones with an amount or that confirm a transfer or payment to our server, to extract amount, date, merchant and card ending.',
   'No guarda el texto de la notificación ni lee las de otras apps. No se usa para publicidad ni se comparte.':
     "It doesn't store the notification text or read other apps' notifications. It's not used for ads or shared.",
   'Funciona aun con la app cerrada. Puedes quitar el acceso cuando quieras desde Ajustes de Android.':
@@ -2163,4 +2163,28 @@ export const en: Record<string, string> = {
   'MM/DD/AAAA': 'MM/DD/YYYY',
   'AAAA-MM-DD': 'YYYY-MM-DD',
   'AAAA/MM/DD': 'YYYY/MM/DD',
+  'Movimientos sin monto ({{count}})':
+    'Movements without an amount ({{count}})',
+  'La app avisó de estos envíos sin decir cuánto. Si llega el correo o SMS con el monto se completan solos; si no, regístralos tú.':
+    'The app reported these transfers without saying how much. If the email or SMS with the amount arrives they complete on their own; otherwise, record them yourself.',
+  'Registrar monto':
+    'Enter amount',
+  'Descartar':
+    'Dismiss',
+  'la app':
+    'the app',
+  'Este movimiento ya se registró con el monto que llegó por correo, SMS u otra app.':
+    'This movement was already recorded with the amount that arrived by email, SMS or another app.',
+  'Este aviso se descartó.':
+    'This notice was dismissed.',
+  'Falta el monto de este aviso de {{app}}. Escríbelo y guarda.':
+    'This notice from {{app}} is missing the amount. Enter it and save.',
+  'Mi app avisó de una transferencia pero sin el monto, ¿qué pasa?':
+    'My app reported a transfer but without the amount. What happens?',
+  'Algunas apps, como Mercado Pago, solo dicen "Enviamos tu transferencia" y a quién, sin la cantidad. En ese caso te llega un aviso de "Falta el monto": al tocarlo se abre el formulario ya prellenado y solo escribes cuánto fue. Si antes o después llega el correo o SMS del banco con el monto, se completa solo y el aviso desaparece. Los pendientes también se ven arriba en Transacciones.':
+    'Some apps, like Mercado Pago, only say "We sent your transfer" and to whom, without the amount. In that case you get a "Missing amount" notification: tapping it opens the form already filled in and you only type how much it was. If the bank email or SMS with the amount arrives before or after, it completes on its own and the reminder disappears. Pending ones also show at the top of Transactions.',
+  'Transferencias sin monto (Mercado Pago)':
+    'Transfers without an amount (Mercado Pago)',
+  'Algunas apps avisan "Enviamos tu transferencia" sin decir cuánto. Ahora esos avisos ya no se pierden: te llega "Falta el monto" y al tocarlo se abre el formulario prellenado para que solo escribas la cantidad. Si el correo o SMS del banco trae el monto, se completa solo. Los que falten aparecen arriba en Transacciones.':
+    'Some apps say "We sent your transfer" without saying how much. These notices are no longer lost: you get a "Missing amount" notification and tapping it opens the form already filled in so you only type the amount. If the bank email or SMS includes the amount, it completes on its own. Any still missing show at the top of Transactions.',
 }

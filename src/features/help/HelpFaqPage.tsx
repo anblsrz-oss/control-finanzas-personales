@@ -63,7 +63,7 @@ function buildTopics(t: (key: string, opts?: Record<string, unknown>) => string)
           q: t('¿Qué datos se leen y cuáles se guardan?'),
           a: (
             <ul className={`grid list-disc gap-1.5 pl-5 ${p}`}>
-              <li>{t('Solo se leen las notificaciones de las apps que tú marques, y solo se envían al servidor las que traen un monto.')}</li>
+              <li>{t('Solo se leen las notificaciones de las apps que tú marques, y solo se envían al servidor las que traen un monto o confirman un envío o pago.')}</li>
               <li>{t('No se leen las de apps que no marcaste (WhatsApp, redes sociales…) ni los avisos sin monto.')}</li>
               <li>{t('Se guarda el movimiento detectado: monto, fecha, comercio y de qué app vino. El texto original de la notificación no se guarda.')}</li>
             </ul>
@@ -127,6 +127,15 @@ function buildTopics(t: (key: string, opts?: Record<string, unknown>) => string)
           a: (
             <p className={p}>
               {t('Sus avisos siempre entran como pendientes, porque por sí solos no confirman que el cobro ya se hizo. Si después llega el aviso del banco por ese mismo monto, se juntan: el banco aporta la cuenta y la tienda aporta el nombre del comercio.')}
+            </p>
+          ),
+        },
+        {
+          id: 'sin-monto',
+          q: t('Mi app avisó de una transferencia pero sin el monto, ¿qué pasa?'),
+          a: (
+            <p className={p}>
+              {t('Algunas apps, como Mercado Pago, solo dicen "Enviamos tu transferencia" y a quién, sin la cantidad. En ese caso te llega un aviso de "Falta el monto": al tocarlo se abre el formulario ya prellenado y solo escribes cuánto fue. Si antes o después llega el correo o SMS del banco con el monto, se completa solo y el aviso desaparece. Los pendientes también se ven arriba en Transacciones.')}
             </p>
           ),
         },

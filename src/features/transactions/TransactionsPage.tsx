@@ -28,6 +28,12 @@ import { Modal } from '@/components/ui/Modal'
 import { TransactionForm } from './TransactionForm'
 import { RefundDialog } from './RefundDialog'
 import { PossibleDuplicateNotice, ReceivedVia } from './CaptureInfo'
+import { AmountlessNotice } from './AmountlessNotice'
+import {
+  useAmountlessSignal,
+  useCompleteAmountlessSignal,
+  useOpenAmountlessSignals,
+} from '@/hooks/useAmountlessSignals'
 import { useDismissPossibleDuplicate, useSignalsByTransaction } from '@/hooks/useIngestSignals'
 import {
   TransactionFilters,
@@ -37,8 +43,8 @@ import {
 import type { FilterState } from './TransactionFilters'
 import { formatMoney, formatDate, CURRENCIES } from '@/lib/format'
 import { Money } from '@/components/ui/Money'
-import { monthStartISO, todayISO } from '@/lib/dates'
-import type { TransactionRow } from '@/types/db'
+import { monthStartISO, todayISO, toISODate } from '@/lib/dates'
+import type { AmountlessSignalRow, TransactionRow } from '@/types/db'
 
 export function TransactionsPage() {
   const { t } = useTranslation()
@@ -70,6 +76,15 @@ export function TransactionsPage() {
   const focusTxId = searchParams.get('tx')
   const [highlightId, setHighlightId] = useState<string | null>(null)
   const [focusMissing, setFocusMissing] = useState(false)
+
+  // Aviso "Falta el monto" (?completar=<id>): abre el formulario prellenado
+  // con lo que dijo la notificación; al guardar, el aviso queda completado.
+  const completarId = searchParams.get('completar')
+  const completarQuery = useAmountlessSignal(completarId)
+  const openAmountlessQuery = useOpenAmountlessSignals(userId)
+  const completeAmountless = useCompleteAmountlessSignal()
+  const [completing, setCompleting] = useState<AmountlessSignalRow | null>(null)
+  const [completarInfo, setCompletarInfo] = useState<string | null>(null)
 
   const [filters, setFilters] = useState<FilterState>({
     ...EMPTY_FILTERS,
@@ -173,6 +188,39 @@ export function TransactionsPage() {
     const timer = window.setTimeout(() => setHighlightId(null), 4000)
     return () => window.clearTimeout(timer)
   }, [highlightId])
+
+  function startCompleting(s: AmountlessSignalRow) {
+    setEditingTx(null)
+    setCompleting(s)
+    setShowForm(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  function closeForm() {
+    setShowForm(false)
+    setCompleting(null)
+  }
+
+  useEffect(() => {
+    if (!completarId || completarQuery.isLoading) return
+    const s = completarQuery.data
+    if (s?.status === 'open') {
+      setCompletarInfo(null)
+      startCompleting(s)
+    } else if (s?.status === 'completed') {
+      setCompletarInfo(t('Este movimiento ya se registró con el monto que llegó por correo, SMS u otra app.'))
+    } else if (s?.status === 'dismissed') {
+      setCompletarInfo(t('Este aviso se descartó.'))
+    }
+    setSearchParams(
+      (p) => {
+        p.delete('completar')
+        return p
+      },
+      { replace: true },
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [completarId, completarQuery.isLoading, completarQuery.data])
 
   const highlightClass = (id: string) =>
     highlightId === id ? 'ring-2 ring-amber-400 ring-offset-2 dark:ring-offset-slate-900' : ''
@@ -317,7 +365,7 @@ export function TransactionsPage() {
                 : t('Historial ({{count}})', { count: deletions.length })}
             </Button>
             {showForm ? (
-              <Button onClick={() => setShowForm(false)}>{t('Cancelar')}</Button>
+              <Button onClick={closeForm}>{t('Cancelar')}</Button>
             ) : (
               <PremiumGate
                 count={totalCount}
@@ -347,13 +395,63 @@ export function TransactionsPage() {
         </Card>
       )}
 
+      {completarInfo && (
+        <Card className="mb-4 border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20">
+          <div className="flex items-start justify-between gap-3">
+            <p className="text-sm text-emerald-800 dark:text-emerald-200">{completarInfo}</p>
+            <button
+              type="button"
+              className="text-xs text-emerald-700 dark:text-emerald-300 underline"
+              onClick={() => setCompletarInfo(null)}
+            >
+              {t('Cerrar')}
+            </button>
+          </div>
+        </Card>
+      )}
+
+      {!showForm && (
+        <AmountlessNotice
+          signals={openAmountlessQuery.data ?? []}
+          onComplete={startCompleting}
+        />
+      )}
+
+      {showForm && !editingTx && completing && (
+        <Card className="mb-2 border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-900/20">
+          <p className="text-sm text-sky-800 dark:text-sky-200">
+            {t('Falta el monto de este aviso de {{app}}. Escríbelo y guarda.', {
+              app: completing.app_name ?? t('la app'),
+            })}
+          </p>
+        </Card>
+      )}
+
       {showForm && !editingTx && (
         <TransactionForm
+          key={completing?.id ?? 'new'}
           accounts={accounts}
           cards={cards}
           categories={categories}
           familyCards={familyCards}
-          onSuccess={() => setShowForm(false)}
+          initial={
+            completing
+              ? {
+                  kind: completing.kind,
+                  concept: completing.concept ?? undefined,
+                  accountId: completing.account_id ?? undefined,
+                  isExternal: completing.kind === 'transfer',
+                  currency: completing.currency,
+                  txDate: toISODate(new Date(completing.occurred_at)),
+                }
+              : undefined
+          }
+          onSuccess={(createdId) => {
+            if (completing && createdId) {
+              completeAmountless.mutate({ signal: completing, transactionId: createdId })
+            }
+            closeForm()
+          }}
         />
       )}
 

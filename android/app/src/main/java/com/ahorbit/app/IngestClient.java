@@ -170,6 +170,47 @@ final class IngestClient {
         }
     }
 
+    // Salidas sin monto ("¡Enviamos tu transferencia!" de Mercado Pago): el
+    // servidor devuelve en `amountless` las que siguen abiertas (si el correo o
+    // SMS con monto ya había llegado, no vienen). Tocar abre el formulario
+    // prellenado para capturar el monto.
+    static void notifyAmountless(Context context, String channelId, String channelName,
+                                 String response) {
+        try {
+            if (response == null || response.isEmpty()) return;
+            JSONArray items = new JSONObject(response).optJSONArray("amountless");
+            if (items == null || items.length() == 0) return;
+            NotificationManager nm =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (nm == null) return;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                nm.createNotificationChannel(new NotificationChannel(
+                    channelId, channelName, NotificationManager.IMPORTANCE_LOW));
+            }
+            for (int i = 0; i < items.length(); i++) {
+                JSONObject it = items.optJSONObject(i);
+                if (it == null) continue;
+                String sid = it.optString("id", "");
+                if (sid.isEmpty()) continue;
+                String concept = it.optString("concept", "Transferencia");
+                int id = (int) ((System.currentTimeMillis() + 2 + i) & 0x7fffffff);
+                String text = concept + " — toca para registrar el monto";
+                NotificationCompat.Builder b = new NotificationCompat.Builder(context, channelId)
+                    .setSmallIcon(android.R.drawable.stat_notify_chat)
+                    .setContentTitle("Falta el monto")
+                    .setContentText(text)
+                    .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                    .setContentIntent(openAppIntent(context,
+                        "/transacciones?completar=" + Uri.encode(sid), id))
+                    .setAutoCancel(true)
+                    .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                nm.notify(id, b.build());
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "No se pudo mostrar el aviso de monto faltante", e);
+        }
+    }
+
     // "Movimiento pendiente por revisar", en un canal de baja importancia.
     // `response` es la respuesta de la ingesta: de ahí sale el movimiento a abrir.
     static void notifyPending(Context context, String channelId, String channelName, String text,
