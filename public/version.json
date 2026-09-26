@@ -1,5 +1,5 @@
 {
-  "version": "0.15.0",
-  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.15.0/finzen-v0.15.0.apk",
-  "notes": "Premium se puede contratar desde Google Play dentro de la app (Configuración → Suscripción) y el recorrido de bienvenida vuelve a empezar por el saludo. Nuevos precios de Premium en la web: $107 al mes o $1,037 al año; quien ya está suscrito conserva su precio."
+  "version": "0.15.1",
+  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.15.1/finzen-v0.15.1.apk",
+  "notes": "Las transferencias que la app de tu banco avisa sin monto (como \"Enviamos tu transferencia\" de Mercado Pago) ya no se pierden: te llega \"Falta el monto\" para registrarla en un toque, y si el correo o SMS trae la cantidad se completa sola."
 }
