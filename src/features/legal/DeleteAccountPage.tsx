@@ -44,7 +44,7 @@ export function DeleteAccountPage() {
               <li>{t('Tu suscripción Premium, que se cancela en ese momento.')}</li>
             </ul>
             <p>
-              {t('No conservamos copias de tus datos financieros después del borrado. El procesador de pagos (Stripe) puede conservar el registro de cobros que exige la ley.')}
+              {t('No conservamos copias de tus datos financieros después del borrado. El procesador de pagos (Stripe o Google Play) puede conservar el registro de cobros que exige la ley.')}
             </p>
           </div>
         </Card>

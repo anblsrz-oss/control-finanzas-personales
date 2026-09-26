@@ -552,6 +552,14 @@ export const en: Record<string, string> = {
   '7 días de prueba gratis. Cancela cuando quieras.':
     '7-day free trial. Cancel anytime.',
   '2 meses gratis': '2 months free',
+  'El cobro lo hace Google Play. Cancela cuando quieras desde Google Play.':
+    'Google Play handles the billing. Cancel anytime from Google Play.',
+  '7 días de prueba gratis.': '7-day free trial.',
+  'No se pudieron cargar los planes de Google Play. Inténtalo más tarde.':
+    'Could not load the Google Play plans. Please try again later.',
+  'No encontramos compras de Google Play para restaurar.':
+    'We found no Google Play purchases to restore.',
+  'Restaurar compra': 'Restore purchase',
 
   // Planes en la landing
   Planes: 'Pricing',
@@ -559,8 +567,8 @@ export const en: Record<string, string> = {
     'Start free. Change or cancel anytime.',
   'Más popular': 'Most popular',
   'Ver planes': 'See plans',
-  'Gratis para empezar. Premium desde $79 al mes con 7 días de prueba.':
-    'Free to start. Premium from $79/month with a 7-day trial.',
+  'Gratis para empezar. Premium desde $107 al mes con 7 días de prueba.':
+    'Free to start. Premium from $107/month with a 7-day trial.',
   'para siempre': 'forever',
   'Premium mensual': 'Premium monthly',
   'al mes': 'per month',
@@ -582,7 +590,7 @@ export const en: Record<string, string> = {
   'MSI y diferidos mes a mes': 'Installment plans, month by month',
   'Rendimientos de tus cuentas': 'Yields on your accounts',
   'Todo lo del plan mensual': 'Everything in the monthly plan',
-  'Ahorras $158 al año': 'Save $158 per year',
+  'Ahorras $247 al año': 'Save $247 per year',
   'Los planes de pago se cobran en pesos mexicanos. Cancela desde la app en cualquier momento.':
     'Paid plans are billed in Mexican pesos. Cancel from the app at any time.',
 
@@ -957,12 +965,12 @@ export const en: Record<string, string> = {
     'While the Gmail connection is in testing mode with Google, only email addresses added as "test users" in the Google Cloud console can use that feature; this limitation comes from Google, not from the app.',
   'Si conectas Google Calendar, la app crea en tu calendario recordatorios de cobros de suscripciones y de pagos de tarjeta. Puedes desconectarlo en cualquier momento desde "Configuración".':
     'If you connect Google Calendar, the app creates reminders in your calendar for subscription charges and card payments. You can disconnect it at any time from "Settings".',
-  'La app tiene un plan gratuito y un plan Premium con funciones adicionales. Premium cuesta $79 MXN al mes o $790 MXN al año; el precio final es el que se muestra al momento de pagar. Al suscribirte tienes 7 días de prueba gratis: si cancelas antes de que termine la prueba, no se te cobra.':
-    'The app has a free plan and a Premium plan with additional features. Premium costs $79 MXN per month or $790 MXN per year; the final price is the one shown at checkout. When you subscribe you get a 7-day free trial: if you cancel before the trial ends, you are not charged.',
-  'Los pagos se procesan a través de Stripe. Nosotros no vemos ni guardamos el número de tu tarjeta.':
-    'Payments are processed through Stripe. We never see or store your card number.',
-  'La suscripción se renueva automáticamente al final de cada periodo (mensual o anual) hasta que la canceles. Puedes cancelarla en cualquier momento desde "Configuración → Gestionar suscripción"; la cancelación surte efecto al terminar el periodo que ya pagaste, y hasta entonces conservas Premium.':
-    'The subscription renews automatically at the end of each period (monthly or yearly) until you cancel it. You can cancel at any time from "Settings → Manage subscription"; cancellation takes effect at the end of the period you already paid for, and you keep Premium until then.',
+  'La app tiene un plan gratuito y un plan Premium con funciones adicionales. Premium cuesta $107 MXN al mes o $1,037 MXN al año cuando lo contratas en la web; si lo contratas desde Google Play, el precio es el que Google Play muestra en tu país, con impuestos incluidos. El precio final es siempre el que se muestra al momento de pagar. Al suscribirte tienes 7 días de prueba gratis: si cancelas antes de que termine la prueba, no se te cobra.':
+    'The app has a free plan and a Premium plan with additional features. Premium costs $107 MXN per month or $1,037 MXN per year when you subscribe on the web; if you subscribe through Google Play, the price is the one Google Play shows in your country, taxes included. The final price is always the one shown at checkout. When you subscribe you get a 7-day free trial: if you cancel before the trial ends, you are not charged.',
+  'Los pagos se procesan a través de Stripe (web) o de Google Play (app instalada desde Google Play). Nosotros no vemos ni guardamos el número de tu tarjeta.':
+    'Payments are processed through Stripe (web) or Google Play (app installed from Google Play). We never see or store your card number.',
+  'La suscripción se renueva automáticamente al final de cada periodo (mensual o anual) hasta que la canceles. Puedes cancelarla en cualquier momento desde "Configuración → Gestionar suscripción" (si la contrataste en Google Play, se cancela desde Google Play y sus reembolsos siguen las políticas de Google); la cancelación surte efecto al terminar el periodo que ya pagaste, y hasta entonces conservas Premium.':
+    'The subscription renews automatically at the end of each period (monthly or yearly) until you cancel it. You can cancel at any time from "Settings → Manage subscription" (if you subscribed through Google Play, cancel it from Google Play; refunds follow Google\'s policies); cancellation takes effect at the end of the period you already paid for, and you keep Premium until then.',
   'Podemos cambiar los precios o las funciones incluidas en cada plan. Si un cambio de precio te afecta, te avisaremos antes de tu siguiente renovación para que puedas cancelar si no estás de acuerdo.':
     'We may change prices or the features included in each plan. If a price change affects you, we will notify you before your next renewal so you can cancel if you do not agree.',
   'La app, su diseño, código y marca nos pertenecen. Tú conservas la propiedad de los datos financieros que capturas; nos das permiso únicamente para almacenarlos y procesarlos con el fin de prestarte el servicio.':
@@ -1006,14 +1014,16 @@ export const en: Record<string, string> = {
     'Optional Outlook sync data: if you connect your Microsoft account (Outlook/Hotmail) in "Sync email", the app uses it with read-only permission, with the same sender rules and the same handling as Gmail.',
   'Datos de Google Calendar: si conectas Google Calendar, la app crea eventos de recordatorio (cobros de suscripciones y pagos de tarjeta) en tu calendario; no lee tus otros eventos.':
     'Google Calendar data: if you connect Google Calendar, the app creates reminder events (subscription charges and card payments) in your calendar; it does not read your other events.',
-  'Datos de pago: si contratas Premium, el pago lo procesa Stripe. Nosotros solo guardamos el identificador de cliente de Stripe y el estado de tu suscripción (plan, vigencia, periodo de prueba); nunca vemos ni guardamos el número de tu tarjeta.':
-    'Payment data: if you purchase Premium, the payment is processed by Stripe. We only store your Stripe customer ID and your subscription status (plan, validity, trial period); we never see or store your card number.',
+  'Datos de pago: si contratas Premium, el pago lo procesa Stripe o Google Play. Nosotros solo guardamos el identificador de cliente de Stripe o el token de compra de Google Play y el estado de tu suscripción (plan, vigencia, periodo de prueba); nunca vemos ni guardamos el número de tu tarjeta.':
+    'Payment data: if you purchase Premium, the payment is processed by Stripe or Google Play. We only store your Stripe customer ID or Google Play purchase token and your subscription status (plan, validity, trial period); we never see or store your card number.',
   'Datos de uso: información técnica básica para el funcionamiento de la app (por ejemplo, idioma preferido, tema claro/oscuro, y registros de error para poder corregir fallas).':
     'Usage data: basic technical information needed to run the app (for example, preferred language, light/dark theme, and error logs so we can fix bugs).',
   'El uso y la transferencia de información recibida desde las APIs de Google por parte de Mi Control de Finanzas Personales se ajustará a la Política de Datos de Usuario de los Servicios de API de Google (Google API Services User Data Policy), incluidos los requisitos de Uso Limitado ("Limited Use").':
     "Mi Control de Finanzas Personales's use and transfer of information received from Google APIs will adhere to the Google API Services User Data Policy, including the Limited Use requirements.",
   'En concreto: el acceso de solo lectura a Gmail (scope gmail.readonly) se usa exclusivamente para detectar transacciones financieras en los correos que coinciden con las reglas de remitente que tú configuras dentro de la app. No usamos estos datos para publicidad, no los vendemos, no los compartimos con terceros salvo lo necesario para operar el servicio (ver "Con quién compartimos tus datos"), y ningún humano lee tu correo salvo que sea estrictamente necesario para dar soporte técnico que tú mismo solicites, para cumplir la ley, o para investigar un uso indebido.':
     'Specifically: read-only Gmail access (the gmail.readonly scope) is used exclusively to detect financial transactions in emails that match the sender rules you configure inside the app. We do not use this data for advertising, we do not sell it, and we do not share it with third parties except as necessary to operate the service (see "Who we share your data with"); no human reads your email unless strictly necessary to provide technical support you request, to comply with the law, or to investigate misuse.',
+  'El permiso de Google Calendar (scope calendar.events) se usa exclusivamente para crear, actualizar y eliminar los eventos de recordatorio que la propia app genera (cobros de suscripciones y pagos de tarjeta); no leemos ni modificamos los demás eventos de tu calendario. Los datos recibidos de Gmail y de Google Calendar no se usan para desarrollar, mejorar ni entrenar modelos de inteligencia artificial o de aprendizaje automático, ni generalizados ni personalizados.':
+    'The Google Calendar permission (the calendar.events scope) is used exclusively to create, update and delete the reminder events that the app itself generates (subscription charges and card payments); we do not read or modify any other events in your calendar. Data received from Gmail and Google Calendar is not used to develop, improve or train artificial intelligence or machine learning models, whether generalized or personalized.',
   'Puedes revocar el acceso de la app a tu cuenta de Google en cualquier momento desde la configuración de tu cuenta de Google (myaccount.google.com/permissions) o desde la sección "Sincronizar correo" dentro de la app.':
     'You can revoke the app\'s access to your Google account at any time from your Google account settings (myaccount.google.com/permissions) or from the "Sync email" section inside the app.',
   'Usamos tus datos para operar la app: mostrar tus saldos, transacciones, reportes y presupuestos; enviarte notificaciones relacionadas con tu cuenta; y responder a tus comentarios o solicitudes de soporte.':
@@ -1022,14 +1032,12 @@ export const en: Record<string, string> = {
     'We do not use your financial data for advertising, nor do we sell it to third parties.',
   'Usamos Supabase como proveedor de infraestructura (base de datos, autenticación y funciones del servidor) para operar la app; Supabase procesa los datos en nuestro nombre bajo sus propias medidas de seguridad, y no los usa para sus propios fines.':
     'We use Supabase as our infrastructure provider (database, authentication and server functions) to run the app; Supabase processes data on our behalf under its own security measures, and does not use it for its own purposes.',
-  'El permiso de Google Calendar (scope calendar.events) se usa exclusivamente para crear, actualizar y eliminar los eventos de recordatorio que la propia app genera (cobros de suscripciones y pagos de tarjeta); no leemos ni modificamos los demás eventos de tu calendario. Los datos recibidos de Gmail y de Google Calendar no se usan para desarrollar, mejorar ni entrenar modelos de inteligencia artificial o de aprendizaje automático, ni generalizados ni personalizados.':
-    'The Google Calendar permission (the calendar.events scope) is used exclusively to create, update and delete the reminder events that the app itself generates (subscription charges and card payments); we do not read or modify any other events in your calendar. Data received from Gmail and Google Calendar is not used to develop, improve or train artificial intelligence or machine learning models, whether generalized or personalized.',
   'Cuando inicias sesión con Google, o conectas Gmail, compartimos información con Google únicamente en la medida necesaria para autenticarte o para leer los correos que tú autorizas, conforme a esta política.':
     'When you sign in with Google, or connect Gmail, we share information with Google only to the extent necessary to authenticate you or to read the emails you authorize, in accordance with this policy.',
   'Si conectas Outlook, compartimos información con Microsoft únicamente en la medida necesaria para leer los correos que tú autorizas.':
     'If you connect Outlook, we share information with Microsoft only to the extent necessary to read the emails you authorize.',
-  'Si contratas Premium, Stripe recibe los datos necesarios para cobrarte (correo, datos de la tarjeta que capturas directamente en su página) y los trata conforme a su propia política de privacidad.':
-    'If you purchase Premium, Stripe receives the data needed to charge you (email, and the card details you enter directly on its page) and handles it under its own privacy policy.',
+  'Si contratas Premium, Stripe o Google Play reciben los datos necesarios para cobrarte (correo, datos de la tarjeta o del medio de pago que capturas directamente en su página) y los tratan conforme a su propia política de privacidad.':
+    'If you purchase Premium, Stripe or Google Play receive the data needed to charge you (email, and the card or payment method details you enter directly on their page) and handle it under their own privacy policies.',
   'No compartimos tus datos financieros con anunciantes ni los vendemos a terceros.':
     'We do not share your financial data with advertisers, nor do we sell it to third parties.',
   'Conservamos tus datos mientras tu cuenta esté activa. Puedes exportar tus transacciones a Excel en cualquier momento desde la app.':
@@ -1067,8 +1075,8 @@ export const en: Record<string, string> = {
     'A temporary value while you connect your email or calendar, which is deleted when you close the tab.',
   'Todo esto es necesario para que la app funcione, así que no pedimos consentimiento para guardarlo. No lo usamos para identificarte fuera de la app ni para publicidad.':
     'All of this is necessary for the app to work, so we do not ask for consent to store it. We do not use it to identify you outside the app or for advertising.',
-  'Cuando pagas Premium te llevamos a la página de pago de Stripe, y cuando conectas Google o Microsoft, a sus páginas de inicio de sesión. Esos sitios pueden usar sus propias cookies, que se rigen por sus políticas de privacidad, no por esta.':
-    'When you pay for Premium we send you to Stripe\'s checkout page, and when you connect Google or Microsoft, to their sign-in pages. Those sites may use their own cookies, which are governed by their privacy policies, not this one.',
+  'Cuando pagas Premium en la web te llevamos a la página de pago de Stripe (en la app de Google Play el pago lo hace Google Play), y cuando conectas Google o Microsoft, a sus páginas de inicio de sesión. Esos sitios pueden usar sus propias cookies, que se rigen por sus políticas de privacidad, no por esta.':
+    'When you pay for Premium on the web we send you to Stripe\'s checkout page (in the Google Play app, Google Play handles the payment), and when you connect Google or Microsoft, to their sign-in pages. Those sites may use their own cookies, which are governed by their privacy policies, not this one.',
   'Al cerrar sesión se borra tu sesión. Para borrar todo lo demás, elimina los datos de este sitio desde la configuración de tu navegador; ten en cuenta que perderás tus preferencias y tendrás que volver a iniciar sesión.':
     'Signing out deletes your session. To delete everything else, clear this site\'s data from your browser settings; keep in mind you will lose your preferences and will need to sign in again.',
   'Si en el futuro usamos cookies que no sean necesarias (por ejemplo, de analítica), actualizaremos esta página y te pediremos tu consentimiento antes de usarlas.':
@@ -1418,8 +1426,8 @@ export const en: Record<string, string> = {
   'Reglas y conexiones de correo (Gmail/Outlook), Google Calendar y captura en el teléfono. Se revoca el acceso a Google.':
     'Email rules and connections (Gmail/Outlook), Google Calendar and phone capture. Google access is revoked.',
   'Tu suscripción Premium, que se cancela en ese momento.': 'Your Premium subscription, which is canceled right away.',
-  'No conservamos copias de tus datos financieros después del borrado. El procesador de pagos (Stripe) puede conservar el registro de cobros que exige la ley.':
-    'We keep no copies of your financial data after deletion. The payment processor (Stripe) may keep the charge records required by law.',
+  'No conservamos copias de tus datos financieros después del borrado. El procesador de pagos (Stripe o Google Play) puede conservar el registro de cobros que exige la ley.':
+    'We keep no copies of your financial data after deletion. The payment processor (Stripe or Google Play) may keep the charge records required by law.',
   'Sesión iniciada como {{email}}.': 'Signed in as {{email}}.',
   'Cómo hacerlo': 'How to do it',
   'Inicia sesión (en la app o aquí mismo).': 'Sign in (in the app or right here).',

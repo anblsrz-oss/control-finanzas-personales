@@ -47,7 +47,7 @@ export const TOUR_STEPS: TourStep[] = [
     id: 'cuentas',
     icon: '🏦',
     title: 'Cuentas',
-    body: 'Registra tus cuentas de efectivo, débito o ahorro. Cada transacción que agregues se descuenta o suma aquí.',
+    body: 'Registra tus cuentas de efectivo, débito o ahorro. Cada transacción que agregues se descuenta o suma aquí. Dentro de una cuenta puedes separar dinero en apartados (cajitas) con "Mover a apartado".',
     route: '/cuentas',
     target: 'cuentas',
   },
@@ -90,22 +90,6 @@ export const TOUR_STEPS: TourStep[] = [
     body: 'Detecta Netflix, Spotify y demás cargos recurrentes por SMS/correo, o agrégalos a mano. Si un comercio no manda correo/SMS, activa "Generar el cargo automáticamente" para que se registre solo cada ciclo.',
     route: '/suscripciones',
     target: 'suscripciones',
-  },
-  {
-    id: 'categorias',
-    icon: '🏷️',
-    title: 'Categorías',
-    body: 'Organiza tus gastos e ingresos en categorías propias, con color e ícono, para que tus reportes tengan sentido.',
-    route: '/categorias',
-    target: 'categorias',
-  },
-  {
-    id: 'reportes',
-    icon: '📑',
-    title: 'Reportes',
-    body: 'Gráficas a fondo de tus finanzas por periodo: ingresos vs. gastos, gasto por categoría y más, exportables a Excel.',
-    route: '/reportes',
-    target: 'reportes',
   },
   {
     id: 'importar',
@@ -164,12 +148,28 @@ export const TOUR_STEPS: TourStep[] = [
     target: 'notif-capture',
   },
   {
+    id: 'categorias',
+    icon: '🏷️',
+    title: 'Categorías',
+    body: 'Organiza tus gastos e ingresos en categorías propias, con color e ícono, para que tus reportes tengan sentido.',
+    route: '/categorias',
+    target: 'categorias',
+  },
+  {
     id: 'rendimientos',
     icon: '📈',
     title: 'Rendimientos',
     body: 'Da seguimiento a cuentas de inversión o ahorro con rendimiento (incluso por tramos de monto, y apartados con su propia tasa). Al verificar, se contabiliza como una transacción real.',
     route: '/rendimientos',
     target: 'rendimientos',
+  },
+  {
+    id: 'reportes',
+    icon: '📑',
+    title: 'Reportes',
+    body: 'Gráficas a fondo de tus finanzas por periodo: ingresos vs. gastos, gasto por categoría y más, exportables a Excel.',
+    route: '/reportes',
+    target: 'reportes',
   },
   {
     id: 'ayuda',
@@ -183,7 +183,7 @@ export const TOUR_STEPS: TourStep[] = [
     id: 'configuracion',
     icon: '⚙️',
     title: 'Configuración',
-    body: 'Tema, moneda principal, privacidad (ocultar montos) y demás preferencias de tu cuenta.',
+    body: 'Tema, moneda principal, privacidad (ocultar montos), tu suscripción Premium y demás preferencias de tu cuenta. Aquí también puedes eliminar tu cuenta y tus datos.',
     inTour: false,
   },
   {
@@ -198,10 +198,12 @@ export const TOUR_STEPS: TourStep[] = [
 /**
  * Pasos del recorrido inicial, ordenados según pageOrder (el mismo
  * appConfig.page_order que reordena el sidebar/"Más" — ver lib/pageOrder.ts)
- * cuando se da. "bienvenida" no tiene route, así que el orden lo deja al
- * principio (posición relativa original); configuracion/admin quedan
- * excluidos por inTour: false, sin cambios. Las secciones que el admin ocultó
- * (hiddenPages) se saltan.
+ * cuando se da. Los pasos sin route ("bienvenida") van siempre al principio:
+ * no forman parte de page_order, y si entraran al sort caerían detrás de todas
+ * las rutas guardadas. Las páginas ausentes de page_order (las agregadas
+ * después de que el admin guardó su orden) quedan al final, en su orden
+ * original. configuracion/admin quedan excluidos por inTour: false. Las
+ * secciones que el admin ocultó (hiddenPages) se saltan.
  */
 export function getTourSteps(
   pageOrder?: string[] | null,
@@ -211,10 +213,13 @@ export function getTourSteps(
     (s) => s.inTour !== false && !(s.route && isPageHidden(s.route, hiddenPages)),
   )
   if (!pageOrder || pageOrder.length === 0) return steps
-  // orderByPageOrder necesita un campo `to` — bienvenida no tiene route, se
-  // le da un id único para que el sort estable lo deje en su posición inicial.
-  const withTo = steps.map((s) => ({ ...s, to: s.route ?? `__${s.id}` }))
-  return orderByPageOrder(withTo, pageOrder).map(({ to, ...step }) => step)
+  const intro = steps.filter((s) => !s.route)
+  const pages = steps.filter((s): s is TourStep & { route: string } => !!s.route)
+  const ordered = orderByPageOrder(
+    pages.map((s) => ({ ...s, to: s.route })),
+    pageOrder,
+  ).map(({ to: _to, ...step }) => step)
+  return [...intro, ...ordered]
 }
 
 export function getSectionHelp(id: string): TourStep | undefined {

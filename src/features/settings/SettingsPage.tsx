@@ -29,7 +29,13 @@ import { useEntitlements } from '@/hooks/useAppConfig'
 import { CURRENCIES } from '@/lib/format'
 import { APK_URL, APP_VERSION } from '@/lib/appUpdate'
 import { isNative } from '@/lib/nativeAuth'
-import { isPlayBuild } from '@/lib/distribution'
+import { isPlayBuild, canUsePlayBilling } from '@/lib/distribution'
+import {
+  usePlayProducts,
+  usePlayPurchase,
+  usePlayRestore,
+  usePlayManageSubscription,
+} from '@/hooks/usePlayBilling'
 import { PhoneSection } from './PhoneSection'
 import { DeleteAccountSection } from './DeleteAccountSection'
 import { PageHeader } from '@/components/ui/PageHeader'
@@ -89,6 +95,20 @@ export function SettingsPage() {
   // En Google Play no se puede comprar con Stripe ni mandar a comprar a la web:
   // solo se muestra el estado del plan (ver lib/distribution.ts).
   const playBuild = isPlayBuild()
+  // En Play la compra va por Google Play Billing (hooks/usePlayBilling.ts).
+  const playBilling = canUsePlayBilling()
+  const playProducts = usePlayProducts()
+  const playPurchase = usePlayPurchase()
+  const playRestore = usePlayRestore()
+  const playManage = usePlayManageSubscription()
+  // Compra hecha pero sin verificar (sin red, app cerrada) o teléfono nuevo:
+  // al abrir Configuración sin Premium se re-verifica lo que Play tenga. Una vez.
+  const playRestoreTried = useRef(false)
+  useEffect(() => {
+    if (!playBilling || !profile || profile.is_premium || playRestoreTried.current) return
+    playRestoreTried.current = true
+    playRestore.mutate(undefined, { onError: () => {} })
+  }, [playBilling, profile, playRestore])
 
   // Llegada desde un plan de la landing: /configuracion?plan=monthly|yearly
   // abre el checkout de una vez, para no obligar a buscar el botón después de
@@ -623,11 +643,88 @@ export function SettingsPage() {
                   {t('Gestionar suscripción')}
                 </Button>
               )}
+              {playBilling && profile.premium_source === 'google' && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  disabled={playManage.isPending}
+                  onClick={() =>
+                    playManage.mutate(undefined, {
+                      onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
+                    })
+                  }
+                >
+                  {t('Gestionar suscripción')}
+                </Button>
+              )}
             </div>
           ) : playBuild ? (
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              {t('Plan gratuito. Premium desbloquea plan familiar, MSI/diferidos y rendimientos.')}
-            </p>
+            <div className="flex flex-col gap-3">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {t('Plan gratuito. Premium desbloquea plan familiar, MSI/diferidos y rendimientos.')}
+              </p>
+              {playBilling && (
+                <>
+                  <p className="text-xs text-slate-400 dark:text-slate-500">
+                    {t('El cobro lo hace Google Play. Cancela cuando quieras desde Google Play.')}
+                    {playProducts.data?.monthly?.hasTrial || playProducts.data?.yearly?.hasTrial
+                      ? ` ${t('7 días de prueba gratis.')}`
+                      : ''}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {playProducts.data?.monthly && (
+                      <Button
+                        disabled={playPurchase.isPending}
+                        onClick={() =>
+                          playPurchase.mutate(playProducts.data!.monthly!, {
+                            onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
+                          })
+                        }
+                      >
+                        {playPurchase.isPending
+                          ? t('Abriendo…')
+                          : `${t('Mensual')} · ${playProducts.data.monthly.priceString}`}
+                      </Button>
+                    )}
+                    {playProducts.data?.yearly && (
+                      <Button
+                        variant="secondary"
+                        disabled={playPurchase.isPending}
+                        onClick={() =>
+                          playPurchase.mutate(playProducts.data!.yearly!, {
+                            onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
+                          })
+                        }
+                      >
+                        {playPurchase.isPending
+                          ? t('Abriendo…')
+                          : `${t('Anual')} · ${playProducts.data.yearly.priceString}`}
+                      </Button>
+                    )}
+                  </div>
+                  {playProducts.isError && (
+                    <p className="text-xs text-red-500">
+                      {t('No se pudieron cargar los planes de Google Play. Inténtalo más tarde.')}
+                    </p>
+                  )}
+                  <button
+                    type="button"
+                    className="self-start text-xs text-emerald-600 underline dark:text-emerald-400"
+                    disabled={playRestore.isPending}
+                    onClick={() =>
+                      playRestore.mutate(undefined, {
+                        onSuccess: (n) => {
+                          if (n === 0) alert(t('No encontramos compras de Google Play para restaurar.'))
+                        },
+                        onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
+                      })
+                    }
+                  >
+                    {t('Restaurar compra')}
+                  </button>
+                </>
+              )}
+            </div>
           ) : (
             <div className="flex flex-col gap-3">
               <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -645,7 +742,7 @@ export function SettingsPage() {
                     })
                   }
                 >
-                  {startCheckout.isPending ? t('Abriendo…') : `${t('Mensual')} · $79`}
+                  {startCheckout.isPending ? t('Abriendo…') : `${t('Mensual')} · $107`}
                 </Button>
                 <Button
                   variant="secondary"
@@ -658,7 +755,7 @@ export function SettingsPage() {
                 >
                   {startCheckout.isPending
                     ? t('Abriendo…')
-                    : `${t('Anual')} · $790 · ${t('2 meses gratis')}`}
+                    : `${t('Anual')} · $1,037 · ${t('2 meses gratis')}`}
                 </Button>
               </div>
             </div>

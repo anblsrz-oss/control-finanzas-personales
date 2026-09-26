@@ -83,7 +83,7 @@ function PricingSection() {
     {
       id: 'monthly',
       name: t('Premium mensual'),
-      price: '$79',
+      price: '$107',
       period: t('al mes'),
       note: t('7 días de prueba gratis'),
       highlight: true,
@@ -94,14 +94,14 @@ function PricingSection() {
     {
       id: 'yearly',
       name: t('Premium anual'),
-      price: '$790',
+      price: '$1,037',
       period: t('al año'),
       note: t('2 meses gratis'),
       cta: t('Empezar prueba gratis'),
       to: '/login?mode=signup&plan=yearly',
       perks: [
         t('Todo lo del plan mensual'),
-        t('Ahorras $158 al año'),
+        t('Ahorras $247 al año'),
         t('7 días de prueba gratis'),
       ],
     },
@@ -314,7 +314,7 @@ export function LandingPage() {
             (ver lib/distribution.ts). */}
         {!playBuild && (
           <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">
-            {t('Gratis para empezar. Premium desde $79 al mes con 7 días de prueba.')}{' '}
+            {t('Gratis para empezar. Premium desde $107 al mes con 7 días de prueba.')}{' '}
             <a href="#planes" className="underline hover:text-slate-600 dark:hover:text-slate-300">
               {t('Ver planes')}
             </a>

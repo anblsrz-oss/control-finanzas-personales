@@ -18,6 +18,8 @@ export interface ProfileRow {
   last_name: string | null
   avatar_url: string | null
   is_premium: boolean
+  /** Quién activó Premium: 'stripe' | 'google' | 'admin' (null si no es premium). */
+  premium_source?: 'stripe' | 'google' | 'admin' | null
   is_admin: boolean
   main_currency: string
   /** Umbral de aviso por defecto (1-100) para presupuestos sin umbral propio. */

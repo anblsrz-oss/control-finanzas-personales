@@ -12,6 +12,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-26-premium-google-play',
+    date: '2026-09-26',
+    title: 'Premium desde Google Play y recorrido corregido',
+    description:
+      'Si instalaste la app desde Google Play, ya puedes suscribirte a Premium dentro de la app (Configuración → Suscripción) y gestionarla desde Google Play. Los nuevos precios de Premium son $107 al mes o $1,037 al año en la web (Google Play muestra su propio precio con impuestos); quien ya está suscrito conserva su precio. También se corrigió el recorrido de bienvenida: siempre empieza por el saludo y termina con las secciones más nuevas.',
+  },
+  {
     id: '2026-09-26-notificacion-abre-movimiento',
     date: '2026-09-26',
     title: 'Las notificaciones te llevan al lugar correcto',

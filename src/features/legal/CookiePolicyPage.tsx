@@ -37,7 +37,7 @@ const SECTIONS: Section[] = [
   {
     heading: 'Sitios de terceros',
     paragraphs: [
-      'Cuando pagas Premium te llevamos a la página de pago de Stripe, y cuando conectas Google o Microsoft, a sus páginas de inicio de sesión. Esos sitios pueden usar sus propias cookies, que se rigen por sus políticas de privacidad, no por esta.',
+      'Cuando pagas Premium en la web te llevamos a la página de pago de Stripe (en la app de Google Play el pago lo hace Google Play), y cuando conectas Google o Microsoft, a sus páginas de inicio de sesión. Esos sitios pueden usar sus propias cookies, que se rigen por sus políticas de privacidad, no por esta.',
     ],
   },
   {

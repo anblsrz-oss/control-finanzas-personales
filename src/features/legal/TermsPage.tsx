@@ -55,9 +55,9 @@ const SECTIONS: Section[] = [
   {
     heading: 'Planes y pagos',
     paragraphs: [
-      'La app tiene un plan gratuito y un plan Premium con funciones adicionales. Premium cuesta $79 MXN al mes o $790 MXN al año; el precio final es el que se muestra al momento de pagar. Al suscribirte tienes 7 días de prueba gratis: si cancelas antes de que termine la prueba, no se te cobra.',
-      'Los pagos se procesan a través de Stripe. Nosotros no vemos ni guardamos el número de tu tarjeta.',
-      'La suscripción se renueva automáticamente al final de cada periodo (mensual o anual) hasta que la canceles. Puedes cancelarla en cualquier momento desde "Configuración → Gestionar suscripción"; la cancelación surte efecto al terminar el periodo que ya pagaste, y hasta entonces conservas Premium.',
+      'La app tiene un plan gratuito y un plan Premium con funciones adicionales. Premium cuesta $107 MXN al mes o $1,037 MXN al año cuando lo contratas en la web; si lo contratas desde Google Play, el precio es el que Google Play muestra en tu país, con impuestos incluidos. El precio final es siempre el que se muestra al momento de pagar. Al suscribirte tienes 7 días de prueba gratis: si cancelas antes de que termine la prueba, no se te cobra.',
+      'Los pagos se procesan a través de Stripe (web) o de Google Play (app instalada desde Google Play). Nosotros no vemos ni guardamos el número de tu tarjeta.',
+      'La suscripción se renueva automáticamente al final de cada periodo (mensual o anual) hasta que la canceles. Puedes cancelarla en cualquier momento desde "Configuración → Gestionar suscripción" (si la contrataste en Google Play, se cancela desde Google Play y sus reembolsos siguen las políticas de Google); la cancelación surte efecto al terminar el periodo que ya pagaste, y hasta entonces conservas Premium.',
       'Podemos cambiar los precios o las funciones incluidas en cada plan. Si un cambio de precio te afecta, te avisaremos antes de tu siguiente renovación para que puedas cancelar si no estás de acuerdo.',
     ],
   },
