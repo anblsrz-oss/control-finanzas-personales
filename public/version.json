@@ -1,5 +1,5 @@
 {
-  "version": "0.15.1",
-  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.15.1/finzen-v0.15.1.apk",
-  "notes": "Las transferencias que la app de tu banco avisa sin monto (como \"Enviamos tu transferencia\" de Mercado Pago) ya no se pierden: te llega \"Falta el monto\" para registrarla en un toque, y si el correo o SMS trae la cantidad se completa sola."
+  "version": "0.16.0",
+  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.16.0/finzen-v0.16.0.apk",
+  "notes": "Nuevas guías con imágenes (instalar la app, conectar Gmail, activar notificaciones). Conectar Gmail, Outlook y Calendar ya funciona dentro de la app, y la captura por notificaciones se reconecta sola y recupera los avisos que llegaron mientras estaba caída."
 }
