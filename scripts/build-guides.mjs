@@ -195,9 +195,10 @@ function guideHtml(id, logoDataUri) {
 async function buildPdfs() {
   const { chromium } = await import(process.env.PLAYWRIGHT_CORE ? pathToFileURL(process.env.PLAYWRIGHT_CORE).href : 'playwright-core')
   fs.mkdirSync(PDF_OUT, { recursive: true })
-  const logoPath = path.resolve(ROOT, '..', 'Logo_MCFP.png')
+  // Logo con fondo transparente real (Logo_MCFP.png trae el tablero gris pintado en la imagen).
+  const logoPath = path.join(ROOT, 'public', 'icon-source-1024.png')
   const logo = fs.existsSync(logoPath)
-    ? `data:image/png;base64,${(await sharp(logoPath).resize(120).png().toBuffer()).toString('base64')}`
+    ? `data:image/png;base64,${(await sharp(logoPath).resize(160).flatten({ background: '#ffffff' }).png().toBuffer()).toString('base64')}`
     : null
   const browser = await chromium.launch({
     executablePath: process.env.CHROME_PATH || 'C:/Program Files/Google/Chrome/Application/chrome.exe',
