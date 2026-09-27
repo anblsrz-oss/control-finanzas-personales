@@ -62,6 +62,16 @@ public class PaymentNotificationListener extends NotificationListenerService {
     private static volatile long lastRebindAt = 0L;
     private static final long REBIND_MIN_INTERVAL_MS = 10 * 60_000L;
 
+    // Avisos ya procesados (no repetir al repasar la barra al reconectar). Se
+    // guarda en disco porque el proceso puede morir y el repaso corre en cada
+    // conexión del servicio.
+    private static final String SEEN_PREFS = "finzen_notif_seen";
+    private static final String SEEN_KEY = "ids";
+    private static final String SEEN_INIT_KEY = "init";
+    private static final int SEEN_MAX = 300;
+    // Al reconectar solo se repasan avisos recientes (los viejos ya no importan).
+    private static final long BACKFILL_MAX_AGE_MS = 24L * 60 * 60_000L;
+
     // Un solo hilo: los envíos y la cola se procesan en orden, sin carreras.
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
 
@@ -81,7 +91,10 @@ public class PaymentNotificationListener extends NotificationListenerService {
         connected = true;
         // Al (re)conectarse, mandar lo que quedó pendiente sin red.
         final Context ctx = getApplicationContext();
-        EXECUTOR.execute(() -> flushQueueBlocking(ctx));
+        EXECUTOR.execute(() -> {
+            flushQueueBlocking(ctx);
+            backfillActive(ctx);
+        });
     }
 
     @Override
@@ -94,13 +107,14 @@ public class PaymentNotificationListener extends NotificationListenerService {
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
         try {
-            handle(sbn);
+            handle(sbn, false);
         } catch (Exception e) {
             Log.w(TAG, "No se pudo procesar la notificación", e);
         }
     }
 
-    private void handle(StatusBarNotification sbn) throws Exception {
+    // baselineOnly: solo marca el aviso como ya visto, sin enviarlo (ver backfillActive).
+    private void handle(StatusBarNotification sbn, boolean baselineOnly) throws Exception {
         final Context ctx = getApplicationContext();
         String pkg = sbn.getPackageName();
         if (pkg == null || pkg.equals(ctx.getPackageName())) return;
@@ -158,6 +172,14 @@ public class PaymentNotificationListener extends NotificationListenerService {
             Log.i(TAG, "descartada (" + pkg + "): sin texto o sin monto detectable");
             return;
         }
+
+        // Un mismo aviso no se procesa dos veces aunque el servicio se reconecte.
+        String seenId = pkg + "|" + full.hashCode() + "|" + sbn.getPostTime();
+        if (baselineOnly) {
+            markSeen(ctx, seenId);
+            return;
+        }
+        if (!markSeen(ctx, seenId)) return;
 
         long now = System.currentTimeMillis();
         String key = pkg + "|" + full;
@@ -248,6 +270,60 @@ public class PaymentNotificationListener extends NotificationListenerService {
 
     static int queueSize(Context ctx) {
         return readQueue(ctx.getSharedPreferences(QUEUE_PREFS, MODE_PRIVATE)).length();
+    }
+
+    // --- Repaso de la barra al conectar ---------------------------------------
+
+    /**
+     * Al (re)conectarse el servicio, procesa los avisos que YA estaban en la
+     * barra y no se habían visto (llegaron mientras el servicio estaba caído).
+     * La primera vez solo marca lo que hay como visto (línea base), para no
+     * reenviar avisos que se capturaron antes de que existiera este registro.
+     */
+    private void backfillActive(Context ctx) {
+        SharedPreferences prefs = ctx.getSharedPreferences(IngestClient.PREFS, MODE_PRIVATE);
+        if (!"true".equals(prefs.getString("notif_capture_on", null))) return;
+        SharedPreferences seen = ctx.getSharedPreferences(SEEN_PREFS, MODE_PRIVATE);
+        boolean baseline = !seen.getBoolean(SEEN_INIT_KEY, false);
+        StatusBarNotification[] active;
+        try {
+            active = getActiveNotifications();
+        } catch (Exception e) {
+            Log.w(TAG, "no se pudo leer la barra al conectar", e);
+            return;
+        }
+        if (active == null) return;
+        long now = System.currentTimeMillis();
+        int count = 0;
+        for (StatusBarNotification sbn : active) {
+            try {
+                if (!baseline && now - sbn.getPostTime() > BACKFILL_MAX_AGE_MS) continue;
+                handle(sbn, baseline);
+                count++;
+            } catch (Exception e) {
+                Log.w(TAG, "repaso: no se pudo procesar un aviso", e);
+            }
+        }
+        if (baseline) seen.edit().putBoolean(SEEN_INIT_KEY, true).apply();
+        Log.i(TAG, (baseline ? "línea base de avisos: " : "repaso de avisos: ") + count + " revisados");
+    }
+
+    /** true si el id era nuevo (y queda registrado); false si ya se había procesado. */
+    private static synchronized boolean markSeen(Context ctx, String id) {
+        SharedPreferences p = ctx.getSharedPreferences(SEEN_PREFS, MODE_PRIVATE);
+        JSONArray arr;
+        try {
+            arr = new JSONArray(p.getString(SEEN_KEY, "[]"));
+        } catch (Exception e) {
+            arr = new JSONArray();
+        }
+        for (int i = 0; i < arr.length(); i++) {
+            if (id.equals(arr.optString(i))) return false;
+        }
+        arr.put(id);
+        while (arr.length() > SEEN_MAX) arr.remove(0);
+        p.edit().putString(SEEN_KEY, arr.toString()).apply();
+        return true;
     }
 
     /** ¿El sistema tiene conectado el servicio en este momento? */
