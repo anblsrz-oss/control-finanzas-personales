@@ -8,6 +8,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
@@ -61,6 +63,7 @@ public class PaymentNotificationListener extends NotificationListenerService {
     private static volatile boolean connected = false;
     private static volatile long lastRebindAt = 0L;
     private static final long REBIND_MIN_INTERVAL_MS = 10 * 60_000L;
+    private static final long REBIND_GRACE_MS = 8_000L;
 
     // Avisos ya procesados (no repetir al repasar la barra al reconectar). Se
     // guarda en disco porque el proceso puede morir y el repaso corre en cada
@@ -335,22 +338,30 @@ public class PaymentNotificationListener extends NotificationListenerService {
      * Pide al sistema reconectar el servicio si algún fabricante lo mató.
      * requestRebind() solo sirve si el sistema ya lo había desconectado; cuando
      * el proceso murió (p. ej. al limpiar recientes en Xiaomi) el servicio se
-     * queda sin conectar aunque el permiso siga concedido. Apagar y volver a
-     * encender el componente fuerza al sistema a enlazarlo de nuevo. Se limita
-     * a una vez cada 10 min para no provocar bucles.
+     * queda sin conectar aunque el permiso siga concedido. Si tras unos segundos
+     * sigue sin conectar, apagar y volver a encender el componente fuerza al
+     * sistema a enlazarlo de nuevo (la espera evita enlazarlo dos veces cuando
+     * el sistema ya lo estaba conectando). Máximo una vez cada 10 min.
      */
-    static void requestRebindIfNeeded(Context ctx) {
+    static void requestRebindIfNeeded(final Context ctx) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return;
-        ComponentName cn = new ComponentName(ctx, PaymentNotificationListener.class);
         try {
-            requestRebind(cn);
+            requestRebind(new ComponentName(ctx, PaymentNotificationListener.class));
         } catch (Exception e) {
             Log.w(TAG, "requestRebind falló", e);
         }
+        if (connected) return;
+        new Handler(Looper.getMainLooper()).postDelayed(
+            () -> forceRebindIfStillDown(ctx), REBIND_GRACE_MS);
+    }
+
+    private static void forceRebindIfStillDown(Context ctx) {
+        if (connected) return;
         long now = System.currentTimeMillis();
-        if (connected || now - lastRebindAt < REBIND_MIN_INTERVAL_MS) return;
+        if (now - lastRebindAt < REBIND_MIN_INTERVAL_MS) return;
         lastRebindAt = now;
         try {
+            ComponentName cn = new ComponentName(ctx, PaymentNotificationListener.class);
             PackageManager pm = ctx.getPackageManager();
             pm.setComponentEnabledSetting(cn, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                 PackageManager.DONT_KILL_APP);
