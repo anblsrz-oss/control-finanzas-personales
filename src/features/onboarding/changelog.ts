@@ -12,6 +12,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-26-recibos-y-pagos-tarjeta',
+    date: '2026-09-26',
+    title: 'Recibos de suscripción y pagos de tarjeta más inteligentes',
+    description:
+      'Si un recibo por correo (como el de Claude) llega sin la terminación de tu tarjeta, ahora se vincula solo a la suscripción que ya tienes en vez de crear una sugerida duplicada, y queda confirmado. Además, los avisos de pago de tu tarjeta (por ejemplo "Recibimos tu pago con SPEI" de Didi) se registran como pago de tarjeta hacia su línea de crédito y, si ya lo habías capturado a mano, se fusionan sin duplicarse.',
+  },
+  {
     id: '2026-09-26-guias-y-notificaciones',
     date: '2026-09-26',
     title: 'Guías con imágenes y captura por notificaciones más confiable',
