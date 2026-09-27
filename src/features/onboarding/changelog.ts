@@ -12,6 +12,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-27-actualizar-dentro-de-la-app',
+    date: '2026-09-27',
+    title: 'Actualizar la app ya no se queda trabada',
+    description:
+      'Al tocar Descargar en el aviso de nueva versión, la app baja el APK por sí misma (con el avance en porcentaje) y abre el instalador de Android, sin pasar por el navegador donde la descarga se quedaba en "Descargando…" y nunca se guardaba. La primera vez Android te pedirá activar "Permitir desde esta fuente" para la app.',
+  },
+  {
     id: '2026-09-26-recibos-y-pagos-tarjeta',
     date: '2026-09-26',
     title: 'Recibos de suscripción y pagos de tarjeta más inteligentes',

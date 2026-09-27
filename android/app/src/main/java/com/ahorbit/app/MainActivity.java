@@ -11,6 +11,7 @@ public class MainActivity extends BridgeActivity {
         // notificaciones) antes de crear el bridge.
         registerPlugin(SmsCapturePlugin.class);
         registerPlugin(NotificationCapturePlugin.class);
+        registerPlugin(ApkInstallerPlugin.class);
         super.onCreate(savedInstanceState);
     }
 }

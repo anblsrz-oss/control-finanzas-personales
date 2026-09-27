@@ -2413,4 +2413,13 @@ export const en: Record<string, string> = {
     'Smarter subscription receipts and card payments',
   'Si un recibo por correo (como el de Claude) llega sin la terminación de tu tarjeta, ahora se vincula solo a la suscripción que ya tienes en vez de crear una sugerida duplicada, y queda confirmado. Además, los avisos de pago de tu tarjeta (por ejemplo "Recibimos tu pago con SPEI" de Didi) se registran como pago de tarjeta hacia su línea de crédito y, si ya lo habías capturado a mano, se fusionan sin duplicarse.':
     'If an emailed receipt (like the Claude one) arrives without the last digits of your card, it now links itself to the subscription you already have instead of creating a duplicate suggestion, and is confirmed. Also, card payment notices (for example Didi "We received your SPEI payment") are recorded as a card payment toward its credit line and, if you had already entered it by hand, they merge without duplicating.',
+  'Activa "Permitir desde esta fuente" para esta app y vuelve a tocar Descargar.':
+    'Turn on "Allow from this source" for this app and tap Download again.',
+  'No se pudo descargar dentro de la app. Se abrirá en el navegador.':
+    'Could not download inside the app. It will open in the browser.',
+  'Descargando… {{p}}%': 'Downloading… {{p}}%',
+  'Actualizar la app ya no se queda trabada':
+    'Updating the app no longer gets stuck',
+  'Al tocar Descargar en el aviso de nueva versión, la app baja el APK por sí misma (con el avance en porcentaje) y abre el instalador de Android, sin pasar por el navegador donde la descarga se quedaba en "Descargando…" y nunca se guardaba. La primera vez Android te pedirá activar "Permitir desde esta fuente" para la app.':
+    'When you tap Download on the new version notice, the app downloads the APK itself (showing the percentage) and opens the Android installer, without going through the browser where the download stayed on "Downloading…" and was never saved. The first time, Android will ask you to turn on "Allow from this source" for the app.',
 }

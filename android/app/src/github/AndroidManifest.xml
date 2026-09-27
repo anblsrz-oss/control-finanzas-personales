@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Build de GitHub (APK): puede instalar su propia actualización desde la app
+     (ApkInstallerPlugin). Google Play no permite este permiso a apps de este
+     tipo, por eso NO está en main ni en el flavor play. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+</manifest>

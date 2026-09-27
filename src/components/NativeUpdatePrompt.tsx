@@ -9,6 +9,7 @@ import {
   compareVersions,
   type RemoteVersion,
 } from '@/lib/appUpdate'
+import { canInstallApkInApp, downloadAndInstallApk } from '@/lib/apkInstaller'
 
 // Abre la descarga del APK en el navegador EXTERNO (Intent ACTION_VIEW), no en
 // la Custom Tab embebida: esa se queda en "Descargando…" para siempre porque no
@@ -29,6 +30,31 @@ export function NativeUpdatePrompt() {
   const { t } = useTranslation()
   const [remote, setRemote] = useState<RemoteVersion | null>(null)
   const [dismissed, setDismissed] = useState(false)
+  // null = sin descarga en curso; 0-100 = descargando; mensaje = aviso/error.
+  const [progress, setProgress] = useState<number | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
+
+  // Descarga el APK dentro de la app y abre el instalador. Si el plugin no está
+  // o falla, cae al navegador externo (comportamiento anterior).
+  async function startUpdate(url: string) {
+    setNotice(null)
+    if (!canInstallApkInApp()) {
+      await openApkDownload(url)
+      return
+    }
+    try {
+      setProgress(0)
+      const r = await downloadAndInstallApk(url, setProgress)
+      if (r === 'needs_permission') {
+        setNotice(t('Activa "Permitir desde esta fuente" para esta app y vuelve a tocar Descargar.'))
+      }
+    } catch {
+      setNotice(t('No se pudo descargar dentro de la app. Se abrirá en el navegador.'))
+      await openApkDownload(url)
+    } finally {
+      setProgress(null)
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -59,13 +85,17 @@ export function NativeUpdatePrompt() {
       <div className="flex w-full max-w-md items-center gap-3 rounded-xl border border-brand-200 dark:border-brand-800 bg-white dark:bg-slate-800 p-3 shadow-lg">
         <span className="text-xl">⬇️</span>
         <p className="flex-1 text-sm text-slate-700 dark:text-slate-200">
-          {t('Hay una nueva versión ({{v}}). Descarga la actualización.', {
-            v: remote!.version,
-          })}
+          {notice ??
+            (progress !== null
+              ? t('Descargando… {{p}}%', { p: progress })
+              : t('Hay una nueva versión ({{v}}). Descarga la actualización.', {
+                  v: remote!.version,
+                }))}
         </p>
         <button
-          onClick={() => void openApkDownload(remote!.apkUrl || APK_URL)}
-          className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700"
+          disabled={progress !== null}
+          onClick={() => void startUpdate(remote!.apkUrl || APK_URL)}
+          className="rounded-lg bg-brand-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-60"
         >
           {t('Descargar')}
         </button>
