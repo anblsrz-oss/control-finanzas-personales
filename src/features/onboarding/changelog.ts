@@ -12,6 +12,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-09-26-guias-y-notificaciones',
+    date: '2026-09-26',
+    title: 'Guías con imágenes y captura por notificaciones más confiable',
+    description:
+      'Nuevas guías paso a paso con imágenes en Preguntas frecuentes (y en PDF): instalar la app fuera de Google Play, conectar Gmail y activar la lectura de notificaciones, con la guía de batería de Xiaomi. Además: Conectar Gmail, Outlook y Google Calendar ya funciona dentro de la app de Android; la captura por notificaciones se reconecta sola si el sistema la desconecta y recupera los avisos que llegaron mientras estaba caída; y los íconos de la barra de estado se ven bien en modo oscuro.',
+  },
+  {
     id: '2026-09-26-transferencias-sin-monto',
     date: '2026-09-26',
     title: 'Transferencias sin monto (Mercado Pago)',
