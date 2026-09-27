@@ -1,5 +1,5 @@
 {
-  "version": "0.16.0",
-  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.16.0/finzen-v0.16.0.apk",
-  "notes": "Nuevas guías con imágenes (instalar la app, conectar Gmail, activar notificaciones). Conectar Gmail, Outlook y Calendar ya funciona dentro de la app, y la captura por notificaciones se reconecta sola y recupera los avisos que llegaron mientras estaba caída."
+  "version": "0.16.1",
+  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.16.1/finzen-v0.16.1.apk",
+  "notes": "Los recibos de suscripciones (como Claude) que llegan por correo sin tu tarjeta ya se vinculan solos a la suscripción que tienes, sin duplicar sugeridas. Y los avisos de pago de tu tarjeta (como el de Didi) se registran como pago de tarjeta y se fusionan con el que ya hayas capturado."
 }
