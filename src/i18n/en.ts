@@ -2187,4 +2187,222 @@ export const en: Record<string, string> = {
     'Transfers without an amount (Mercado Pago)',
   'Algunas apps avisan "Enviamos tu transferencia" sin decir cuánto. Ahora esos avisos ya no se pierden: te llega "Falta el monto" y al tocarlo se abre el formulario prellenado para que solo escribas la cantidad. Si el correo o SMS del banco trae el monto, se completa solo. Los que falten aparecen arriba en Transacciones.':
     'Some apps say "We sent your transfer" without saying how much. These notices are no longer lost: you get a "Missing amount" notification and tapping it opens the form already filled in so you only type the amount. If the bank email or SMS includes the amount, it completes on its own. Any still missing show at the top of Transactions.',
+  'Instalar la app fuera de Google Play':
+    'Install the app outside Google Play',
+  'Descarga el APK en Android: permitir apps desconocidas y Play Protect, con imágenes.':
+    'Download the APK on Android: allowing unknown apps and Play Protect, with pictures.',
+  'Paso a paso para instalarla':
+    'Step by step installation',
+  'Dudas comunes de la instalación':
+    'Common installation questions',
+  'Conectar el correo (Gmail) y aceptar permisos':
+    'Connect your email (Gmail) and accept permissions',
+  'Cómo conectar Gmail y pasar los avisos de Google mientras la app está en revisión, con imágenes.':
+    'How to connect Gmail and get past Google\'s warnings while the app is under review, with pictures.',
+  'Paso a paso para conectar Gmail':
+    'Step by step to connect Gmail',
+  'Errores y dudas comunes':
+    'Common errors and questions',
+  'Descargar PDF con imágenes':
+    'Download PDF with pictures',
+  'Ampliar imagen':
+    'Enlarge image',
+  'Ver guía con imágenes':
+    'See the illustrated guide',
+  '¿Cómo activarlo? Ver guía con imágenes →':
+    'How do I turn it on? See the illustrated guide →',
+  '¿Cómo conectar y aceptar los permisos de Google? Ver guía con imágenes →':
+    'How do I connect and accept Google\'s permissions? See the illustrated guide →',
+  'Instalar la app fuera de Google Play (Android)':
+    'Install the app outside Google Play (Android)',
+  'Mientras la app se publica en Google Play, puedes instalarla directamente desde su archivo APK. Android mostrará varios avisos de seguridad porque la app no viene de la tienda: es normal. Sigue estos pasos.':
+    'While the app is being published on Google Play, you can install it directly from its APK file. Android will show several security warnings because the app doesn\'t come from the store: that\'s normal. Follow these steps.',
+  'Desde tu teléfono, abre esta página en Chrome y toca **Descargar app (Android)**. Empieza a descargarse el archivo finzen.apk.':
+    'From your phone, open this page in Chrome and tap **Download app (Android)**. The finzen.apk file starts downloading.',
+  'Chrome puede avisar **"Este tipo de archivo puede dañar tu dispositivo"**. Toca **Descargar de todos modos** (o **Conservar**).':
+    'Chrome may warn **"This type of file can harm your device"**. Tap **Download anyway** (or **Keep**).',
+  'Cuando termine la descarga, toca **Abrir** (también puedes abrir finzen.apk desde la app Descargas o Archivos).':
+    'When the download finishes, tap **Open** (you can also open finzen.apk from the Downloads or Files app).',
+  'Si Android dice **"Por seguridad, tu teléfono no puede instalar apps de esta fuente"**, toca **Configuración** y activa **Permitir de esta fuente** (para Chrome). Luego regresa con la flecha atrás.':
+    'If Android says **"For your security, your phone can\'t install unknown apps from this source"**, tap **Settings** and turn on **Allow from this source** (for Chrome). Then go back with the back arrow.',
+  'Toca **Instalar**.':
+    'Tap **Install**.',
+  'Si Google Play Protect muestra **"App bloqueada"** o **"Aplicación no verificada"**, toca **Más detalles** y luego **Instalar de todos modos**.':
+    'If Google Play Protect shows **"App blocked"** or **"Unverified app"**, tap **More details** and then **Install anyway**.',
+  'Si Play Protect no te deja instalarla, desactívalo un momento: abre **Play Store** → toca tu foto de perfil → **Play Protect** → engrane ⚙️ arriba a la derecha → apaga **Analizar apps con Play Protect**. Instala la app y **vuelve a activarlo** al terminar.':
+    'If Play Protect won\'t let you install it, turn it off for a moment: open **Play Store** → tap your profile picture → **Play Protect** → gear ⚙️ at the top right → turn off **Scan apps with Play Protect**. Install the app and **turn it back on** when you\'re done.',
+  'Toca **Abrir** e inicia sesión o crea tu cuenta.':
+    'Tap **Open** and sign in or create your account.',
+  '¿Por qué salen tantos avisos de seguridad?':
+    'Why are there so many security warnings?',
+  'Porque la app todavía no está en Google Play (estamos en el proceso de verificación del desarrollador). Android y Play Protect avisan de cualquier app que no viene de la tienda. Es la misma app; instálala solo desde el enlace oficial.':
+    'Because the app is not on Google Play yet (we\'re going through developer verification). Android and Play Protect warn about any app that doesn\'t come from the store. It\'s the same app; only install it from the official link.',
+  'Ya instalé la app. ¿Dejo Play Protect y "apps desconocidas" desactivados?':
+    'I\'ve installed the app. Should I leave Play Protect and "unknown apps" turned off?',
+  'No. Vuelve a activar Play Protect (Play Store → perfil → Play Protect → ⚙️ → "Analizar apps con Play Protect") y quita el permiso de Chrome para instalar apps desconocidas (Ajustes → Apps → Chrome → Instalar apps desconocidas → No permitir).':
+    'No. Turn Play Protect back on (Play Store → profile → Play Protect → ⚙️ → "Scan apps with Play Protect") and remove Chrome\'s permission to install unknown apps (Settings → Apps → Chrome → Install unknown apps → Don\'t allow).',
+  '¿Cómo actualizo la app?':
+    'How do I update the app?',
+  'La app te avisa cuando hay una versión nueva. Descarga el nuevo APK con el mismo enlace y ábrelo: se instala encima de la anterior y conservas todos tus datos.':
+    'The app tells you when there\'s a new version. Download the new APK from the same link and open it: it installs over the previous one and you keep all your data.',
+  'En mi Xiaomi, Redmi o POCO aparece otra pantalla de seguridad':
+    'On my Xiaomi, Redmi or POCO another security screen appears',
+  'Algunos teléfonos Xiaomi muestran su propia verificación de seguridad antes de instalar. Espera a que termine y toca Continuar instalación.':
+    'Some Xiaomi phones show their own security check before installing. Wait for it to finish and tap Continue installation.',
+  'Conectar tu correo (Gmail) y aceptar los permisos':
+    'Connect your email (Gmail) and accept the permissions',
+  'Con esta función la app lee los avisos de tu banco que llegan a tu correo y los registra como movimientos pendientes. Solo lee los remitentes que tú configures.':
+    'With this feature the app reads your bank\'s alerts that arrive by email and records them as pending transactions. It only reads the senders you set up.',
+  '**Antes de empezar:** mientras Google termina de verificar la app, tu cuenta de Gmail debe estar en la lista de usuarios de prueba. Envía tu correo de Gmail a {{contact}} y espera la confirmación. Además, verás avisos de seguridad de Google al conectar: es normal, sigue los pasos.':
+    '**Before you start:** while Google finishes verifying the app, your Gmail account must be on the test users list. Send your Gmail address to {{contact}} and wait for confirmation. You\'ll also see Google security warnings when connecting: that\'s normal, just follow the steps.',
+  'Inicia sesión en la app y entra a **Sincronizar correo** desde el menú.':
+    'Sign in to the app and open **Sync email** from the menu.',
+  'En **"1. Remitentes"**, escribe el banco o proveedor y el correo desde el que te llegan sus avisos (por ejemplo notificaciones@bbva.mx). Pulsa **Guardar remitente**. Solo se leerán los correos de esos remitentes.':
+    'Under **"1. Senders"**, type the bank or provider and the email address its alerts come from (for example notificaciones@bbva.mx). Tap **Save sender**. Only emails from those senders will be read.',
+  'En **"2. Conecta Gmail y sincroniza"**, pulsa **Conectar Gmail**.':
+    'Under **"2. Connect Gmail and sync"**, tap **Connect Gmail**.',
+  'Elige la cuenta de Google que enviaste para la lista de usuarios de prueba.':
+    'Choose the Google account you sent for the test users list.',
+  'Google mostrará **"Google no ha verificado esta app"**. Toca **Configuración avanzada** (o **Avanzado**).':
+    'Google will show **"Google hasn\'t verified this app"**. Tap **Advanced**.',
+  'Toca **Ir a … (no seguro)**. Es seguro: solo indica que la app está en revisión de Google.':
+    'Tap **Go to … (unsafe)**. It\'s safe: it only means the app is under Google\'s review.',
+  'En la pantalla de permisos, **marca la casilla** "Ver tus mensajes y configuración de correo electrónico". Viene sin marcar y, si no la marcas, la app no podrá leer los avisos de tu banco. Después toca **Continuar**.':
+    'On the permissions screen, **tick the checkbox** "View your email messages and settings". It comes unchecked and, if you don\'t tick it, the app won\'t be able to read your bank\'s alerts. Then tap **Continue**.',
+  'Regresarás a la app y verás **"✓ Gmail conectado"**.':
+    'You\'ll return to the app and see **"✓ Gmail connected"**.',
+  'Pulsa **Sincronizar ahora** para leer los últimos 30 días, o **Activar tiempo real** para que los correos nuevos se registren solos.':
+    'Tap **Sync now** to read the last 30 days, or **Turn on real time** so new emails are recorded automatically.',
+  'Los movimientos se crean como pendientes: revísalos y confírmalos en **Transacciones** para que cuenten en tus saldos.':
+    'Transactions are created as pending: review and confirm them in **Transactions** so they count toward your balances.',
+  'Veo "Error 403: access_denied" o "Acceso bloqueado"':
+    'I see "Error 403: access_denied" or "Access blocked"',
+  'Tu cuenta de Gmail todavía no está en la lista de usuarios de prueba. Envía tu correo a {{contact}} y espera la confirmación.':
+    'Your Gmail account isn\'t on the test users list yet. Send your email address to {{contact}} and wait for confirmation.',
+  'Dejó de sincronizar después de una semana':
+    'It stopped syncing after a week',
+  'Mientras la app está en revisión, Google cierra el acceso cada 7 días. En Sincronizar correo pulsa **Reconectar (forzar permisos)** y repite los pasos de elegir cuenta y aceptar permisos. Cuando Google termine la verificación esto deja de pasar.':
+    'While the app is under review, Google closes access every 7 days. In Sync email tap **Reconnect (force permissions)** and repeat the steps of choosing an account and accepting permissions. Once Google finishes verification this stops happening.',
+  '¿Qué correos se leen?':
+    'Which emails are read?',
+  'Solo los de los remitentes que configuraste. No se leen otros correos, no se envían ni se modifican, y no se guarda el correo completo: solo el movimiento detectado (monto, fecha y concepto).':
+    'Only those from the senders you set up. No other emails are read, none are sent or modified, and the full email isn\'t stored: only the detected transaction (amount, date and description).',
+  '¿Cómo quito el acceso?':
+    'How do I remove access?',
+  'Desde la app: Sincronizar correo → Desactivar tiempo real. Desde Google, en cualquier momento: myaccount.google.com/permissions → elige la app → Quitar acceso.':
+    'From the app: Sync email → Turn off real time. From Google, at any time: myaccount.google.com/permissions → choose the app → Remove access.',
+  '¿Y Google Calendar?':
+    'What about Google Calendar?',
+  'Es opcional (recordatorios de cobros y pagos). Se conecta en Configuración → Google Calendar → Conectar, con el mismo flujo de permisos de estos pasos.':
+    'It\'s optional (reminders for charges and payments). Connect it in Settings → Google Calendar → Connect, with the same permissions flow as these steps.',
+  '¿Y si uso Outlook?':
+    'What if I use Outlook?',
+  'Outlook (Microsoft) no pasa por la verificación de Google: en la misma pantalla usa la sección "4. Conecta Outlook y sincroniza".':
+    'Outlook (Microsoft) doesn\'t go through Google\'s verification: on the same screen use the section "4. Connect Outlook and sync".',
+  'Activar la lectura de notificaciones (Android)':
+    'Turn on notification reading (Android)',
+  'Con este permiso la app lee los avisos de tu banco o wallet y registra el cargo sola. Solo se leen las apps que tú marques. Disponible solo en la app de Android.':
+    'With this permission the app reads your bank or wallet alerts and records the charge on its own. Only the apps you tick are read. Available only in the Android app.',
+  'En el menú, entra a **Captura por notificaciones**.':
+    'In the menu, open **Notification capture**.',
+  'Toca **Dar acceso a notificaciones**, lee el aviso de privacidad y toca **Continuar**.':
+    'Tap **Give notification access**, read the privacy notice and tap **Continue**.',
+  'Se abre **Acceso a notificaciones** en los Ajustes de Android. Busca esta app en la lista y **actívala**.':
+    '**Notification access** opens in Android Settings. Find this app in the list and **turn it on**.',
+  'Android pide confirmar: toca **Permitir**.':
+    'Android asks you to confirm: tap **Allow**.',
+  '**Si el interruptor sale atenuado** o dice "Configuración restringida" (pasa en Android 13 o más cuando la app se instaló fuera de Google Play): sal, ve a Ajustes → Apps → esta app → menú ⋮ (arriba a la derecha) → **Permitir configuración restringida**, y repite el paso anterior.':
+    '**If the switch is greyed out** or says "Restricted setting" (happens on Android 13 or later when the app was installed outside Google Play): go out, open Settings → Apps → this app → ⋮ menu (top right) → **Allow restricted settings**, and repeat the previous step.',
+  'Regresa a la app: verás **"✅ Acceso concedido"**.':
+    'Go back to the app: you\'ll see **"✅ Access granted"**.',
+  'En **"Apps que se escuchan"**, marca tu banco, tu wallet o las tiendas cuyos avisos quieres capturar. Los bancos conocidos ya vienen premarcados.':
+    'Under **"Apps being listened to"**, tick your bank, wallet or the stores whose alerts you want to capture. Well-known banks come pre-ticked.',
+  'Toca **Activar captura automática**.':
+    'Tap **Turn on automatic capture**.',
+  'En la mayoría de los teléfonos falta un ajuste de batería para que Android no cierre la app: busca tu marca en la lista de abajo y sigue los pasos.':
+    'On most phones one more battery setting is needed so Android doesn\'t close the app: find your brand in the list below and follow the steps.',
+  'Para comprobar que funciona, revisa "Últimos avisos recibidos" en Captura por notificaciones después de un cargo real.':
+    'To check that it works, look at "Latest notices received" in Notification capture after a real charge.',
+  'Chrome avisa **"Es posible que el archivo sea dañino"**. Toca **Descargar de todos modos**.':
+    'Chrome warns **"This type of file can be harmful"**. Tap **Download anyway**.',
+  'Cuando termine, abre **finzen.apk** desde las descargas de Chrome (menú ⋮ → Descargas) o desde la app Archivos.':
+    'When it finishes, open **finzen.apk** from Chrome\'s downloads (⋮ menu → Downloads) or from the Files app.',
+  'Si Android dice que **por seguridad tu teléfono no permite instalar apps desconocidas de esta fuente**, toca **Configuración**.':
+    'If Android says that **for your security your phone doesn\'t allow installing unknown apps from this source**, tap **Settings**.',
+  'Activa el interruptor de **Confiar en esta fuente** (en otras marcas se llama **Permitir de esta fuente**).':
+    'Turn on the **Trust this source** switch (on other brands it is called **Allow from this source**).',
+  'En Xiaomi aparece un aviso de **Peligro**: marca **"Soy consciente de los posibles riesgos…"**, espera unos segundos y toca **Aceptar**. Si tu teléfono no lo muestra, sigue con el paso siguiente.':
+    'On Xiaomi a **Danger** notice appears: tick **"I am aware of the possible risks…"**, wait a few seconds and tap **Accept**. If your phone doesn\'t show it, go on to the next step.',
+  'Regresa y toca **Instalar**.':
+    'Go back and tap **Install**.',
+  'Espera a que termine el análisis de seguridad del teléfono y toca **Abrir**.':
+    'Wait for your phone\'s security scan to finish and tap **Open**.',
+  'Si Google Play Protect muestra **"Se bloqueó la app para proteger tu dispositivo"**, toca **Entendido** y sigue con los dos pasos siguientes para pausarlo. Si no apareció, salta al último paso.':
+    'If Google Play Protect shows **"App blocked to protect your device"**, tap **Understood** and follow the next two steps to pause it. If it didn\'t appear, skip to the last step.',
+  'Abre **Play Store** → toca tu foto de perfil → **Play Protect** → engrane ⚙️ arriba a la derecha y apaga **Analizar las apps con Play Protect**.':
+    'Open **Play Store** → tap your profile picture → **Play Protect** → gear ⚙️ at the top right and turn off **Scan apps with Play Protect**.',
+  'Confirma con **Desactivar** (o **Pausar**). Vuelve a abrir finzen.apk (paso 3) e instala. Al terminar, **vuelve a activar Play Protect**.':
+    'Confirm with **Turn off** (or **Pause**). Open finzen.apk again (step 3) and install. When you\'re done, **turn Play Protect back on**.',
+  'Al abrir la app, Android puede decir **"A la app se le negó el acceso a SMS"**. Es normal en apps instaladas fuera de Google Play: toca **Cerrar**. La captura por SMS es opcional; el resto de la app funciona igual.':
+    'When you open the app, Android may say **"The app was denied SMS access"**. That\'s normal for apps installed outside Google Play: tap **Close**. SMS capture is optional; the rest of the app works the same.',
+  'Me piden confirmar varias veces en mi Xiaomi, Redmi o POCO':
+    'I get asked to confirm several times on my Xiaomi, Redmi or POCO',
+  'Es normal: además de Android, Xiaomi hace su propio análisis de seguridad y a veces muestra el aviso de Peligro. Marca la casilla, espera y confirma en cada pantalla.':
+    'That\'s normal: besides Android, Xiaomi runs its own security scan and sometimes shows the Danger notice. Tick the box, wait and confirm on each screen.',
+  'En **"2. Conecta Gmail y sincroniza"**, pulsa **Conectar Gmail** (si ya dice "Gmail conectado" pero no sincroniza, pulsa **Reconectar**).':
+    'Under **"2. Connect Gmail and sync"**, tap **Connect Gmail** (if it already says "Gmail connected" but doesn\'t sync, tap **Reconnect**).',
+  'Google mostrará **"Google no verificó esta app"**. Toca **Configuración avanzada**.':
+    'Google will show **"Google hasn\'t verified this app"**. Tap **Advanced settings**.',
+  'Toca **Ir a Mi Control de Finanzas Personales (no seguro)**. Es seguro: solo indica que la app está en revisión de Google.':
+    'Tap **Go to Mi Control de Finanzas Personales (unsafe)**. It\'s safe: it only means the app is under Google\'s review.',
+  'Google te pide confirmar el acceso a tu cuenta: toca **Continuar**.':
+    'Google asks you to confirm access to your account: tap **Continue**.',
+  'Aparece **"Mi Control de Finanzas Personales requiere acceso adicional a tu Cuenta de Google"** con el aviso amarillo de app no verificada. Baja hasta el final de la pantalla.':
+    '**"Mi Control de Finanzas Personales requires additional access to your Google Account"** appears with the yellow unverified-app warning. Scroll down to the end of the screen.',
+  'Comprueba que esté el permiso **"Ver mensajes de correo electrónico y parámetros de configuración"** (si en tu primera vez aparece como casilla sin marcar, márcala: sin él la app no puede leer los avisos del banco). Marca también **"Quiero permitir que Mi Control de Finanzas Personales tenga acceso continuo…"** y toca **Continuar**.':
+    'Check that the **"View email messages and settings"** permission is there (if on your first time it appears as an unchecked box, tick it: without it the app can\'t read your bank alerts). Also tick **"I want to allow Mi Control de Finanzas Personales continuous access…"** and tap **Continue**.',
+  'Regresarás a la app y verás **"✓ Gmail conectado"**. Pulsa **Sincronizar ahora** para leer los últimos 30 días.':
+    'You\'ll return to the app and see **"✓ Gmail connected"**. Tap **Sync now** to read the last 30 days.',
+  'Para que los correos nuevos se registren solos, pulsa **Activar tiempo real**.':
+    'To have new emails recorded automatically, tap **Turn on real time**.',
+  'Los movimientos se crean como pendientes: revísalos y toca **Confirmar** en **Transacciones** para que cuenten en tus saldos.':
+    'Transactions are created as pending: review them and tap **Confirm** in **Transactions** so they count toward your balances.',
+  'En el menú **Más**, entra a **Captura por notificaciones**.':
+    'In the **More** menu, open **Notification capture**.',
+  'Toca **Dar acceso a notificaciones**.':
+    'Tap **Give notification access**.',
+  'Lee el aviso de privacidad y toca **Acepto, continuar**.':
+    'Read the privacy notice and tap **I accept, continue**.',
+  'Se abre **Control, respuesta y lectura de notificaciones** en los Ajustes de Android. Si el interruptor sale atenuado con **"Función controlada por configuración restringida"** (pasa en Android 13 o más cuando la app se instaló fuera de Google Play), sigue el paso siguiente; si no, salta al paso 6.':
+    '**Control, response and reading of notifications** opens in Android Settings. If the switch is greyed out with **"Feature controlled by restricted settings"** (happens on Android 13 or later when the app was installed outside Google Play), follow the next step; if not, skip to step 6.',
+  'Ve a Ajustes → Apps → esta app → **Info. de la aplicación** y activa **Permitir ajustes restringidos** (abajo, en "Ajustes avanzados"; en otras marcas está en el menú ⋮ de arriba a la derecha).':
+    'Go to Settings → Apps → this app → **App info** and turn on **Allow restricted settings** (at the bottom, under "Advanced settings"; on other brands it\'s in the ⋮ menu at the top right).',
+  'Regresa a **Control, respuesta y lectura de notificaciones** y abre esta app en la lista.':
+    'Go back to **Control, response and reading of notifications** and open this app in the list.',
+  'Activa **Permitir acceso a las notificaciones**.':
+    'Turn on **Allow access to notifications**.',
+  'Si tu teléfono muestra un aviso de **Peligro** (Xiaomi), marca **"Soy consciente de los posibles riesgos…"**, espera unos segundos y toca **Aceptar**.':
+    'If your phone shows a **Danger** notice (Xiaomi), tick **"I am aware of the possible risks…"**, wait a few seconds and tap **Accept**.',
+  'El interruptor queda activado.':
+    'The switch is now on.',
+  'Regresa a la app: verás **"✅ Acceso concedido"**. En **"Apps que se escuchan"**, marca tu banco, tu wallet o las tiendas cuyos avisos quieres capturar (los bancos conocidos ya vienen premarcados).':
+    'Go back to the app: you\'ll see **"✅ Access granted"**. Under **"Apps being listened to"**, tick your bank, your wallet or the stores whose alerts you want to capture (well-known banks come pre-ticked).',
+  'Baja hasta **"3. Captura automática"** y toca **Activar captura automática**.':
+    'Scroll down to **"3. Automatic capture"** and tap **Turn on automatic capture**.',
+  'Verás **"✅ Activada"** con el número de apps que se escuchan.':
+    'You\'ll see **"✅ Turned on"** with the number of apps being listened to.',
+  '⚠️ El permiso está dado, pero Android tiene desconectada la lectura de notificaciones y por eso no se captura nada. Abre los ajustes de acceso, apaga "Permitir acceso a las notificaciones" y vuelve a encenderlo.':
+    '⚠️ The permission is granted, but Android has notification reading disconnected, so nothing is being captured. Open the access settings, turn off "Allow access to notifications" and turn it back on.',
+  'Abrir ajustes de acceso':
+    'Open access settings',
+  'Ajustes del teléfono → Aplicaciones → Permisos → "Autoencendido en segundo plano" (en otras versiones se llama "Inicio automático"), busca esta app y **enciéndela**. Tras instalar o reinstalar suele quedar APAGADA y sin esto el sistema no la despierta.':
+    'Phone Settings → Apps → Permissions → "Autostart" (called "Background autostart" on some versions), find this app and **turn it on**. After installing or reinstalling it is often OFF, and without it the system will not wake the app up.',
+  'Debe quedar encendida.':
+    'It should stay on.',
+  'En "Info. de la aplicación" de esta app, deja **apagado** "Pausar la actividad de la aplicación si no se utiliza".':
+    'In the "App info" of this app, leave **off** "Pause app activity if unused".',
+  'Comprueba que aparece un candado junto al nombre de la app.':
+    'Check that a padlock appears next to the app name.',
+  'Si el acceso a notificaciones figura como activado y aun así no captura: en Ajustes → Notificaciones → "Control, respuesta y lectura de notificaciones", abre esta app, **apaga** "Permitir acceso a las notificaciones" y vuelve a **encenderlo**. Es lo que hace que el sistema vuelva a conectar la lectura.':
+    'If notification access shows as on and it still does not capture: in Settings → Notifications → "Control, response and reading of notifications", open this app, **turn off** "Allow access to notifications" and **turn it back on**. That makes the system reconnect the reading.',
 }

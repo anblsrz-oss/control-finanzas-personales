@@ -21,6 +21,7 @@ import {
   enableNotificationCapture,
   getListenedPackages,
   isNotificationAccessGranted,
+  isNotificationServiceConnected,
   isNotificationCaptureEnabled,
   listInstalledApps,
   openNotificationAccessSettings,
@@ -83,6 +84,8 @@ export function NotificationCapturePage() {
   const rules = rulesQuery.data || []
 
   const [granted, setGranted] = useState(false)
+  // Permiso concedido pero el sistema no tiene conectado el servicio (no captura).
+  const [serviceDown, setServiceDown] = useState(false)
   const [enabled, setEnabled] = useState(false)
   const [apps, setApps] = useState<InstalledApp[]>([])
   const [selected, setSelected] = useState<Set<string>>(new Set())
@@ -96,7 +99,20 @@ export function NotificationCapturePage() {
   const [showDisclosure, setShowDisclosure] = useState(false)
 
   const refreshAccess = useCallback(async () => {
-    setGranted(await isNotificationAccessGranted())
+    const ok = await isNotificationAccessGranted()
+    setGranted(ok)
+    if (!ok) {
+      setServiceDown(false)
+      return
+    }
+    // Recién abierta la app el servicio puede tardar unos segundos en
+    // conectarse (la app ya intenta reconectarlo): avisar solo si sigue caído.
+    if ((await isNotificationServiceConnected()) === false) {
+      await new Promise((r) => setTimeout(r, 4000))
+      setServiceDown((await isNotificationServiceConnected()) === false)
+    } else {
+      setServiceDown(false)
+    }
   }, [])
 
   // El permiso se da en Ajustes de Android: al volver a la app, revisarlo.
@@ -243,9 +259,27 @@ export function NotificationCapturePage() {
                 </Button>
               </div>
             )}
+            {granted && serviceDown && (
+              <div className="grid gap-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 px-3 py-2 text-sm text-amber-800 dark:text-amber-300">
+                <p>
+                  {t('⚠️ El permiso está dado, pero Android tiene desconectada la lectura de notificaciones y por eso no se captura nada. Abre los ajustes de acceso, apaga "Permitir acceso a las notificaciones" y vuelve a encenderlo.')}
+                </p>
+                <div>
+                  <Button variant="secondary" onClick={() => void openNotificationAccessSettings()}>
+                    {t('Abrir ajustes de acceso')}
+                  </Button>
+                </div>
+              </div>
+            )}
             <p className="text-xs text-slate-400 dark:text-slate-500">
               {t('Privacidad: solo se leen las apps que marques abajo y solo se envían los avisos que traen un monto o confirman un envío o pago. El texto de la notificación no se guarda; solo el movimiento que se detecte.')}
             </p>
+            <Link
+              to="/ayuda#captura-notificaciones"
+              className="w-fit text-xs font-medium text-brand-700 dark:text-brand-500 hover:underline"
+            >
+              {t('¿Cómo activarlo? Ver guía con imágenes →')}
+            </Link>
           </Card>
 
           <Card className="grid gap-3">

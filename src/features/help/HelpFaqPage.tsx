@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
+import { isPlayBuild } from '@/lib/distribution'
 import { BrandBatteryGuide } from './BrandBatteryGuide'
+import { GuideFaq, GuidePdfLink, GuideSteps, type GuideId } from './guides/GuideSteps'
 
 interface FaqItem {
   id: string
@@ -16,6 +18,10 @@ interface FaqTopic {
   icon: string
   title: string
   intro?: string
+  /** Guía con imágenes cuyo PDF se ofrece para descargar. */
+  pdfGuide?: GuideId
+  /** Pregunta que se abre sola al entrar por /ayuda#<id>. */
+  autoOpenItem: string
   items: FaqItem[]
 }
 
@@ -25,12 +31,54 @@ interface FaqTopic {
 // texto, ver i18n/index.ts).
 function buildTopics(t: (key: string, opts?: Record<string, unknown>) => string): FaqTopic[] {
   const p = 'text-sm text-slate-600 dark:text-slate-300'
-  return [
+  const topics: FaqTopic[] = [
+    {
+      id: 'instalar-apk',
+      icon: '📲',
+      title: t('Instalar la app fuera de Google Play'),
+      intro: t('Descarga el APK en Android: permitir apps desconocidas y Play Protect, con imágenes.'),
+      pdfGuide: 'instalar-apk',
+      autoOpenItem: 'pasos',
+      items: [
+        {
+          id: 'pasos',
+          q: t('Paso a paso para instalarla'),
+          a: <GuideSteps id="instalar-apk" showIntro />,
+        },
+        {
+          id: 'dudas',
+          q: t('Dudas comunes de la instalación'),
+          a: <GuideFaq id="instalar-apk" />,
+        },
+      ],
+    },
+    {
+      id: 'conectar-correo',
+      icon: '📧',
+      title: t('Conectar el correo (Gmail) y aceptar permisos'),
+      intro: t('Cómo conectar Gmail y pasar los avisos de Google mientras la app está en revisión, con imágenes.'),
+      pdfGuide: 'conectar-correo',
+      autoOpenItem: 'pasos',
+      items: [
+        {
+          id: 'pasos',
+          q: t('Paso a paso para conectar Gmail'),
+          a: <GuideSteps id="conectar-correo" showIntro />,
+        },
+        {
+          id: 'dudas',
+          q: t('Errores y dudas comunes'),
+          a: <GuideFaq id="conectar-correo" />,
+        },
+      ],
+    },
     {
       id: 'captura-notificaciones',
       icon: '🔔',
       title: t('Captura por notificaciones'),
       intro: t('Registra solos los cargos que te avisan las apps de tu banco, wallet o tiendas. Solo en Android.'),
+      pdfGuide: 'notificaciones',
+      autoOpenItem: 'no-funciona',
       items: [
         {
           id: 'que-es',
@@ -47,15 +95,10 @@ function buildTopics(t: (key: string, opts?: Record<string, unknown>) => string)
           id: 'activar',
           q: t('¿Cómo la activo?'),
           a: (
-            <ol className={`grid gap-1.5 ${p}`}>
-              <li>{t('1. Entra a "Captura por notificaciones" desde el menú.')}</li>
-              <li>{t('2. En "Acceso a notificaciones", dale a "Dar acceso a notificaciones". Se abre una pantalla de Ajustes de Android: busca esta app en la lista y actívala ahí.')}</li>
-              <li>{t('3. En "Apps que se escuchan", marca tu banco, tu wallet o las tiendas cuyos avisos quieres capturar. Los bancos conocidos ya vienen premarcados.')}</li>
-              <li>{t('4. Dale a "Activar captura automática".')}</li>
-              <li className="mt-1 font-medium text-amber-700 dark:text-amber-400">
-                {t('Ojo: en la mayoría de los teléfonos esto no basta. Revisa la pregunta "No se registró un cargo" de abajo: casi todos necesitan un ajuste extra de batería.')}
-              </li>
-            </ol>
+            <div className="grid gap-3">
+              <GuideSteps id="notificaciones" />
+              <BrandBatteryGuide />
+            </div>
           ),
         },
         {
@@ -151,12 +194,14 @@ function buildTopics(t: (key: string, opts?: Record<string, unknown>) => string)
       ],
     },
   ]
+  // La descarga del APK no se ofrece en Google Play (ver lib/distribution.ts).
+  return isPlayBuild() ? topics.filter((topic) => topic.id !== 'instalar-apk') : topics
 }
 
 function FaqTopicCard({ topic, autoOpen }: { topic: FaqTopic; autoOpen: boolean }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(true)
-  const [openItem, setOpenItem] = useState<string | null>(autoOpen ? 'no-funciona' : null)
+  const [openItem, setOpenItem] = useState<string | null>(autoOpen ? topic.autoOpenItem : null)
 
   return (
     <div id={topic.id} className="scroll-mt-4">
@@ -184,6 +229,7 @@ function FaqTopicCard({ topic, autoOpen }: { topic: FaqTopic; autoOpen: boolean 
 
       {open && (
         <div className="grid">
+          {topic.pdfGuide && <GuidePdfLink id={topic.pdfGuide} />}
           {topic.items.map((item) => {
             const isOpen = openItem === item.id
             return (

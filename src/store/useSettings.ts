@@ -5,6 +5,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { reconcileOrder } from '@/lib/charts'
 import type { ChartId, ChartPage } from '@/lib/charts'
+import { setNativeStatusBarStyle } from '@/lib/nativeUi'
 
 const SETTINGS_KEY = 'ahorbit-settings'
 const LEGACY_SETTINGS_KEY = 'finzen-settings'
@@ -95,6 +96,8 @@ function applyTheme(theme: ThemePref) {
   // Color de la barra del navegador / status bar coherente con el tema.
   const meta = document.querySelector('meta[name="theme-color"]')
   if (meta) meta.setAttribute('content', dark ? '#0f172a' : '#0f766e')
+  // App nativa: íconos de la barra de estado claros u oscuros según el tema.
+  void setNativeStatusBarStyle(dark)
 }
 
 export const useSettings = create<SettingsState>()(

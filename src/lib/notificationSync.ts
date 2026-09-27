@@ -31,7 +31,7 @@ export interface InstalledApp {
 }
 
 interface NotificationCapturePlugin {
-  isAccessGranted(): Promise<{ granted: boolean }>
+  isAccessGranted(): Promise<{ granted: boolean; connected?: boolean }>
   openAccessSettings(): Promise<void>
   listInstalledApps(): Promise<{ apps: InstalledApp[] }>
   flushQueue(): Promise<{ pending: number }>
@@ -64,6 +64,21 @@ export async function isNotificationAccessGranted(): Promise<boolean> {
     return (await NotificationCapture.isAccessGranted()).granted
   } catch {
     return false
+  }
+}
+
+/**
+ * ¿El sistema tiene conectado el servicio que lee las notificaciones? El
+ * permiso puede figurar como concedido y aun así estar desconectado (Xiaomi al
+ * limpiar recientes, tras reinstalar…): entonces no se captura nada. undefined
+ * si el APK no reporta el estado (versiones anteriores).
+ */
+export async function isNotificationServiceConnected(): Promise<boolean | undefined> {
+  if (!isAndroidNative()) return undefined
+  try {
+    return (await NotificationCapture.isAccessGranted()).connected
+  } catch {
+    return undefined
   }
 }
 

@@ -178,11 +178,15 @@ export async function updateSmsSenders(senders: string[]): Promise<void> {
 
 // --- Lectura de inbox (fallback) -----------------------------------------
 
-async function readInbox(sinceDays: number): Promise<RawSms[]> {
+// `askPermission` es false en el auto-sync silencioso: si el usuario negó (o
+// el sistema restringió) el permiso de SMS, NO se vuelve a pedir en cada
+// reanudación de la app — eso encadenaba diálogos de permiso sin parar.
+async function readInbox(sinceDays: number, askPermission = true): Promise<RawSms[]> {
   if (!isAndroidNative()) return []
   try {
     const perm = await SmsVault.checkPermissions()
     if (perm.readSms !== 'granted') {
+      if (!askPermission) return []
       await SmsVault.requestPermissions()
     }
     const since = Date.now() - sinceDays * 86400_000
@@ -223,11 +227,11 @@ async function postToIngest(token: string, messages: RawSms[]): Promise<SyncResu
 
 // Lee el inbox y lo sincroniza contra `ingest-sms`. Usado por el botón manual y
 // por el auto-sync al reanudar la app. Requiere captura activa (token guardado).
-export async function syncSmsNow(sinceDays = 30): Promise<SyncResult> {
+export async function syncSmsNow(sinceDays = 30, askPermission = true): Promise<SyncResult> {
   if (!isAndroidNative()) return { found: 0, inserted: 0, duplicates: 0 }
   const token = await getStoredToken()
   if (!token) throw new Error('La captura automática no está activada.')
-  const inbox = await readInbox(sinceDays)
+  const inbox = await readInbox(sinceDays, askPermission)
   if (inbox.length === 0) return { found: 0, inserted: 0, duplicates: 0 }
   return postToIngest(token, inbox)
 }
@@ -237,7 +241,7 @@ export async function autoSyncSmsSilently(sinceDays = 7): Promise<void> {
   try {
     // En Play no hay permisos de SMS (ver lib/distribution.ts).
     if (isPlayBuild() || !(await isSmsCaptureEnabled())) return
-    await syncSmsNow(sinceDays)
+    await syncSmsNow(sinceDays, false)
   } catch (e) {
     console.warn('auto-sync SMS falló:', e)
   }

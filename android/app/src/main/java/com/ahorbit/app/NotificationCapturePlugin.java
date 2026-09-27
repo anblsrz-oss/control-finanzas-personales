@@ -65,6 +65,8 @@ public class NotificationCapturePlugin extends Plugin {
     public void isAccessGranted(PluginCall call) {
         JSObject ret = new JSObject();
         ret.put("granted", accessGranted());
+        // ¿El sistema tiene el servicio conectado ahora mismo? (concedido no basta)
+        ret.put("connected", PaymentNotificationListener.isConnected());
         call.resolve(ret);
     }
 

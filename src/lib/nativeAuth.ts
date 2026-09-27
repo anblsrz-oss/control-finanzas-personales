@@ -44,6 +44,45 @@ export async function signInWithGoogle(): Promise<void> {
   }
 }
 
+// OAuth adicional con scopes (Gmail, Outlook, Google Calendar) sobre el mismo
+// proveedor. Web: redirige la propia página y vuelve con la sesión (recarga).
+// Nativo: NO se puede navegar el WebView a Google/Microsoft (Capacitor manda la
+// URL a un Intent y no hay cómo regresar a https://localhost), así que se abre
+// el navegador del sistema y se vuelve por el deep link `NATIVE_REDIRECT`, que
+// canjea el código (initNativeAuthListener). La sesión resultante trae
+// provider_token / provider_refresh_token, igual que en web.
+export async function startProviderOAuth(opts: {
+  provider: 'google' | 'azure'
+  scopes: string
+  queryParams: Record<string, string>
+}): Promise<void> {
+  if (!isNative()) {
+    await supabase.auth.signInWithOAuth({
+      provider: opts.provider,
+      options: {
+        scopes: opts.scopes,
+        redirectTo: window.location.href,
+        queryParams: opts.queryParams,
+      },
+    })
+    return
+  }
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: opts.provider,
+    options: {
+      scopes: opts.scopes,
+      redirectTo: NATIVE_REDIRECT,
+      queryParams: opts.queryParams,
+      skipBrowserRedirect: true,
+    },
+  })
+  if (error) throw error
+  if (data?.url) {
+    await Browser.open({ url: data.url })
+  }
+}
+
 // Escucha el retorno del deep link tras el login. Llamar una sola vez al arrancar.
 export function initNativeAuthListener(): void {
   if (!isNative()) return

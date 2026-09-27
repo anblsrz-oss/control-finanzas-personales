@@ -382,7 +382,10 @@ export function LandingPage() {
             </Link>
           </div>
           <p className="mx-auto mt-3 max-w-md text-xs text-white/70">
-            {t('En Android, permite instalar apps de orígenes desconocidos al abrir el archivo.')}
+            {t('En Android, permite instalar apps de orígenes desconocidos al abrir el archivo.')}{' '}
+            <Link to="/instalar-android" className="underline hover:text-white">
+              {t('Ver guía con imágenes')}
+            </Link>
           </p>
         </div>
       </section>

@@ -55,6 +55,13 @@ public class PaymentNotificationListener extends NotificationListenerService {
             + "|tu pago (fue|se)",
         Pattern.CASE_INSENSITIVE);
 
+    // ¿El sistema tiene conectado este servicio? Lo apagan a veces los
+    // fabricantes (Xiaomi al limpiar recientes, reinstalar, ahorro de batería):
+    // el permiso sigue "concedido" pero no llega ninguna notificación.
+    private static volatile boolean connected = false;
+    private static volatile long lastRebindAt = 0L;
+    private static final long REBIND_MIN_INTERVAL_MS = 10 * 60_000L;
+
     // Un solo hilo: los envíos y la cola se procesan en orden, sin carreras.
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
 
@@ -71,6 +78,7 @@ public class PaymentNotificationListener extends NotificationListenerService {
     public void onListenerConnected() {
         super.onListenerConnected();
         Log.i(TAG, "onListenerConnected");
+        connected = true;
         // Al (re)conectarse, mandar lo que quedó pendiente sin red.
         final Context ctx = getApplicationContext();
         EXECUTOR.execute(() -> flushQueueBlocking(ctx));
@@ -80,6 +88,7 @@ public class PaymentNotificationListener extends NotificationListenerService {
     public void onListenerDisconnected() {
         super.onListenerDisconnected();
         Log.w(TAG, "onListenerDisconnected");
+        connected = false;
     }
 
     @Override
@@ -241,14 +250,39 @@ public class PaymentNotificationListener extends NotificationListenerService {
         return readQueue(ctx.getSharedPreferences(QUEUE_PREFS, MODE_PRIVATE)).length();
     }
 
-    /** Pide al sistema reconectar el servicio si algún fabricante lo mató. */
+    /** ¿El sistema tiene conectado el servicio en este momento? */
+    static boolean isConnected() {
+        return connected;
+    }
+
+    /**
+     * Pide al sistema reconectar el servicio si algún fabricante lo mató.
+     * requestRebind() solo sirve si el sistema ya lo había desconectado; cuando
+     * el proceso murió (p. ej. al limpiar recientes en Xiaomi) el servicio se
+     * queda sin conectar aunque el permiso siga concedido. Apagar y volver a
+     * encender el componente fuerza al sistema a enlazarlo de nuevo. Se limita
+     * a una vez cada 10 min para no provocar bucles.
+     */
     static void requestRebindIfNeeded(Context ctx) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            try {
-                requestRebind(new ComponentName(ctx, PaymentNotificationListener.class));
-            } catch (Exception e) {
-                Log.w(TAG, "requestRebind falló", e);
-            }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return;
+        ComponentName cn = new ComponentName(ctx, PaymentNotificationListener.class);
+        try {
+            requestRebind(cn);
+        } catch (Exception e) {
+            Log.w(TAG, "requestRebind falló", e);
+        }
+        long now = System.currentTimeMillis();
+        if (connected || now - lastRebindAt < REBIND_MIN_INTERVAL_MS) return;
+        lastRebindAt = now;
+        try {
+            PackageManager pm = ctx.getPackageManager();
+            pm.setComponentEnabledSetting(cn, PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                PackageManager.DONT_KILL_APP);
+            pm.setComponentEnabledSetting(cn, PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP);
+            Log.i(TAG, "reconexión forzada del servicio");
+        } catch (Exception e) {
+            Log.w(TAG, "no se pudo forzar la reconexión", e);
         }
     }
 

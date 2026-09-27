@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import { useAuth } from '@/store/useAuth'
 import { useAccounts } from '@/hooks/useAccounts'
 import { useCategories } from '@/hooks/useCategories'
@@ -488,6 +489,12 @@ export function EmailSyncPage() {
               {syncEmail.isPending ? t('Sincronizando…') : t('Sincronizar ahora')}
             </Button>
           </div>
+          <Link
+            to="/ayuda#conectar-correo"
+            className="w-fit text-xs font-medium text-brand-700 dark:text-brand-500 hover:underline"
+          >
+            {t('¿Cómo conectar y aceptar los permisos de Google? Ver guía con imágenes →')}
+          </Link>
           <p className="text-xs text-slate-400 dark:text-slate-500">
             {t('Si iniciaste sesión con Google normalmente (no con este botón), el token guardado no trae permiso de Gmail. Pulsa "Reconectar" para autorizarlo, incluso si ya dice conectado.')}
           </p>

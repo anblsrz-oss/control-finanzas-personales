@@ -1,13 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
+import { startProviderOAuth } from '@/lib/nativeAuth'
 
 const GMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.readonly'
 const OUTLOOK_SCOPE = 'offline_access https://graph.microsoft.com/Mail.Read'
 
 // Supabase solo guarda en la sesión el provider_token del ÚLTIMO OAuth
 // completado (Gmail, Outlook o Calendar, cualquiera que se haya usado más
-// recientemente), y cada flujo de conexión recarga la página al volver del
-// consentimiento (redirectTo: window.location.href). Este flag en
+// recientemente), y en web cada flujo de conexión recarga la página al volver
+// del consentimiento (redirectTo: window.location.href; en la app nativa se
+// vuelve por deep link sin recargar, ver startProviderOAuth). Este flag en
 // sessionStorage sobrevive esa recarga y le dice a cada página a cuál de
 // los proveedores pertenece el token recién leído — exportado aquí (no
 // declarado en EmailSyncPage) para que useGoogleCalendar/SettingsPage
@@ -17,13 +19,10 @@ export const EMAIL_SYNC_PROVIDER_KEY = 'finzen_email_sync_provider'
 // Pide consentimiento del scope de solo-lectura de Gmail. Provoca un nuevo flujo
 // OAuth; al volver, la sesión trae `provider_token` para llamar a Gmail API.
 export async function connectGmail(): Promise<void> {
-  await supabase.auth.signInWithOAuth({
+  await startProviderOAuth({
     provider: 'google',
-    options: {
-      scopes: GMAIL_SCOPE,
-      redirectTo: window.location.href,
-      queryParams: { access_type: 'offline', prompt: 'consent' },
-    },
+    scopes: GMAIL_SCOPE,
+    queryParams: { access_type: 'offline', prompt: 'consent' },
   })
 }
 
@@ -31,13 +30,10 @@ export async function connectGmail(): Promise<void> {
 // `offline_access` es el que hace que Microsoft entregue un refresh_token
 // (Google usa `access_type: 'offline'` para lo mismo).
 export async function connectOutlook(): Promise<void> {
-  await supabase.auth.signInWithOAuth({
+  await startProviderOAuth({
     provider: 'azure',
-    options: {
-      scopes: OUTLOOK_SCOPE,
-      redirectTo: window.location.href,
-      queryParams: { prompt: 'consent' },
-    },
+    scopes: OUTLOOK_SCOPE,
+    queryParams: { prompt: 'consent' },
   })
 }
 

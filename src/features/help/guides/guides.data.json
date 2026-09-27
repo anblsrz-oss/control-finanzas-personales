@@ -1,0 +1,319 @@
+{
+  "contact": "anbl.srz@gmail.com",
+  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/latest/download/finzen.apk",
+  "guides": {
+    "instalar-apk": {
+      "pdf": "instalar-apk.pdf",
+      "title": "Instalar la app fuera de Google Play (Android)",
+      "intro": "Mientras la app se publica en Google Play, puedes instalarla directamente desde su archivo APK. Android mostrará varios avisos de seguridad porque la app no viene de la tienda: es normal. Sigue estos pasos.",
+      "steps": [
+        {
+          "text": "Desde tu teléfono, abre esta página en Chrome y toca **Descargar app (Android)**. Empieza a descargarse el archivo finzen.apk.",
+          "image": "apk-01.webp"
+        },
+        {
+          "text": "Chrome avisa **\"Es posible que el archivo sea dañino\"**. Toca **Descargar de todos modos**.",
+          "image": "apk-02.webp"
+        },
+        {
+          "text": "Cuando termine, abre **finzen.apk** desde las descargas de Chrome (menú ⋮ → Descargas) o desde la app Archivos.",
+          "image": "apk-03.webp"
+        },
+        {
+          "text": "Si Android dice que **por seguridad tu teléfono no permite instalar apps desconocidas de esta fuente**, toca **Configuración**.",
+          "image": "apk-04.webp"
+        },
+        {
+          "text": "Activa el interruptor de **Confiar en esta fuente** (en otras marcas se llama **Permitir de esta fuente**).",
+          "image": "apk-05.webp"
+        },
+        {
+          "text": "En Xiaomi aparece un aviso de **Peligro**: marca **\"Soy consciente de los posibles riesgos…\"**, espera unos segundos y toca **Aceptar**. Si tu teléfono no lo muestra, sigue con el paso siguiente.",
+          "image": "apk-06.webp"
+        },
+        {
+          "text": "Regresa y toca **Instalar**.",
+          "image": "apk-07.webp"
+        },
+        {
+          "text": "Espera a que termine el análisis de seguridad del teléfono y toca **Abrir**.",
+          "image": "apk-08.webp"
+        },
+        {
+          "text": "Si Google Play Protect muestra **\"Se bloqueó la app para proteger tu dispositivo\"**, toca **Entendido** y sigue con los dos pasos siguientes para pausarlo. Si no apareció, salta al último paso.",
+          "image": "apk-09.webp"
+        },
+        {
+          "text": "Abre **Play Store** → toca tu foto de perfil → **Play Protect** → engrane ⚙️ arriba a la derecha y apaga **Analizar las apps con Play Protect**.",
+          "image": "apk-10.webp"
+        },
+        {
+          "text": "Confirma con **Desactivar** (o **Pausar**). Vuelve a abrir finzen.apk (paso 3) e instala. Al terminar, **vuelve a activar Play Protect**.",
+          "image": "apk-11.webp"
+        },
+        {
+          "text": "Al abrir la app, Android puede decir **\"A la app se le negó el acceso a SMS\"**. Es normal en apps instaladas fuera de Google Play: toca **Cerrar**. La captura por SMS es opcional; el resto de la app funciona igual.",
+          "image": "apk-12.webp"
+        }
+      ],
+      "faq": [
+        {
+          "q": "¿Por qué salen tantos avisos de seguridad?",
+          "a": "Porque la app todavía no está en Google Play (estamos en el proceso de verificación del desarrollador). Android y Play Protect avisan de cualquier app que no viene de la tienda. Es la misma app; instálala solo desde el enlace oficial."
+        },
+        {
+          "q": "Ya instalé la app. ¿Dejo Play Protect y \"apps desconocidas\" desactivados?",
+          "a": "No. Vuelve a activar Play Protect (Play Store → perfil → Play Protect → ⚙️ → \"Analizar apps con Play Protect\") y quita el permiso de Chrome para instalar apps desconocidas (Ajustes → Apps → Chrome → Instalar apps desconocidas → No permitir)."
+        },
+        {
+          "q": "¿Cómo actualizo la app?",
+          "a": "La app te avisa cuando hay una versión nueva. Descarga el nuevo APK con el mismo enlace y ábrelo: se instala encima de la anterior y conservas todos tus datos."
+        },
+        {
+          "q": "Me piden confirmar varias veces en mi Xiaomi, Redmi o POCO",
+          "a": "Es normal: además de Android, Xiaomi hace su propio análisis de seguridad y a veces muestra el aviso de Peligro. Marca la casilla, espera y confirma en cada pantalla."
+        }
+      ]
+    },
+    "conectar-correo": {
+      "pdf": "conectar-correo.pdf",
+      "title": "Conectar tu correo (Gmail) y aceptar los permisos",
+      "intro": "Con esta función la app lee los avisos de tu banco que llegan a tu correo y los registra como movimientos pendientes. Solo lee los remitentes que tú configures.",
+      "prereq": {
+        "unverified": true,
+        "text": "**Antes de empezar:** mientras Google termina de verificar la app, tu cuenta de Gmail debe estar en la lista de usuarios de prueba. Envía tu correo de Gmail a {{contact}} y espera la confirmación. Además, verás avisos de seguridad de Google al conectar: es normal, sigue los pasos."
+      },
+      "steps": [
+        {
+          "text": "Inicia sesión en la app y entra a **Sincronizar correo** desde el menú.",
+          "image": "correo-01.webp"
+        },
+        {
+          "text": "En **\"1. Remitentes\"**, escribe el banco o proveedor y el correo desde el que te llegan sus avisos (por ejemplo notificaciones@bbva.mx). Pulsa **Guardar remitente**. Solo se leerán los correos de esos remitentes.",
+          "image": "correo-02.webp"
+        },
+        {
+          "text": "En **\"2. Conecta Gmail y sincroniza\"**, pulsa **Conectar Gmail** (si ya dice \"Gmail conectado\" pero no sincroniza, pulsa **Reconectar**).",
+          "image": "correo-03.webp"
+        },
+        {
+          "text": "Elige la cuenta de Google que enviaste para la lista de usuarios de prueba.",
+          "image": "correo-04.webp"
+        },
+        {
+          "text": "Google mostrará **\"Google no verificó esta app\"**. Toca **Configuración avanzada**.",
+          "image": "correo-05.webp",
+          "unverified": true
+        },
+        {
+          "text": "Toca **Ir a Mi Control de Finanzas Personales (no seguro)**. Es seguro: solo indica que la app está en revisión de Google.",
+          "image": "correo-06.webp",
+          "unverified": true
+        },
+        {
+          "text": "Google te pide confirmar el acceso a tu cuenta: toca **Continuar**.",
+          "image": "correo-07.webp"
+        },
+        {
+          "text": "Aparece **\"Mi Control de Finanzas Personales requiere acceso adicional a tu Cuenta de Google\"** con el aviso amarillo de app no verificada. Baja hasta el final de la pantalla.",
+          "image": "correo-08.webp",
+          "unverified": true
+        },
+        {
+          "text": "Comprueba que esté el permiso **\"Ver mensajes de correo electrónico y parámetros de configuración\"** (si en tu primera vez aparece como casilla sin marcar, márcala: sin él la app no puede leer los avisos del banco). Marca también **\"Quiero permitir que Mi Control de Finanzas Personales tenga acceso continuo…\"** y toca **Continuar**.",
+          "image": "correo-09.webp"
+        },
+        {
+          "text": "Regresarás a la app y verás **\"✓ Gmail conectado\"**. Pulsa **Sincronizar ahora** para leer los últimos 30 días.",
+          "image": "correo-10.webp"
+        },
+        {
+          "text": "Para que los correos nuevos se registren solos, pulsa **Activar tiempo real**.",
+          "image": "correo-11.webp"
+        },
+        {
+          "text": "Los movimientos se crean como pendientes: revísalos y toca **Confirmar** en **Transacciones** para que cuenten en tus saldos.",
+          "image": "correo-12.webp"
+        }
+      ],
+      "faq": [
+        {
+          "unverified": true,
+          "q": "Veo \"Error 403: access_denied\" o \"Acceso bloqueado\"",
+          "a": "Tu cuenta de Gmail todavía no está en la lista de usuarios de prueba. Envía tu correo a {{contact}} y espera la confirmación."
+        },
+        {
+          "unverified": true,
+          "q": "Dejó de sincronizar después de una semana",
+          "a": "Mientras la app está en revisión, Google cierra el acceso cada 7 días. En Sincronizar correo pulsa **Reconectar (forzar permisos)** y repite los pasos de elegir cuenta y aceptar permisos. Cuando Google termine la verificación esto deja de pasar."
+        },
+        {
+          "q": "¿Qué correos se leen?",
+          "a": "Solo los de los remitentes que configuraste. No se leen otros correos, no se envían ni se modifican, y no se guarda el correo completo: solo el movimiento detectado (monto, fecha y concepto)."
+        },
+        {
+          "q": "¿Cómo quito el acceso?",
+          "a": "Desde la app: Sincronizar correo → Desactivar tiempo real. Desde Google, en cualquier momento: myaccount.google.com/permissions → elige la app → Quitar acceso."
+        },
+        {
+          "q": "¿Y Google Calendar?",
+          "a": "Es opcional (recordatorios de cobros y pagos). Se conecta en Configuración → Google Calendar → Conectar, con el mismo flujo de permisos de estos pasos."
+        },
+        {
+          "q": "¿Y si uso Outlook?",
+          "a": "Outlook (Microsoft) no pasa por la verificación de Google: en la misma pantalla usa la sección \"4. Conecta Outlook y sincroniza\"."
+        }
+      ]
+    },
+    "notificaciones": {
+      "pdf": "activar-notificaciones.pdf",
+      "title": "Activar la lectura de notificaciones (Android)",
+      "intro": "Con este permiso la app lee los avisos de tu banco o wallet y registra el cargo sola. Solo se leen las apps que tú marques. Disponible solo en la app de Android.",
+      "steps": [
+        {
+          "text": "En el menú **Más**, entra a **Captura por notificaciones**.",
+          "image": "notif-01.webp"
+        },
+        {
+          "text": "Toca **Dar acceso a notificaciones**.",
+          "image": "notif-02.webp"
+        },
+        {
+          "text": "Lee el aviso de privacidad y toca **Acepto, continuar**.",
+          "image": "notif-03.webp"
+        },
+        {
+          "text": "Se abre **Control, respuesta y lectura de notificaciones** en los Ajustes de Android. Si el interruptor sale atenuado con **\"Función controlada por configuración restringida\"** (pasa en Android 13 o más cuando la app se instaló fuera de Google Play), sigue el paso siguiente; si no, salta al paso 6.",
+          "image": "notif-04.webp"
+        },
+        {
+          "text": "Ve a Ajustes → Apps → esta app → **Info. de la aplicación** y activa **Permitir ajustes restringidos** (abajo, en \"Ajustes avanzados\"; en otras marcas está en el menú ⋮ de arriba a la derecha).",
+          "image": "notif-05.webp"
+        },
+        {
+          "text": "Regresa a **Control, respuesta y lectura de notificaciones** y abre esta app en la lista.",
+          "image": "notif-06.webp"
+        },
+        {
+          "text": "Activa **Permitir acceso a las notificaciones**.",
+          "image": "notif-07.webp"
+        },
+        {
+          "text": "Si tu teléfono muestra un aviso de **Peligro** (Xiaomi), marca **\"Soy consciente de los posibles riesgos…\"**, espera unos segundos y toca **Aceptar**.",
+          "image": "notif-08.webp"
+        },
+        {
+          "text": "El interruptor queda activado.",
+          "image": "notif-09.webp"
+        },
+        {
+          "text": "Regresa a la app: verás **\"✅ Acceso concedido\"**. En **\"Apps que se escuchan\"**, marca tu banco, tu wallet o las tiendas cuyos avisos quieres capturar (los bancos conocidos ya vienen premarcados).",
+          "image": "notif-10.webp"
+        },
+        {
+          "text": "Baja hasta **\"3. Captura automática\"** y toca **Activar captura automática**.",
+          "image": "notif-11.webp"
+        },
+        {
+          "text": "Verás **\"✅ Activada\"** con el número de apps que se escuchan.",
+          "image": "notif-12.webp"
+        },
+        {
+          "text": "En la mayoría de los teléfonos falta un ajuste de batería para que Android no cierre la app: busca tu marca en la lista de abajo y sigue los pasos."
+        },
+        {
+          "text": "Para comprobar que funciona, revisa \"Últimos avisos recibidos\" en Captura por notificaciones después de un cargo real.",
+          "image": "notif-13.webp"
+        }
+      ],
+      "faq": []
+    }
+  },
+  "brandGuides": [
+    {
+      "key": "xiaomi",
+      "brands": "Xiaomi, Redmi, POCO (MIUI o HyperOS)",
+      "steps": [
+        {
+          "text": "Ajustes del teléfono → Aplicaciones → Gestionar aplicaciones → busca esta app → Ahorro de batería → elige \"Sin restricciones\".",
+          "image": "bat-04.webp"
+        },
+        {
+          "text": "Ajustes del teléfono → Aplicaciones → Permisos → \"Autoencendido en segundo plano\" (en otras versiones se llama \"Inicio automático\"), busca esta app y **enciéndela**. Tras instalar o reinstalar suele quedar APAGADA y sin esto el sistema no la despierta.",
+          "image": "bat-01.webp"
+        },
+        {
+          "text": "Debe quedar encendida.",
+          "image": "bat-02.webp"
+        },
+        {
+          "text": "En \"Info. de la aplicación\" de esta app, deja **apagado** \"Pausar la actividad de la aplicación si no se utiliza\".",
+          "image": "bat-03.webp"
+        },
+        {
+          "text": "Abre las apps recientes (botón cuadrado), mantén presionada la tarjeta de esta app hasta que aparezca un candado, y actívalo para que no se cierre sola.",
+          "image": "bat-05.webp"
+        },
+        {
+          "text": "Comprueba que aparece un candado junto al nombre de la app.",
+          "image": "bat-06.webp"
+        },
+        {
+          "text": "Si el acceso a notificaciones figura como activado y aun así no captura: en Ajustes → Notificaciones → \"Control, respuesta y lectura de notificaciones\", abre esta app, **apaga** \"Permitir acceso a las notificaciones\" y vuelve a **encenderlo**. Es lo que hace que el sistema vuelva a conectar la lectura.",
+          "image": "notif-07.webp"
+        },
+        {
+          "text": "Si después de esto sigue sin registrar nada: desinstala la app y vuelve a instalarla. A veces el sistema deja el permiso en un estado raro que solo se arregla reinstalando."
+        }
+      ]
+    },
+    {
+      "key": "huawei",
+      "brands": "Huawei, Honor (EMUI o MagicOS)",
+      "steps": [
+        {
+          "text": "Ajustes → Batería → Inicio de apps → busca esta app y desactiva la gestión automática."
+        },
+        {
+          "text": "Activa a mano las tres opciones que aparecen: \"Inicio automático\", \"Inicio secundario\" y \"Ejecutar en segundo plano\"."
+        }
+      ]
+    },
+    {
+      "key": "oppo",
+      "brands": "Oppo, Realme, OnePlus (ColorOS)",
+      "steps": [
+        {
+          "text": "Ajustes → Batería → Uso de batería por app → busca esta app → permite \"Actividad en segundo plano\"."
+        },
+        {
+          "text": "Ajustes → Administración de apps (o \"Inicio automático de apps\") → actívalo para esta app."
+        }
+      ]
+    },
+    {
+      "key": "samsung",
+      "brands": "Samsung (One UI)",
+      "steps": [
+        {
+          "text": "Mantén presionado el ícono de la app → Info de la app → Batería → elige \"Sin restricciones\"."
+        },
+        {
+          "text": "Ajustes → Cuidado del dispositivo → Batería → Límites de uso en segundo plano → confirma que esta app NO esté en \"Apps que no se usan\" ni en \"Apps en reposo profundo\"."
+        }
+      ]
+    },
+    {
+      "key": "otro",
+      "brands": "Otra marca",
+      "steps": [
+        {
+          "text": "Busca en Ajustes algo como \"Optimización de batería\" o \"Ahorro de energía\" y pon esta app en \"Sin restricciones\" o \"No optimizar\"."
+        },
+        {
+          "text": "Revisa que no tenga activado ningún modo de \"suspender apps no usadas\" para ella."
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { EMAIL_SYNC_PROVIDER_KEY } from '@/hooks/useEmailSync'
+import { startProviderOAuth } from '@/lib/nativeAuth'
 
 // Scope aditivo sobre el proveedor 'google' de Supabase Auth, SEPARADO del
 // de Gmail (gmail.readonly): Google trata cada consentimiento como un grant
@@ -15,13 +16,10 @@ const CALENDAR_SCOPE = 'https://www.googleapis.com/auth/calendar.events'
 // lo confundiría con uno de Gmail — ver el chequeo explícito en su efecto.
 export async function connectGoogleCalendar(): Promise<void> {
   sessionStorage.setItem(EMAIL_SYNC_PROVIDER_KEY, 'calendar')
-  await supabase.auth.signInWithOAuth({
+  await startProviderOAuth({
     provider: 'google',
-    options: {
-      scopes: CALENDAR_SCOPE,
-      redirectTo: window.location.href,
-      queryParams: { access_type: 'offline', prompt: 'consent' },
-    },
+    scopes: CALENDAR_SCOPE,
+    queryParams: { access_type: 'offline', prompt: 'consent' },
   })
 }
 

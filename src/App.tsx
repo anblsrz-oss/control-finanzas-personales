@@ -32,6 +32,7 @@ import { EmailSyncPage } from '@/features/email/EmailSyncPage'
 import { SmsSyncPage } from '@/features/sms/SmsSyncPage'
 import { NotificationCapturePage } from '@/features/notification-capture/NotificationCapturePage'
 import { HelpFaqPage } from '@/features/help/HelpFaqPage'
+import { InstallApkPage } from '@/features/help/InstallApkPage'
 import { CategoriesPage } from '@/features/categories/CategoriesPage'
 import { YieldsPage } from '@/features/yields/YieldsPage'
 import { ReportsPage } from '@/features/reports/ReportsPage'
@@ -72,6 +73,8 @@ export default function App() {
       <Route path="/cookies" element={<PageGuard to="/cookies"><CookiePolicyPage /></PageGuard>} />
       {/* Sin PageGuard: Google Play exige que esta URL esté siempre disponible. */}
       <Route path="/eliminar-cuenta" element={<DeleteAccountPage />} />
+      {/* Sin PageGuard: la necesita quien aún no tiene la app instalada. */}
+      <Route path="/instalar-android" element={<InstallApkPage />} />
       <Route path="/login" element={<PageGuard to="/login"><LoginPage /></PageGuard>} />
       <Route path="/reset-password" element={<PageGuard to="/reset-password"><ResetPasswordPage /></PageGuard>} />
       <Route
