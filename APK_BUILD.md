@@ -1,7 +1,9 @@
 ﻿# APK de Mi Control de Finanzas Personales (Android) — build, firma y publicación
 
-> `Ahorbit.keystore` y el alias `Ahorbit` son identificadores reales de la firma:
-> no los renombres o el APK ya instalado no podrá actualizarse.
+> La llave de firma es `finzen.keystore` (alias `finzen`), guardada en
+> `C:\Users\gamer\finzen.keystore`. No la renombres ni la cambies: el APK ya
+> instalado y Google Play (Play App Signing) dependen de ella.
+> Si no tienes las contraseñas, usa el workflow `export-play-key.yml`.
 > El repo es `anblsrz-oss/control-finanzas-personales` y el Release publica dos
 > APKs idénticos: `finzen.apk` (nombre fijo, para `releases/latest/download`) y
 > `finzen-vX.Y.Z.apk` (con la versión en el nombre, para saber cuál tienes bajado).
@@ -20,20 +22,20 @@ podrás publicar actualizaciones que el sistema acepte como la misma app).
 Necesitas `keytool` (viene con cualquier JDK). En una terminal:
 
 ```bash
-keytool -genkey -v -keystore Ahorbit.keystore -alias Ahorbit \
+keytool -genkey -v -keystore finzen.keystore -alias finzen \
   -keyalg RSA -keysize 2048 -validity 10000
 ```
-Te pedirá una contraseña (guárdala) y algunos datos. Genera `Ahorbit.keystore`.
+Te pedirá una contraseña (guárdala) y algunos datos. Genera `finzen.keystore`.
 
 Conviértela a base64 para guardarla como secret:
 ```bash
 # Linux/macOS/Git Bash:
-base64 -w0 Ahorbit.keystore > Ahorbit.keystore.b64
+base64 -w0 finzen.keystore > finzen.keystore.b64
 # Windows PowerShell:
-[Convert]::ToBase64String([IO.File]::ReadAllBytes("Ahorbit.keystore")) > Ahorbit.keystore.b64
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("finzen.keystore")) > finzen.keystore.b64
 ```
 
-> Guarda `Ahorbit.keystore` y las contraseñas en un lugar seguro (gestor de
+> Guarda `finzen.keystore` y las contraseñas en un lugar seguro (gestor de
 > contraseñas). NO las subas al repo.
 
 ### 2. Agrega los secrets al repo
@@ -41,9 +43,9 @@ GitHub → tu repo → **Settings → Secrets and variables → Actions → New 
 
 | Secret | Valor |
 |--------|-------|
-| `ANDROID_KEYSTORE_BASE64` | contenido de `Ahorbit.keystore.b64` |
+| `ANDROID_KEYSTORE_BASE64` | contenido de `finzen.keystore.b64` |
 | `ANDROID_KEYSTORE_PASSWORD` | la contraseña del keystore |
-| `ANDROID_KEY_ALIAS` | `Ahorbit` |
+| `ANDROID_KEY_ALIAS` | `finzen` |
 | `ANDROID_KEY_PASSWORD` | la contraseña de la llave (suele ser la misma) |
 | `GOOGLE_SERVICES_JSON_BASE64` | `android/app/google-services.json` (de Firebase) en base64, para que el push funcione |
 
