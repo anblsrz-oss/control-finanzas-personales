@@ -8,10 +8,10 @@ Reglas que respetan estos textos (no cambiarlas al editar):
 - Nada de SMS: la variante `play` no los lee.
 - No se prometen funciones como gratuitas: qué es Premium lo decide la configuración del admin.
 
-## Nombre de la app (≤ 30)
+## Nombre de la app (≤ 30, usa los 30)
 
 ```
-Control Finanzas Personales
+Control de Finanzas Personales
 ```
 
 ## Descripción breve (≤ 80)
