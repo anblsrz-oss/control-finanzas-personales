@@ -7,7 +7,10 @@ import { startProviderOAuth } from '@/lib/nativeAuth'
 // de Gmail (gmail.readonly): Google trata cada consentimiento como un grant
 // independiente, revocable por el usuario sin afectar al otro. Ver
 // google_calendar_connections en 0050 para el porqué de la fila propia.
-const CALENDAR_SCOPE = 'https://www.googleapis.com/auth/calendar.events'
+// calendar.app.created (mínimo privilegio, exigido en la verificación de
+// Google): la app solo accede al calendario secundario que ella crea
+// (google-calendar-connect), nunca al principal ni a otros eventos.
+const CALENDAR_SCOPE = 'https://www.googleapis.com/auth/calendar.app.created'
 
 // Pide consentimiento para crear eventos en el Calendar del usuario. Mismo
 // patrón que connectGmail/connectOutlook en useEmailSync.ts, incluyendo el
@@ -60,8 +63,9 @@ export function useEnableGoogleCalendar() {
     { userId: string; providerToken: string; providerRefreshToken: string | null }
   >({
     mutationFn: async ({ providerToken, providerRefreshToken }) => {
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
       const { data, error } = await supabase.functions.invoke('google-calendar-connect', {
-        body: { providerToken, providerRefreshToken },
+        body: { providerToken, providerRefreshToken, timeZone },
       })
       if (error) {
         let detail = error.message
@@ -82,19 +86,16 @@ export function useEnableGoogleCalendar() {
   })
 }
 
-// Desconectar: borra la fila directo (el cliente tiene permiso de delete,
-// igual que gmail_connections/outlook_connections). Los recordatorios ya
-// creados en el Calendar del usuario NO se borran de golpe: quedan huérfanos
-// hasta que su suscripción/tarjeta/plan de origen se elimine (ver
-// calendar_event_cleanup en 0052) o el propio usuario los borre a mano.
+// Desconectar: vía google-calendar-connect (action 'disconnect'), que borra
+// en Google el calendario de recordatorios de la app (con sus eventos) y
+// luego la fila. Conexiones antiguas en 'primary' solo borran la fila.
 export function useDisconnectGoogleCalendar() {
   const queryClient = useQueryClient()
   return useMutation<void, Error, { userId: string }>({
-    mutationFn: async ({ userId }) => {
-      const { error } = await supabase
-        .from('google_calendar_connections')
-        .delete()
-        .eq('user_id', userId)
+    mutationFn: async () => {
+      const { error } = await supabase.functions.invoke('google-calendar-connect', {
+        body: { action: 'disconnect' },
+      })
       if (error) throw error
     },
     onSuccess: (_d, vars) => {

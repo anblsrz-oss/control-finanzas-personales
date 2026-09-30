@@ -206,7 +206,7 @@ export function SettingsPage() {
 
   async function handleDisconnectCalendar() {
     if (!userId) return
-    if (!window.confirm(t('¿Desconectar Google Calendar? Los recordatorios ya creados se quedan en tu calendario.'))) return
+    if (!window.confirm(t('¿Desconectar Google Calendar? Se borrará el calendario «Mi Control de Finanzas — Recordatorios» con sus recordatorios.'))) return
     try {
       await disconnectCalendar.mutateAsync({ userId })
     } catch (e) {
@@ -528,7 +528,7 @@ export function SettingsPage() {
             📅 {t('Recordatorios en Google Calendar')}
           </p>
           <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
-            {t('Crea un evento en tu calendario cuando se acerca el próximo cobro de una suscripción o la fecha de pago de una tarjeta/MSI.')}
+            {t('Crea en tu cuenta un calendario aparte, «Mi Control de Finanzas — Recordatorios», con un evento cuando se acerca el próximo cobro de una suscripción o la fecha de pago de una tarjeta/MSI. La app no ve tus otros calendarios ni eventos.')}
           </p>
 
           <div className="flex flex-wrap items-center gap-3">
