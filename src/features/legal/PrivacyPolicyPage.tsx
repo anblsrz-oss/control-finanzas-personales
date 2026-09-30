@@ -10,7 +10,7 @@ import { activeLocale } from '@/i18n'
 // OAuth de Google. Incluye la cláusula de "Limited Use" que Google exige
 // cuando una app pide scopes de Gmail (gmail.readonly).
 
-const LAST_UPDATED_ISO = '2026-09-26'
+const LAST_UPDATED_ISO = '2026-09-29'
 const CONTACT_EMAIL = 'anbl.srz@gmail.com'
 
 type Section = { heading: string; paragraphs: string[]; link?: { to: string; label: string } }
@@ -58,6 +58,9 @@ const SECTIONS: Section[] = [
       'Usamos Supabase como proveedor de infraestructura (base de datos, autenticación y funciones del servidor) para operar la app; Supabase procesa los datos en nuestro nombre bajo sus propias medidas de seguridad, y no los usa para sus propios fines.',
       'Cuando inicias sesión con Google, o conectas Gmail, compartimos información con Google únicamente en la medida necesaria para autenticarte o para leer los correos que tú autorizas, conforme a esta política.',
       'Si conectas Outlook, compartimos información con Microsoft únicamente en la medida necesaria para leer los correos que tú autorizas.',
+      'Cuando escaneas un recibo, una factura o un estado de cuenta, la imagen o el documento se envía a OpenAI para extraer el monto, la fecha y el comercio. OpenAI lo procesa en nuestro nombre, no lo guardamos nosotros y, conforme a sus condiciones para clientes de su API, no lo usa para entrenar sus modelos. Los correos de Gmail u Outlook no se envían a OpenAI.',
+      'Los correos que te manda la app (alertas de presupuesto, avisos de suscripciones, reportes e invitaciones familiares) se envían a través de Resend, que recibe tu correo y el contenido del aviso solo para entregarlo.',
+      'Las notificaciones push se entregan mediante Firebase Cloud Messaging (Google), que recibe un identificador de tu dispositivo y el texto de la notificación.',
       'Si contratas Premium, Stripe o Google Play reciben los datos necesarios para cobrarte (correo, datos de la tarjeta o del medio de pago que capturas directamente en su página) y los tratan conforme a su propia política de privacidad.',
       'No compartimos tus datos financieros con anunciantes ni los vendemos a terceros.',
     ],

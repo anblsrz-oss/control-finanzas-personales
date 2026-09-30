@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Select } from '@/components/ui/Select'
 import { PremiumGate } from '@/components/ui/PremiumGate'
-import { AccountForm } from './AccountForm'
+import { AccountForm, ACCOUNT_TYPE_LABELS } from './AccountForm'
 import { Money } from '@/components/ui/Money'
 import { useSettings } from '@/store/useSettings'
 import type { AccountRow } from '@/types/db'
@@ -208,7 +208,7 @@ export function AccountsPage() {
                       )}
                     </h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      {acc.bank_name || t('Sin banco')} • {acc.type} • {acc.currency}
+                      {acc.bank_name || t('Sin banco')} • {t(ACCOUNT_TYPE_LABELS[acc.type] ?? acc.type)} • {acc.currency}
                     </p>
                     {acc.has_yield && (
                       <p className="mt-1 text-xs text-green-600">

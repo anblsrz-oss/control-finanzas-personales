@@ -1034,6 +1034,12 @@ export const en: Record<string, string> = {
     'When you sign in with Google, or connect Gmail, we share information with Google only to the extent necessary to authenticate you or to read the emails you authorize, in accordance with this policy.',
   'Si conectas Outlook, compartimos información con Microsoft únicamente en la medida necesaria para leer los correos que tú autorizas.':
     'If you connect Outlook, we share information with Microsoft only to the extent necessary to read the emails you authorize.',
+  'Cuando escaneas un recibo, una factura o un estado de cuenta, la imagen o el documento se envía a OpenAI para extraer el monto, la fecha y el comercio. OpenAI lo procesa en nuestro nombre, no lo guardamos nosotros y, conforme a sus condiciones para clientes de su API, no lo usa para entrenar sus modelos. Los correos de Gmail u Outlook no se envían a OpenAI.':
+    'When you scan a receipt, an invoice or a statement, the image or document is sent to OpenAI to extract the amount, date and merchant. OpenAI processes it on our behalf, we do not store it, and under its terms for API customers it does not use it to train its models. Gmail and Outlook emails are not sent to OpenAI.',
+  'Los correos que te manda la app (alertas de presupuesto, avisos de suscripciones, reportes e invitaciones familiares) se envían a través de Resend, que recibe tu correo y el contenido del aviso solo para entregarlo.':
+    'The emails the app sends you (budget alerts, subscription notices, reports and family invitations) are delivered through Resend, which receives your email address and the content of the notice only to deliver it.',
+  'Las notificaciones push se entregan mediante Firebase Cloud Messaging (Google), que recibe un identificador de tu dispositivo y el texto de la notificación.':
+    'Push notifications are delivered through Firebase Cloud Messaging (Google), which receives an identifier for your device and the text of the notification.',
   'Si contratas Premium, Stripe o Google Play reciben los datos necesarios para cobrarte (correo, datos de la tarjeta o del medio de pago que capturas directamente en su página) y los tratan conforme a su propia política de privacidad.':
     'If you purchase Premium, Stripe or Google Play receive the data needed to charge you (email, and the card or payment method details you enter directly on their page) and handle it under their own privacy policies.',
   'No compartimos tus datos financieros con anunciantes ni los vendemos a terceros.':

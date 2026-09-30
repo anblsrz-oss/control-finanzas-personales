@@ -15,7 +15,17 @@ import { Select } from '@/components/ui/Select'
 import { Card } from '@/components/ui/Card'
 import { CURRENCIES_ARRAY, CURRENCIES, formatMoney } from '@/lib/format'
 import { toMonthlyRate, toAnnualRate, daysInMonthOf } from '@/lib/yields'
-import type { AccountRow } from '@/types/db'
+import type { AccountRow, AccountType } from '@/types/db'
+
+// Nombre visible de cada tipo de cuenta (clave de i18n); lo usan el
+// formulario y la lista de cuentas.
+export const ACCOUNT_TYPE_LABELS: Record<AccountType, string> = {
+  checking: 'Corriente',
+  savings: 'Ahorro',
+  investment: 'Inversión',
+  cash: 'Efectivo',
+  voucher: 'Vales de despensa',
+}
 
 // Tasa anual de retención sobre el capital para inversiones (Ley de Ingresos).
 // Es solo la sugerencia inicial: cambia cada año y el usuario puede editarla.
@@ -287,13 +297,10 @@ export function AccountForm({ account, parentAccount, onSuccess, onCancel }: Acc
         <div className="grid grid-cols-3 gap-4">
           <Select
             label={t('Tipo')}
-            options={[
-              { value: 'checking', label: t('Corriente') },
-              { value: 'savings', label: t('Ahorro') },
-              { value: 'investment', label: t('Inversión') },
-              { value: 'cash', label: t('Efectivo') },
-              { value: 'voucher', label: t('Vales de despensa') },
-            ]}
+            options={(Object.keys(ACCOUNT_TYPE_LABELS) as AccountType[]).map((value) => ({
+              value,
+              label: t(ACCOUNT_TYPE_LABELS[value]),
+            }))}
             {...form.register('type')}
           />
           <Select
