@@ -1,0 +1,79 @@
+# Exporta la llave de firma del APK (la misma de build-apk.yml) para subirla a
+# Play App Signing ("Exportar y subir una clave desde Java KeyStore").
+#
+# Se corre a mano (Actions → Export Play signing key → Run workflow) y deja el
+# artefacto `play-signing-key` con el zip que pide Play Console. El zip sale
+# cifrado con play-store/encryption_public_key.pem (llave pública de Google),
+# así que solo Google puede abrirlo; aun así el artefacto dura 1 día.
+#
+# Usa los secrets de firma de siempre porque las contraseñas solo viven ahí.
+name: Export Play signing key
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    env:
+      # Huella SHA-256 del certificado que firma los APK/AAB publicados.
+      EXPECTED_SHA256: '39:74:1D:0F:2D:87:13:1C:29:27:D7:B8:66:64:97:D5:27:73:FE:44:46:CA:1E:36:96:3D:66:F0:D0:BF:56:4E'
+      PEPK_URL: https://www.gstatic.com/play-apps-publisher-rapid/signing-tool/prod/pepk.jar
+      PEPK_SHA256: aaccc0774b240aa5304bdad2a49865e92f229ca73209ecb6eaafe75dc858e24e
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Restore keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+
+      # Si la llave de los secrets no es la que firma la app, no se exporta nada.
+      - name: Check certificate fingerprint
+        env:
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          keytool -list -v -keystore "$RUNNER_TEMP/release.keystore" \
+            -storepass "$KS_PASS" -alias "$KEY_ALIAS" > "$RUNNER_TEMP/cert.txt"
+          grep -F "$EXPECTED_SHA256" "$RUNNER_TEMP/cert.txt" \
+            || { echo "::error::La huella de la llave no coincide con la del AAB"; exit 1; }
+          echo "Huella verificada"
+
+      - name: Download PEPK
+        run: |
+          curl -fsSL "$PEPK_URL" -o "$RUNNER_TEMP/pepk.jar"
+          echo "$PEPK_SHA256  $RUNNER_TEMP/pepk.jar" | sha256sum -c -
+
+      - name: Export encrypted key
+        env:
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          mkdir -p out
+          java -jar "$RUNNER_TEMP/pepk.jar" \
+            --keystore="$RUNNER_TEMP/release.keystore" \
+            --alias="$KEY_ALIAS" \
+            --keystore-pass="$KS_PASS" \
+            --key-pass="$KEY_PASS" \
+            --output=out/play-signing-key.zip \
+            --include-cert \
+            --rsa-aes-encryption \
+            --encryption-key-path=play-store/encryption_public_key.pem
+          rm -f "$RUNNER_TEMP/release.keystore"
+          ls -l out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: play-signing-key
+          path: out/play-signing-key.zip
+          retention-days: 1
