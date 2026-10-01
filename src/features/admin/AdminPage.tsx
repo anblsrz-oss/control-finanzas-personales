@@ -122,7 +122,7 @@ function BrandingEditor() {
           <input
             ref={fileInputRef}
             type="file"
-            accept="image/*"
+            accept="image/png,image/jpeg,image/webp,image/gif"
             className="hidden"
             onChange={handleFileChange}
           />

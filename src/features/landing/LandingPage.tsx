@@ -196,6 +196,9 @@ function FeedbackForm() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
+  // Campo trampa para bots: invisible para personas; si llega lleno, el
+  // servidor responde "enviado" sin mandar nada.
+  const [website, setWebsite] = useState('')
 
   if (sendFeedback.isSuccess) {
     return (
@@ -213,10 +216,20 @@ function FeedbackForm() {
       onSubmit={(e) => {
         e.preventDefault()
         if (!message.trim()) return
-        sendFeedback.mutate({ name, email, message })
+        sendFeedback.mutate({ name, email, message, website })
       }}
       className="space-y-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm"
     >
+      <input
+        type="text"
+        name="website"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="absolute -left-[9999px] h-px w-px opacity-0"
+        value={website}
+        onChange={(e) => setWebsite(e.target.value)}
+      />
       <div className="grid gap-3 sm:grid-cols-2">
         <input
           className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent px-3 py-2 text-sm text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"

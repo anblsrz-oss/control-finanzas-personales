@@ -5,6 +5,8 @@ export interface FeedbackInput {
   name?: string
   email?: string
   message: string
+  // Campo trampa anti-bots (debe ir vacío).
+  website?: string
 }
 
 // Envía un comentario/sugerencia desde la landing. La edge function send-feedback
