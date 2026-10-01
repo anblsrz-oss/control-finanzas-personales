@@ -1536,8 +1536,8 @@ export const en: Record<string, string> = {
     'Save name',
   'Escribe tu nombre y apellido.':
     'Enter your first and last name.',
-  'La contraseña debe tener al menos 6 caracteres.':
-    'The password must be at least 6 characters long.',
+  'La contraseña debe tener al menos 8 caracteres.':
+    'The password must be at least 8 characters long.',
   'Este correo ya tiene una cuenta. Inicia sesión o usa "¿Olvidaste tu contraseña?".':
     'This email already has an account. Sign in or use "Forgot your password?".',
   'Te enviamos un correo a {{email}} para confirmar que es tuyo. Abre el enlace para activar tu cuenta.':

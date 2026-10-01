@@ -68,8 +68,8 @@ export function LoginPage() {
       setError(t('Escribe tu correo.'))
       return
     }
-    if (password.length < 6) {
-      setError(t('La contraseña debe tener al menos 6 caracteres.'))
+    if (password.length < 8) {
+      setError(t('La contraseña debe tener al menos 8 caracteres.'))
       return
     }
     setLoading(true)
