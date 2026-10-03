@@ -1,5 +1,5 @@
 {
-  "version": "0.16.2",
-  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.16.2/finzen-v0.16.2.apk",
-  "notes": "Actualizar la app ya no se queda trabada: ahora baja el APK dentro de la app y abre el instalador de Android."
+  "version": "0.17.0",
+  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.17.0/finzen-v0.17.0.apk",
+  "notes": "Rendimientos más exactos: el esperado usa el saldo de cada día del mes y el aviso \"Ganaste $X\" de Mercado Pago se registra solo. Y en Sincronizar correo ya no necesitas regex: pega un correo de ejemplo y la app arma la regla."
 }
