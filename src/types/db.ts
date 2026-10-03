@@ -427,6 +427,16 @@ export interface ParsingRuleConfig {
   // Regex que extrae la terminación (4 dígitos) de la tarjeta del correo. Se
   // cruza con cards.last4 para asignar la tarjeta/cuenta automáticamente.
   last4Regex?: string
+  // Regla armada SIN regex (modo simple / correo de ejemplo): los textos
+  // "antes/después" con los que se generaron amountRegex/conceptRegex/
+  // last4Regex (lib/ruleBuilder.ts), para reabrirla igual al editar. El
+  // backend solo lee los regex.
+  simple?: {
+    amountBefore: string
+    conceptBefore: string
+    conceptAfter: string
+    last4Before: string
+  }
   // Cuenta a usar cuando el correo no trae ninguna terminación de
   // tarjeta/cuenta (ej. pagos vía wallet de un gateway como EBANX/Xsolla).
   defaultAccountId?: string

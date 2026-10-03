@@ -29,6 +29,8 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
+import { EMPTY_SIMPLE, regexError, type SimpleRuleFields } from '@/lib/ruleBuilder'
+import { RulePatternEditor, effectiveRegexes, type PatternMode } from './RulePatternEditor'
 
 export function EmailSyncPage() {
   const { t } = useTranslation()
@@ -75,6 +77,12 @@ export function EmailSyncPage() {
   const [ruleCategoryId, setRuleCategoryId] = useState('')
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
+  // Monto/concepto/tarjeta sin regex: modo simple o por correo de ejemplo
+  // (ver RulePatternEditor). El correo de ejemplo NO se guarda.
+  const [patternMode, setPatternMode] = useState<PatternMode>('example')
+  const [simpleFields, setSimpleFields] = useState<SimpleRuleFields>(EMPTY_SIMPLE)
+  const [ruleSample, setRuleSample] = useState('')
+  const [ruleError, setRuleError] = useState<string | null>(null)
 
   useEffect(() => {
     // Al volver del consentimiento (Gmail u Outlook), la sesión trae el
@@ -226,10 +234,27 @@ export function EmailSyncPage() {
     setRuleCategoryId('')
     setShowAdvanced(false)
     setEditingId(null)
+    setPatternMode('example')
+    setSimpleFields(EMPTY_SIMPLE)
+    setRuleSample('')
+    setRuleError(null)
   }
 
   async function handleSaveRule() {
     if (!userId || !bankName.trim() || !senders.trim()) return
+    const patterns = effectiveRegexes(patternMode, simpleFields, {
+      amountRegex,
+      conceptRegex,
+      last4Regex,
+    })
+    const badRegex = [patterns.amountRegex, patterns.conceptRegex, patterns.last4Regex]
+      .map(regexError)
+      .find(Boolean)
+    if (badRegex) {
+      setRuleError(t('Un regex no es válido: {{error}}', { error: badRegex }))
+      return
+    }
+    setRuleError(null)
     // Si se renombró el banco durante la edición, el upsert (por bank_name)
     // crearía una regla nueva; borramos la vieja para no duplicar.
     if (editingId && rules.find((r) => r.id === editingId)?.bank_name !== bankName.trim()) {
@@ -244,11 +269,12 @@ export function EmailSyncPage() {
           .split(',')
           .map((s) => s.trim())
           .filter(Boolean),
-        amountRegex: amountRegex.trim() || undefined,
-        conceptRegex: conceptRegex.trim() || undefined,
+        amountRegex: patterns.amountRegex.trim() || undefined,
+        conceptRegex: patterns.conceptRegex.trim() || undefined,
         currency: currency.trim() || undefined,
         kind,
-        last4Regex: last4Regex.trim() || undefined,
+        last4Regex: patterns.last4Regex.trim() || undefined,
+        simple: patternMode === 'advanced' ? undefined : simpleFields,
         defaultAccountId: ruleDefaultAccountId || undefined,
         categoryId: ruleCategoryId || undefined,
       },
@@ -267,6 +293,13 @@ export function EmailSyncPage() {
     setLast4Regex(r.config.last4Regex ?? '')
     setRuleDefaultAccountId(r.config.defaultAccountId ?? '')
     setRuleCategoryId(r.config.categoryId ?? '')
+    // Reglas guardadas en modo simple se reabren igual; las que solo tienen
+    // regex escrito a mano, en avanzado.
+    const hasRegex = !!(r.config.amountRegex || r.config.conceptRegex || r.config.last4Regex)
+    setSimpleFields(r.config.simple ? { ...EMPTY_SIMPLE, ...r.config.simple } : EMPTY_SIMPLE)
+    setPatternMode(r.config.simple ? 'simple' : hasRegex ? 'advanced' : 'simple')
+    setRuleSample('')
+    setRuleError(null)
     setShowAdvanced(true)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -336,7 +369,7 @@ export function EmailSyncPage() {
               ))}
             </ul>
           )}
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             <Input
               label={t('Banco o proveedor')}
               value={bankName}
@@ -349,20 +382,29 @@ export function EmailSyncPage() {
               onChange={(e) => setSenders(e.target.value)}
               placeholder="notificaciones@bbva.mx"
             />
-            <Input
-              label={t('Regex de monto (opcional)')}
-              value={amountRegex}
-              onChange={(e) => setAmountRegex(e.target.value)}
-              placeholder="por \\$([\\d,]+\\.\\d{2})"
-            />
           </div>
+
+          <RulePatternEditor
+            mode={patternMode}
+            onModeChange={setPatternMode}
+            simple={simpleFields}
+            onSimpleChange={setSimpleFields}
+            regexes={{ amountRegex, conceptRegex, last4Regex }}
+            onRegexesChange={(rx) => {
+              setAmountRegex(rx.amountRegex)
+              setConceptRegex(rx.conceptRegex)
+              setLast4Regex(rx.last4Regex)
+            }}
+            sample={ruleSample}
+            onSampleChange={setRuleSample}
+          />
 
           <button
             type="button"
             onClick={() => setShowAdvanced((v) => !v)}
             className="w-fit text-xs font-medium text-brand-700 dark:text-brand-500 hover:underline"
           >
-            {showAdvanced ? t('▲ Ocultar opciones avanzadas') : t('▼ Opciones avanzadas (moneda, tipo, concepto, tarjeta)')}
+            {showAdvanced ? t('▲ Ocultar opciones avanzadas') : t('▼ Más opciones (tipo, moneda, cuenta, categoría)')}
           </button>
 
           {showAdvanced && (
@@ -382,18 +424,6 @@ export function EmailSyncPage() {
                 onChange={(e) => setCurrency(e.target.value.toUpperCase())}
                 placeholder="MXN"
                 maxLength={3}
-              />
-              <Input
-                label={t('Regex de concepto (opcional)')}
-                value={conceptRegex}
-                onChange={(e) => setConceptRegex(e.target.value)}
-                placeholder="en (.+?) por"
-              />
-              <Input
-                label={t('Regex de terminación de tarjeta (opcional)')}
-                value={last4Regex}
-                onChange={(e) => setLast4Regex(e.target.value)}
-                placeholder="terminada en (\\d{4})"
               />
               <p className="text-xs text-slate-400 dark:text-slate-500 sm:col-span-2">
                 {t('Si el correo trae la terminación de la tarjeta, se asignará automáticamente la tarjeta que coincida (y su cuenta ligada).')}
@@ -434,6 +464,7 @@ export function EmailSyncPage() {
             </div>
           )}
 
+          {ruleError && <p className="text-xs text-red-600 dark:text-red-400">{ruleError}</p>}
           <div className="flex flex-wrap gap-2">
             <Button
               variant="secondary"

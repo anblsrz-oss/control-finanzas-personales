@@ -5,22 +5,21 @@ import { useAccountYieldTiers } from '@/hooks/useAccountYieldTiers'
 import { useEntitlements } from '@/hooks/useAppConfig'
 import { monthStartISO, formatMonthLabel } from '@/lib/dates'
 import { formatDate } from '@/lib/format'
-import { expectedYield } from '@/lib/yields'
-import { useYieldRecords } from '@/hooks/useYields'
+import { averageBalance, projectYield, type YieldTier } from '@/lib/yields'
+import { useAccountDailyBalances, useYieldRecords, type YieldRecord } from '@/hooks/useYields'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
 import { YieldForm } from './YieldForm'
 import { useMoneyFormat } from '@/components/ui/Money'
+import type { AccountRow } from '@/types/db'
 
 import { useState } from 'react'
 
 export function YieldsPage() {
   const { t } = useTranslation()
-  const formatMoney = useMoneyFormat()
   const { session } = useAuth()
   const userId = session?.user?.id
   const { canUseYields } = useEntitlements()
-  const [editingAccountId, setEditingAccountId] = useState<string | null>(null)
 
   const accountsQuery = useAccounts(userId)
   const balancesQuery = useAccountBalances(userId)
@@ -86,155 +85,174 @@ export function YieldsPage() {
       <div className="space-y-6">
         {accountsWithYield.map((account) => {
           const balance = balances.find((b) => b.account_id === account.id)
-          const currentBalance = balance?.current_balance ?? account.initial_balance
-          const accountYields = yields.filter(
-            (y) => y.account_id === account.id,
-          )
-
-          // Rendimiento esperado este mes
-          const currentMonth = monthStartISO()
-          const thisMonthYield = accountYields.find(
-            (y) => y.period_month === currentMonth,
-          )
-          const accountTiers = tiers
-            .filter((tr) => tr.account_id === account.id)
-            .map((tr) => ({ minAmount: tr.min_amount, rate: tr.rate }))
-          // Bruto → ISR → neto. El esperado que se compara contra el real es
-          // el NETO, que es lo que de verdad abona el banco.
-          const projection = expectedYield({
-            balance: currentBalance,
-            rate: account.yield_rate || 0,
-            period: account.yield_rate_period ?? 'monthly',
-            kind: account.yield_kind ?? 'demand',
-            termEnd: account.yield_term_end,
-            termDays: account.yield_term_days,
-            periodMonth: currentMonth,
-            withholdIsr: account.withhold_isr,
-            isrRate: account.isr_rate,
-            tiers: accountTiers,
-          })
-          const expectedGrowth = thisMonthYield?.expected_growth ?? projection.net
-          const parentAccount = account.parent_account_id
-            ? accountById.get(account.parent_account_id)
-            : undefined
-
           return (
-            <div key={account.id} className="space-y-3">
-              <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:border-emerald-900/60 dark:from-emerald-950/60 dark:to-green-950/40">
-                <h3 className="font-semibold text-slate-800 dark:text-slate-100">
-                  {parentAccount && <span className="text-slate-400">↳ </span>}
-                  {account.name}
-                  {parentAccount && (
-                    <span className="ml-1 text-xs font-normal text-slate-500 dark:text-slate-400">
-                      {t('(apartado de {{name}})', { name: parentAccount.name })}
-                    </span>
-                  )}
-                </h3>
-                <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
-                  📈 {t('Rendimiento:')} {account.yield_rate}%{' '}
-                  {account.yield_rate_period === 'annual' ? t('anual') : t('mensual')}
-                  {account.yield_kind === 'term' && account.yield_term_end && (
-                    <> · {t('plazo fijo, vence {{date}}', { date: formatDate(account.yield_term_end) })}</>
-                  )}
-                </p>
-                {/* Desglose: la retención es la diferencia principal contra el
-                    estado de cuenta, así que se muestra explícita. */}
-                {account.withhold_isr && projection.isr > 0 && (
-                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                    {t('Bruto')} {formatMoney(projection.gross, account.currency)} ·{' '}
-                    {t('ISR')} −{formatMoney(projection.isr, account.currency)} ·{' '}
-                    {t('neto')} {formatMoney(projection.net, account.currency)}
-                  </p>
-                )}
-                <div className="mt-3 grid grid-cols-3 gap-3">
-                  <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{t('Saldo actual')}</p>
-                    <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-                      {formatMoney(currentBalance, account.currency)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{t('Crecimiento esperado')}</p>
-                    <p className="text-lg font-semibold text-green-600 dark:text-green-400">
-                      +{formatMoney(expectedGrowth, account.currency)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{t('Crecimiento real')}</p>
-                    <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-                      {thisMonthYield && thisMonthYield.actual_growth !== null
-                        ? `+${formatMoney(thisMonthYield.actual_growth, account.currency)}`
-                        : '—'}
-                    </p>
-                  </div>
-                </div>
-              </Card>
-
-              {/* Mostrar últimos registros */}
-              {accountYields.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-                    {t('Histórico')}
-                  </p>
-                  {accountYields.map((y) => (
-                    <div
-                      key={y.id}
-                      onClick={() => setEditingAccountId(y.id)}
-                      className="cursor-pointer transition-colors"
-                    >
-                      <Card
-                        className={`flex items-center justify-between ${
-                          y.verified
-                            ? 'border-green-200 bg-green-50 dark:border-green-900/60 dark:bg-green-950/30'
-                            : ''
-                        } ${
-                          editingAccountId === y.id ? 'border-blue-300 bg-blue-50 dark:bg-blue-900/20' : ''
-                        } hover:border-slate-300`}
-                      >
-                      <div>
-                        <p className="text-sm font-medium text-slate-800 dark:text-slate-100">
-                          {formatMonthLabel(y.period_month, {
-                            year: 'numeric',
-                            month: 'long',
-                          })}
-                        </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          {t('Esperado:')}{' '}
-                          {formatMoney(y.expected_growth || 0, account.currency)} |
-                          {' '}{t('Real:')}{' '}
-                          {y.actual_growth !== null
-                            ? formatMoney(y.actual_growth, account.currency)
-                            : '—'}
-                        </p>
-                      </div>
-                      {y.verified && (
-                        <span className="text-xs font-semibold text-green-600">
-                          ✓ {t('Verificado')}
-                        </span>
-                      )}
-                      </Card>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Form para registrar crecimiento actual o editar */}
-              {editingAccountId && editingAccountId !== account.id ? null : (
-                <YieldForm
-                  account={account}
-                  expectedGrowth={expectedGrowth}
-                  currentRecord={
-                    editingAccountId === account.id
-                      ? accountYields.find((y) => y.id === editingAccountId)
-                      : thisMonthYield || undefined
-                  }
-                  onDelete={() => setEditingAccountId(null)}
-                />
-              )}
-            </div>
+            <AccountYieldSection
+              key={account.id}
+              account={account}
+              parentAccount={
+                account.parent_account_id ? accountById.get(account.parent_account_id) : undefined
+              }
+              currentBalance={balance?.current_balance ?? account.initial_balance}
+              records={yields.filter((y) => y.account_id === account.id)}
+              tiers={tiers
+                .filter((tr) => tr.account_id === account.id)
+                .map((tr) => ({ minAmount: tr.min_amount, rate: tr.rate }))}
+            />
           )
         })}
       </div>
     </>
+  )
+}
+
+function AccountYieldSection({
+  account,
+  parentAccount,
+  currentBalance,
+  records,
+  tiers,
+}: {
+  account: AccountRow
+  parentAccount?: AccountRow
+  currentBalance: number
+  records: YieldRecord[]
+  tiers: YieldTier[]
+}) {
+  const { t } = useTranslation()
+  const formatMoney = useMoneyFormat()
+  const currentMonth = monthStartISO()
+  // Mes que se está editando en el formulario (al tocar un registro del
+  // histórico); null = el mes en curso.
+  const [editingMonth, setEditingMonth] = useState<string | null>(null)
+
+  const isDemand = (account.yield_kind ?? 'demand') === 'demand'
+  const dailyQuery = useAccountDailyBalances(isDemand ? account.id : undefined, currentMonth)
+  const daily = dailyQuery.data
+
+  const thisMonthYield = records.find((y) => y.period_month === currentMonth)
+  // Bruto → ISR → neto. El esperado que se compara contra el real es el
+  // NETO, que es lo que de verdad abona el banco. Con el saldo de cada día
+  // del mes (lo transcurrido) y el actual proyectado al resto del mes.
+  const projection = projectYield(account, tiers, currentMonth, currentBalance, daily)
+  const avgBalance = daily && daily.length > 0 ? averageBalance(daily) : null
+
+  return (
+    <div className="space-y-3">
+      <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:border-emerald-900/60 dark:from-emerald-950/60 dark:to-green-950/40">
+        <h3 className="font-semibold text-slate-800 dark:text-slate-100">
+          {parentAccount && <span className="text-slate-400">↳ </span>}
+          {account.name}
+          {parentAccount && (
+            <span className="ml-1 text-xs font-normal text-slate-500 dark:text-slate-400">
+              {t('(apartado de {{name}})', { name: parentAccount.name })}
+            </span>
+          )}
+        </h3>
+        <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+          📈 {t('Rendimiento:')} {account.yield_rate}%{' '}
+          {account.yield_rate_period === 'annual' ? t('anual') : t('mensual')}
+          {account.yield_kind === 'term' && account.yield_term_end && (
+            <> · {t('plazo fijo, vence {{date}}', { date: formatDate(account.yield_term_end) })}</>
+          )}
+        </p>
+        {/* Desglose: la retención es la diferencia principal contra el
+            estado de cuenta, así que se muestra explícita. */}
+        {account.withhold_isr && projection.isr > 0 && (
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            {t('Bruto')} {formatMoney(projection.gross, account.currency)} ·{' '}
+            {t('ISR')} −{formatMoney(projection.isr, account.currency)} ·{' '}
+            {t('neto')} {formatMoney(projection.net, account.currency)}
+          </p>
+        )}
+        <div className="mt-3 grid grid-cols-3 gap-3">
+          <div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{t('Saldo actual')}</p>
+            <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+              {formatMoney(currentBalance, account.currency)}
+            </p>
+            {avgBalance != null && (
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                {t('Promedio del mes: {{amount}}', {
+                  amount: formatMoney(avgBalance, account.currency),
+                })}
+              </p>
+            )}
+          </div>
+          <div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{t('Crecimiento esperado')}</p>
+            <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+              +{formatMoney(projection.net, account.currency)}
+            </p>
+          </div>
+          <div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{t('Crecimiento real')}</p>
+            <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
+              {thisMonthYield && thisMonthYield.actual_growth !== null
+                ? `+${formatMoney(thisMonthYield.actual_growth, account.currency)}`
+                : '—'}
+            </p>
+          </div>
+        </div>
+      </Card>
+
+      {/* Mostrar últimos registros */}
+      {records.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+            {t('Histórico')}
+          </p>
+          {records.map((y) => (
+            <div
+              key={y.id}
+              onClick={() => setEditingMonth(y.period_month)}
+              className="cursor-pointer transition-colors"
+            >
+              <Card
+                className={`flex items-center justify-between ${
+                  y.verified
+                    ? 'border-green-200 bg-green-50 dark:border-green-900/60 dark:bg-green-950/30'
+                    : ''
+                } ${
+                  editingMonth === y.period_month ? 'border-blue-300 bg-blue-50 dark:bg-blue-900/20' : ''
+                } hover:border-slate-300`}
+              >
+                <div>
+                  <p className="text-sm font-medium text-slate-800 dark:text-slate-100">
+                    {formatMonthLabel(y.period_month, {
+                      year: 'numeric',
+                      month: 'long',
+                    })}
+                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    {t('Esperado:')}{' '}
+                    {formatMoney(y.expected_growth || 0, account.currency)} |
+                    {' '}{t('Real:')}{' '}
+                    {y.actual_growth !== null
+                      ? formatMoney(y.actual_growth, account.currency)
+                      : '—'}
+                  </p>
+                </div>
+                {y.verified && (
+                  <span className="text-xs font-semibold text-green-600">
+                    ✓ {t('Verificado')}
+                  </span>
+                )}
+              </Card>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Form para registrar el mes en curso o editar el mes elegido. */}
+      <YieldForm
+        key={editingMonth ?? currentMonth}
+        account={account}
+        tiers={tiers}
+        currentBalance={currentBalance}
+        records={records}
+        initialMonth={editingMonth ?? currentMonth}
+        onDelete={() => setEditingMonth(null)}
+      />
+    </div>
   )
 }

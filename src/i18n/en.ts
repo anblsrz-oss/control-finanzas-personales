@@ -2428,4 +2428,94 @@ export const en: Record<string, string> = {
     'Updating the app no longer gets stuck',
   'Al tocar Descargar en el aviso de nueva versión, la app baja el APK por sí misma (con el avance en porcentaje) y abre el instalador de Android, sin pasar por el navegador donde la descarga se quedaba en "Descargando…" y nunca se guardaba. La primera vez Android te pedirá activar "Permitir desde esta fuente" para la app.':
     'When you tap Download on the new version notice, the app downloads the APK itself (showing the percentage) and opens the Android installer, without going through the browser where the download stayed on "Downloading…" and was never saved. The first time, Android will ask you to turn on "Allow from this source" for the app.',
+  'Promedio del mes: {{amount}}':
+    'Month average: {{amount}}',
+  'Esperado para {{month}}: {{amount}}':
+    'Expected for {{month}}: {{amount}}',
+  'saldo promedio {{amount}}':
+    'average balance {{amount}}',
+  'el monto':
+    'the amount',
+  'el concepto':
+    'the concept',
+  'la terminación':
+    'the card ending',
+  'No encontré {{what}} en el correo. Revisa que lo hayas escrito igual que aparece.':
+    'I couldn\'t find {{what}} in the email. Check that you typed it exactly as it appears.',
+  '✓ Listo. Revisa la vista previa y ajusta los textos si hace falta.':
+    '✓ Done. Check the preview and adjust the text if needed.',
+  'Con un correo de ejemplo':
+    'With a sample email',
+  'Texto antes / después':
+    'Text before / after',
+  'Avanzado (regex)':
+    'Advanced (regex)',
+  'Correo de ejemplo':
+    'Sample email',
+  'Pega aquí el texto de un correo de tu banco (asunto y cuerpo)…':
+    'Paste the text of an email from your bank here (subject and body)…',
+  '¿Dónde viene el monto, el concepto y la tarjeta?':
+    'Where are the amount, concept and card?',
+  'Opcional: si lo dejas vacío, el sistema los busca solo (Total, monto con $, terminación de tarjeta).':
+    'Optional: if you leave it empty, the system finds them on its own (Total, amount with $, card ending).',
+  'Escribe lo que ves en ese correo, tal cual aparece:':
+    'Type what you see in that email, exactly as it appears:',
+  'Comercio o concepto':
+    'Merchant or concept',
+  'Terminación de tarjeta':
+    'Card ending',
+  'Detectar':
+    'Detect',
+  'El monto viene después de':
+    'The amount comes after',
+  'La tarjeta viene después de':
+    'The card comes after',
+  'El concepto viene después de':
+    'The concept comes after',
+  '…y termina antes de (opcional)':
+    '…and ends before (optional)',
+  'ej. por':
+    'e.g. por',
+  'ej. terminada en':
+    'e.g. terminada en',
+  'ej. en':
+    'e.g. en',
+  'ej. con':
+    'e.g. con',
+  'El monto toma el primer grupo entre paréntesis; el concepto y la terminación, el grupo 1. Se ignoran mayúsculas/minúsculas.':
+    'The amount takes the first group in parentheses; the concept and card ending take group 1. Case is ignored.',
+  'Probar con un correo de ejemplo':
+    'Test with a sample email',
+  'Vista previa con el correo de ejemplo:':
+    'Preview with the sample email:',
+  'no encontrado (el correo se omitiría)':
+    'not found (the email would be skipped)',
+  'automático':
+    'automatic',
+  'el asunto del correo':
+    'the email subject',
+  'sin terminación (usa la cuenta por defecto)':
+    'no ending (uses the default account)',
+  'Ver regex generado':
+    'View generated regex',
+  'Un regex no es válido: {{error}}':
+    'A regex is not valid: {{error}}',
+  '▼ Más opciones (tipo, moneda, cuenta, categoría)':
+    '▼ More options (type, currency, account, category)',
+  '¿Cómo le digo dónde viene el monto si no sé usar regex?':
+    'How do I tell it where the amount is if I don\'t know regex?',
+  'En "Sincronizar correo", al agregar un remitente, elige "Con un correo de ejemplo": pega el texto de un correo de tu banco, escribe el monto, el comercio y la terminación tal como aparecen, y toca "Detectar". La app encuentra las palabras que van antes de cada dato y arma la regla sola; la vista previa te muestra qué leería. También puedes escribir esas palabras a mano en "Texto antes / después". El regex queda en "Avanzado" para quien lo prefiera. Si dejas todo vacío, el sistema busca el monto y la tarjeta automáticamente.':
+    'In "Sync email", when adding a sender, choose "With a sample email": paste the text of an email from your bank, type the amount, merchant and card ending exactly as they appear, and tap "Detect". The app finds the words that come before each value and builds the rule for you; the preview shows what it would read. You can also type those words yourself in "Text before / after". Regex stays under "Advanced" for those who prefer it. If you leave everything empty, the system finds the amount and card automatically.',
+  'Mercado Pago me avisó "Ganaste $X en septiembre", ¿qué hace la app?':
+    'Mercado Pago notified me "Ganaste $X en septiembre" (you earned $X in September). What does the app do?',
+  'Lo registra como el rendimiento de ese mes en tu cuenta de Mercado Pago con rendimiento: aparece verificado en Rendimientos y como ingreso en la categoría "Rendimientos", con fecha del último día del mes. Si ya lo habías verificado a mano, se actualiza en vez de duplicarse. Si tienes varias cuentas de esa app con rendimiento, entra como ingreso pendiente para que elijas la cuenta (o fija una cuenta por defecto en "Ajustes" de la app). Las invitaciones tipo "Asegura tus ganancias" se ignoran.':
+    'It records it as that month\'s yield in your Mercado Pago account with yield: it shows up verified in Yields and as income in the "Rendimientos" category, dated the last day of the month. If you had already verified it by hand, it is updated instead of duplicated. If you have several accounts with yield for that app, it comes in as pending income so you can choose the account (or set a default account in the app\'s "Settings"). Invitations like "Asegura tus ganancias" are ignored.',
+  'Conecta tu Gmail para detectar cargos y pagos automáticamente desde los correos de tu banco. Para indicar dónde viene el monto no necesitas regex: pega un correo de ejemplo y la app arma la regla.':
+    'Connect your Gmail to detect charges and payments automatically from your bank\'s emails. You don\'t need regex to say where the amount is: paste a sample email and the app builds the rule.',
+  'Da seguimiento a cuentas de inversión o ahorro con rendimiento (incluso por tramos de monto, y apartados con su propia tasa). El esperado se calcula con el saldo de cada día del mes, y al verificar se contabiliza como una transacción real.':
+    'Track investment or savings accounts with yield (even with amount tiers, and pockets with their own rate). The expected yield is calculated from each day\'s balance in the month, and verifying records it as a real transaction.',
+  'Rendimientos más exactos y reglas de correo sin regex':
+    'More accurate yields and email rules without regex',
+  'El aviso mensual de Mercado Pago "Ganaste $X en septiembre" ahora se registra solo como el rendimiento de ese mes en tu cuenta (antes entraba como un gasto pendiente), y las invitaciones tipo "Asegura tus ganancias" se ignoran. En Rendimientos, el esperado ya no usa tu saldo de hoy: se calcula con el saldo que tuviste cada día de ese mes, y al elegir un mes pasado se recalcula. En Sincronizar correo ya no necesitas saber regex: pega un correo de ejemplo, escribe el monto, el comercio y la tarjeta que ves, y la app arma la regla con vista previa.':
+    'Mercado Pago\'s monthly notice "Ganaste $X en septiembre" is now recorded automatically as that month\'s yield in your account (before, it came in as a pending expense), and invitations like "Asegura tus ganancias" are ignored. In Yields, the expected amount no longer uses today\'s balance: it is calculated from the balance you had each day of that month, and it is recalculated when you pick a past month. In Sync email you no longer need to know regex: paste a sample email, type the amount, merchant and card you see, and the app builds the rule with a preview.',
 }

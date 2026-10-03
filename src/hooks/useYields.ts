@@ -47,6 +47,26 @@ export function useYieldRecords(userId?: string, accountId?: string) {
   })
 }
 
+/**
+ * Saldo al cierre de cada día del mes (hasta hoy si es el mes en curso), para
+ * calcular el rendimiento esperado con el saldo que de verdad hubo ese mes
+ * y no con el saldo actual (RPC account_daily_balances, migración 0084).
+ */
+export function useAccountDailyBalances(accountId?: string, month?: string) {
+  return useQuery({
+    queryKey: ['account_daily_balances', accountId, month],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('account_daily_balances', {
+        p_account_id: accountId,
+        p_month: month,
+      })
+      if (error) throw error
+      return ((data || []) as { day: string; balance: number }[]).map((r) => Number(r.balance))
+    },
+    enabled: !!accountId && !!month,
+  })
+}
+
 export function useDeleteYield() {
   const queryClient = useQueryClient()
   const deleteTx = useDeleteTransaction()
@@ -75,6 +95,7 @@ export function useDeleteYield() {
     onSuccess: (_data, { userId }) => {
       queryClient.invalidateQueries({ queryKey: ['yield_records', userId] })
       queryClient.invalidateQueries({ queryKey: ['account_balances', userId] })
+      queryClient.invalidateQueries({ queryKey: ['account_daily_balances'] })
       queryClient.invalidateQueries({ queryKey: ['transactions', userId] })
     },
   })
@@ -198,6 +219,7 @@ export function useCreateOrUpdateYield() {
     onSuccess: (_data, { userId }) => {
       queryClient.invalidateQueries({ queryKey: ['yield_records', userId] })
       queryClient.invalidateQueries({ queryKey: ['account_balances', userId] })
+      queryClient.invalidateQueries({ queryKey: ['account_daily_balances'] })
       queryClient.invalidateQueries({ queryKey: ['transactions', userId] })
       queryClient.invalidateQueries({ queryKey: ['transactions_summary', userId] })
       queryClient.invalidateQueries({ queryKey: ['category_totals', userId] })

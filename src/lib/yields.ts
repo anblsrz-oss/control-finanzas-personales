@@ -15,6 +15,7 @@ import {
   monthsElapsed,
   toISODate as toLocalISO,
 } from '@/lib/dates'
+import type { AccountRow } from '@/types/db'
 
 export type YieldRatePeriod = 'monthly' | 'annual'
 export type YieldKind = 'demand' | 'term'
@@ -72,6 +73,14 @@ export interface ExpectedYieldInput {
    * de la cuenta, compartidos por todos los tramos.
    */
   tiers?: YieldTier[]
+  /**
+   * Saldo al cierre de cada día del mes (account_daily_balances), en orden.
+   * Solo a la vista: si viene, el interés se devenga día por día sobre el
+   * saldo de ESE día (tramos incluidos) en vez de sobre `balance`. Si el mes
+   * sigue en curso y trae menos días que el mes, los restantes se proyectan
+   * con el último saldo conocido.
+   */
+  dailyBalances?: number[]
 }
 
 export interface ExpectedYieldResult {
@@ -138,6 +147,10 @@ export function expectedYield(input: ExpectedYieldInput): ExpectedYieldResult {
   } = input
   const days = input.days ?? daysInMonthOf(periodMonth ?? new Date())
 
+  if (kind === 'demand' && input.dailyBalances && input.dailyBalances.length > 0) {
+    return dailyAccrual(input, days)
+  }
+
   let accrualDays = days
   if (kind === 'term') {
     // Sin fecha de vencimiento no hay nada que reconocer todavía.
@@ -170,6 +183,46 @@ export function expectedYield(input: ExpectedYieldInput): ExpectedYieldResult {
   return { gross, isr, net: gross - isr }
 }
 
+/**
+ * Devengo día por día sobre el saldo real de cada día. Una tasa MENSUAL se
+ * reparte entre los días del mes (con saldo constante da exactamente lo
+ * mismo que aplicarla plana); una anual, entre 365 como siempre.
+ */
+function dailyAccrual(input: ExpectedYieldInput, days: number): ExpectedYieldResult {
+  const { rate, period, kind, withholdIsr, isrRate, tiers } = input
+  const known = input.dailyBalances!.slice(0, days)
+  const last = known[known.length - 1]
+  const series = [...known, ...Array(Math.max(0, days - known.length)).fill(last)]
+  const perDay = (amount: number, r: number) =>
+    period === 'monthly'
+      ? (amount * r) / 100 / days
+      : grossForRate(amount, r, period, kind, 1)
+
+  let gross = 0
+  let isr = 0
+  for (const b of series) {
+    const bal = Math.max(0, b)
+    if (tiers && tiers.length > 0) {
+      const sorted = [...tiers].sort((a, b2) => a.minAmount - b2.minAmount)
+      for (let i = 0; i < sorted.length; i++) {
+        const nextMin = sorted[i + 1]?.minAmount ?? Infinity
+        const slice = Math.max(0, Math.min(bal, nextMin) - sorted[i].minAmount)
+        if (slice > 0) gross += perDay(slice, sorted[i].rate)
+      }
+    } else {
+      gross += perDay(bal, rate)
+    }
+    if (withholdIsr) isr += (bal * ((isrRate ?? 0) / 100)) / DAYS_IN_YEAR
+  }
+  return { gross, isr, net: gross - isr }
+}
+
+/** Saldo promedio diario de una serie (solo los días ya transcurridos). */
+export function averageBalance(dailyBalances: number[]): number {
+  if (dailyBalances.length === 0) return 0
+  return dailyBalances.reduce((s, b) => s + b, 0) / dailyBalances.length
+}
+
 /** Días restantes de un plazo fijo (0 si ya venció o no aplica). */
 export function daysToMaturity(termEnd?: string | null): number {
   if (!termEnd) return 0
@@ -177,6 +230,33 @@ export function daysToMaturity(termEnd?: string | null): number {
     (parseLocalDate(termEnd).getTime() - new Date().setHours(0, 0, 0, 0)) / 86_400_000,
   )
   return Math.max(0, diff)
+}
+
+/**
+ * Proyección del rendimiento de un mes. A la vista se calcula con el saldo de
+ * CADA DÍA de ese mes (dailyBalances); sin la serie (cargando o plazo fijo),
+ * con el saldo que se pase como respaldo.
+ */
+export function projectYield(
+  account: AccountRow,
+  tiers: YieldTier[],
+  month: string,
+  fallbackBalance: number,
+  dailyBalances?: number[],
+): ExpectedYieldResult {
+  return expectedYield({
+    balance: fallbackBalance,
+    rate: account.yield_rate || 0,
+    period: account.yield_rate_period ?? 'monthly',
+    kind: account.yield_kind ?? 'demand',
+    termEnd: account.yield_term_end,
+    termDays: account.yield_term_days,
+    periodMonth: month,
+    withholdIsr: account.withhold_isr,
+    isrRate: account.isr_rate,
+    tiers,
+    dailyBalances,
+  })
 }
 
 export { monthsElapsed }

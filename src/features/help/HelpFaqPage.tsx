@@ -70,6 +70,15 @@ function buildTopics(t: (key: string, opts?: Record<string, unknown>) => string)
           q: t('Errores y dudas comunes'),
           a: <GuideFaq id="conectar-correo" />,
         },
+        {
+          id: 'reglas-sin-regex',
+          q: t('¿Cómo le digo dónde viene el monto si no sé usar regex?'),
+          a: (
+            <p className={p}>
+              {t('En "Sincronizar correo", al agregar un remitente, elige "Con un correo de ejemplo": pega el texto de un correo de tu banco, escribe el monto, el comercio y la terminación tal como aparecen, y toca "Detectar". La app encuentra las palabras que van antes de cada dato y arma la regla sola; la vista previa te muestra qué leería. También puedes escribir esas palabras a mano en "Texto antes / después". El regex queda en "Avanzado" para quien lo prefiera. Si dejas todo vacío, el sistema busca el monto y la tarjeta automáticamente.')}
+            </p>
+          ),
+        },
       ],
     },
     {
@@ -179,6 +188,15 @@ function buildTopics(t: (key: string, opts?: Record<string, unknown>) => string)
           a: (
             <p className={p}>
               {t('Algunas apps, como Mercado Pago, solo dicen "Enviamos tu transferencia" y a quién, sin la cantidad. En ese caso te llega un aviso de "Falta el monto": al tocarlo se abre el formulario ya prellenado y solo escribes cuánto fue. Si antes o después llega el correo o SMS del banco con el monto, se completa solo y el aviso desaparece. Los pendientes también se ven arriba en Transacciones.')}
+            </p>
+          ),
+        },
+        {
+          id: 'rendimiento-mensual',
+          q: t('Mercado Pago me avisó "Ganaste $X en septiembre", ¿qué hace la app?'),
+          a: (
+            <p className={p}>
+              {t('Lo registra como el rendimiento de ese mes en tu cuenta de Mercado Pago con rendimiento: aparece verificado en Rendimientos y como ingreso en la categoría "Rendimientos", con fecha del último día del mes. Si ya lo habías verificado a mano, se actualiza en vez de duplicarse. Si tienes varias cuentas de esa app con rendimiento, entra como ingreso pendiente para que elijas la cuenta (o fija una cuenta por defecto en "Ajustes" de la app). Las invitaciones tipo "Asegura tus ganancias" se ignoran.')}
             </p>
           ),
         },

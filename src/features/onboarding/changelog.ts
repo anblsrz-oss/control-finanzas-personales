@@ -12,6 +12,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-03-rendimientos-y-reglas-sin-regex',
+    date: '2026-10-03',
+    title: 'Rendimientos más exactos y reglas de correo sin regex',
+    description:
+      'El aviso mensual de Mercado Pago "Ganaste $X en septiembre" ahora se registra solo como el rendimiento de ese mes en tu cuenta (antes entraba como un gasto pendiente), y las invitaciones tipo "Asegura tus ganancias" se ignoran. En Rendimientos, el esperado ya no usa tu saldo de hoy: se calcula con el saldo que tuviste cada día de ese mes, y al elegir un mes pasado se recalcula. En Sincronizar correo ya no necesitas saber regex: pega un correo de ejemplo, escribe el monto, el comercio y la tarjeta que ves, y la app arma la regla con vista previa.',
+  },
+  {
     id: '2026-09-27-actualizar-dentro-de-la-app',
     date: '2026-09-27',
     title: 'Actualizar la app ya no se queda trabada',
