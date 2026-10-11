@@ -4,6 +4,7 @@ import { App } from '@capacitor/app'
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/store/useAuth'
 import { useAccounts } from '@/hooks/useAccounts'
+import { useCards } from '@/hooks/useCards'
 import { useCategories } from '@/hooks/useCategories'
 import {
   useParsingRules,
@@ -75,6 +76,7 @@ export function NotificationCapturePage() {
   const catalogQuery = useNotificationAppCatalog()
   const rulesQuery = useParsingRules(userId, 'notification')
   const accountsQuery = useAccounts(userId)
+  const cardsQuery = useCards(userId)
   const categoriesQuery = useCategories(userId, 'expense')
   const signalsQuery = useRecentIngestSignals(userId)
   const saveRule = useSaveParsingRule()
@@ -440,6 +442,11 @@ export function NotificationCapturePage() {
         rule={settingsFor ? ruleFor(settingsFor.packageName) : undefined}
         defaultShopping={settingsFor ? catalogFor(catalog, settingsFor)?.kind === 'shopping' : false}
         accounts={(accountsQuery.data ?? []).map((a) => ({ value: a.id, label: a.name }))}
+        cards={(cardsQuery.data ?? []).map((c) => ({
+          value: c.id,
+          label: c.last4 ? `${c.name} ·${c.last4}` : c.name,
+          credit: c.type === 'credit',
+        }))}
         categories={(categoriesQuery.data ?? []).map((c) => ({ value: c.id, label: c.name }))}
         busy={saveRule.isPending || deleteRule.isPending}
         onClose={() => setSettingsFor(null)}
@@ -503,13 +510,45 @@ function TroubleshootGuide() {
   )
 }
 
+type AccountRoutes = NonNullable<ParsingRuleRow['config']['accountRoutes']>
+
+// Fila editable de "si el aviso dice X, usar Y". target = 'account:<id>' o
+// 'card:<id>'.
+interface RouteDraft {
+  keywords: string
+  target: string
+}
+
+// Palabras típicas de los avisos de cuenta (débito) y de tarjeta de crédito.
+const DEBIT_WORDS = 'debitamos, de tu cuenta, transferencia, ingresaste, retiraste'
+const CREDIT_WORDS = 'compra, tarjeta de crédito, crédito disponible'
+
+function routesToDrafts(routes: AccountRoutes | undefined): RouteDraft[] {
+  return (routes ?? []).map((r) => ({
+    keywords: r.keywords.join(', '),
+    target: r.cardId ? `card:${r.cardId}` : r.accountId ? `account:${r.accountId}` : '',
+  }))
+}
+
+function draftsToRoutes(drafts: RouteDraft[]): AccountRoutes {
+  return drafts
+    .map((d) => {
+      const keywords = d.keywords.split(',').map((k) => k.trim()).filter(Boolean)
+      const [type, id] = d.target.split(':')
+      return type === 'card' ? { keywords, cardId: id } : { keywords, accountId: id }
+    })
+    .filter((r) => r.keywords.length > 0 && (r.cardId || r.accountId))
+}
+
 // Ajustes por app (se guardan como parsing_rules channel='notification' con
-// el paquete como remitente): cuenta y categoría por defecto, y si es tienda.
+// el paquete como remitente): cuenta y categoría por defecto, cuenta/tarjeta
+// según las palabras del aviso, y si es tienda.
 function AppSettingsModal({
   app,
   rule,
   defaultShopping,
   accounts,
+  cards,
   categories,
   busy,
   onClose,
@@ -519,21 +558,41 @@ function AppSettingsModal({
   rule: ParsingRuleRow | undefined
   defaultShopping: boolean
   accounts: { value: string; label: string }[]
+  cards: { value: string; label: string; credit: boolean }[]
   categories: { value: string; label: string }[]
   busy: boolean
   onClose: () => void
-  onSave: (cfg: { defaultAccountId?: string; categoryId?: string; shopping: boolean }) => Promise<void>
+  onSave: (cfg: {
+    defaultAccountId?: string
+    categoryId?: string
+    shopping: boolean
+    accountRoutes?: AccountRoutes
+  }) => Promise<void>
 }) {
   const { t } = useTranslation()
   const [accountId, setAccountId] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [shopping, setShopping] = useState(false)
+  const [routes, setRoutes] = useState<RouteDraft[]>([])
 
   useEffect(() => {
     setAccountId(rule?.config.defaultAccountId ?? '')
     setCategoryId(rule?.config.categoryId ?? '')
     setShopping(rule?.config.shopping ?? defaultShopping)
+    setRoutes(routesToDrafts(rule?.config.accountRoutes))
   }, [app, rule, defaultShopping])
+
+  const targetOptions = [
+    { value: '', label: t('Elige cuenta o tarjeta') },
+    ...accounts.map((a) => ({ value: `account:${a.value}`, label: `🏦 ${a.label}` })),
+    ...cards.map((c) => ({
+      value: `card:${c.value}`,
+      label: `💳 ${c.label} (${c.credit ? t('crédito') : t('débito')})`,
+    })),
+  ]
+
+  const updateRoute = (i: number, patch: Partial<RouteDraft>) =>
+    setRoutes((prev) => prev.map((r, j) => (j === i ? { ...r, ...patch } : r)))
 
   return (
     <Modal open={!!app} title={app?.label ?? ''} onClose={onClose}>
@@ -544,6 +603,60 @@ function AppSettingsModal({
           onChange={(e) => setAccountId(e.target.value)}
           options={[{ value: '', label: t('Según la terminación del aviso') }, ...accounts]}
         />
+        <div className="grid gap-2 rounded-lg border border-slate-200 dark:border-slate-700 p-3">
+          <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+            {t('Cuenta o tarjeta según lo que diga el aviso')}
+          </p>
+          <p className="text-xs text-slate-400 dark:text-slate-500">
+            {t('Para apps donde tienes cuenta y tarjeta de crédito y el aviso no dice la terminación. Escribe palabras que aparecen en el aviso, separadas por coma; se usa la primera regla que coincida.')}
+          </p>
+          {routes.map((r, i) => (
+            <div key={i} className="grid gap-2 rounded-md bg-slate-50 dark:bg-slate-800/60 p-2">
+              <Input
+                label={t('Si el aviso dice')}
+                value={r.keywords}
+                onChange={(e) => updateRoute(i, { keywords: e.target.value })}
+                placeholder={DEBIT_WORDS}
+              />
+              <Select
+                label={t('Registrar en')}
+                value={r.target}
+                onChange={(e) => updateRoute(i, { target: e.target.value })}
+                options={targetOptions}
+              />
+              <button
+                type="button"
+                onClick={() => setRoutes((prev) => prev.filter((_, j) => j !== i))}
+                className="w-fit text-xs font-medium text-red-600 dark:text-red-400 hover:underline"
+              >
+                {t('Quitar regla')}
+              </button>
+            </div>
+          ))}
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() => setRoutes((prev) => [...prev, { keywords: '', target: '' }])}
+              className="text-xs font-medium text-brand-700 dark:text-brand-500 hover:underline"
+            >
+              {t('+ Agregar regla')}
+            </button>
+            {routes.length === 0 && (
+              <button
+                type="button"
+                onClick={() =>
+                  setRoutes([
+                    { keywords: DEBIT_WORDS, target: '' },
+                    { keywords: CREDIT_WORDS, target: '' },
+                  ])
+                }
+                className="text-xs font-medium text-brand-700 dark:text-brand-500 hover:underline"
+              >
+                {t('Sugerir palabras de débito y crédito')}
+              </button>
+            )}
+          </div>
+        </div>
         <Select
           label={t('Categoría fija (opcional)')}
           value={categoryId}
@@ -560,7 +673,7 @@ function AppSettingsModal({
           {t('Es una app de compras (sus cargos entran pendientes y aportan el comercio)')}
         </label>
         <p className="text-xs text-slate-400 dark:text-slate-500">
-          {t('La cuenta por defecto se usa cuando el aviso no menciona la terminación de tu tarjeta o cuenta (por ejemplo, Mercado Pago).')}
+          {t('Orden: primero la terminación que traiga el aviso, luego las reglas por palabras y al final la cuenta por defecto.')}
         </p>
         <div className="flex gap-2">
           <Button
@@ -569,6 +682,7 @@ function AppSettingsModal({
                 defaultAccountId: accountId || undefined,
                 categoryId: categoryId || undefined,
                 shopping,
+                accountRoutes: draftsToRoutes(routes),
               })
             }
             disabled={busy}

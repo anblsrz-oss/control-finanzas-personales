@@ -442,6 +442,11 @@ export interface ParsingRuleConfig {
   defaultAccountId?: string
   // Categoría fija para este remitente (ej. PlayStation Store -> Videojuegos).
   // Gana siempre sobre la categoría adivinada por texto.
+  // Notificaciones/SMS: cuenta o tarjeta según las palabras del aviso, para
+  // apps que no dicen la terminación (Mercado Pago: "Debitamos" = cuenta,
+  // "Compra ... aprobada" = tarjeta de crédito). En orden; gana la primera
+  // que coincida y, si ninguna, se usa defaultAccountId.
+  accountRoutes?: { keywords: string[]; accountId?: string; cardId?: string }[]
   categoryId?: string
   // Notificaciones: la app es una tienda (Amazon, Rappi...). Sus avisos
   // entran pendientes y aportan el comercio al fusionarse con el del banco.

@@ -1224,6 +1224,28 @@ export const en: Record<string, string> = {
     'They\'re different',
   'Parecido a "{{concept}}" del {{date}}':
     'Similar to "{{concept}}" from {{date}}',
+  'Cuenta o tarjeta según lo que diga el aviso':
+    'Account or card based on what the notice says',
+  'Para apps donde tienes cuenta y tarjeta de crédito y el aviso no dice la terminación. Escribe palabras que aparecen en el aviso, separadas por coma; se usa la primera regla que coincida.':
+    'For apps where you have both an account and a credit card and the notice does not show the ending. Type words that appear in the notice, separated by commas; the first matching rule is used.',
+  'Si el aviso dice':
+    'If the notice says',
+  'Registrar en':
+    'Record in',
+  'Elige cuenta o tarjeta':
+    'Choose an account or card',
+  'crédito':
+    'credit',
+  'débito':
+    'debit',
+  'Quitar regla':
+    'Remove rule',
+  '+ Agregar regla':
+    '+ Add rule',
+  'Sugerir palabras de débito y crédito':
+    'Suggest debit and credit words',
+  'Orden: primero la terminación que traiga el aviso, luego las reglas por palabras y al final la cuenta por defecto.':
+    'Order: first the ending shown in the notice, then the word rules, and finally the default account.',
   'Recibido por: {{channels}}':
     'Received via: {{channels}}',
   'Notificación {{app}}':

@@ -12,6 +12,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-11-captura-cuenta-o-tarjeta-por-palabras',
+    date: '2026-10-11',
+    title: 'Captura automática: cuenta o tarjeta según el aviso, y menos falsos movimientos',
+    description:
+      'En Captura por notificaciones → Ajustes de cada app ahora puedes decir a qué cuenta o tarjeta va un aviso según sus palabras (por ejemplo, en Mercado Pago "debitamos" a tu cuenta y "compra" a tu tarjeta de crédito), para las apps que no dicen la terminación. Además: las compras de DiDi Card que avisa DiDi Food ya se registran, las promociones con monto ("¿Vas por los $30,000 mensuales?", "¡Continúas con el 12% anual!") ya no entran como movimientos, un SMS ya no se registra dos veces, y una transferencia entre tus cuentas avisada por los dos bancos queda como un solo movimiento.',
+  },
+  {
     id: '2026-10-03-rendimientos-y-reglas-sin-regex',
     date: '2026-10-03',
     title: 'Rendimientos más exactos y reglas de correo sin regex',
