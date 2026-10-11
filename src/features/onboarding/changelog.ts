@@ -2,6 +2,9 @@
 // cambie una funcionalidad que valga la pena avisar, se agrega una entrada
 // aquí — el punto rojo del botón "Novedades" se enciende solo hasta que el
 // usuario lo abre.
+//
+// Solo se conservan las entradas de las DOS fechas más recientes: al agregar
+// una entrada de una fecha nueva, borra las de la fecha más antigua.
 
 export interface ChangelogEntry {
   id: string
@@ -24,117 +27,5 @@ export const CHANGELOG: ChangelogEntry[] = [
     title: 'Rendimientos más exactos y reglas de correo sin regex',
     description:
       'El aviso mensual de Mercado Pago "Ganaste $X en septiembre" ahora se registra solo como el rendimiento de ese mes en tu cuenta (antes entraba como un gasto pendiente), y las invitaciones tipo "Asegura tus ganancias" se ignoran. En Rendimientos, el esperado ya no usa tu saldo de hoy: se calcula con el saldo que tuviste cada día de ese mes, y al elegir un mes pasado se recalcula. En Sincronizar correo ya no necesitas saber regex: pega un correo de ejemplo, escribe el monto, el comercio y la tarjeta que ves, y la app arma la regla con vista previa.',
-  },
-  {
-    id: '2026-09-27-actualizar-dentro-de-la-app',
-    date: '2026-09-27',
-    title: 'Actualizar la app ya no se queda trabada',
-    description:
-      'Al tocar Descargar en el aviso de nueva versión, la app baja el APK por sí misma (con el avance en porcentaje) y abre el instalador de Android, sin pasar por el navegador donde la descarga se quedaba en "Descargando…" y nunca se guardaba. La primera vez Android te pedirá activar "Permitir desde esta fuente" para la app.',
-  },
-  {
-    id: '2026-09-26-recibos-y-pagos-tarjeta',
-    date: '2026-09-26',
-    title: 'Recibos de suscripción y pagos de tarjeta más inteligentes',
-    description:
-      'Si un recibo por correo (como el de Claude) llega sin la terminación de tu tarjeta, ahora se vincula solo a la suscripción que ya tienes en vez de crear una sugerida duplicada, y queda confirmado. Además, los avisos de pago de tu tarjeta (por ejemplo "Recibimos tu pago con SPEI" de Didi) se registran como pago de tarjeta hacia su línea de crédito y, si ya lo habías capturado a mano, se fusionan sin duplicarse.',
-  },
-  {
-    id: '2026-09-26-guias-y-notificaciones',
-    date: '2026-09-26',
-    title: 'Guías con imágenes y captura por notificaciones más confiable',
-    description:
-      'Nuevas guías paso a paso con imágenes en Preguntas frecuentes (y en PDF): instalar la app fuera de Google Play, conectar Gmail y activar la lectura de notificaciones, con la guía de batería de Xiaomi. Además: Conectar Gmail, Outlook y Google Calendar ya funciona dentro de la app de Android; la captura por notificaciones se reconecta sola si el sistema la desconecta y recupera los avisos que llegaron mientras estaba caída; y los íconos de la barra de estado se ven bien en modo oscuro.',
-  },
-  {
-    id: '2026-09-26-transferencias-sin-monto',
-    date: '2026-09-26',
-    title: 'Transferencias sin monto (Mercado Pago)',
-    description:
-      'Algunas apps avisan "Enviamos tu transferencia" sin decir cuánto. Ahora esos avisos ya no se pierden: te llega "Falta el monto" y al tocarlo se abre el formulario prellenado para que solo escribas la cantidad. Si el correo o SMS del banco trae el monto, se completa solo. Los que falten aparecen arriba en Transacciones.',
-  },
-  {
-    id: '2026-09-26-premium-google-play',
-    date: '2026-09-26',
-    title: 'Premium desde Google Play y recorrido corregido',
-    description:
-      'Si instalaste la app desde Google Play, ya puedes suscribirte a Premium dentro de la app (Configuración → Suscripción) y gestionarla desde Google Play. Los nuevos precios de Premium son $107 al mes o $1,037 al año en la web (Google Play muestra su propio precio con impuestos); quien ya está suscrito conserva su precio. También se corrigió el recorrido de bienvenida: siempre empieza por el saludo y termina con las secciones más nuevas.',
-  },
-  {
-    id: '2026-09-26-notificacion-abre-movimiento',
-    date: '2026-09-26',
-    title: 'Las notificaciones te llevan al lugar correcto',
-    description:
-      'Al tocar "Movimiento pendiente por revisar" se abre Transacciones con ese movimiento resaltado, listo para confirmarlo. Los avisos de presupuesto abren Presupuestos. Además se arreglaron las vistas de Sincronizar correo y del panel de administración en el celular, los textos que no se leían en modo oscuro (Rendimientos, Resumen, Reportes, Suscripciones) y la app ya usa el logo nuevo como ícono.',
-  },
-  {
-    id: '2026-09-24-preguntas-frecuentes',
-    date: '2026-09-24',
-    title: 'Preguntas frecuentes',
-    description:
-      'Nueva sección "Preguntas frecuentes" en el menú, empezando por la captura por notificaciones: qué activar en tu teléfono (Xiaomi, Huawei, Oppo, Samsung…) para que registre tus cargos con la app cerrada, cómo se manejan los duplicados y qué hacer si algo no funciona.',
-  },
-  {
-    id: '2026-09-22-captura-notificaciones',
-    date: '2026-09-22',
-    title: 'Captura por notificaciones (Android)',
-    description:
-      'Nueva sección "Captura por notificaciones": marca las apps de tu banco, wallet o tiendas y los cargos que te avisen se registran solos, aun con la app cerrada. Además, si el mismo cargo llega por notificación, SMS y correo ahora se registra una sola vez; si hay duda, se marca como "Posible duplicado" para que lo revises.',
-  },
-  {
-    id: '2026-09-17-rendimientos-tramos-apartados',
-    date: '2026-09-17',
-    title: 'Tramos, apartados y rendimientos que sí contabilizan',
-    description:
-      'En Cuentas, una cuenta con rendimiento ahora puede tener tramos por monto (ej. "primeros $50,000 a una tasa, el excedente a otra") y apartados con su propio saldo y tasa, como las cajitas. Además, "Verificar" en Rendimientos ya no es solo comparar: crea una transacción real de ingreso con la categoría "Rendimientos".',
-  },
-  {
-    id: '2026-09-16-vista-tabla-transacciones',
-    date: '2026-09-16',
-    title: 'Vista de tabla en Transacciones',
-    description:
-      'Alterna entre la vista de tarjetas y una vista de tabla compacta. Si un movimiento tiene subpartidas, haz clic para ver el detalle en una ventana superpuesta.',
-  },
-  {
-    id: '2026-09-16-subpartidas',
-    date: '2026-09-16',
-    title: 'Subpartidas en tus transacciones',
-    description:
-      'Desglosa un gasto (ej. el ticket del súper) en líneas con su propio concepto, monto y categoría. La suma debe cuadrar exacto con el total, y los reportes por categoría ahora usan el detalle si lo capturaste. El OCR de recibos también intenta detectar las líneas del ticket.',
-  },
-  {
-    id: '2026-09-16-suscripciones-auto',
-    date: '2026-09-16',
-    title: 'Cobro automático de suscripciones',
-    description:
-      'Para suscripciones que no llegan por correo/SMS, activa "Generar el cargo automáticamente" y la app registrará el cargo sola cada ciclo. Las que sí llegan por correo/SMS ahora se confirman solas si ya estaban activas.',
-  },
-  {
-    id: '2026-09-09-conciliacion',
-    date: '2026-09-09',
-    title: 'Conciliación con estados de cuenta',
-    description:
-      'Nueva sección: sube el estado de cuenta (PDF o foto) de una tarjeta o cuenta y la app lo compara con tus movimientos registrados para detectar faltantes, sobrantes y montos distintos. Puedes agregar los faltantes con un clic.',
-  },
-  {
-    id: '2026-09-09-monedas',
-    date: '2026-09-09',
-    title: 'Más monedas y conversión visible',
-    description:
-      'El selector de moneda ahora tiene buscador e incluye monedas de Latinoamérica (DOP, ARS, COP, CLP, PEN y más). En el historial, cada movimiento en otra moneda muestra su equivalente en tu moneda principal, y puedes filtrar por moneda.',
-  },
-  {
-    id: '2026-08-09-periodo-pagado',
-    date: '2026-08-09',
-    title: 'Panel de tarjeta pagada',
-    description:
-      'Cuando ya pagaste el periodo de una línea de crédito, ahora se muestra el gasto que llevas acumulado para el periodo siguiente en vez del saldo ya confirmado.',
-  },
-  {
-    id: '2026-08-09-tutorial',
-    date: '2026-08-09',
-    title: 'Tutorial guiado',
-    description:
-      'Los usuarios nuevos ven un recorrido inicial por las secciones principales. Puedes volver a consultarlo en cualquier momento con el botón "?" de cada sección.',
   },
 ]

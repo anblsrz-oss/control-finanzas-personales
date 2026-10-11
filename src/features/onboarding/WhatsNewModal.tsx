@@ -5,22 +5,14 @@ import { Modal } from '@/components/ui/Modal'
 import { formatDate } from '@/lib/format'
 import { CHANGELOG, type ChangelogEntry } from './changelog'
 
-// Una entrada deja de ser "novedad" a los 30 días. Siempre se muestran al
-// menos las 3 más recientes (para que la lista nunca quede vacía en rachas
-// sin releases). Las anteriores no se borran: quedan detrás de "Ver
-// anteriores" como historial.
-const RECENT_DAYS = 30
-const MIN_RECENT = 3
+// Solo se muestran las entradas de las DOS fechas más recientes; las demás
+// no se listan (changelog.ts también se poda a mano, esto lo garantiza aunque
+// se olvide).
+const RECENT_DATES = 2
 
-function splitChangelog(entries: ChangelogEntry[]) {
-  const cutoff = new Date()
-  cutoff.setDate(cutoff.getDate() - RECENT_DAYS)
-  const cutoffStr = cutoff.toISOString().slice(0, 10)
-  const recentCount = Math.max(
-    MIN_RECENT,
-    entries.filter((e) => e.date >= cutoffStr).length,
-  )
-  return { recent: entries.slice(0, recentCount), older: entries.slice(recentCount) }
+function recentChangelog(entries: ChangelogEntry[]) {
+  const dates = [...new Set(entries.map((e) => e.date))].sort().reverse().slice(0, RECENT_DATES)
+  return entries.filter((e) => dates.includes(e.date))
 }
 
 function EntryItem({ entry }: { entry: ChangelogEntry }) {
@@ -38,15 +30,13 @@ function EntryItem({ entry }: { entry: ChangelogEntry }) {
 export function WhatsNewButton({ className = '' }: { className?: string }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
-  const [showOlder, setShowOlder] = useState(false)
-  const { recent, older } = splitChangelog(CHANGELOG)
+  const recent = recentChangelog(CHANGELOG)
   const lastSeenChangelogId = useOnboarding((s) => s.lastSeenChangelogId)
   const markChangelogSeen = useOnboarding((s) => s.markChangelogSeen)
   const hasUnseen = CHANGELOG.length > 0 && CHANGELOG[0].id !== lastSeenChangelogId
 
   function openModal() {
     setOpen(true)
-    setShowOlder(false)
     if (CHANGELOG.length > 0) markChangelogSeen(CHANGELOG[0].id)
   }
 
@@ -75,22 +65,6 @@ export function WhatsNewButton({ className = '' }: { className?: string }) {
                 <EntryItem key={entry.id} entry={entry} />
               ))}
             </ul>
-            {older.length > 0 &&
-              (showOlder ? (
-                <ul className="mt-4 space-y-4 border-t border-slate-200 pt-4 opacity-80 dark:border-slate-700">
-                  {older.map((entry) => (
-                    <EntryItem key={entry.id} entry={entry} />
-                  ))}
-                </ul>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setShowOlder(true)}
-                  className="mt-4 text-xs font-medium text-brand-600 transition-colors hover:text-brand-800 dark:text-brand-400"
-                >
-                  {t('Ver anteriores ({{n}})', { n: older.length })}
-                </button>
-              ))}
           </>
         )}
       </Modal>
