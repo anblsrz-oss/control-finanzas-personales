@@ -1,5 +1,5 @@
 {
-  "version": "0.17.0",
-  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.17.0/finzen-v0.17.0.apk",
-  "notes": "Rendimientos más exactos: el esperado usa el saldo de cada día del mes y el aviso \"Ganaste $X\" de Mercado Pago se registra solo. Y en Sincronizar correo ya no necesitas regex: pega un correo de ejemplo y la app arma la regla."
+  "version": "0.17.1",
+  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.17.1/finzen-v0.17.1.apk",
+  "notes": "Captura automática más precisa: las compras de DiDi Card avisadas por DiDi Food ya se registran, las promociones de Mercado Pago ya no entran como movimientos y un SMS no se registra dos veces. En los ajustes de cada app de Captura por notificaciones puedes elegir la cuenta o la tarjeta según las palabras del aviso."
 }
