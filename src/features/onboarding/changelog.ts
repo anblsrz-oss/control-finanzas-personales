@@ -15,6 +15,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-16-asistente-y-guias',
+    date: '2026-10-16',
+    title: 'Asistente de ayuda y guías de todas las funciones',
+    description:
+      'Conoce a Taffy, el nuevo asistente (la burbuja de abajo a la derecha): contesta tus dudas sobre la app y te ayuda a crear cuentas, tarjetas, categorías, presupuestos y suscripciones; antes de guardar nada te pide confirmación. Además, Preguntas frecuentes ahora trae una guía paso a paso de cada sección.',
+  },
+  {
     id: '2026-10-16-nuevo-diseno',
     date: '2026-10-16',
     title: 'Nuevo diseño, inicio de la app y página de Suscripción',

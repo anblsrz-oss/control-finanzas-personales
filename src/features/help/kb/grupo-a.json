@@ -1,0 +1,240 @@
+[
+  {
+    "id": "resumen",
+    "title": "Resumen",
+    "icon": "📊",
+    "route": "/",
+    "featureKey": "dashboard_period_filter",
+    "summary": "Es la pantalla de inicio. Te muestra de un vistazo cuánto ingresaste, cuánto gastaste y cuál es tu balance en un periodo, junto con gráficas de tus gastos, presupuestos y uso de crédito.",
+    "steps": [
+      "Entra a **Resumen** desde el menú (es la primera pantalla al abrir la app).",
+      "Arriba verás tres cifras del periodo: **Total Ingresos**, **Total Egresos** y **Balance efectivo** (ingresos menos egresos de efectivo).",
+      "Si tu plan lo permite, usa el selector de periodo de la parte superior para elegir hoy, semana, mes o un rango personalizado; las cifras y gráficas se recalculan.",
+      "Baja para ver las gráficas disponibles: **Ingresos vs Egresos**, **Gastos por Categoría**, **Presupuestos** y **Uso de línea de crédito**. Solo aparecen las que tienen datos.",
+      "Usa los controles de gráficas (arriba de ellas) para cambiar su orden o su estilo, si lo necesitas.",
+      "Para ver más detalle, ve a **Reportes**; para corregir un dato, ve a **Transacciones**."
+    ],
+    "faq": [
+      {
+        "q": "¿Por qué mi Resumen dice \"Sin transacciones en este periodo\"?",
+        "a": "No hay movimientos dentro del periodo seleccionado. Cambia el periodo o registra una transacción en **Transacciones**."
+      },
+      {
+        "q": "¿Qué significa \"Balance efectivo\"?",
+        "a": "Son tus ingresos menos tus egresos de efectivo. Lo que compras a crédito no cuenta hasta que lo pagas. En **Reportes** también puedes ver el balance económico, que sí resta el crédito usado al momento de consumir."
+      },
+      {
+        "q": "No puedo cambiar el periodo del Resumen, ¿por qué?",
+        "a": "El selector de periodo puede ser una función Premium según la configuración de tu plan. Si no la tienes, verás un aviso que te lo indica."
+      },
+      {
+        "q": "¿Por qué no veo alguna gráfica?",
+        "a": "Cada gráfica solo se muestra cuando hay datos: por ejemplo, la de Presupuestos necesita al menos un presupuesto y la de crédito necesita una línea de crédito con uso."
+      },
+      {
+        "q": "Mis cuentas en otras monedas, ¿cómo se suman?",
+        "a": "Los montos se muestran convertidos a tu moneda principal con el tipo de cambio guardado en cada transacción."
+      },
+      {
+        "q": "¿Dónde ocultar mis montos?",
+        "a": "Toca el **ícono del ojo** en la barra superior: las cifras se enmascaran en toda la app. Vuelve a tocarlo para mostrarlas."
+      }
+    ],
+    "canCreate": []
+  },
+  {
+    "id": "cuentas",
+    "title": "Cuentas",
+    "icon": "🏦",
+    "route": "/cuentas",
+    "featureKey": "accounts",
+    "summary": "Aquí registras tus cuentas bancarias, de ahorro, inversión, efectivo o vales, cada una con su saldo. También puedes crear apartados (cajitas) dentro de una cuenta y activar rendimientos.",
+    "steps": [
+      "Entra a **Cuentas** y toca **+ Agregar cuenta**.",
+      "En **Datos de la cuenta** escribe el **Nombre de la cuenta** y, si quieres, el **Banco (opcional)**.",
+      "Opcional: llena CLABE o número de cuenta (o solo sus últimos 4 dígitos). Sirven para identificar automáticamente depósitos y transferencias que llegan por SMS o correo.",
+      "En **Tipo y saldo** elige el **Tipo** (Corriente, Ahorro, Inversión, Efectivo o Vales de despensa), la **Moneda** y el **Saldo inicial**.",
+      "Si la cuenta paga intereses, activa **Esta cuenta genera rendimientos** y captura el **Rendimiento (%)**, si la tasa es **Anual** o **Mensual**, y el **Tipo de rendimiento** (A la vista o Plazo fijo).",
+      "Toca **Crear cuenta**. Para corregirla después usa **Editar** (botón **Guardar cambios**) y para quitarla **Eliminar**.",
+      "Para separar dinero dentro de una cuenta usa **+ Apartado** en esa cuenta y toca **Crear apartado**; el apartado tiene su propio saldo y rendimiento."
+    ],
+    "faq": [
+      {
+        "q": "¿Qué es un apartado (cajita)?",
+        "a": "Es una subcuenta que vive dentro de una cuenta madre, con su propio saldo y rendimiento. Comparte la moneda de la cuenta madre. Los apartados son una función que puede ser Premium o tener límite según tu plan."
+      },
+      {
+        "q": "Ya tengo una cuenta creada, ¿puedo convertirla en apartado?",
+        "a": "Sí. En la cuenta usa **Mover a apartado**, elige la cuenta madre en \"Elige una cuenta…\" y toca **Confirmar**. Sus transacciones no se tocan, solo se muestra anidada. Este botón aparece solo si tienes más de una cuenta y la cuenta no tiene apartados propios."
+      },
+      {
+        "q": "No puedo agregar más cuentas, ¿por qué?",
+        "a": "El plan gratis tiene un máximo de cuentas (según tu plan). Al llegar al límite el botón se bloquea y verás un aviso para actualizar a Premium. Los apartados no cuentan para ese límite de cuentas."
+      },
+      {
+        "q": "¿Qué pasa si elimino una cuenta?",
+        "a": "La app te pide confirmar con \"¿Eliminar esta cuenta?\". Revisa antes tus transacciones ligadas a ella."
+      },
+      {
+        "q": "¿Cómo se calcula el saldo de la cuenta?",
+        "a": "Es el saldo inicial más los movimientos que registres. En la parte de arriba, **Total en cuentas** suma todos los saldos y se separa un renglón por cada moneda."
+      },
+      {
+        "q": "No veo el \"Total en cuentas\".",
+        "a": "Esa tarjeta se puede ocultar desde **Configuración**. También solo aparece si ya tienes al menos una cuenta."
+      },
+      {
+        "q": "¿Puedo tener una cuenta en dólares u otra moneda?",
+        "a": "Sí, pero elegir una moneda distinta a la tuya es una función de cuentas en otras monedas que puede ser Premium según tu plan; si no la tienes, el selector de **Moneda** solo muestra la actual."
+      }
+    ],
+    "canCreate": ["account"]
+  },
+  {
+    "id": "tarjetas",
+    "title": "Tarjetas",
+    "icon": "💳",
+    "route": "/tarjetas",
+    "featureKey": "cards",
+    "summary": "Registra tus tarjetas de crédito, débito y vales. Cada tarjeta se liga a una cuenta (o a una línea de crédito si es de crédito) para que tus compras se descuenten del lugar correcto.",
+    "steps": [
+      "Entra a **Tarjetas** y toca **+ Agregar tarjeta**.",
+      "En **Datos de la tarjeta** escribe el **Nombre de la tarjeta**, elige el **Formato** (Física o Virtual) y, si quieres, el **Banco (opcional)**, los **Últimos 4 dígitos (opcional)** y la **Marca**.",
+      "Si usas la app en el celular, puedes tocar **Escanear tarjeta con la cámara**: solo se leen la marca y los últimos 4 dígitos, nunca el número completo ni el CVC.",
+      "En **Apariencia** elige el color; la vista previa de la izquierda muestra cómo se verá tu tarjeta.",
+      "En **Tipo y moneda** elige **Crédito**, **Débito** o **Vales de despensa** y la **Moneda**. Débito y vales piden **Cuenta ligada** (o **Cuenta de vales**).",
+      "Si es de crédito, elige la **Línea de crédito** existente o **➕ Nueva línea de crédito** (nombre, límite, día de corte y día de pago).",
+      "En **Opciones** puedes activar **Ofrece cashback** o **Es una tarjeta de beca**. Toca **Crear tarjeta**.",
+      "Después puedes usar **Editar** o **Eliminar**, y el selector **Agrupar por** (Línea de crédito, Banco, Tipo o Formato) para ordenarlas."
+    ],
+    "faq": [
+      {
+        "q": "¿Dónde pongo el límite y las fechas de corte y pago?",
+        "a": "En la **Línea de crédito**, no en la tarjeta. Varias tarjetas del mismo banco pueden compartir una sola línea con el mismo límite y las mismas fechas. Se administra en la sección **Líneas de crédito**."
+      },
+      {
+        "q": "¿Qué significa \"Gasto de esta tarjeta\"?",
+        "a": "En tarjetas de crédito, es lo que has gastado solo con esa tarjeta. El límite y lo disponible están en la línea de crédito, porque se comparten."
+      },
+      {
+        "q": "Mi tarjeta de débito, ¿de dónde descuenta?",
+        "a": "De la **Cuenta ligada** que elegiste. Si cambias de cuenta, usa **Editar**."
+      },
+      {
+        "q": "Registré mi tarjeta virtual, ¿qué cambia?",
+        "a": "Solo cómo se muestra (aparece como \"Virtual\" en vez de la marca). Funciona igual que una física."
+      },
+      {
+        "q": "No me deja agregar más tarjetas.",
+        "a": "El plan gratis tiene un máximo de tarjetas (según tu plan). Al llegar al límite verás un aviso para actualizar a Premium."
+      },
+      {
+        "q": "¿Cómo registro el cashback?",
+        "a": "Activa **Ofrece cashback** en la tarjeta y, cuando te lo abonen, regístralo como un ingreso con la categoría Cashback."
+      },
+      {
+        "q": "¿Qué pasa si elimino una tarjeta?",
+        "a": "La app te pregunta \"¿Eliminar esta tarjeta?\" antes de borrarla. Si la usas en transacciones, revisa antes tu historial."
+      }
+    ],
+    "canCreate": ["card"]
+  },
+  {
+    "id": "lineas-credito",
+    "title": "Líneas de crédito",
+    "icon": "🏧",
+    "route": "/lineas-credito",
+    "featureKey": "credit_lines",
+    "summary": "Una línea de crédito agrupa las tarjetas que comparten límite y fechas de corte y pago. Aquí ves cuánto has usado, cuánto te queda, cuánto toca pagar este periodo y tus meses sin intereses activos.",
+    "steps": [
+      "Entra a **Líneas de crédito** y toca **+ Agregar línea**.",
+      "Escribe el **Nombre de la línea**, el **Banco (opcional)**, el **Límite de crédito**, la **Moneda**, el **Día de corte** y el **Día de pago**; toca **Crear línea**.",
+      "Si tu banco mueve las fechas en días inhábiles, activa **Las fechas se recorren en días inhábiles**: la app te preguntará la fecha real cuando llegue el corte.",
+      "En la tarjeta de cada línea verás **Usado**, **Límite** y **Disponible**, además de la próxima fecha de **Corte:** y de **Pago:**.",
+      "En el bloque **A pagar de este periodo** ves los consumos del periodo y, si hay, tus **Meses sin intereses activos** con las mensualidades pagadas y las que faltan.",
+      "Toca **Pagar** para abrir el pago de tarjeta ya prellenado con el monto del periodo; elige la cuenta de origen y guarda.",
+      "Cuando llegue el corte, confirma tus datos: **Sí, fue esa fecha** o **Fue otro día** (y **Guardar**), y usa **confirmar saldo** si tu estado de cuenta coincide.",
+      "Con **Ver historial de periodos** revisas los cortes y pagos anteriores. Para ajustar la línea usa **Editar**, y para quitarla **Eliminar**."
+    ],
+    "faq": [
+      {
+        "q": "¿Cuál es la diferencia entre tarjeta y línea de crédito?",
+        "a": "La **tarjeta** es el plástico (o virtual); la **línea** es el límite y las fechas que comparten una o varias tarjetas del mismo banco."
+      },
+      {
+        "q": "¿Qué pasa si elimino una línea con tarjetas?",
+        "a": "La app te avisa cuántas tarjetas tiene y, si continúas, esas tarjetas quedan sin línea asignada."
+      },
+      {
+        "q": "¿Qué es \"Periodo pagado\"?",
+        "a": "Al confirmar el saldo de tu estado de cuenta y pagarlo, el periodo se marca como pagado y los gastos nuevos se acumulan en el siguiente periodo."
+      },
+      {
+        "q": "No encuentro la sección Líneas de crédito o no puedo agregar más.",
+        "a": "Las líneas de crédito pueden ser una función Premium o tener límite según tu plan. Si llegas al límite, el botón se bloquea con un aviso."
+      },
+      {
+        "q": "¿Cómo se manejan los meses sin intereses (MSI)?",
+        "a": "Cuando registras un egreso con tarjeta de crédito puedes activar **Meses sin intereses / Diferido**. La línea muestra cada plan con \"pagadas / total\". Al hacer un pago de tarjeta puedes marcar las mensualidades que cubre ese pago. Los MSI pueden ser Premium según tu plan."
+      },
+      {
+        "q": "El pago de la línea, ¿es un gasto?",
+        "a": "No. Un pago de tarjeta mueve dinero de tu cuenta hacia la línea de crédito para bajar la deuda; el gasto ya se contó cuando hiciste la compra."
+      }
+    ],
+    "canCreate": []
+  },
+  {
+    "id": "transacciones",
+    "title": "Transacciones",
+    "icon": "🧾",
+    "route": "/transacciones",
+    "featureKey": "transactions",
+    "summary": "Es donde registras y consultas todos tus movimientos: ingresos, egresos, transferencias, pagos de tarjeta, retiros de efectivo y reembolsos. Puedes editarlos, filtrarlos y eliminarlos dejando un motivo.",
+    "steps": [
+      "Entra a **Transacciones** y toca **+ Nueva transacción**.",
+      "Elige el **Tipo**: Ingreso, Egreso, Transferencia, Pago de tarjeta, Retiro de efectivo o Reembolso.",
+      "Escribe el **Monto**, elige la **Moneda** y la **Fecha**. Si es otra moneda, la app sugiere el tipo de cambio y lo puedes ajustar.",
+      "Escribe el **Concepto** y elige la **Categoría**. En **Cuentas** elige la **Cuenta** o la tarjeta (**O tarjeta**) según el tipo de movimiento.",
+      "Para una transferencia, elige **Cuenta origen** y **Cuenta destino**; si el destino no es tuyo, activa **La cuenta destino no es mía (cuenta externa)** y contará como egreso. Para un pago de tarjeta, elige **Cuenta origen** y **Línea de crédito a pagar**. Para un reembolso, elige la **Compra a reembolsar**.",
+      "Opcional: en un egreso, divide el gasto en **Detalle (opcional)** con **+ Agregar línea** (subpartidas). Con tarjeta de crédito puedes activar **Meses sin intereses / Diferido** y poner los **Meses**.",
+      "Toca **Registrar** (o **Guardar cambios** al editar). Para modificar un movimiento usa **Editar**; para quitarlo, **Eliminar**.",
+      "Al eliminar, escribe el **Motivo de la eliminación** (o toca uno frecuente como Duplicado o Error de captura) y confirma. Los eliminados quedan en **Historial**."
+    ],
+    "faq": [
+      {
+        "q": "¿Qué es un movimiento \"Pendiente\"?",
+        "a": "Es un movimiento que llegó por correo, SMS o notificación y aún no confirmas. Usa el filtro **Pendientes** para verlos y toca **Confirmar** cuando estén correctos. También puedes **Editar** antes de confirmar."
+      },
+      {
+        "q": "Me aparece el aviso \"Posible duplicado\", ¿qué hago?",
+        "a": "La app detectó un movimiento parecido a otro. Toca **Es duplicado** para eliminarlo (el motivo ya se llena solo) o **Son distintos** si en realidad son dos movimientos diferentes."
+      },
+      {
+        "q": "Un aviso llegó sin monto, ¿cómo lo completo?",
+        "a": "Aparece un aviso arriba con los movimientos sin monto. Ábrelo, escribe el monto y guarda; el aviso se marca como registrado."
+      },
+      {
+        "q": "¿Cómo reembolso una compra?",
+        "a": "En el egreso toca **Reembolsar**, escribe el **Monto a reembolsar**, la fecha y guarda. Puede ser parcial o completo. Si reembolsas todo y la compra estaba a meses sin intereses, el plan se cancela."
+      },
+      {
+        "q": "¿Qué diferencia hay entre una transferencia normal y una externa?",
+        "a": "La normal mueve dinero entre tus cuentas y no cuenta como gasto. La externa (cuenta que no es tuya) sí cuenta como egreso en tus reportes."
+      },
+      {
+        "q": "¿Para qué sirve el retiro de efectivo?",
+        "a": "Para sacar dinero de una cuenta y llevarlo a tu cartera (cuenta tipo Efectivo). Solo será egreso cuando lo gastes, o si activas **Ya lo gastaste o es para un pago**."
+      },
+      {
+        "q": "¿Cómo encuentro un movimiento?",
+        "a": "Toca **Filtros** y usa fechas (**Desde** / **Hasta**), **Buscar**, **Tarjeta**, **Cuenta**, **Categoría**, **Tipo**, **Estado**, **Moneda** o **Monto mín.** y **Monto máx.**. Con **Limpiar filtros** los quitas. Elige vista **Tarjetas** o **Tabla** arriba de la lista."
+      },
+      {
+        "q": "No me deja registrar más transacciones.",
+        "a": "El plan gratis tiene un máximo de transacciones (según tu plan). Al llegar al límite verás un aviso para actualizar a Premium. Las subpartidas y los MSI también pueden ser funciones Premium según tu plan."
+      }
+    ],
+    "canCreate": []
+  }
+]

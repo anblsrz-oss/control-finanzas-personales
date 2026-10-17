@@ -18,6 +18,12 @@ export const CATEGORY_COLORS = [
 // Color de respaldo cuando una categoría no tiene color asignado.
 export const FALLBACK_CATEGORY_COLOR = '#94a3b8'
 
+// Si no se elige ícono se usa una etiqueta; el color se reparte por nombre entre la paleta, para
+// que categorías sin color propio no salgan todas iguales en las gráficas.
+export const DEFAULT_CATEGORY_ICON = '🏷️'
+export const autoCategoryColor = (name: string) =>
+  CATEGORY_COLORS[[...name.trim().toLowerCase()].reduce((n, ch) => n + ch.charCodeAt(0), 0) % CATEGORY_COLORS.length]
+
 // Paletas disponibles para las gráficas (elegibles desde Reportes). Se usan para
 // colorear automáticamente las categorías que no tienen un color propio.
 export const CHART_PALETTES: Record<string, readonly string[]> = {

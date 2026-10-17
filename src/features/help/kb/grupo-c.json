@@ -1,0 +1,395 @@
+[
+  {
+    "id": "correo",
+    "title": "Sincronizar correo",
+    "icon": "📧",
+    "route": "/correo",
+    "featureKey": "email_sync",
+    "summary": "Lee los avisos de tu banco y los correos de proveedores (facturas, tickets, cobros domiciliados) desde Gmail u Outlook y crea movimientos **pendientes** para que tú los revises. Sirve para no capturar a mano cada cargo.",
+    "steps": [
+      "Entra a **Sincronizar correo** (menú de captura o ruta /correo).",
+      "En **1. Remitentes (banco o proveedor)** escribe el **Banco o proveedor** (por ejemplo BBVA, CFE o Netflix) y en **Remitentes (separados por coma)** el correo desde el que te llegan los avisos (por ejemplo notificaciones@bbva.mx). Solo se leen los correos de esos remitentes.",
+      "Para que la app encuentre el monto, el concepto y la terminación de tu tarjeta, usa una de las pestañas: **Con un correo de ejemplo** (pegas el texto de un correo real, escribes el Monto, Comercio o concepto y Terminación tal como aparecen y pulsas **Detectar**), **Texto antes / después** (por ejemplo \"El monto viene después de: por\") o **Avanzado (regex)**. Es opcional: si lo dejas vacío, la app busca sola el Total, el monto con $ y la terminación.",
+      "Opcional: abre **▼ Más opciones (tipo, moneda, cuenta, categoría)** para elegir **Tipo de movimiento** (Egreso o Ingreso), **Moneda**, **Cuenta por defecto** (se usa solo si el correo no trae terminación de tarjeta) y **Categoría fija**. Pulsa **Guardar remitente** (o **Guardar cambios** si estás editando).",
+      "En **2. Conecta Gmail y sincroniza** pulsa **Conectar Gmail** y acepta los permisos de Google. Para Outlook, en **4. Conecta Outlook y sincroniza** pulsa **Conectar Outlook**. Opcionalmente elige **Asignar a la cuenta** antes de sincronizar.",
+      "Pulsa **Sincronizar ahora**. La app revisa los últimos 30 días y te dice cuántos correos encontró y cuántos movimientos nuevos (pendientes) creó.",
+      "Si prefieres no pulsar el botón cada vez, activa **Activar tiempo real** (secciones 3 y 5): los correos nuevos se registran solos en cuanto llegan. Para quitarlo pulsa **Desactivar tiempo real**.",
+      "Ve a **Transacciones**, revisa los movimientos pendientes y confírmalos para que cuenten en tus saldos. Guía con imágenes: /ayuda#conectar-correo."
+    ],
+    "faq": [
+      {
+        "q": "¿Por qué no veo el botón Conectar Gmail?",
+        "a": "Por ahora Gmail está disponible solo para cuentas de prueba mientras se completa una revisión de seguridad con Google. En su lugar verás un aviso. Mientras tanto puedes usar **Outlook** o escribir a soporte si necesitas Gmail."
+      },
+      {
+        "q": "¿Por qué el botón Sincronizar ahora está apagado?",
+        "a": "Necesitas dos cosas: tener Gmail u Outlook conectado y haber guardado al menos un remitente. Si falta el remitente verás el aviso \"Agrega al menos un remitente arriba antes de sincronizar\"."
+      },
+      {
+        "q": "Sincronicé y no apareció nada en mis saldos.",
+        "a": "Los movimientos se crean como **pendientes**. Revísalos y confírmalos en **Transacciones**; hasta entonces no afectan tus saldos."
+      },
+      {
+        "q": "Me sale \"Error 403\" o \"Acceso bloqueado\" al conectar Gmail.",
+        "a": "Tu correo debe estar autorizado como usuario de prueba de la app en Google. Si te pasa, revisa la guía en /ayuda#conectar-correo o escribe a soporte."
+      },
+      {
+        "q": "La captura en tiempo real de Gmail dejó de funcionar.",
+        "a": "Mientras la app esté en modo de prueba de Google, cada cuenta debe **reconectar Gmail cada 7 días**. Pulsa **Reconectar (forzar permisos)** y vuelve a activar el tiempo real. Si la app avisa que Google no entregó el permiso offline, desconecta y conecta de nuevo."
+      },
+      {
+        "q": "¿Tengo que repetir los remitentes para Gmail y Outlook?",
+        "a": "No. Outlook usa los mismos remitentes que ya configuraste arriba."
+      },
+      {
+        "q": "¿Cómo editar o borrar un remitente?",
+        "a": "En la lista de remitentes pulsa **Editar** (carga los datos en el formulario) o **Borrar** (te pide confirmar). Si cambias el nombre del banco al editar, la regla anterior se reemplaza."
+      },
+      {
+        "q": "¿Qué pasa con las facturas CFDI y los pagos de gateways como EBANX o Xsolla?",
+        "a": "Las facturas CFDI (XML) se leen automáticamente sin configurar nada. Para pagos que no traen terminación de tarjeta, elige una **Cuenta por defecto** en las opciones avanzadas; y con **Categoría fija** puedes asignar siempre la misma categoría a un remitente."
+      }
+    ],
+    "canCreate": []
+  },
+  {
+    "id": "sms",
+    "title": "Sincronizar SMS",
+    "icon": "💬",
+    "route": "/sms",
+    "featureKey": "sms_sync",
+    "summary": "Registra solo las alertas de compra y transferencia que tu banco te manda por SMS, como movimientos pendientes. Funciona únicamente en la app instalada de **Android** y no existe en la versión de Google Play.",
+    "steps": [
+      "Abre la app instalada en Android y entra a **Captura automática de SMS** (ruta /sms). En el navegador o en iPhone solo verás un aviso de que no está disponible.",
+      "En **1. Remitentes de SMS de tu banco** escribe el **Banco** (por ejemplo BBVA) y los **Remitentes (coma)**: el nombre o número desde el que te llegan los SMS (por ejemplo BBVA, 33000).",
+      "Opcional: **Regex de monto (opcional)** si tu banco usa un formato especial, y **Palabras de ingreso** / **Palabras de gasto** separadas por coma. Si el SMS contiene una palabra de ingreso se registra como ingreso; si no, como gasto. Vacío usa listas por defecto en español.",
+      "Pulsa **Guardar remitente** (o **Guardar cambios** al editar). Puedes agregar varios bancos.",
+      "En **2. Captura automática** pulsa **Activar captura automática** y concede el permiso de Android para leer y recibir SMS.",
+      "Pulsa **Sincronizar ahora** (aparece cuando la captura está activa) para leer también los SMS que ya tienes; verás cuántos leyó y cuántos movimientos nuevos creó.",
+      "Confirma los movimientos pendientes en **Transacciones** para que cuenten en tus saldos.",
+      "Para que funcione con la app cerrada, excluye la app de la optimización de batería de tu teléfono."
+    ],
+    "faq": [
+      {
+        "q": "¿Funciona en iPhone o en el navegador?",
+        "a": "No. Apple no permite que las apps lean SMS y en el navegador tampoco se pueden leer. En iPhone usa **Sincronizar correo** o **Importar** tu estado de cuenta."
+      },
+      {
+        "q": "¿Y en la versión de Google Play?",
+        "a": "Esta función no existe en la versión de Google Play, porque la tienda restringe el acceso a SMS. Usa la captura por notificaciones o el correo."
+      },
+      {
+        "q": "Me sale \"Agrega al menos un remitente de tu banco antes de activar\".",
+        "a": "La captura necesita saber de quién leer. Guarda primero un banco con su remitente y vuelve a pulsar **Activar captura automática**."
+      },
+      {
+        "q": "No se registran los SMS con la app cerrada.",
+        "a": "Casi siempre es la optimización de batería del teléfono. Excluye la app de esa optimización (y en Xiaomi, Huawei u Oppo permite el inicio automático)."
+      },
+      {
+        "q": "Un ingreso se registró como gasto (o al revés).",
+        "a": "Edita el banco y agrega las **Palabras de ingreso** o **Palabras de gasto** que usa tu banco (por ejemplo recibiste, abono, depósito)."
+      },
+      {
+        "q": "¿Se duplican los movimientos si también uso correo o notificaciones?",
+        "a": "La app compara los avisos que llegan por distintos canales para registrar un mismo cargo una sola vez; si sospecha un duplicado lo deja como posible duplicado por revisar."
+      },
+      {
+        "q": "¿Es una función Premium?",
+        "a": "Está marcada como Premium en el registro de planes. Si tu plan no la incluye, la página te lo indicará."
+      }
+    ],
+    "canCreate": []
+  },
+  {
+    "id": "captura-notificaciones",
+    "title": "Captura por notificaciones",
+    "icon": "🔔",
+    "route": "/captura-notificaciones",
+    "featureKey": "notification_capture",
+    "summary": "Registra solos los cargos que te avisan las apps de tu banco, wallet o tiendas, leyendo sus notificaciones en tu teléfono. Disponible solo en la app de Android. Guía completa con imágenes en /ayuda#captura-notificaciones.",
+    "steps": [
+      "Abre la app de Android y entra a **Captura por notificaciones** (ruta /captura-notificaciones).",
+      "En **1. Acceso a notificaciones** pulsa **Dar acceso a notificaciones**, lee el aviso \"Antes de dar acceso a notificaciones\" y pulsa **Acepto, continuar**. En Ajustes de Android busca esta app y activa \"Permitir acceso a notificaciones\". Al volver verás \"Acceso concedido\".",
+      "En **2. Apps que se escuchan** marca las apps cuyos avisos quieres capturar (tu banco, por ejemplo). Puedes usar **Buscar app**. Las de bancos y tiendas conocidos aparecen primero con su etiqueta (Banco, Fintech, Wallet, Compras).",
+      "Opcional: junto a cada app marcada pulsa **Ajustes** para elegir la **Cuenta por defecto**, reglas \"Si el aviso dice … Registrar en …\" (útil si tienes cuenta y tarjeta de crédito en la misma app), una **Categoría fija** y si **es una app de compras**. Pulsa **Guardar**.",
+      "En **3. Captura automática** pulsa **Activar captura automática**. Funciona aun con la app cerrada.",
+      "Revisa **Últimos avisos recibidos** al final: ahí ves cada aviso y si quedó Registrado, Unido a un cargo que ya existía o como posible duplicado por revisar.",
+      "Si no captura, abre **🔧 ¿No te está funcionando?** (**▼ Ver guía**) y sigue los pasos de batería de la marca de tu teléfono.",
+      "Confirma los movimientos pendientes en **Transacciones**."
+    ],
+    "faq": [
+      {
+        "q": "¿Qué lee exactamente la app?",
+        "a": "Solo las notificaciones de las apps que tú marcas, y solo envía al servidor las que traen un monto o confirman un envío o pago. El texto de la notificación no se guarda; solo el movimiento que se detecta. Puedes quitar el acceso cuando quieras desde Ajustes de Android."
+      },
+      {
+        "q": "Me dice que el permiso está dado pero no captura nada.",
+        "a": "Android pudo desconectar la lectura de notificaciones. Pulsa **Abrir ajustes de acceso**, apaga \"Permitir acceso a las notificaciones\" y vuelve a encenderlo."
+      },
+      {
+        "q": "Un cargo real no aparece en Últimos avisos recibidos.",
+        "a": "Casi siempre el teléfono cerró la app en segundo plano por \"ahorrar batería\". Quita la optimización de batería y, en Xiaomi, Huawei, Oppo y similares, permite el inicio automático. La guía por marca está en esta página."
+      },
+      {
+        "q": "¿Se duplican los cargos si también me llegan por SMS o correo?",
+        "a": "No: si el mismo cargo llega por otro canal se registra una sola vez (Unido a un cargo que ya existía). Si hay dudas queda como posible duplicado por revisar."
+      },
+      {
+        "q": "¿Por qué los cargos de apps de compras entran como pendientes?",
+        "a": "Las apps marcadas como de compras aportan el comercio y sus cargos entran pendientes de confirmar. Puedes activar o quitar esa opción en **Ajustes** de cada app."
+      },
+      {
+        "q": "No puedo activar la captura.",
+        "a": "Marca al menos una app en la lista antes de pulsar **Activar captura automática**; si no, la app te lo pide."
+      },
+      {
+        "q": "¿Funciona en iPhone, en el navegador o en Google Play?",
+        "a": "En iPhone no (Apple no permite leer notificaciones de otras apps) y en el navegador tampoco: usa **Sincronizar correo** o **Importar**. La disponibilidad en la versión de Google Play depende de cómo esté publicada; la página te indica si no está disponible."
+      },
+      {
+        "q": "¿Es una función Premium?",
+        "a": "Está marcada como Premium en el registro de planes. Revisa tu plan en /suscripcion."
+      }
+    ],
+    "canCreate": []
+  },
+  {
+    "id": "rendimientos",
+    "title": "Rendimientos",
+    "icon": "📈",
+    "route": "/rendimientos",
+    "featureKey": "yields",
+    "summary": "Compara cuánto debería crecer cada cuenta con rendimiento (según su tasa, tramos y retención de ISR) contra lo que realmente te abonó el banco, y registra ese abono como un ingreso. Los apartados con rendimiento también aparecen aquí.",
+    "steps": [
+      "Primero activa el rendimiento en la cuenta: en **Cuentas**, al crear o editar, enciende **Esta cuenta genera rendimientos** y captura **Rendimiento (%)** y **La tasa es** Anual o Mensual.",
+      "Elige **Tipo de rendimiento**: **A la vista (se paga cada mes)** o **Plazo fijo (se paga al vencer)** con **Plazo (días)** y **Vence el**.",
+      "Opcional, solo a la vista: **+ Agregar tramo** en **Tramos por monto (opcional)**. Captura **Desde ($)** y **Tasa (%)** de cada tramo; son marginales y se ordenan solos. Mientras haya al menos uno sustituyen a la tasa general. Verás una vista **Así quedaría**.",
+      "Opcional: en **Cuentas** pulsa **+ Apartado** en una cuenta para crear un apartado (cajita) con su propio saldo y rendimiento, o **Mover a apartado** para convertir una cuenta existente en apartado de otra.",
+      "Entra a **Rendimientos**. Por cada cuenta verás **Saldo actual**, **Crecimiento esperado** y **Crecimiento real**, y si hay retención, el desglose Bruto, ISR y neto.",
+      "En el formulario **Confirma el rendimiento calculado** elige el **Mes** (últimos 12). El **Monto a contabilizar ($)** ya viene precargado con el cálculo del sistema; ajústalo solo si tu banco dio un monto distinto. Debajo ves la diferencia contra lo esperado.",
+      "Pulsa **Verificar y contabilizar**. Se registra como una transacción de ingreso y el mes queda marcado como **Verificado** en el **Histórico**.",
+      "Para corregir un mes, toca ese registro en el **Histórico**, cambia el monto y pulsa **Actualizar**; o **Eliminar** para borrarlo."
+    ],
+    "faq": [
+      {
+        "q": "Dice \"Sin cuentas con rendimiento\".",
+        "a": "Aún no tienes ninguna cuenta con la opción de rendimiento activa. Crea o edita una cuenta en **Cuentas** y enciende **Esta cuenta genera rendimientos**."
+      },
+      {
+        "q": "Dice que la función es solo para Premium.",
+        "a": "Rendimientos puede estar marcada como Premium según la configuración del plan. Si tu plan no la incluye, verás ese aviso; revisa tus opciones en /suscripcion."
+      },
+      {
+        "q": "¿Qué son los tramos por monto?",
+        "a": "Algunas cuentas pagan distinta tasa según el saldo. Los tramos son marginales: el primero (normalmente Desde $0) cubre hasta el siguiente tramo, y así sucesivamente. No importa en qué orden los captures."
+      },
+      {
+        "q": "¿Qué hace exactamente Verificar y contabilizar?",
+        "a": "Confirma el rendimiento del mes y crea una transacción real de ingreso por ese monto, así que tu saldo sube. Por eso conviene ajustar el monto al que realmente abonó tu banco antes de confirmar."
+      },
+      {
+        "q": "Mi estado de cuenta muestra menos que el esperado.",
+        "a": "Suele ser la retención de ISR. La app calcula el esperado en neto y, si la cuenta retiene ISR, muestra Bruto, ISR y neto para que compares."
+      },
+      {
+        "q": "¿Qué es un apartado (cajita)?",
+        "a": "Es una cuenta hija dentro de otra cuenta: comparte su moneda, tiene su propio saldo y puede tener su propio rendimiento. Se identifica con \"(apartado de …)\". Los apartados pueden tener límite en el plan gratis y ser Premium."
+      },
+      {
+        "q": "En un plazo fijo no veo el rendimiento mes a mes.",
+        "a": "El plazo fijo se paga al vencer; la tarjeta de la cuenta muestra \"plazo fijo, vence\" con la fecha."
+      }
+    ],
+    "canCreate": []
+  },
+  {
+    "id": "reportes",
+    "title": "Reportes",
+    "icon": "📊",
+    "route": "/reportes",
+    "featureKey": "reports_filters",
+    "summary": "Gráficas y totales de tus ingresos y gastos por periodo, categoría, cuenta y tarjeta, con dos balances (efectivo y económico). Puedes filtrar por fechas y exportar todo a Excel.",
+    "steps": [
+      "Entra a **Reportes**. De inicio ves el mes en curso.",
+      "Si tu plan incluye filtros, usa **Rango de fechas** con **Desde** y **Hasta** para cambiar el periodo; todo el resumen y las gráficas se recalculan.",
+      "Mira las tiras de resumen: **Total Ingresos**, **Total Egresos** y **Crédito usado**, y debajo **Balance efectivo** y **Balance económico**.",
+      "Recorre las gráficas disponibles: **Ingresos vs Egresos**, **Gastos por Categoría**, **Gasto por Suscripción**, **Ingresos y Egresos por Tarjeta**, **Ingresos y Egresos por Cuenta**, **Uso de línea de crédito** y **Presupuestos**. Solo aparecen las que tienen datos.",
+      "Con los controles de gráficas (arriba de las gráficas) puedes ordenarlas y marcar cuáles se incluyen al exportar.",
+      "Para exportar, elige en **Exportar a Excel** entre **Tablas y gráficos**, **Solo tablas** o **Solo gráficos**, y pulsa **Descargar Excel**.",
+      "El archivo se llama mi-control-finanzas-reporte con las fechas del rango, e incluye los movimientos del periodo."
+    ],
+    "faq": [
+      {
+        "q": "¿Qué diferencia hay entre Balance efectivo y Balance económico?",
+        "a": "**Balance efectivo** = ingresos menos egresos de efectivo; el consumo con tarjeta de crédito no cuenta hasta que lo pagas. **Balance económico** reconoce el gasto en cuanto consumes con la tarjeta, restando el crédito usado."
+      },
+      {
+        "q": "¿Por qué Total Egresos incluye pagos de tarjeta?",
+        "a": "Porque muestra el efectivo que salió de tus cuentas, y pagar la tarjeta es salida de efectivo. El consumo a crédito se ve aparte en **Crédito usado**."
+      },
+      {
+        "q": "No veo el filtro de fechas.",
+        "a": "Los filtros por rango de fechas, cuenta o tarjeta pueden ser Premium según tu plan. Sin ellos, el reporte se queda en el mes actual y verás un aviso en amarillo al final."
+      },
+      {
+        "q": "No veo el botón de exportar a Excel.",
+        "a": "Exportar a Excel puede ser una función Premium, y además el bloque solo aparece cuando hay datos para graficar en el periodo."
+      },
+      {
+        "q": "Dice \"Sin transacciones en este período\".",
+        "a": "No hay movimientos en el rango elegido. Amplía las fechas o revisa que tus movimientos estén confirmados."
+      },
+      {
+        "q": "¿En qué moneda se muestran los reportes?",
+        "a": "En tu **Moneda principal** (se cambia en Configuración). Los movimientos en otra moneda se convierten con el tipo de cambio."
+      },
+      {
+        "q": "La exportación falla.",
+        "a": "Verás un aviso \"No se pudo exportar\" con el motivo. Intenta de nuevo con **Solo tablas**; si persiste, avisa a soporte."
+      }
+    ],
+    "canCreate": []
+  },
+  {
+    "id": "suscripcion",
+    "title": "Suscripción y plan Premium",
+    "icon": "⭐",
+    "route": "/suscripcion",
+    "featureKey": null,
+    "summary": "Aquí ves tu plan (Gratis o Premium), qué incluye cada uno y puedes contratar, administrar o cancelar Premium. En web y APK el cobro es por Stripe; en la versión de Google Play, por Google Play.",
+    "steps": [
+      "Entra a **Suscripción** (también desde Configuración, botón **Ver planes**).",
+      "Compara las tarjetas **Gratis** y **Premium**: cada una lista lo que incluye según la configuración actual de la app.",
+      "En web o APK elige **Mensual** o **Anual**; los precios y el ahorro del plan anual se muestran en los propios botones. Se abre la página de pago segura de Stripe.",
+      "En la versión de Google Play, elige **Mensual** o **Anual** con el precio que muestra Google Play; el cobro y la cancelación los maneja Google Play.",
+      "Si el plan incluye prueba gratis, la pantalla lo indica (por ejemplo \"7 días de prueba gratis\").",
+      "Una vez Premium verás la insignia **Premium** y \"Tienes acceso a todas las funciones\". Pulsa **Gestionar suscripción** para cambiar tarjeta, ver recibos o cancelar.",
+      "En Google Play, si cambiaste de teléfono o compraste y no se activó, pulsa **Restaurar compra**."
+    ],
+    "faq": [
+      {
+        "q": "¿Qué incluye Premium?",
+        "a": "La lista de la tarjeta Premium se arma con las funciones que el administrador marcó como Premium (por ejemplo apartados, líneas de crédito, rendimientos, filtros de reportes, Excel, captura por correo, SMS o notificaciones, según la configuración). Lo que ves en pantalla es lo vigente."
+      },
+      {
+        "q": "¿Cuánto cuesta?",
+        "a": "Los precios se muestran en los botones de Mensual y Anual al momento de contratar. En Google Play el precio lo da Google Play."
+      },
+      {
+        "q": "¿Puedo cancelar cuando quiera?",
+        "a": "Sí. En web o APK usa **Gestionar suscripción** (portal de Stripe). En Google Play, cancela desde Google Play con **Gestionar suscripción**."
+      },
+      {
+        "q": "Pagué y sigo viendo el plan Gratis.",
+        "a": "Espera unos segundos y recarga la página. En Google Play pulsa **Restaurar compra**; si dice que no encontró compras, revisa que uses la misma cuenta de Google con la que pagaste."
+      },
+      {
+        "q": "¿Por qué en la app de Google Play no hay opciones de pago por web?",
+        "a": "Por las reglas de Google Play, en esa versión la compra se hace solo con Google Play y no se menciona el pago por web."
+      },
+      {
+        "q": "¿Qué pasa con mis datos si cancelo Premium?",
+        "a": "Conservas tu cuenta y tus movimientos; las funciones Premium dejan de estar disponibles y algunas funciones quedan sujetas a los límites del plan Gratis."
+      },
+      {
+        "q": "Llegué desde un plan de la página principal y se abrió el pago directo.",
+        "a": "Es normal: si elegiste Mensual o Anual en la página de inicio, al iniciar sesión se abre el pago de ese plan. Si ya eres Premium no se vuelve a cobrar."
+      }
+    ],
+    "canCreate": []
+  },
+  {
+    "id": "configuracion",
+    "title": "Configuración",
+    "icon": "⚙️",
+    "route": "/configuracion",
+    "featureKey": null,
+    "summary": "Tu perfil y preferencias: tema, idioma, moneda principal, alertas de presupuesto, reporte por correo, recordatorios en Google Calendar, teléfono, plan, tutorial, cerrar sesión y eliminar tu cuenta.",
+    "steps": [
+      "Entra a **Configuración**. En **Perfil** ves tu nombre, correo y foto, que vienen de tu cuenta de Google.",
+      "En **Apariencia** elige el tema **Claro**, **Oscuro** o **Sistema**. En **Idioma** elige **Español** o **English**.",
+      "En **Visibilidad** activa o desactiva **Mostrar total de cuentas** (la suma de todas tus cuentas arriba del listado). Para esconder tus cifras usa el botón del ojo en la barra superior (**Ocultar montos** / **Mostrar montos**).",
+      "En **Moneda principal** pulsa la moneda en la que quieres ver tu balance y reportes; los movimientos en otra moneda se convierten con el tipo de cambio.",
+      "En **Presupuestos** ajusta **Avisarme al llegar a** (porcentaje, de 1 a 100) y, si quieres, **Avisarme también por correo**. Con **Reporte financiero por correo** recibes un resumen con Excel adjunto cada semana, quincena, mes, trimestre o cada cierto número de días.",
+      "En **Recordatorios en Google Calendar** pulsa **Conectar Google Calendar** y luego **Activar recordatorios**. Se crea un calendario aparte \"Mi Control de Finanzas — Recordatorios\". Marca **Próximo cobro de suscripciones** y/o **Pago de tarjeta / MSI**. Para quitarlo usa **Desconectar**.",
+      "En **Suscripción** ves tu plan (**Ver planes** o **Gestionar suscripción**); en **Plan familiar** gestionas o creas tu familia; en **Tutorial** pulsa **Ver tutorial de nuevo** para repetir el recorrido guiado.",
+      "Al final: **Cerrar sesión**, y en **Eliminar mi cuenta** puedes borrar tu cuenta definitivamente."
+    ],
+    "faq": [
+      {
+        "q": "¿Cómo oculto mis montos para que nadie los vea?",
+        "a": "Con el icono del ojo de la barra superior: **Ocultar montos** los esconde y **Mostrar montos** los vuelve a mostrar. No está dentro de Configuración."
+      },
+      {
+        "q": "¿Qué pasa si cambio la moneda principal?",
+        "a": "Tu balance y tus reportes se muestran en la nueva moneda. Los movimientos conservan su moneda original y se convierten con el tipo de cambio."
+      },
+      {
+        "q": "¿Cómo elimino mi cuenta?",
+        "a": "En **Eliminar mi cuenta** pulsa el botón, escribe **ELIMINAR** para confirmar y pulsa **Eliminar definitivamente**. Se borran para siempre tus movimientos, cuentas, tarjetas, presupuestos, reglas y conexiones de correo o calendario, y si tienes Premium la suscripción se cancela. No se puede deshacer; si quieres conservar tus movimientos, expórtalos antes a Excel desde **Reportes**."
+      },
+      {
+        "q": "¿Qué ve la app de mi Google Calendar?",
+        "a": "Solo crea y usa su propio calendario \"Mi Control de Finanzas — Recordatorios\". No ve tus otros calendarios ni eventos. Al **Desconectar**, ese calendario se borra con sus recordatorios."
+      },
+      {
+        "q": "No puedo activar los recordatorios de Google Calendar.",
+        "a": "Los recordatorios en Google Calendar pueden ser una función Premium; si tu plan no la incluye, verás el aviso. Si ya la tienes, conecta primero Google Calendar y luego pulsa **Activar recordatorios**."
+      },
+      {
+        "q": "¿Cómo cambio mi nombre o mi foto?",
+        "a": "No se editan aquí: vienen de tu cuenta de Google."
+      },
+      {
+        "q": "¿Para qué sirve verificar mi teléfono?",
+        "a": "En la sección **Teléfono** puedes registrar tu número en formato internacional (por ejemplo +5215512345678), recibir un código por SMS y verificarlo con **Verificar**. Si el envío de SMS no está configurado, la app te avisa que contactes al administrador."
+      }
+    ],
+    "canCreate": []
+  },
+  {
+    "id": "notificaciones",
+    "title": "Centro de avisos",
+    "icon": "🔔",
+    "route": "/notificaciones",
+    "featureKey": null,
+    "summary": "Una sola página con los avisos pendientes de pagos de tarjeta, suscripciones y presupuestos. Se llega desde la campana de la barra superior, que muestra cuántos tienes sin leer.",
+    "steps": [
+      "Pulsa la campana de la barra superior (con el contador) o entra a **Notificaciones** (ruta /notificaciones).",
+      "Los avisos están agrupados en **Pagos de tarjeta**, **Suscripciones** y **Presupuestos**.",
+      "En **Pagos de tarjeta** verás cuándo vence el pago de una tarjeta o una mensualidad de MSI, con su monto y fecha.",
+      "En **Suscripciones** verás cuándo te cobrarán una suscripción o si su precio subió (de cuánto a cuánto).",
+      "En **Presupuestos** verás cuando llevas cierto porcentaje de un presupuesto o cuando ya lo excediste.",
+      "Pulsa **Ver** para ir a la sección relacionada (Tarjetas, Suscripciones o Presupuestos).",
+      "Pulsa **Entendido** para marcar el aviso como leído; desaparece de la lista y baja el contador de la campana."
+    ],
+    "faq": [
+      {
+        "q": "Dice \"No tienes notificaciones pendientes\".",
+        "a": "No hay avisos sin leer. Los nuevos aparecerán aquí y en el contador de la campana."
+      },
+      {
+        "q": "¿Dónde configuro cuándo me avisan los presupuestos?",
+        "a": "En **Configuración**, sección **Presupuestos**: ahí eliges el porcentaje de **Avisarme al llegar a** y si quieres además recibir un correo."
+      },
+      {
+        "q": "¿Dónde configuro los recordatorios de pagos y cobros?",
+        "a": "Los avisos de pagos de tarjeta y cobros de suscripciones salen según tus tarjetas, MSI y suscripciones. Además puedes recibirlos en Google Calendar desde **Configuración**."
+      },
+      {
+        "q": "Marqué un aviso como Entendido por error.",
+        "a": "Ya no vuelve a aparecer en esta lista. Revisa la información en Tarjetas, Suscripciones o Presupuestos."
+      },
+      {
+        "q": "¿Se repiten los avisos de presupuesto?",
+        "a": "Se avisa una vez por periodo al cruzar el umbral y otra vez si excedes el presupuesto."
+      },
+      {
+        "q": "¿Esta página es lo mismo que las notificaciones del teléfono?",
+        "a": "No. Esto es el centro de avisos dentro de la app. La captura de movimientos por notificaciones del teléfono es otra función, en **Captura por notificaciones**."
+      }
+    ],
+    "canCreate": []
+  }
+]

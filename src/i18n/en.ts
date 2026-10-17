@@ -2213,8 +2213,8 @@ export const en: Record<string, string> = {
     'Set a monthly limit per category and get an alert when you\'re about to go over.',
   'Detecta Netflix, Spotify y demás cargos recurrentes por SMS/correo, o agrégalos a mano. Si un comercio no manda correo/SMS, activa "Generar el cargo automáticamente" para que se registre solo cada ciclo.':
     'Detects Netflix, Spotify and other recurring charges from SMS/email, or add them by hand. If a merchant doesn\'t send an email/SMS, turn on "Generate the charge automatically" so it is recorded on its own each cycle.',
-  'Sube un archivo (Excel/CSV) con movimientos ya existentes para no capturarlos uno por uno.':
-    'Upload a file (Excel/CSV) with existing transactions so you don\'t have to enter them one by one.',
+  'Sube un archivo CSV con movimientos ya existentes para no capturarlos uno por uno.':
+    'Upload a CSV file with existing transactions so you don\'t have to enter them one by one.',
   'Toma una foto de un ticket o sube un PDF/XML y la app detecta los datos del gasto por ti.':
     'Take a photo of a receipt or upload a PDF/XML and the app detects the expense data for you.',
   'Sube el estado de cuenta de una tarjeta o cuenta y compáralo, movimiento por movimiento, con lo que registraste: te dice qué falta, qué sobra y qué tiene un monto distinto.':
@@ -2680,4 +2680,32 @@ export const en: Record<string, string> = {
     "New design, app home screen and Subscription page",
   'Estrenamos diseño: nueva paleta, tipografía y gráficas, ventanas de confirmación propias, listas desplegables con búsqueda y formularios más claros. En la app del celular hay una pantalla de inicio propia y la pantalla de arranque con tu logo, y los planes viven ahora en la página de Suscripción. En Transacciones puedes filtrar rápido lo pendiente de confirmar y elegir un motivo rápido (duplicado, error de captura…) al eliminar.':
     "We're launching a new look: new palette, typography and charts, our own confirmation windows, searchable dropdowns and clearer forms. The mobile app now has its own home screen and a launch screen with your logo, and plans now live on the Subscription page. In Transactions you can quickly filter what is pending confirmation and pick a quick reason (duplicate, entry error…) when deleting.",
+  // Asistente y guías por función (el contenido de las guías sigue en español)
+  'Ayuda con la app y tus configuraciones': 'Help with the app and your settings',
+  'Nueva conversación': 'New conversation',
+  'Chat con {{name}}': 'Chat with {{name}}',
+  'No encontré esa línea de crédito. Créala primero o elige una existente.': "I couldn't find that credit line. Create it first or pick an existing one.",
+  'Te quedan {{n}} de {{limit}} mensajes hoy': 'You have {{n}} of {{limit}} messages left today',
+  'Llegaste al máximo de mensajes de hoy. Mañana se reinicia.': "You reached today's message limit. It resets tomorrow.",
+  'El asistente no está disponible por ahora. Intenta más tarde.': 'The assistant is unavailable right now. Please try again later.',
+  Asistente: 'Assistant',
+  'Escribe tu duda…': 'Type your question…',
+  Enviar: 'Send',
+  'Escribiendo…': 'Typing…',
+  Guardado: 'Saved',
+  Cancelado: 'Cancelled',
+  Presupuesto: 'Budget',
+  '¿Cómo se usa?': 'How do I use it?',
+  'Ir a {{title}}': 'Go to {{title}}',
+  'No se pudo contactar al asistente.': 'Could not reach the assistant.',
+  'No se pudo guardar.': 'Could not save.',
+  'No encontré esa categoría. Créala primero o elige una existente.':
+    "I couldn't find that category. Create it first or pick an existing one.",
+  '¡Hola! Soy {{name}}. Pregúntame cómo usar la app o pídeme crear una cuenta, tarjeta, línea de crédito, categoría, presupuesto o suscripción. Antes de guardar nada te pido confirmación.':
+    "Hi! I'm {{name}}. Ask me how to use the app or ask me to create an account, card, credit line, category, budget or subscription. I ask for your confirmation before saving anything.",
+  'El asistente solo ayuda con esta app. Tus mensajes se envían a un proveedor de IA para responderte.':
+    'The assistant only helps with this app. Your messages are sent to an AI provider to answer you.',
+  'Asistente de ayuda y guías de todas las funciones': 'Help assistant and guides for every feature',
+  'Conoce a Taffy, el nuevo asistente (la burbuja de abajo a la derecha): contesta tus dudas sobre la app y te ayuda a crear cuentas, tarjetas, categorías, presupuestos y suscripciones; antes de guardar nada te pide confirmación. Además, Preguntas frecuentes ahora trae una guía paso a paso de cada sección.':
+    'Meet Taffy, the new assistant (the bubble at the bottom right): it answers your questions about the app and helps you create accounts, cards, categories, budgets and subscriptions; it asks for confirmation before saving anything. Also, Frequently asked questions now includes a step-by-step guide for each section.',
 }

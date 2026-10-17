@@ -42,6 +42,7 @@ import { NotificationTapRouter } from '@/components/NotificationTapRouter'
 import { DialogHost } from '@/components/ui/DialogHost'
 import { isNative } from '@/lib/nativeAuth'
 import { isPlayBuild } from '@/lib/distribution'
+import { PlayUpdatePrompt } from '@/components/PlayUpdatePrompt'
 
 export default function App() {
   const init = useAuth((s) => s.init)
@@ -58,8 +59,8 @@ export default function App() {
 
   return (
     <>
-      {/* En Play la app solo se actualiza desde la tienda (ver lib/distribution.ts). */}
-      {isNative() ? !isPlayBuild() && <NativeUpdatePrompt /> : <WebUpdatePrompt />}
+      {/* En Play la actualización la hace la tienda (In-App Updates; ver lib/distribution.ts). */}
+      {isNative() ? (isPlayBuild() ? <PlayUpdatePrompt /> : <NativeUpdatePrompt />) : <WebUpdatePrompt />}
       <NotificationTapRouter />
       <DialogHost />
     <RouteMeta />
