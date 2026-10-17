@@ -2576,4 +2576,8 @@ export const en: Record<string, string> = {
   'Motivos frecuentes': 'Common reasons',
   'Si no eliges ícono, se usará una etiqueta.': "If you don't pick an icon, a tag will be used.",
   'Si no eliges color, se asigna uno automáticamente.': "If you don't pick a color, one is assigned automatically.",
+  'Nuevo diseño, inicio de la app y página de Suscripción':
+    "New design, app home screen and Subscription page",
+  'Estrenamos diseño: nueva paleta, tipografía y gráficas, ventanas de confirmación propias, listas desplegables con búsqueda y formularios más claros. En la app del celular hay una pantalla de inicio propia y la pantalla de arranque con tu logo, y los planes viven ahora en la página de Suscripción. En Transacciones puedes filtrar rápido lo pendiente de confirmar y elegir un motivo rápido (duplicado, error de captura…) al eliminar.':
+    "We're launching a new look: new palette, typography and charts, our own confirmation windows, searchable dropdowns and clearer forms. The mobile app now has its own home screen and a launch screen with your logo, and plans now live on the Subscription page. In Transactions you can quickly filter what is pending confirmation and pick a quick reason (duplicate, entry error…) when deleting.",
 }
