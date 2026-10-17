@@ -1,0 +1,48 @@
+[
+  {
+    "id": "asistente",
+    "title": "Taffy, el asistente",
+    "icon": "🤖",
+    "route": "/ayuda",
+    "featureKey": "assistant",
+    "summary": "Taffy es el asistente de la app: un chat que contesta dudas sobre cómo usarla y te ayuda a crear cuentas, tarjetas, líneas de crédito, categorías, presupuestos y suscripciones.",
+    "steps": [
+      "Toca la **burbuja de Taffy** (el perrito poodle) abajo a la derecha.",
+      "Escribe tu duda, por ejemplo: «¿cómo registro un pago de tarjeta?».",
+      "Para crear algo, pídelo con tus datos: «crea una cuenta de ahorro llamada Nu con 5,000 pesos».",
+      "Si falta algún dato, el asistente te lo pregunta. Cuando tiene todo, te muestra una **tarjeta con lo que va a crear**.",
+      "Toca **Confirmar** para guardarlo o **Cancelar** para descartarlo. Nada se guarda sin tu confirmación."
+    ],
+    "faq": [
+      {
+        "q": "¿Qué puede hacer el asistente?",
+        "a": "Responder dudas de esta app y proponerte crear **cuentas, tarjetas, líneas de crédito, categorías, presupuestos y suscripciones**. No registra transacciones ni modifica o borra datos que ya tienes."
+      },
+      {
+        "q": "¿Puedo preguntarle cualquier cosa?",
+        "a": "No. Solo ayuda con esta app. Para otros temas, incluidos consejos de inversión, responde que no puede ayudarte con eso."
+      },
+      {
+        "q": "¿Guarda cosas sin avisarme?",
+        "a": "No. Siempre muestra primero una propuesta y solo se guarda cuando tocas **Confirmar**."
+      },
+      {
+        "q": "Me dice que llegué al máximo de mensajes.",
+        "a": "El asistente tiene un tope diario de mensajes por usuario, y puede ser mayor con Premium. Se reinicia al día siguiente. Mientras tanto puedes consultar las guías de esta página."
+      },
+      {
+        "q": "Al confirmar me marca un error de límite del plan.",
+        "a": "Crear cosas desde el asistente respeta los mismos límites de tu plan que los formularios. Revisa tu plan en Suscripción."
+      },
+      {
+        "q": "¿Qué datos se envían?",
+        "a": "Tus mensajes y los **nombres** de tus cuentas, tarjetas y categorías, para no duplicarlos. No se envían saldos, movimientos ni correos."
+      },
+      {
+        "q": "No veo la burbuja de Taffy.",
+        "a": "El administrador puede reservar el asistente para Premium. Si tu plan no lo incluye, la burbuja no aparece."
+      }
+    ],
+    "canCreate": []
+  }
+]

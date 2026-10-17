@@ -76,6 +76,8 @@ export const FEATURES = [
 
   // Otros
   { key: 'calendar_reminders', label: 'Recordatorios en Google Calendar', group: 'other', premium: { flag: true } },
+  // Los mensajes por día los topa el servidor (ASSISTANT_DAILY_LIMIT_*), no el admin.
+  { key: 'assistant', label: 'Asistente de IA', group: 'other', premium: { flag: true } },
 ] as const satisfies readonly FeatureDef[]
 
 export type FeatureKey = (typeof FEATURES)[number]['key']

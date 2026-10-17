@@ -19,14 +19,8 @@ import { Select } from '@/components/ui/Select'
 import { EmojiPicker } from '@/components/ui/EmojiPicker'
 import { Emoji } from '@/components/ui/Emoji'
 import { ColorPicker } from '@/components/ui/ColorPicker'
-import { CATEGORY_COLORS } from '@/lib/categoryColors'
+import { DEFAULT_CATEGORY_ICON as DEFAULT_ICON, autoCategoryColor as autoColor } from '@/lib/categoryColors'
 import type { CategoryRow } from '@/types/db'
-
-// Si no se elige ícono se usa una etiqueta; el color se reparte por nombre entre la paleta, para
-// que categorías sin color propio no salgan todas iguales en las gráficas.
-const DEFAULT_ICON = '🏷️'
-const autoColor = (name: string) =>
-  CATEGORY_COLORS[[...name.trim().toLowerCase()].reduce((n, ch) => n + ch.charCodeAt(0), 0) % CATEGORY_COLORS.length]
 
 export function CategoriesPage() {
   const { t } = useTranslation()

@@ -16,6 +16,7 @@ import { CardPaymentAlertWatcher } from '@/components/cards/CardPaymentAlertWatc
 import { NotificationBell } from '@/components/layout/NotificationBell'
 import { TourGate } from '@/features/onboarding/TourGate'
 import { WhatsNewButton } from '@/features/onboarding/WhatsNewModal'
+import { AssistantButton } from '@/features/assistant/AssistantButton'
 import { APK_URL } from '@/lib/appUpdate'
 import { isNative } from '@/lib/nativeAuth'
 import { PAGE_NAV_ITEMS, isPageHidden, orderByPageOrder, type PageNavItem } from '@/lib/pageOrder'
@@ -114,6 +115,7 @@ export function AppShell() {
   return (
     <div className="flex min-h-screen w-full overflow-x-clip bg-canvas">
       <TourGate />
+      <AssistantButton />
       {/* Sidebar */}
       <aside className="hidden w-60 shrink-0 flex-col overflow-hidden border-r border-slate-200 dark:border-slate-700 bg-surface md:sticky md:top-0 md:flex md:h-screen">
         <div className="flex h-16 shrink-0 items-center gap-2 border-b border-slate-200 dark:border-slate-700 px-5">
