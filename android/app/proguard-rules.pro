@@ -14,8 +14,9 @@
 
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# Plugins de Capacitor, listener de notificaciones y receiver de SMS propios:
+# se resuelven por reflexión / manifiesto, R8 no debe renombrarlos.
+-keep class com.ahorbit.app.** { *; }
