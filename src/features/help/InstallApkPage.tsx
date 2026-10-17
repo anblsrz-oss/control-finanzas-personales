@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { BrandLogo } from '@/components/ui/BrandLogo'
 import { useAppConfig } from '@/hooks/useAppConfig'
+import { useLocalePath } from '@/hooks/useLocalePath'
 import { APK_URL } from '@/lib/appUpdate'
 import { isPlayBuild } from '@/lib/distribution'
 import { GuideFaq, GuidePdfLink, GuideSteps, getGuide } from './guides/GuideSteps'
@@ -13,16 +14,17 @@ import { GuideFaq, GuidePdfLink, GuideSteps, getGuide } from './guides/GuideStep
 // no se ofrece la descarga del APK (ver lib/distribution.ts).
 export function InstallApkPage() {
   const { t } = useTranslation()
+  const lp = useLocalePath()
   const { data: appConfig } = useAppConfig()
 
-  if (isPlayBuild()) return <Navigate to="/bienvenida" replace />
+  if (isPlayBuild()) return <Navigate to="/" replace />
 
   const guide = getGuide('instalar-apk')
 
   return (
     <div className="min-h-screen bg-canvas text-slate-800 dark:text-slate-100">
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-        <Link to="/bienvenida" className="text-xs text-slate-400 dark:text-slate-500 underline">
+        <Link to={lp('/')} className="text-xs text-slate-400 dark:text-slate-500 underline">
           {t('← Volver al inicio')}
         </Link>
 

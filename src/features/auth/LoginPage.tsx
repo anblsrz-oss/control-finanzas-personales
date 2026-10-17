@@ -11,6 +11,7 @@ import { supabase } from '@/lib/supabase'
 import { signInWithGoogle, isNative } from '@/lib/nativeAuth'
 import { useAuth } from '@/store/useAuth'
 import { useAppConfig } from '@/hooks/useAppConfig'
+import { useLocalePath } from '@/hooks/useLocalePath'
 
 // Login con tres opciones:
 // - Google (OAuth, adaptado a web/nativo en nativeAuth).
@@ -24,6 +25,7 @@ type OtpStep = 'email' | 'code'
 
 export function LoginPage() {
   const { t } = useTranslation()
+  const lp = useLocalePath()
   const { session } = useAuth()
   const { data: appConfig } = useAppConfig()
   const [searchParams] = useSearchParams()
@@ -459,7 +461,7 @@ export function LoginPage() {
 
         <div className="mt-5 border-t border-slate-100 dark:border-slate-700 pt-4">
           <Link
-            to={isNative() ? '/inicio' : '/bienvenida'}
+            to={isNative() ? '/inicio' : lp('/')}
             className="text-xs text-slate-400 dark:text-slate-500 underline"
           >
             {t('← Volver al inicio')}
@@ -468,11 +470,11 @@ export function LoginPage() {
 
         <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">
           {t('Al continuar aceptas nuestros')}{' '}
-          <Link to="/terminos" className="underline">
+          <Link to={lp('/terminos')} className="underline">
             {t('Términos y Condiciones')}
           </Link>{' '}
           {t('y nuestra')}{' '}
-          <Link to="/privacidad" className="underline">
+          <Link to={lp('/privacidad')} className="underline">
             {t('Política de Privacidad')}
           </Link>
           .

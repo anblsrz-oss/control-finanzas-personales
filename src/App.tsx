@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from '@/store/useAuth'
 import { useAppConfig } from '@/hooks/useAppConfig'
 import { applyThemeColors } from '@/lib/themeColors'
@@ -9,12 +9,10 @@ import { FeatureGate } from '@/components/ui/FeatureGate'
 import { ProtectedRoute } from '@/features/auth/ProtectedRoute'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { ResetPasswordPage } from '@/features/auth/ResetPasswordPage'
-import { LandingPage } from '@/features/landing/LandingPage'
+import { RouteMeta } from '@/components/RouteMeta'
+import { publicRoutes } from '@/publicRoutes'
 import { MobileWelcomePage } from '@/features/welcome/MobileWelcomePage'
 import { SubscriptionPage } from '@/features/subscription/SubscriptionPage'
-import { PrivacyPolicyPage } from '@/features/legal/PrivacyPolicyPage'
-import { TermsPage } from '@/features/legal/TermsPage'
-import { CookiePolicyPage } from '@/features/legal/CookiePolicyPage'
 import { NotFoundPage } from '@/features/legal/NotFoundPage'
 import { DeleteAccountPage } from '@/features/legal/DeleteAccountPage'
 import { DashboardPage } from '@/features/reports/DashboardPage'
@@ -34,7 +32,6 @@ import { EmailSyncPage } from '@/features/email/EmailSyncPage'
 import { SmsSyncPage } from '@/features/sms/SmsSyncPage'
 import { NotificationCapturePage } from '@/features/notification-capture/NotificationCapturePage'
 import { HelpFaqPage } from '@/features/help/HelpFaqPage'
-import { InstallApkPage } from '@/features/help/InstallApkPage'
 import { CategoriesPage } from '@/features/categories/CategoriesPage'
 import { YieldsPage } from '@/features/yields/YieldsPage'
 import { ReportsPage } from '@/features/reports/ReportsPage'
@@ -60,28 +57,22 @@ export default function App() {
     applyThemeColors(appConfig?.theme_colors ?? null)
   }, [appConfig?.theme_colors])
 
-  // Refleja el título configurado por el admin en la pestaña del navegador.
-  useEffect(() => {
-    document.title = appConfig?.app_title || 'Mi Control de Finanzas Personales'
-  }, [appConfig?.app_title])
-
   return (
     <>
       {/* En Play la actualización la hace la tienda (In-App Updates; ver lib/distribution.ts). */}
       {isNative() ? (isPlayBuild() ? <PlayUpdatePrompt /> : <NativeUpdatePrompt />) : <WebUpdatePrompt />}
       <NotificationTapRouter />
       <DialogHost />
+    <RouteMeta />
     <Routes>
-      <Route path="/bienvenida" element={<PageGuard to="/bienvenida"><LandingPage /></PageGuard>} />
-      {/* Inicio de la app del celular: la web usa /bienvenida. */}
+      {/* La landing web es "/" sin sesión (ver ProtectedRoute). En web, /bienvenida redirige por
+          vercel.json; esta ruta cubre el WebView nativo. */}
+      <Route path="/bienvenida" element={<Navigate to="/" replace />} />
+      {/* Inicio de la app del celular. */}
       <Route path="/inicio" element={<MobileWelcomePage />} />
-      <Route path="/privacidad" element={<PageGuard to="/privacidad"><PrivacyPolicyPage /></PageGuard>} />
-      <Route path="/terminos" element={<PageGuard to="/terminos"><TermsPage /></PageGuard>} />
-      <Route path="/cookies" element={<PageGuard to="/cookies"><CookiePolicyPage /></PageGuard>} />
+      {publicRoutes}
       {/* Sin PageGuard: Google Play exige que esta URL esté siempre disponible. */}
       <Route path="/eliminar-cuenta" element={<DeleteAccountPage />} />
-      {/* Sin PageGuard: la necesita quien aún no tiene la app instalada. */}
-      <Route path="/instalar-android" element={<InstallApkPage />} />
       <Route path="/login" element={<PageGuard to="/login"><LoginPage /></PageGuard>} />
       <Route path="/reset-password" element={<PageGuard to="/reset-password"><ResetPasswordPage /></PageGuard>} />
       <Route

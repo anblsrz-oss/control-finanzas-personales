@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Card } from '@/components/ui/Card'
 import { BrandLogo } from '@/components/ui/BrandLogo'
 import { useAppConfig } from '@/hooks/useAppConfig'
+import { useLocalePath } from '@/hooks/useLocalePath'
 import { activeLocale } from '@/i18n'
 
 // Página pública (sin login) con la Política de Cookies. La app no pone
@@ -11,8 +12,8 @@ import { activeLocale } from '@/i18n'
 // hay banner de consentimiento. Si algún día se agrega analítica o rastreo,
 // hay que actualizar esta página y agregar el banner.
 
-const LAST_UPDATED_ISO = '2026-09-24'
-const CONTACT_EMAIL = 'anbl.srz@gmail.com'
+const LAST_UPDATED_ISO = '2026-10-17'
+const CONTACT_EMAIL = 'soporte@controlfinanzaspersonales.com'
 
 type Section = { heading: string; paragraphs: string[] }
 
@@ -37,7 +38,7 @@ const SECTIONS: Section[] = [
   {
     heading: 'Sitios de terceros',
     paragraphs: [
-      'Cuando pagas Premium en la web te llevamos a la página de pago de Stripe (en la app de Google Play el pago lo hace Google Play), y cuando conectas Google o Microsoft, a sus páginas de inicio de sesión. Esos sitios pueden usar sus propias cookies, que se rigen por sus políticas de privacidad, no por esta.',
+      'Cuando pagas Premium en la web te llevamos a la página de pago de Stripe (en la app de Google Play el pago lo hace Google Play), y cuando conectas Google, a su página de inicio de sesión. Esos sitios pueden usar sus propias cookies, que se rigen por sus políticas de privacidad, no por esta.',
     ],
   },
   {
@@ -60,12 +61,13 @@ const SECTIONS: Section[] = [
 
 export function CookiePolicyPage() {
   const { t } = useTranslation()
+  const lp = useLocalePath()
   const { data: appConfig } = useAppConfig()
 
   return (
     <div className="min-h-screen bg-canvas text-slate-800 dark:text-slate-100">
       <div className="mx-auto max-w-3xl px-6 py-10">
-        <Link to="/bienvenida" className="text-xs text-slate-400 dark:text-slate-500 underline">
+        <Link to={lp('/')} className="text-xs text-slate-400 dark:text-slate-500 underline">
           {t('← Volver al inicio')}
         </Link>
 

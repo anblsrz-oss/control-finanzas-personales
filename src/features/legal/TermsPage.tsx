@@ -3,14 +3,15 @@ import { useTranslation } from 'react-i18next'
 import { Card } from '@/components/ui/Card'
 import { BrandLogo } from '@/components/ui/BrandLogo'
 import { useAppConfig } from '@/hooks/useAppConfig'
+import { useLocalePath } from '@/hooks/useLocalePath'
 import { activeLocale } from '@/i18n'
 
 // Página pública (sin login) con los Términos y Condiciones. Enlazada desde
 // LoginPage y desde la pantalla de consentimiento OAuth de Google
 // (App domain → Terms of Service link).
 
-const LAST_UPDATED_ISO = '2026-09-26'
-const CONTACT_EMAIL = 'anbl.srz@gmail.com'
+const LAST_UPDATED_ISO = '2026-10-17'
+const CONTACT_EMAIL = 'soporte@controlfinanzaspersonales.com'
 
 type Section = { heading: string; paragraphs: string[] }
 
@@ -42,11 +43,11 @@ const SECTIONS: Section[] = [
     ],
   },
   {
-    heading: 'Sincronización de correo, SMS y notificaciones',
+    heading: 'Captura por SMS y notificaciones',
     paragraphs: [
-      'Las funciones de "Sincronizar correo" (Gmail u Outlook, solo lectura), "Sincronizar SMS" (solo Android) y "Captura por notificaciones" (solo Android) son opcionales y requieren tu autorización explícita. Puedes desactivarlas en cualquier momento desde la app. El tratamiento de estos datos se rige por la Política de Privacidad.',
+      'Las funciones de "Sincronizar SMS" (solo en la app de Android que se descarga directamente desde nuestro sitio) y "Captura por notificaciones" (solo Android) son opcionales y requieren tu autorización explícita. Puedes desactivarlas en cualquier momento desde la app. El tratamiento de estos datos se rige por la Política de Privacidad.',
       'La captura por notificaciones funciona solo si le das a la app el "Acceso a notificaciones" en los ajustes de Android, y solo lee las notificaciones de las apps que tú marcas (por ejemplo, la de tu banco o de una tienda). Puedes quitar ese permiso en cualquier momento desde los ajustes de Android. Los avisos que traen un monto, o que confirman un envío o pago aunque no digan cuánto, se procesan en nuestro servidor para crear una transacción, un pendiente por confirmar o un aviso de monto faltante.',
-      'Cuando un mismo cargo llega por más de un canal (SMS, correo o notificación), la app descarta el aviso repetido si es seguro que es el mismo movimiento y, si no lo es, lo marca como "Posible duplicado" para que tú decidas. Aun así, revisa las transacciones capturadas automáticamente: pueden contener errores de lectura.',
+      'Cuando un mismo cargo llega por más de un canal (SMS o notificación), la app descarta el aviso repetido si es seguro que es el mismo movimiento y, si no lo es, lo marca como "Posible duplicado" para que tú decidas. Aun así, revisa las transacciones capturadas automáticamente: pueden contener errores de lectura.',
       'La captura por notificaciones depende de tu teléfono: algunos fabricantes (por ejemplo, Xiaomi, Huawei o Samsung) detienen las apps en segundo plano para ahorrar batería. No garantizamos que se capture cada aviso; si falta alguno, puedes registrarlo a mano.',
       'Si conectas Google Calendar, la app crea en tu cuenta un calendario aparte con recordatorios de cobros de suscripciones y de pagos de tarjeta. Puedes desconectarlo en cualquier momento desde "Configuración"; al hacerlo, ese calendario se borra.',
     ],
@@ -69,7 +70,7 @@ const SECTIONS: Section[] = [
   {
     heading: 'Limitación de responsabilidad',
     paragraphs: [
-      'La app se ofrece "tal cual", sin garantías de que esté libre de errores o interrupciones. En la medida permitida por la ley, no somos responsables de decisiones financieras que tomes con base en la información mostrada por la app, ni de pérdidas derivadas de errores de sincronización, del correo, del SMS o de las notificaciones, o de fallas de servicios de terceros (Google, Microsoft, Stripe, Supabase, tu banco).',
+      'La app se ofrece "tal cual", sin garantías de que esté libre de errores o interrupciones. En la medida permitida por la ley, no somos responsables de decisiones financieras que tomes con base en la información mostrada por la app, ni de pérdidas derivadas de errores de sincronización, del SMS o de las notificaciones, o de fallas de servicios de terceros (Google, Stripe, Supabase, tu banco).',
     ],
   },
   {
@@ -98,12 +99,13 @@ const SECTIONS: Section[] = [
 
 export function TermsPage() {
   const { t } = useTranslation()
+  const lp = useLocalePath()
   const { data: appConfig } = useAppConfig()
 
   return (
     <div className="min-h-screen bg-canvas text-slate-800 dark:text-slate-100">
       <div className="mx-auto max-w-3xl px-6 py-10">
-        <Link to="/bienvenida" className="text-xs text-slate-400 dark:text-slate-500 underline">
+        <Link to={lp('/')} className="text-xs text-slate-400 dark:text-slate-500 underline">
           {t('← Volver al inicio')}
         </Link>
 

@@ -55,7 +55,7 @@ export function DeleteAccountSection() {
           disabled={confirmText.trim().toUpperCase() !== 'ELIMINAR' || deleteAccount.isPending}
           onClick={() =>
             deleteAccount.mutate(undefined, {
-              onSuccess: () => navigate('/bienvenida', { replace: true }),
+              onSuccess: () => navigate('/', { replace: true }),
             })
           }
         >

@@ -1,0 +1,7 @@
+# Todo el sitio es rastreable. Las páginas privadas (login, app) llevan
+# <meta name="robots" content="noindex">; no se bloquean aquí para que los
+# buscadores puedan leer ese noindex.
+User-agent: *
+Allow: /
+
+Sitemap: https://controlfinanzaspersonales.com/sitemap.xml

@@ -67,12 +67,12 @@ TU INFORMACIÓN ES TUYA
 
 La app se puede usar gratis. Premium, una suscripción mensual o anual dentro de la app, desbloquea las funciones avanzadas y quita los límites del plan gratuito.
 
-Dudas o sugerencias: anbl.srz@gmail.com
+Dudas o sugerencias: soporte@controlfinanzaspersonales.com
 ```
 
 ## Datos de contacto (Ficha → Detalles de la tienda)
 
-- Correo: `anbl.srz@gmail.com`
+- Correo: `soporte@controlfinanzaspersonales.com`
 - Sitio web: `https://controlfinanzaspersonales.com`
 - Política de privacidad: `https://controlfinanzaspersonales.com/privacidad`
 - Categoría: **Finanzas**. Etiquetas sugeridas: presupuesto, gastos, finanzas personales.

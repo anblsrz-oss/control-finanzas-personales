@@ -562,7 +562,6 @@ export const en: Record<string, string> = {
   'Restaurar compra': 'Restore purchase',
 
   // Planes en la landing
-  Planes: 'Pricing',
   'Empieza gratis. Cambia o cancela cuando quieras.':
     'Start free. Change or cancel anytime.',
   'Más popular': 'Most popular',
@@ -626,40 +625,151 @@ export const en: Record<string, string> = {
 
   // Landing
   'Iniciar sesión': 'Sign in',
-  'Tus finanzas personales, claras y en un solo lugar.':
-    'Your personal finances, clear and all in one place.',
-  'Organiza ingresos, gastos, cuentas y tarjetas. Escanea recibos y entiende a dónde va tu dinero.':
-    'Organize income, expenses, accounts and cards. Scan receipts and understand where your money goes.',
+  'La app para controlar tus gastos personales':
+    'The app to keep track of your personal expenses',
+  'Registra ingresos, gastos, cuentas y tarjetas en un solo lugar y entiende a dónde va tu dinero. Tú decides qué registrar; solo tú ves tus datos.':
+    'Log your income, expenses, accounts and cards in one place and see where your money goes. You decide what to log; only you can see your data.',
   'Crear cuenta gratis': 'Create free account',
   'Ya tengo cuenta': 'I already have an account',
   'Todas las funciones gratuitas por el momento.':
     'All features free for now.',
   'Cómo funciona': 'How it works',
-  'Conecta tus cuentas': 'Connect your accounts',
-  'Registra cuentas y tarjetas, o sincroniza tus movimientos desde el correo.':
-    'Add accounts and cards, or sync your transactions from email.',
-  'Captura sin esfuerzo': 'Capture effortlessly',
-  'Escanea tickets y facturas con la cámara o sube un PDF; Mi Control de Finanzas Personales extrae los datos.':
-    'Scan receipts and invoices with the camera or upload a PDF; Mi Control de Finanzas Personales extracts the data.',
-  'Entiende tu dinero': 'Understand your money',
-  'Mira tu balance, gastos por categoría y reportes claros en un solo lugar.':
-    'See your balance, spending by category and clear reports all in one place.',
-  'Todo lo que necesitas': 'Everything you need',
-  'Cuentas y tarjetas': 'Accounts and cards',
-  'Controla saldos, límites y fechas de corte.':
-    'Track balances, limits and cut-off dates.',
-  'Recibos con OCR': 'Receipts with OCR',
-  'Foto o PDF del ticket y listo.': 'A photo or PDF of the receipt and done.',
-  'Sincronización por correo': 'Email sync',
-  'Importa cargos desde tus notificaciones.':
-    'Import charges from your notifications.',
-  'Comparte tarjetas y gastos con tu familia.':
-    'Share cards and expenses with your family.',
-  'Multi-moneda': 'Multi-currency',
-  'Registra en varias monedas.': 'Record in several currencies.',
+  'Lleva el control de tus gastos en 3 pasos': 'Track your spending in 3 steps',
+  'Registra tus cuentas y tarjetas': 'Add your accounts and cards',
+  'Da de alta tus cuentas, tarjetas, fechas de corte y meses sin intereses. Solo tú los ves.':
+    'Set up your accounts, cards, statement dates and installment plans. Only you can see them.',
+  'Captura tus gastos sin esfuerzo': 'Capture expenses effortlessly',
+  'En Android, la app registra tus compras a partir de las notificaciones de tu banco. También puedes escanear tickets o anotarlos a mano.':
+    "On Android, the app logs your purchases from your bank's notifications. You can also scan receipts or add them by hand.",
+  'Entiende a dónde va tu dinero': 'See where your money goes',
+  'Revisa tu balance, tus gastos por categoría, tus presupuestos y reportes claros.':
+    'Check your balance, spending by category, budgets and clear reports.',
+  'Funciones para organizar tu dinero': 'Features to organize your money',
+  'Captura automática en Android': 'Automatic capture on Android',
+  'Tus compras se registran solas desde las notificaciones de tu banco, con tu permiso.':
+    "Your purchases are logged automatically from your bank's notifications, with your permission.",
+  'Escaneo de tickets y facturas': 'Receipt and invoice scanning',
+  'Toma una foto o sube un PDF y la app extrae el monto, la fecha y el comercio.':
+    'Take a photo or upload a PDF and the app pulls out the amount, date and merchant.',
+  'Tarjetas, fechas de corte y MSI': 'Cards, statement dates and installments',
+  'Registra tus tarjetas y lleva el control de cortes, pagos y meses sin intereses mes a mes.':
+    'Log your cards and keep track of statement dates, payments and interest-free installments month by month.',
+  'Presupuestos y plan familiar': 'Budgets and family plan',
+  'Pon límites por categoría y comparte con tu familia solo lo que tú elijas.':
+    'Set limits by category and share only what you choose with your family.',
+  'Detecta tus suscripciones y te avisa antes de cada cobro.':
+    'Spots your subscriptions and reminds you before each charge.',
+  'Varias monedas': 'Multiple currencies',
+  'Registra en pesos o en la moneda que uses, con conversión automática.':
+    'Log in pesos or any currency you use, with automatic conversion.',
+  'Exporta e importa': 'Import and export',
+  'Importa tus estados de cuenta y exporta tus movimientos a Excel.':
+    'Import your bank statements and export your transactions to Excel.',
+  'Cómo funciona la captura automática': 'How automatic capture works',
+  'Cómo escanear tus tickets': 'How to scan your receipts',
+  'Control de tarjetas y meses sin intereses': 'Card and installment tracking',
+  'Presupuesto personal y familiar': 'Personal and family budgets',
   'Modo oscuro e idiomas': 'Dark mode and languages',
   'Español e inglés, claro y oscuro.': 'Spanish and English, light and dark.',
-  'Llévala en tu celular': 'Take it on your phone',
+  'Tus datos son solo tuyos': 'Your data stays yours',
+  'No somos un banco: no pedimos tu usuario ni tu contraseña de banca en línea.':
+    "We're not a bank: we never ask for your online banking username or password.",
+  'Nadie más ve tus cuentas, salvo lo que tú compartas en el plan familiar.':
+    'No one else sees your accounts, except what you share in the family plan.',
+  'No vendemos tus datos ni los usamos para publicidad.':
+    "We don't sell your data or use it for advertising.",
+  'Sin cookies de rastreo ni anuncios.': 'No tracking cookies, no ads.',
+  'Lee nuestra política de privacidad': 'Read our privacy policy',
+  'Conoce quién está detrás de la app': 'Meet the people behind the app',
+  'Precios: empieza gratis': 'Pricing: start for free',
+  'Descarga la app para Android': 'Get the Android app',
+  'Guía para instalar la app en Android': 'Android installation guide',
+  '¿Es un banco o me da tarjetas de crédito?': 'Is this a bank? Does it give me credit cards?',
+  'No. Es una app para llevar el control de tus gastos personales. No ofrecemos cuentas, tarjetas ni crédito: tú registras los tuyos.':
+    "No. It's an app to keep track of your personal expenses. We don't offer accounts, cards or credit: you log your own.",
+  '¿Se conecta a mi banco?': 'Does it connect to my bank?',
+  'No. Nunca te pedimos tu usuario ni tu contraseña del banco. Tú registras tus movimientos, escaneas tus tickets o, en Android, la app los toma de las notificaciones que tu banco te envía al celular.':
+    'No. We never ask for your bank username or password. You log your transactions, scan your receipts or, on Android, the app picks them up from the notifications your bank sends to your phone.',
+  '¿Quién puede ver mi información?': 'Who can see my information?',
+  'Solo tú. Si usas el plan familiar, tu familia ve únicamente las tarjetas y los gastos que decidas compartir.':
+    'Only you. If you use the family plan, your family only sees the cards and expenses you choose to share.',
+  '¿Es gratis?': 'Is it free?',
+  'Sí. El plan gratis no vence. Premium cuesta {{monthly}} MXN al mes o {{yearly}} MXN al año, con 7 días de prueba gratis.':
+    'Yes. The free plan never expires. Premium costs {{monthly}} MXN per month or {{yearly}} MXN per year, with a 7-day free trial.',
+  '¿Puedo cancelar cuando quiera?': 'Can I cancel anytime?',
+  'Sí. Cancelas desde la app en cualquier momento y conservas Premium hasta el final del periodo pagado.':
+    'Yes. Cancel from the app at any time and keep Premium until the end of the period you paid for.',
+  'Sí, desde el navegador; en Safari puedes agregarla a tu pantalla de inicio como una app. La captura automática por notificaciones solo está disponible en Android.':
+    'Yes, in the browser; in Safari you can add it to your home screen like an app. Automatic capture from notifications is only available on Android.',
+  '¿Cómo registra mis gastos automáticamente?': 'How does it log my expenses automatically?',
+  'En la app de Android, con tu permiso, lee las notificaciones de compra que tu banco te envía y crea el movimiento por ti. Tú puedes revisarlo o corregirlo.':
+    'In the Android app, with your permission, it reads the purchase notifications your bank sends you and creates the transaction for you. You can review or edit it.',
+  '¿En qué monedas funciona?': 'Which currencies does it support?',
+  'En pesos mexicanos y en otras monedas; convierte los montos a tu moneda principal.':
+    'Mexican pesos and other currencies; amounts are converted to your main currency.',
+  'Hecho por ALCE-Soft': 'Made by ALCE-Soft',
+  'También te puede interesar': 'You may also like',
+  'Mi Control de Finanzas Personales es una app desarrollada por ALCE-Soft (alce-soft.com). La creamos para que cualquier persona sepa a dónde va su dinero sin depender de hojas de cálculo ni entregar el acceso a su banco.':
+    'Mi Control de Finanzas Personales is an app developed by ALCE-Soft (alce-soft.com). We built it so anyone can see where their money goes without spreadsheets and without handing over access to their bank.',
+  'Qué es y qué no es': "What it is and what it isn't",
+  'Es una herramienta para registrar y entender tus gastos. No es un banco ni una fintech: no damos cuentas, tarjetas ni crédito, y no movemos tu dinero.':
+    "It's a tool to log and understand your expenses. It isn't a bank or a fintech: we don't provide accounts, cards or credit, and we never move your money.",
+  'Nuestro compromiso con tus datos': 'Our commitment to your data',
+  'Escríbenos a': 'Write to us at',
+  'o usa el': 'or use the',
+  'formulario de comentarios de la página principal': 'feedback form on the home page',
+  'Registra tus gastos automáticamente desde las notificaciones de tu banco':
+    "Log your expenses automatically from your bank's notifications",
+  'Cada vez que tu banco te avisa de una compra en el celular, la app de Android puede convertir ese aviso en un movimiento, sin que lo captures a mano.':
+    "Every time your bank notifies you of a purchase on your phone, the Android app can turn that alert into a transaction, so you don't have to type it in.",
+  'Das permiso a la app para leer notificaciones. Cuando llega un aviso de compra, la app toma el monto, el comercio y la fecha, y crea el movimiento en la cuenta o tarjeta que corresponde.':
+    'You allow the app to read notifications. When a purchase alert arrives, the app takes the amount, merchant and date, and creates the transaction in the matching account or card.',
+  'Sin acceso a tu banco': 'No access to your bank',
+  'No te pedimos usuario ni contraseña del banco y no nos conectamos a tu banca en línea. Solo se usan los avisos que ya llegan a tu celular, y se ignoran las promociones.':
+    "We never ask for your bank login and we don't connect to your online banking. Only the alerts already on your phone are used, and promotions are ignored.",
+  'Tú tienes la última palabra': 'You have the final say',
+  'Revisa, edita o borra cualquier movimiento. Si un aviso llega duplicado, la app lo detecta para no registrarlo dos veces.':
+    "Review, edit or delete any transaction. If an alert arrives twice, the app detects it so it isn't logged twice.",
+  'La captura automática solo está disponible en la app de Android.':
+    'Automatic capture is only available in the Android app.',
+  'Escanea tus tickets y facturas para registrar tus gastos':
+    'Scan your receipts and invoices to log your expenses',
+  'Guardar tickets en la cartera no sirve de mucho. Escanéalos y conviértelos en movimientos en segundos.':
+    "Keeping receipts in your wallet doesn't help much. Scan them and turn them into transactions in seconds.",
+  'Foto o PDF': 'Photo or PDF',
+  'Usa la cámara del celular o sube un PDF. La app lee el monto, la fecha y el comercio, y tú confirmas antes de guardar.':
+    'Use your phone camera or upload a PDF. The app reads the amount, date and merchant, and you confirm before saving.',
+  'Detalle por artículo': 'Item-level detail',
+  'Si el ticket trae varios artículos, puedes dividirlo en partidas con su propia categoría.':
+    'If the receipt lists several items, you can split it into lines with their own category.',
+  'También estados de cuenta': 'Bank statements too',
+  'Importa tu estado de cuenta y compáralo con lo que registraste para encontrar diferencias.':
+    'Import your bank statement and compare it with what you logged to spot differences.',
+  'Lleva el control de tus tarjetas de crédito y meses sin intereses':
+    'Keep track of your credit cards and interest-free installments',
+  'Registra las tarjetas que ya tienes y deja de adivinar cuánto debes, cuándo corta cada una y cuánto te falta de cada compra a meses.':
+    'Log the cards you already have and stop guessing how much you owe, when each one closes and how much is left on each installment purchase.',
+  'Fechas de corte y de pago': 'Statement and payment dates',
+  'Indica el día de corte y de pago de cada tarjeta. La app agrupa tus compras por periodo y te muestra cuánto pagar.':
+    "Set each card's statement and payment day. The app groups your purchases by period and shows how much to pay.",
+  'Meses sin intereses mes a mes': 'Installments month by month',
+  'Registra tus compras a meses y ve cuánto toca pagar en cada periodo y cuánto te falta.':
+    'Log your installment purchases and see how much is due each period and how much is left.',
+  'Tarjetas compartidas y adicionales': 'Shared and additional cards',
+  'Si varias tarjetas comparten una línea de crédito, regístralas juntas para ver tu crédito disponible real.':
+    'If several cards share one credit line, log them together to see your real available credit.',
+  'Haz tu presupuesto personal o familiar y cúmplelo':
+    'Build your personal or family budget and stick to it',
+  'Saber cuánto gastas es el primer paso; ponerte un límite es el segundo.':
+    'Knowing how much you spend is step one; setting a limit is step two.',
+  'Presupuestos por categoría': 'Budgets by category',
+  'Define cuánto quieres gastar en comida, transporte o lo que necesites, y mira tu avance durante el mes.':
+    'Decide how much to spend on food, transport or anything else, and follow your progress through the month.',
+  'Avisos antes de pasarte': 'Alerts before you overspend',
+  'La app te avisa cuando te acercas al límite.':
+    'The app warns you as you approach the limit.',
+  'Invita a tu familia y comparte solo las tarjetas y los gastos que decidas. Lo demás sigue siendo privado.':
+    'Invite your family and share only the cards and expenses you choose. Everything else stays private.',
   'Aplicación': 'App',
   'Instala Mi Control de Finanzas Personales en tu teléfono y llévala contigo.':
     'Install Mi Control de Finanzas Personales on your phone and take it with you.',
@@ -931,7 +1041,7 @@ export const en: Record<string, string> = {
   'Qué es (y qué no es) la app': 'What the app is (and is not)',
   'Tu cuenta': 'Your account',
   'Uso aceptable': 'Acceptable use',
-  'Sincronización de correo, SMS y notificaciones': 'Email, SMS and notification sync',
+  'Captura por SMS y notificaciones': 'SMS and notification capture',
   'Planes y pagos': 'Plans and payments',
   'Propiedad intelectual': 'Intellectual property',
   'Limitación de responsabilidad': 'Limitation of liability',
@@ -953,12 +1063,12 @@ export const en: Record<string, string> = {
     'The information you record (accounts, cards, amounts) must be information you have the right to share; do not use the app to record third parties\' financial data without their consent, except within a shared family plan that you manage yourself.',
   'No debes usar la app para actividades ilegales, para intentar acceder a cuentas de otros usuarios sin autorización, ni para interferir con el funcionamiento del servicio.':
     'You must not use the app for illegal activities, to attempt to access other users\' accounts without authorization, or to interfere with the operation of the service.',
-  'Las funciones de "Sincronizar correo" (Gmail u Outlook, solo lectura), "Sincronizar SMS" (solo Android) y "Captura por notificaciones" (solo Android) son opcionales y requieren tu autorización explícita. Puedes desactivarlas en cualquier momento desde la app. El tratamiento de estos datos se rige por la Política de Privacidad.':
-    'The "Sync email" (Gmail or Outlook, read-only), "Sync SMS" (Android only) and "Notification capture" (Android only) features are optional and require your explicit authorization. You can turn them off at any time from within the app. The handling of this data is governed by the Privacy Policy.',
+  'Las funciones de "Sincronizar SMS" (solo en la app de Android que se descarga directamente desde nuestro sitio) y "Captura por notificaciones" (solo Android) son opcionales y requieren tu autorización explícita. Puedes desactivarlas en cualquier momento desde la app. El tratamiento de estos datos se rige por la Política de Privacidad.':
+    'The "Sync SMS" (only in the Android app downloaded directly from our website) and "Notification capture" (Android only) features are optional and require your explicit authorization. You can turn them off at any time from within the app. The handling of this data is governed by the Privacy Policy.',
   'La captura por notificaciones funciona solo si le das a la app el "Acceso a notificaciones" en los ajustes de Android, y solo lee las notificaciones de las apps que tú marcas (por ejemplo, la de tu banco o de una tienda). Puedes quitar ese permiso en cualquier momento desde los ajustes de Android. Los avisos que traen un monto, o que confirman un envío o pago aunque no digan cuánto, se procesan en nuestro servidor para crear una transacción, un pendiente por confirmar o un aviso de monto faltante.':
     'Notification capture only works if you grant the app "Notification access" in Android settings, and it only reads notifications from the apps you select (for example, your bank\'s or a store\'s app). You can remove that permission at any time from Android settings. Alerts that include an amount, or that confirm a transfer or payment without saying how much, are processed on our server to create a transaction, a pending item to confirm or a missing-amount reminder.',
-  'Cuando un mismo cargo llega por más de un canal (SMS, correo o notificación), la app descarta el aviso repetido si es seguro que es el mismo movimiento y, si no lo es, lo marca como "Posible duplicado" para que tú decidas. Aun así, revisa las transacciones capturadas automáticamente: pueden contener errores de lectura.':
-    'When the same charge arrives through more than one channel (SMS, email or notification), the app discards the repeated alert if it is certain it is the same transaction; otherwise it marks it as "Possible duplicate" so you can decide. Even so, review automatically captured transactions: they may contain reading errors.',
+  'Cuando un mismo cargo llega por más de un canal (SMS o notificación), la app descarta el aviso repetido si es seguro que es el mismo movimiento y, si no lo es, lo marca como "Posible duplicado" para que tú decidas. Aun así, revisa las transacciones capturadas automáticamente: pueden contener errores de lectura.':
+    'When the same charge arrives through more than one channel (SMS or notification), the app discards the repeated alert if it is certain it is the same transaction; otherwise it marks it as "Possible duplicate" so you can decide. Even so, review automatically captured transactions: they may contain reading errors.',
   'La captura por notificaciones depende de tu teléfono: algunos fabricantes (por ejemplo, Xiaomi, Huawei o Samsung) detienen las apps en segundo plano para ahorrar batería. No garantizamos que se capture cada aviso; si falta alguno, puedes registrarlo a mano.':
     'Notification capture depends on your phone: some manufacturers (for example, Xiaomi, Huawei or Samsung) stop background apps to save battery. We do not guarantee that every alert will be captured; if one is missing, you can add it manually.',
   'Si conectas Google Calendar, la app crea en tu cuenta un calendario aparte con recordatorios de cobros de suscripciones y de pagos de tarjeta. Puedes desconectarlo en cualquier momento desde "Configuración"; al hacerlo, ese calendario se borra.':
@@ -973,8 +1083,8 @@ export const en: Record<string, string> = {
     'We may change prices or the features included in each plan. If a price change affects you, we will notify you before your next renewal so you can cancel if you do not agree.',
   'La app, su diseño, código y marca nos pertenecen. Tú conservas la propiedad de los datos financieros que capturas; nos das permiso únicamente para almacenarlos y procesarlos con el fin de prestarte el servicio.':
     'The app, its design, code and brand belong to us. You retain ownership of the financial data you enter; you grant us permission only to store and process it in order to provide you the service.',
-  'La app se ofrece "tal cual", sin garantías de que esté libre de errores o interrupciones. En la medida permitida por la ley, no somos responsables de decisiones financieras que tomes con base en la información mostrada por la app, ni de pérdidas derivadas de errores de sincronización, del correo, del SMS o de las notificaciones, o de fallas de servicios de terceros (Google, Microsoft, Stripe, Supabase, tu banco).':
-    'The app is provided "as is", without guarantees that it is free of errors or interruptions. To the extent permitted by law, we are not responsible for financial decisions you make based on information shown by the app, nor for losses arising from sync errors, email, SMS or notifications, or failures of third-party services (Google, Microsoft, Stripe, Supabase, your bank).',
+  'La app se ofrece "tal cual", sin garantías de que esté libre de errores o interrupciones. En la medida permitida por la ley, no somos responsables de decisiones financieras que tomes con base en la información mostrada por la app, ni de pérdidas derivadas de errores de sincronización, del SMS o de las notificaciones, o de fallas de servicios de terceros (Google, Stripe, Supabase, tu banco).':
+    'The app is provided "as is", without guarantees that it is free of errors or interruptions. To the extent permitted by law, we are not responsible for financial decisions you make based on information shown by the app, nor for losses arising from sync errors, SMS or notifications, or failures of third-party services (Google, Stripe, Supabase, your bank).',
   'Puedes dejar de usar la app y solicitar la eliminación de tu cuenta y tus datos en cualquier momento escribiendo a {{email}}. Podemos suspender o cancelar cuentas que incumplan estos términos.':
     'You can stop using the app and request deletion of your account and data at any time by writing to {{email}}. We may suspend or cancel accounts that violate these terms.',
   'Podemos actualizar estos términos ocasionalmente. Publicaremos cualquier cambio en esta misma página con la fecha de actualización correspondiente.':
@@ -985,7 +1095,7 @@ export const en: Record<string, string> = {
     'Questions about these terms? Write to us at {{email}}.',
 
   // Privacidad — encabezados
-  'Quiénes somos': 'Who we are',
+  'Quiénes somos': 'About us',
   'Qué datos recopilamos': 'What data we collect',
   'Uso de datos obtenidos mediante las APIs de Google': 'Use of data obtained through Google APIs',
   'Cómo usamos tus datos': 'How we use your data',
@@ -1004,12 +1114,8 @@ export const en: Record<string, string> = {
     'Account data: name, email address, and, if you sign in with Google, the name and email associated with your Google account.',
   'Datos financieros que capturas tú mismo: cuentas, tarjetas, líneas de crédito, transacciones, categorías, presupuestos y montos, ya sea escritos a mano, importados desde un archivo, o extraídos de un recibo/factura que fotografías o subes.':
     'Financial data you enter yourself: accounts, cards, credit lines, transactions, categories, budgets and amounts, whether typed in by hand, imported from a file, or extracted from a receipt/invoice you photograph or upload.',
-  'Datos de sincronización opcional por correo: si activas "Sincronizar correo" y conectas tu cuenta de Gmail, la app lee únicamente los mensajes que coinciden con reglas de remitente que tú configuras (por ejemplo, notificaciones de tu banco o de servicios como Xsolla/EBANX), extrae de ellos los datos de una transacción (monto, fecha, concepto) y no guarda el contenido completo del correo.':
-    'Optional email sync data: if you turn on "Sync email" and connect your Gmail account, the app only reads messages that match sender rules you configure (for example, notifications from your bank or services like Xsolla/EBANX), extracts transaction data from them (amount, date, description), and does not store the full email content.',
-  'Datos de sincronización opcional por SMS (solo Android): si activas "Sincronizar SMS", la app lee los mensajes de texto entrantes para detectar avisos de transacciones bancarias y extraer monto, fecha y concepto; no se sube ni se comparte el contenido completo del SMS ni los mensajes que no correspondan a movimientos financieros.':
-    'Optional SMS sync data (Android only): if you turn on "Sync SMS", the app reads incoming text messages to detect bank transaction alerts and extract amount, date and description; the full SMS content is not uploaded or shared, nor are messages that are not financial transactions.',
-  'Datos de sincronización opcional por Outlook: si conectas tu cuenta de Microsoft (Outlook/Hotmail) en "Sincronizar correo", la app la usa con permiso de solo lectura, con las mismas reglas de remitente y el mismo tratamiento que Gmail.':
-    'Optional Outlook sync data: if you connect your Microsoft account (Outlook/Hotmail) in "Sync email", the app uses it with read-only permission, with the same sender rules and the same handling as Gmail.',
+  'Datos de sincronización opcional por SMS (solo en la app de Android que se descarga directamente desde nuestro sitio; la versión de Google Play no lee SMS): si activas "Sincronizar SMS", la app lee los mensajes de texto entrantes para detectar avisos de transacciones bancarias y extraer monto, fecha y concepto; no se sube ni se comparte el contenido completo del SMS ni los mensajes que no correspondan a movimientos financieros.':
+    'Optional SMS sync data (only in the Android app downloaded directly from our website; the Google Play version does not read SMS): if you turn on "Sync SMS", the app reads incoming text messages to detect bank transaction alerts and extract amount, date and description; the full SMS content is not uploaded or shared, nor are messages that are not financial transactions.',
   'Datos de Google Calendar: si conectas Google Calendar, la app crea en tu cuenta un calendario aparte («Mi Control de Finanzas — Recordatorios») y pone ahí los eventos de recordatorio (cobros de suscripciones y pagos de tarjeta); no tiene acceso a tus otros calendarios ni eventos.':
     'Google Calendar data: if you connect Google Calendar, the app creates a separate calendar in your account ("Mi Control de Finanzas — Recordatorios") and puts the reminder events there (subscription charges and card payments); it has no access to your other calendars or events.',
   'Datos de pago: si contratas Premium, el pago lo procesa Stripe o Google Play. Nosotros solo guardamos el identificador de cliente de Stripe o el token de compra de Google Play y el estado de tu suscripción (plan, vigencia, periodo de prueba); nunca vemos ni guardamos el número de tu tarjeta.':
@@ -1018,24 +1124,20 @@ export const en: Record<string, string> = {
     'Usage data: basic technical information needed to run the app (for example, preferred language, light/dark theme, and error logs so we can fix bugs).',
   'El uso y la transferencia de información recibida desde las APIs de Google por parte de Mi Control de Finanzas Personales se ajustará a la Política de Datos de Usuario de los Servicios de API de Google (Google API Services User Data Policy), incluidos los requisitos de Uso Limitado ("Limited Use").':
     "Mi Control de Finanzas Personales's use and transfer of information received from Google APIs will adhere to the Google API Services User Data Policy, including the Limited Use requirements.",
-  'En concreto: el acceso de solo lectura a Gmail (scope gmail.readonly) se usa exclusivamente para detectar transacciones financieras en los correos que coinciden con las reglas de remitente que tú configuras dentro de la app. No usamos estos datos para publicidad, no los vendemos, no los compartimos con terceros salvo lo necesario para operar el servicio (ver "Con quién compartimos tus datos"), y ningún humano lee tu correo salvo que sea estrictamente necesario para dar soporte técnico que tú mismo solicites, para cumplir la ley, o para investigar un uso indebido.':
-    'Specifically: read-only Gmail access (the gmail.readonly scope) is used exclusively to detect financial transactions in emails that match the sender rules you configure inside the app. We do not use this data for advertising, we do not sell it, and we do not share it with third parties except as necessary to operate the service (see "Who we share your data with"); no human reads your email unless strictly necessary to provide technical support you request, to comply with the law, or to investigate misuse.',
-  'El permiso de Google Calendar (scope calendar.app.created) solo permite a la app administrar el calendario secundario que ella misma crea («Mi Control de Finanzas — Recordatorios»): lo usamos exclusivamente para crear y eliminar ahí los eventos de recordatorio (cobros de suscripciones y pagos de tarjeta), y para borrar ese calendario si desconectas Google Calendar o eliminas tu cuenta. La app no puede leer ni modificar tu calendario principal ni ningún otro calendario o evento. Los datos recibidos de Gmail y de Google Calendar no se usan para desarrollar, mejorar ni entrenar modelos de inteligencia artificial o de aprendizaje automático, ni generalizados ni personalizados.':
-    'The Google Calendar permission (the calendar.app.created scope) only lets the app manage the secondary calendar it creates itself ("Mi Control de Finanzas — Recordatorios"): we use it exclusively to create and delete the reminder events there (subscription charges and card payments), and to delete that calendar if you disconnect Google Calendar or delete your account. The app cannot read or modify your primary calendar or any other calendar or event. Data received from Gmail and Google Calendar is not used to develop, improve or train artificial intelligence or machine learning models, whether generalized or personalized.',
-  'Puedes revocar el acceso de la app a tu cuenta de Google en cualquier momento desde la configuración de tu cuenta de Google (myaccount.google.com/permissions) o desde la sección "Sincronizar correo" dentro de la app.':
-    'You can revoke the app\'s access to your Google account at any time from your Google account settings (myaccount.google.com/permissions) or from the "Sync email" section inside the app.',
+  'El permiso de Google Calendar (scope calendar.app.created) solo permite a la app administrar el calendario secundario que ella misma crea («Mi Control de Finanzas — Recordatorios»): lo usamos exclusivamente para crear y eliminar ahí los eventos de recordatorio (cobros de suscripciones y pagos de tarjeta), y para borrar ese calendario si desconectas Google Calendar o eliminas tu cuenta. La app no puede leer ni modificar tu calendario principal ni ningún otro calendario o evento. Los datos recibidos de Google Calendar no se usan para desarrollar, mejorar ni entrenar modelos de inteligencia artificial o de aprendizaje automático, ni generalizados ni personalizados.':
+    'The Google Calendar permission (the calendar.app.created scope) only lets the app manage the secondary calendar it creates itself ("Mi Control de Finanzas — Recordatorios"): we use it exclusively to create and delete the reminder events there (subscription charges and card payments), and to delete that calendar if you disconnect Google Calendar or delete your account. The app cannot read or modify your primary calendar or any other calendar or event. Data received from Google Calendar is not used to develop, improve or train artificial intelligence or machine learning models, whether generalized or personalized.',
+  'Puedes revocar el acceso de la app a tu cuenta de Google en cualquier momento desde la configuración de tu cuenta de Google (myaccount.google.com/permissions) o, en el caso de Google Calendar, desconectándolo desde "Configuración" dentro de la app.':
+    'You can revoke the app\'s access to your Google account at any time from your Google account settings (myaccount.google.com/permissions) or, for Google Calendar, by disconnecting it from "Settings" inside the app.',
   'Usamos tus datos para operar la app: mostrar tus saldos, transacciones, reportes y presupuestos; enviarte notificaciones relacionadas con tu cuenta; y responder a tus comentarios o solicitudes de soporte.':
     'We use your data to run the app: showing your balances, transactions, reports and budgets; sending you notifications related to your account; and responding to your feedback or support requests.',
   'No usamos tus datos financieros para publicidad ni los vendemos a terceros.':
     'We do not use your financial data for advertising, nor do we sell it to third parties.',
   'Usamos Supabase como proveedor de infraestructura (base de datos, autenticación y funciones del servidor) para operar la app; Supabase procesa los datos en nuestro nombre bajo sus propias medidas de seguridad, y no los usa para sus propios fines.':
     'We use Supabase as our infrastructure provider (database, authentication and server functions) to run the app; Supabase processes data on our behalf under its own security measures, and does not use it for its own purposes.',
-  'Cuando inicias sesión con Google, o conectas Gmail, compartimos información con Google únicamente en la medida necesaria para autenticarte o para leer los correos que tú autorizas, conforme a esta política.':
-    'When you sign in with Google, or connect Gmail, we share information with Google only to the extent necessary to authenticate you or to read the emails you authorize, in accordance with this policy.',
-  'Si conectas Outlook, compartimos información con Microsoft únicamente en la medida necesaria para leer los correos que tú autorizas.':
-    'If you connect Outlook, we share information with Microsoft only to the extent necessary to read the emails you authorize.',
-  'Cuando escaneas un recibo, una factura o un estado de cuenta, la imagen o el documento se envía a OpenAI para extraer el monto, la fecha y el comercio. OpenAI lo procesa en nuestro nombre, no lo guardamos nosotros y, conforme a sus condiciones para clientes de su API, no lo usa para entrenar sus modelos. Los correos de Gmail u Outlook no se envían a OpenAI.':
-    'When you scan a receipt, an invoice or a statement, the image or document is sent to OpenAI to extract the amount, date and merchant. OpenAI processes it on our behalf, we do not store it, and under its terms for API customers it does not use it to train its models. Gmail and Outlook emails are not sent to OpenAI.',
+  'Cuando inicias sesión con Google o conectas Google Calendar, compartimos información con Google únicamente en la medida necesaria para autenticarte o para crear tus recordatorios, conforme a esta política.':
+    'When you sign in with Google or connect Google Calendar, we share information with Google only to the extent necessary to authenticate you or to create your reminders, in accordance with this policy.',
+  'Cuando escaneas un recibo, una factura o un estado de cuenta, la imagen o el documento se envía a OpenAI para extraer el monto, la fecha y el comercio. OpenAI lo procesa en nuestro nombre, no lo guardamos nosotros y, conforme a sus condiciones para clientes de su API, no lo usa para entrenar sus modelos.':
+    'When you scan a receipt, an invoice or a statement, the image or document is sent to OpenAI to extract the amount, date and merchant. OpenAI processes it on our behalf, we do not store it, and under its terms for API customers it does not use it to train its models.',
   'Los correos que te manda la app (alertas de presupuesto, avisos de suscripciones, reportes e invitaciones familiares) se envían a través de Resend, que recibe tu correo y el contenido del aviso solo para entregarlo.':
     'The emails the app sends you (budget alerts, subscription notices, reports and family invitations) are delivered through Resend, which receives your email address and the content of the notice only to deliver it.',
   'Las notificaciones push se entregan mediante Firebase Cloud Messaging (Google), que recibe un identificador de tu dispositivo y el texto de la notificación.':
@@ -1079,8 +1181,8 @@ export const en: Record<string, string> = {
     'A temporary value while you connect your email or calendar, which is deleted when you close the tab.',
   'Todo esto es necesario para que la app funcione, así que no pedimos consentimiento para guardarlo. No lo usamos para identificarte fuera de la app ni para publicidad.':
     'All of this is necessary for the app to work, so we do not ask for consent to store it. We do not use it to identify you outside the app or for advertising.',
-  'Cuando pagas Premium en la web te llevamos a la página de pago de Stripe (en la app de Google Play el pago lo hace Google Play), y cuando conectas Google o Microsoft, a sus páginas de inicio de sesión. Esos sitios pueden usar sus propias cookies, que se rigen por sus políticas de privacidad, no por esta.':
-    'When you pay for Premium on the web we send you to Stripe\'s checkout page (in the Google Play app, Google Play handles the payment), and when you connect Google or Microsoft, to their sign-in pages. Those sites may use their own cookies, which are governed by their privacy policies, not this one.',
+  'Cuando pagas Premium en la web te llevamos a la página de pago de Stripe (en la app de Google Play el pago lo hace Google Play), y cuando conectas Google, a su página de inicio de sesión. Esos sitios pueden usar sus propias cookies, que se rigen por sus políticas de privacidad, no por esta.':
+    'When you pay for Premium on the web we send you to Stripe\'s checkout page (in the Google Play app, Google Play handles the payment), and when you connect Google, to its sign-in page. Those sites may use their own cookies, which are governed by their privacy policies, not this one.',
   'Al cerrar sesión se borra tu sesión. Para borrar todo lo demás, elimina los datos de este sitio desde la configuración de tu navegador; ten en cuenta que perderás tus preferencias y tendrás que volver a iniciar sesión.':
     'Signing out deletes your session. To delete everything else, clear this site\'s data from your browser settings; keep in mind you will lose your preferences and will need to sign in again.',
   'Si en el futuro usamos cookies que no sean necesarias (por ejemplo, de analítica), actualizaremos esta página y te pediremos tu consentimiento antes de usarlas.':
@@ -1305,7 +1407,7 @@ export const en: Record<string, string> = {
   '¿Por qué? Ver preguntas frecuentes →':
     'Why? See FAQs →',
   'Preguntas frecuentes':
-    'FAQ',
+    'Frequently asked questions',
   'Respuestas rápidas y guías paso a paso para sacarle provecho a la app.':
     'Quick answers and step-by-step guides to get the most out of the app.',
   '▼ Mostrar':
@@ -1449,8 +1551,8 @@ export const en: Record<string, string> = {
   'Tu perfil y tu inicio de sesión.': 'Your profile and your login.',
   'Movimientos, cuentas, tarjetas, líneas de crédito, presupuestos, suscripciones y categorías.':
     'Transactions, accounts, cards, credit lines, budgets, subscriptions and categories.',
-  'Reglas y conexiones de correo (Gmail/Outlook), Google Calendar y captura en el teléfono. Se revoca el acceso a Google.':
-    'Email rules and connections (Gmail/Outlook), Google Calendar and phone capture. Google access is revoked.',
+  'Conexión con Google Calendar y captura en el teléfono. Se revoca el acceso a Google.':
+    'Google Calendar connection and phone capture. Google access is revoked.',
   'Tu suscripción Premium, que se cancela en ese momento.': 'Your Premium subscription, which is canceled right away.',
   'No conservamos copias de tus datos financieros después del borrado. El procesador de pagos (Stripe o Google Play) puede conservar el registro de cobros que exige la ley.':
     'We keep no copies of your financial data after deletion. The payment processor (Stripe or Google Play) may keep the charge records required by law.',
@@ -2235,8 +2337,6 @@ export const en: Record<string, string> = {
     'Download PDF with pictures',
   'Ampliar imagen':
     'Enlarge image',
-  'Ver guía con imágenes':
-    'See the illustrated guide',
   '¿Cómo activarlo? Ver guía con imágenes →':
     'How do I turn it on? See the illustrated guide →',
   '¿Cómo conectar y aceptar los permisos de Google? Ver guía con imágenes →':
@@ -2580,7 +2680,6 @@ export const en: Record<string, string> = {
     "New design, app home screen and Subscription page",
   'Estrenamos diseño: nueva paleta, tipografía y gráficas, ventanas de confirmación propias, listas desplegables con búsqueda y formularios más claros. En la app del celular hay una pantalla de inicio propia y la pantalla de arranque con tu logo, y los planes viven ahora en la página de Suscripción. En Transacciones puedes filtrar rápido lo pendiente de confirmar y elegir un motivo rápido (duplicado, error de captura…) al eliminar.':
     "We're launching a new look: new palette, typography and charts, our own confirmation windows, searchable dropdowns and clearer forms. The mobile app now has its own home screen and a launch screen with your logo, and plans now live on the Subscription page. In Transactions you can quickly filter what is pending confirmation and pick a quick reason (duplicate, entry error…) when deleting.",
-}
   // Asistente y guías por función (el contenido de las guías sigue en español)
   'Ayuda con la app y tus configuraciones': 'Help with the app and your settings',
   'Nueva conversación': 'New conversation',
@@ -2609,3 +2708,4 @@ export const en: Record<string, string> = {
   'Asistente de ayuda y guías de todas las funciones': 'Help assistant and guides for every feature',
   'Conoce a Taffy, el nuevo asistente (la burbuja de abajo a la derecha): contesta tus dudas sobre la app y te ayuda a crear cuentas, tarjetas, categorías, presupuestos y suscripciones; antes de guardar nada te pide confirmación. Además, Preguntas frecuentes ahora trae una guía paso a paso de cada sección.':
     'Meet Taffy, the new assistant (the bubble at the bottom right): it answers your questions about the app and helps you create accounts, cards, categories, budgets and subscriptions; it asks for confirmation before saving anything. Also, Frequently asked questions now includes a step-by-step guide for each section.',
+}
