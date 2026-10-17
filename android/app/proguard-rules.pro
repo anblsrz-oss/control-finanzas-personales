@@ -20,3 +20,12 @@
 # Plugins de Capacitor, listener de notificaciones y receiver de SMS propios:
 # se resuelven por reflexión / manifiesto, R8 no debe renombrarlos.
 -keep class com.ahorbit.app.** { *; }
+
+# Capacitor y sus plugins se cargan por reflexión (capacitor.plugins.json,
+# métodos @PluginMethod, callbacks del puente JS): se conservan completos.
+-keep class com.getcapacitor.** { *; }
+-keep class com.capacitorjs.** { *; }
+-keep class com.oaalab.** { *; }
+-keep class io.capawesome.** { *; }
+-keep class ee.forgr.** { *; }
+-keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
