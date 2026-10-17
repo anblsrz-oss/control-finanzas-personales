@@ -100,6 +100,24 @@ export async function prerender({ root, outDir, workbox }) {
       throw new Error(`Prerender: añade ${guardHash} a script-src de la CSP en vercel.json (hash del script que oculta la landing con sesión).`)
     }
 
+    // Vercel no sirve el index.html de una carpeta si la URL no termina en "/": sin un rewrite
+    // explícito, /privacidad caería en el shell vacío. Se simula el orden de "rewrites" (el primero
+    // que coincide gana) para cada página pública.
+    const rewriteRe = (source) => new RegExp(`^${source.replace(/:(\w+)\(/g, '(?<$1>')}$`)
+    const { rewrites } = JSON.parse(vercelCfg)
+    for (const route of mod.SEO_ROUTES) {
+      for (const lang of LANGS) {
+        const url = mod.localePath(route.path, lang)
+        if (url === '/') continue
+        const hit = rewrites.find((r) => rewriteRe(r.source).test(url))
+        const groups = hit ? url.match(rewriteRe(hit.source)).groups ?? {} : {}
+        const dest = hit?.destination.replace(/:(\w+)/g, (_, k) => groups[k])
+        if (dest !== `${url}/index.html`) {
+          throw new Error(`Prerender: vercel.json no lleva ${url} a ${url}/index.html; añade la página a "rewrites" antes del catch-all.`)
+        }
+      }
+    }
+
     for (const route of mod.SEO_ROUTES) {
       for (const lang of LANGS) {
         const { head, body } = await mod.renderPage(route, lang, appConfig)
