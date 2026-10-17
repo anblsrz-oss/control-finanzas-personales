@@ -3,9 +3,10 @@ import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
-import { isPlayBuild } from '@/lib/distribution'
+import { isPlayBuild, PLAY_HIDDEN_PAGES } from '@/lib/distribution'
 import { BrandBatteryGuide } from './BrandBatteryGuide'
-import { GuideFaq, GuidePdfLink, GuideSteps, type GuideId } from './guides/GuideSteps'
+import { GuideFaq, GuidePdfLink, GuideSteps, renderRich, type GuideId } from './guides/GuideSteps'
+import { KB } from './kb'
 
 interface FaqItem {
   id: string
@@ -212,13 +213,49 @@ function buildTopics(t: (key: string, opts?: Record<string, unknown>) => string)
       ],
     },
   ]
+  // Una guía por función, desde la base de conocimiento (kb/). Su id lleva
+  // prefijo para no chocar con los temas de arriba (p. ej. captura-notificaciones).
+  const kbTopics: FaqTopic[] = KB.filter((e) => !(isPlayBuild() && PLAY_HIDDEN_PAGES.includes(e.route))).map(
+    (e) => ({
+      id: `funcion-${e.id}`,
+      icon: e.icon,
+      title: t(e.title),
+      intro: t(e.summary),
+      autoOpenItem: 'como-se-usa',
+      items: [
+        {
+          id: 'como-se-usa',
+          q: t('¿Cómo se usa?'),
+          a: (
+            <div className="grid gap-2">
+              <ol className={`grid list-decimal gap-1.5 pl-5 ${p}`}>
+                {e.steps.map((s, i) => (
+                  <li key={i}>{renderRich(t(s))}</li>
+                ))}
+              </ol>
+              <Link to={e.route} className="text-sm text-brand-700 dark:text-brand-500 hover:underline">
+                {t('Ir a {{title}}', { title: t(e.title) })}
+              </Link>
+            </div>
+          ),
+        },
+        ...e.faq.map((f, i) => ({
+          id: `q${i}`,
+          q: t(f.q),
+          a: <p className={p}>{renderRich(t(f.a))}</p>,
+        })),
+      ],
+    }),
+  )
+  topics.push(...kbTopics)
   // La descarga del APK no se ofrece en Google Play (ver lib/distribution.ts).
   return isPlayBuild() ? topics.filter((topic) => topic.id !== 'instalar-apk') : topics
 }
 
 function FaqTopicCard({ topic, autoOpen }: { topic: FaqTopic; autoOpen: boolean }) {
   const { t } = useTranslation()
-  const [open, setOpen] = useState(true)
+  // Las guías por función arrancan plegadas (son muchas); los temas largos, abiertos.
+  const [open, setOpen] = useState(autoOpen || !topic.id.startsWith('funcion-'))
   const [openItem, setOpenItem] = useState<string | null>(autoOpen ? topic.autoOpenItem : null)
 
   return (
