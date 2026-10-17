@@ -3,15 +3,16 @@ import { useTranslation } from 'react-i18next'
 import { Card } from '@/components/ui/Card'
 import { BrandLogo } from '@/components/ui/BrandLogo'
 import { useAppConfig } from '@/hooks/useAppConfig'
+import { useLocalePath } from '@/hooks/useLocalePath'
 import { activeLocale } from '@/i18n'
 
 // Página pública (sin login) con la Política de Privacidad. Debe existir en
 // una URL pública para poder registrarla en la pantalla de consentimiento
 // OAuth de Google. Incluye la cláusula de "Limited Use" que Google exige
-// cuando una app pide scopes de Gmail (gmail.readonly).
+// a las apps que usan sus APIs (inicio de sesión y Google Calendar).
 
-const LAST_UPDATED_ISO = '2026-09-29'
-const CONTACT_EMAIL = 'anbl.srz@gmail.com'
+const LAST_UPDATED_ISO = '2026-10-17'
+const CONTACT_EMAIL = 'soporte@controlfinanzaspersonales.com'
 
 type Section = { heading: string; paragraphs: string[]; link?: { to: string; label: string } }
 
@@ -27,10 +28,8 @@ const SECTIONS: Section[] = [
     paragraphs: [
       'Datos de cuenta: nombre, correo electrónico y, si inicias sesión con Google, tu nombre y correo asociados a tu cuenta de Google.',
       'Datos financieros que capturas tú mismo: cuentas, tarjetas, líneas de crédito, transacciones, categorías, presupuestos y montos, ya sea escritos a mano, importados desde un archivo, o extraídos de un recibo/factura que fotografías o subes.',
-      'Datos de sincronización opcional por correo: si activas "Sincronizar correo" y conectas tu cuenta de Gmail, la app lee únicamente los mensajes que coinciden con reglas de remitente que tú configuras (por ejemplo, notificaciones de tu banco o de servicios como Xsolla/EBANX), extrae de ellos los datos de una transacción (monto, fecha, concepto) y no guarda el contenido completo del correo.',
-      'Datos de sincronización opcional por SMS (solo Android): si activas "Sincronizar SMS", la app lee los mensajes de texto entrantes para detectar avisos de transacciones bancarias y extraer monto, fecha y concepto; no se sube ni se comparte el contenido completo del SMS ni los mensajes que no correspondan a movimientos financieros.',
+      'Datos de sincronización opcional por SMS (solo en la app de Android que se descarga directamente desde nuestro sitio; la versión de Google Play no lee SMS): si activas "Sincronizar SMS", la app lee los mensajes de texto entrantes para detectar avisos de transacciones bancarias y extraer monto, fecha y concepto; no se sube ni se comparte el contenido completo del SMS ni los mensajes que no correspondan a movimientos financieros.',
       'Datos de captura opcional por notificaciones (solo Android): si activas "Captura por notificaciones" y le das a la app el "Acceso a notificaciones" de Android, la app lee únicamente las notificaciones de las apps que tú marcas (por ejemplo, la de tu banco) y solo envía al servidor las que traen un monto o confirman un envío o pago (por ejemplo, "Enviamos tu transferencia"), para extraer monto, fecha, comercio, destinatario y terminación de tarjeta; el texto de la notificación no se guarda y las notificaciones de otras apps no se leen.',
-      'Datos de sincronización opcional por Outlook: si conectas tu cuenta de Microsoft (Outlook/Hotmail) en "Sincronizar correo", la app la usa con permiso de solo lectura, con las mismas reglas de remitente y el mismo tratamiento que Gmail.',
       'Datos de Google Calendar: si conectas Google Calendar, la app crea en tu cuenta un calendario aparte («Mi Control de Finanzas — Recordatorios») y pone ahí los eventos de recordatorio (cobros de suscripciones y pagos de tarjeta); no tiene acceso a tus otros calendarios ni eventos.',
       'Datos de pago: si contratas Premium, el pago lo procesa Stripe o Google Play. Nosotros solo guardamos el identificador de cliente de Stripe o el token de compra de Google Play y el estado de tu suscripción (plan, vigencia, periodo de prueba); nunca vemos ni guardamos el número de tu tarjeta.',
       'Datos de uso: información técnica básica para el funcionamiento de la app (por ejemplo, idioma preferido, tema claro/oscuro, y registros de error para poder corregir fallas).',
@@ -40,9 +39,8 @@ const SECTIONS: Section[] = [
     heading: 'Uso de datos obtenidos mediante las APIs de Google',
     paragraphs: [
       'El uso y la transferencia de información recibida desde las APIs de Google por parte de Mi Control de Finanzas Personales se ajustará a la Política de Datos de Usuario de los Servicios de API de Google (Google API Services User Data Policy), incluidos los requisitos de Uso Limitado ("Limited Use").',
-      'En concreto: el acceso de solo lectura a Gmail (scope gmail.readonly) se usa exclusivamente para detectar transacciones financieras en los correos que coinciden con las reglas de remitente que tú configuras dentro de la app. No usamos estos datos para publicidad, no los vendemos, no los compartimos con terceros salvo lo necesario para operar el servicio (ver "Con quién compartimos tus datos"), y ningún humano lee tu correo salvo que sea estrictamente necesario para dar soporte técnico que tú mismo solicites, para cumplir la ley, o para investigar un uso indebido.',
-      'El permiso de Google Calendar (scope calendar.app.created) solo permite a la app administrar el calendario secundario que ella misma crea («Mi Control de Finanzas — Recordatorios»): lo usamos exclusivamente para crear y eliminar ahí los eventos de recordatorio (cobros de suscripciones y pagos de tarjeta), y para borrar ese calendario si desconectas Google Calendar o eliminas tu cuenta. La app no puede leer ni modificar tu calendario principal ni ningún otro calendario o evento. Los datos recibidos de Gmail y de Google Calendar no se usan para desarrollar, mejorar ni entrenar modelos de inteligencia artificial o de aprendizaje automático, ni generalizados ni personalizados.',
-      'Puedes revocar el acceso de la app a tu cuenta de Google en cualquier momento desde la configuración de tu cuenta de Google (myaccount.google.com/permissions) o desde la sección "Sincronizar correo" dentro de la app.',
+      'El permiso de Google Calendar (scope calendar.app.created) solo permite a la app administrar el calendario secundario que ella misma crea («Mi Control de Finanzas — Recordatorios»): lo usamos exclusivamente para crear y eliminar ahí los eventos de recordatorio (cobros de suscripciones y pagos de tarjeta), y para borrar ese calendario si desconectas Google Calendar o eliminas tu cuenta. La app no puede leer ni modificar tu calendario principal ni ningún otro calendario o evento. Los datos recibidos de Google Calendar no se usan para desarrollar, mejorar ni entrenar modelos de inteligencia artificial o de aprendizaje automático, ni generalizados ni personalizados.',
+      'Puedes revocar el acceso de la app a tu cuenta de Google en cualquier momento desde la configuración de tu cuenta de Google (myaccount.google.com/permissions) o, en el caso de Google Calendar, desconectándolo desde "Configuración" dentro de la app.',
     ],
   },
   {
@@ -56,9 +54,8 @@ const SECTIONS: Section[] = [
     heading: 'Con quién compartimos tus datos',
     paragraphs: [
       'Usamos Supabase como proveedor de infraestructura (base de datos, autenticación y funciones del servidor) para operar la app; Supabase procesa los datos en nuestro nombre bajo sus propias medidas de seguridad, y no los usa para sus propios fines.',
-      'Cuando inicias sesión con Google, o conectas Gmail, compartimos información con Google únicamente en la medida necesaria para autenticarte o para leer los correos que tú autorizas, conforme a esta política.',
-      'Si conectas Outlook, compartimos información con Microsoft únicamente en la medida necesaria para leer los correos que tú autorizas.',
-      'Cuando escaneas un recibo, una factura o un estado de cuenta, la imagen o el documento se envía a OpenAI para extraer el monto, la fecha y el comercio. OpenAI lo procesa en nuestro nombre, no lo guardamos nosotros y, conforme a sus condiciones para clientes de su API, no lo usa para entrenar sus modelos. Los correos de Gmail u Outlook no se envían a OpenAI.',
+      'Cuando inicias sesión con Google o conectas Google Calendar, compartimos información con Google únicamente en la medida necesaria para autenticarte o para crear tus recordatorios, conforme a esta política.',
+      'Cuando escaneas un recibo, una factura o un estado de cuenta, la imagen o el documento se envía a OpenAI para extraer el monto, la fecha y el comercio. OpenAI lo procesa en nuestro nombre, no lo guardamos nosotros y, conforme a sus condiciones para clientes de su API, no lo usa para entrenar sus modelos.',
       'Los correos que te manda la app (alertas de presupuesto, avisos de suscripciones, reportes e invitaciones familiares) se envían a través de Resend, que recibe tu correo y el contenido del aviso solo para entregarlo.',
       'Las notificaciones push se entregan mediante Firebase Cloud Messaging (Google), que recibe un identificador de tu dispositivo y el texto de la notificación.',
       'Si contratas Premium, Stripe o Google Play reciben los datos necesarios para cobrarte (correo, datos de la tarjeta o del medio de pago que capturas directamente en su página) y los tratan conforme a su propia política de privacidad.',
@@ -112,12 +109,13 @@ const SECTIONS: Section[] = [
 
 export function PrivacyPolicyPage() {
   const { t } = useTranslation()
+  const lp = useLocalePath()
   const { data: appConfig } = useAppConfig()
 
   return (
     <div className="min-h-screen bg-canvas text-slate-800 dark:text-slate-100">
       <div className="mx-auto max-w-3xl px-6 py-10">
-        <Link to="/bienvenida" className="text-xs text-slate-400 dark:text-slate-500 underline">
+        <Link to={lp('/')} className="text-xs text-slate-400 dark:text-slate-500 underline">
           {t('← Volver al inicio')}
         </Link>
 
@@ -144,7 +142,7 @@ export function PrivacyPolicyPage() {
                   ))}
                   {section.link && (
                     <p>
-                      <Link to={section.link.to} className="underline text-brand-700 dark:text-brand-500">
+                      <Link to={lp(section.link.to)} className="underline text-brand-700 dark:text-brand-500">
                         {t(section.link.label)}
                       </Link>
                     </p>

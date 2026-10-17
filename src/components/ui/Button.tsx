@@ -12,7 +12,7 @@ const styles: Record<Variant, string> = {
   primary:
     'bg-brand-600 text-white shadow-sm hover:bg-brand-700 active:bg-brand-800 disabled:bg-brand-600/50 disabled:shadow-none',
   secondary:
-    'bg-surface text-brand-700 dark:text-brand-500 border border-slate-300 dark:border-slate-600 hover:border-brand-600 hover:bg-brand-50 dark:hover:bg-slate-800 disabled:opacity-50',
+    'bg-surface text-brand-700 dark:text-[color-mix(in_srgb,rgb(var(--brand-500))_75%,white)] border border-slate-300 dark:border-slate-600 hover:border-brand-600 hover:bg-brand-50 dark:hover:bg-slate-800 disabled:opacity-50',
   ghost:
     'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-50',
   danger:

@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { BrandLogo } from '@/components/ui/BrandLogo'
 import { useAppConfig } from '@/hooks/useAppConfig'
+import { useLocalePath } from '@/hooks/useLocalePath'
 import { useAuth } from '@/store/useAuth'
 import { DeleteAccountSection } from '@/features/settings/DeleteAccountSection'
 
@@ -12,17 +13,18 @@ import { DeleteAccountSection } from '@/features/settings/DeleteAccountSection'
 // iniciada permite borrarla aquí mismo; sin sesión explica los pasos y ofrece
 // iniciar sesión o pedirlo por correo.
 
-const CONTACT_EMAIL = 'anbl.srz@gmail.com'
+const CONTACT_EMAIL = 'soporte@controlfinanzaspersonales.com'
 
 export function DeleteAccountPage() {
   const { t } = useTranslation()
+  const lp = useLocalePath()
   const { data: appConfig } = useAppConfig()
   const { session, loading } = useAuth()
 
   return (
     <div className="min-h-screen bg-canvas text-slate-800 dark:text-slate-100">
       <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
-        <Link to="/bienvenida" className="text-xs text-slate-400 dark:text-slate-500 underline">
+        <Link to={lp('/')} className="text-xs text-slate-400 dark:text-slate-500 underline">
           {t('← Volver al inicio')}
         </Link>
 
@@ -40,7 +42,7 @@ export function DeleteAccountPage() {
             <ul className="list-disc space-y-1 pl-5">
               <li>{t('Tu perfil y tu inicio de sesión.')}</li>
               <li>{t('Movimientos, cuentas, tarjetas, líneas de crédito, presupuestos, suscripciones y categorías.')}</li>
-              <li>{t('Reglas y conexiones de correo (Gmail/Outlook), Google Calendar y captura en el teléfono. Se revoca el acceso a Google.')}</li>
+              <li>{t('Conexión con Google Calendar y captura en el teléfono. Se revoca el acceso a Google.')}</li>
               <li>{t('Tu suscripción Premium, que se cancela en ese momento.')}</li>
             </ul>
             <p>

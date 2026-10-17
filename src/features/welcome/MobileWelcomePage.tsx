@@ -2,16 +2,18 @@ import { Link, Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useAppConfig } from '@/hooks/useAppConfig'
+import { useLocalePath } from '@/hooks/useLocalePath'
 import { BrandLogo } from '@/components/ui/BrandLogo'
 import { LinesDiagram } from '@/components/ui/LinesDiagram'
 
 // Inicio de la app del celular (sin sesión). Una sola vista, sin scroll largo ni
 // precios: los planes viven en /suscripcion una vez dentro. La landing web
-// (/bienvenida) sigue siendo la página de venta del navegador.
+// (/) sigue siendo la página de venta del navegador.
 // Forzada al esmalte medianoche: es la primera impresión de la marca.
 
 export function MobileWelcomePage() {
   const { t } = useTranslation()
+  const lp = useLocalePath()
   const { session } = useAuth()
   const { data: appConfig } = useAppConfig()
 
@@ -52,9 +54,9 @@ export function MobileWelcomePage() {
           {t('Ya tengo cuenta')}
         </Link>
         <p className="mt-2 text-center text-xs text-white/50">
-          <Link to="/terminos" className="underline">{t('Términos y Condiciones')}</Link>
+          <Link to={lp('/terminos')} className="underline">{t('Términos y Condiciones')}</Link>
           {' · '}
-          <Link to="/privacidad" className="underline">{t('Política de Privacidad')}</Link>
+          <Link to={lp('/privacidad')} className="underline">{t('Política de Privacidad')}</Link>
         </p>
       </div>
     </div>
