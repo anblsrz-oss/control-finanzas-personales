@@ -1,5 +1,5 @@
 {
-  "version": "0.18.0",
-  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.18.0/finzen-v0.18.0.apk",
-  "notes": "Nuevo diseño: paleta, tipografía y gráficas renovadas, ventanas de confirmación propias y listas desplegables con búsqueda. La app tiene pantalla de inicio propia y arranque con tu logo, los planes viven en la página de Suscripción, y en Transacciones puedes filtrar rápido lo pendiente de confirmar y elegir un motivo rápido al eliminar."
+  "version": "0.18.4",
+  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.18.4/finzen-v0.18.4.apk",
+  "notes": "Conoce a Taffy, el nuevo asistente: la burbuja de abajo a la derecha contesta tus dudas sobre la app y te ayuda a crear cuentas, tarjetas, líneas de crédito, categorías, presupuestos y suscripciones, siempre con tu confirmación. Preguntas frecuentes ahora trae una guía paso a paso de cada sección, y la app tiene mejoras de estabilidad en Android."
 }
