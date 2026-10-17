@@ -282,3 +282,265 @@ select {
     transition: none;
   }
 }
+
+/* Taffy (TaffyAvatar con `mood`): cada parte del SVG gira/se mueve sobre su propia caja. */
+.taffy {
+  overflow: visible;
+}
+.taffy .taffy-head,
+.taffy .taffy-ear-l,
+.taffy .taffy-ear-r,
+.taffy .taffy-eyes,
+.taffy .taffy-tongue,
+.taffy .taffy-bow {
+  transform-box: fill-box;
+}
+.taffy .taffy-head {
+  transform-origin: 50% 100%;
+  transition: transform 300ms var(--ease-out);
+}
+.taffy .taffy-ear-l {
+  transform-origin: 60% 0%;
+  transition: transform 300ms var(--ease-out);
+}
+.taffy .taffy-ear-r {
+  transform-origin: 40% 0%;
+  transition: transform 300ms var(--ease-out);
+}
+.taffy .taffy-eyes {
+  transform-origin: center;
+}
+.taffy .taffy-tongue {
+  transform-origin: 50% 0%;
+}
+.taffy .taffy-bow {
+  transform-origin: 50% 60%;
+}
+
+/* Parpadeo: cerrar los ojos 120 ms cada 5 s. */
+@keyframes taffy-blink {
+  0%,
+  96%,
+  100% {
+    transform: scaleY(1);
+  }
+  98% {
+    transform: scaleY(0.1);
+  }
+}
+.taffy--idle .taffy-eyes,
+.taffy--nudge .taffy-eyes,
+.taffy--thinking .taffy-eyes {
+  animation: taffy-blink 5s linear infinite;
+}
+
+/* nudge: cada 12 s un saltito con meneo de orejas y moño; el resto del ciclo, quieta. */
+@keyframes taffy-hop {
+  0%,
+  8%,
+  100% {
+    transform: translateY(0);
+  }
+  2% {
+    transform: translateY(-7%);
+  }
+  4% {
+    transform: translateY(0);
+  }
+  6% {
+    transform: translateY(-3%);
+  }
+}
+@keyframes taffy-ear-wiggle {
+  0%,
+  9%,
+  100% {
+    transform: rotate(0);
+  }
+  2%,
+  6% {
+    transform: rotate(var(--ear-angle, 12deg));
+  }
+  4%,
+  8% {
+    transform: rotate(calc(var(--ear-angle, 12deg) * -0.5));
+  }
+}
+@keyframes taffy-bow-swing {
+  0%,
+  10%,
+  100% {
+    transform: rotate(0);
+  }
+  3% {
+    transform: rotate(-15deg);
+  }
+  6% {
+    transform: rotate(10deg);
+  }
+  8% {
+    transform: rotate(-4deg);
+  }
+}
+.taffy--nudge .taffy-head {
+  animation: taffy-hop 12s var(--ease-out) 3s infinite;
+}
+.taffy--nudge .taffy-ear-l,
+.taffy--nudge .taffy-ear-r {
+  animation: taffy-ear-wiggle 12s ease-in-out 3s infinite;
+}
+.taffy--nudge .taffy-ear-r,
+.taffy--thinking .taffy-ear-r {
+  --ear-angle: -12deg;
+}
+.taffy--nudge .taffy-bow {
+  animation: taffy-bow-swing 12s ease-in-out 3s infinite;
+}
+
+/* thinking: inclina la cabeza de lado a lado mientras responde. */
+@keyframes taffy-tilt {
+  from {
+    transform: rotate(-6deg);
+  }
+  to {
+    transform: rotate(6deg);
+  }
+}
+@keyframes taffy-ear-flap {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(var(--ear-angle, 12deg));
+  }
+}
+.taffy--thinking .taffy-head {
+  animation: taffy-tilt 1.2s ease-in-out infinite alternate;
+}
+.taffy--thinking .taffy-ear-l,
+.taffy--thinking .taffy-ear-r {
+  animation: taffy-ear-flap 0.6s ease-in-out infinite alternate;
+}
+
+/* happy: dos rebotes y el moño gira (una vez). */
+@keyframes taffy-bounce {
+  0%,
+  50%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-10%);
+  }
+  75% {
+    transform: translateY(-5%);
+  }
+}
+.taffy--happy .taffy-head {
+  animation: taffy-bounce 700ms var(--ease-out);
+}
+.taffy--happy .taffy-bow {
+  animation: taffy-bow-swing 7s ease-in-out;
+}
+
+/* sad: orejas caídas y cabeza un poco abajo (transición, se queda así). */
+.taffy--sad .taffy-head {
+  transform: translateY(3%);
+}
+.taffy--sad .taffy-ear-l {
+  transform: translateY(6%) rotate(-8deg);
+}
+.taffy--sad .taffy-ear-r {
+  transform: translateY(6%) rotate(8deg);
+}
+
+/* sleeping: respiración lenta y "z" que suben y se desvanecen. */
+@keyframes taffy-breathe {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.03);
+  }
+}
+@keyframes taffy-z {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+.taffy--sleeping .taffy-head {
+  animation: taffy-breathe 3s ease-in-out infinite alternate;
+}
+.taffy-zzz text {
+  opacity: 0;
+  animation: taffy-z 2.4s ease-out infinite;
+}
+.taffy-zzz text:nth-child(2) {
+  animation-delay: 1.2s;
+}
+
+/* Al tocarla: pop y saca la lengua. Va en el contenedor (se re-monta con key para repetir). */
+@keyframes taffy-pop {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.15);
+  }
+}
+@keyframes taffy-lick {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  40% {
+    transform: scaleY(1.6);
+  }
+}
+.taffy-tap {
+  animation: taffy-pop 400ms var(--ease-out);
+}
+.taffy-tap .taffy-tongue {
+  animation: taffy-lick 400ms var(--ease-out);
+}
+
+/* Globo "¿Te ayudo?": crece desde la esquina del botón, sale con fade. */
+@keyframes taffy-bubble-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(4px);
+  }
+}
+.taffy-bubble {
+  transform-origin: 100% 100%;
+  animation: taffy-bubble-in 250ms var(--ease-out);
+  transition: opacity 150ms ease-out;
+}
+.taffy-bubble[data-leaving] {
+  opacity: 0;
+}
+
+/* Con "reducir movimiento": Taffy quieta (las caras feliz/triste/dormida se siguen viendo). */
+@media (prefers-reduced-motion: reduce) {
+  .taffy *,
+  .taffy-tap,
+  .taffy-tap * {
+    animation: none !important;
+    transition: none !important;
+  }
+  .taffy-zzz text {
+    opacity: 0.9;
+  }
+  .taffy-bubble {
+    animation: none;
+  }
+}

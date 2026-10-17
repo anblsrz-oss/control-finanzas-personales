@@ -15,6 +15,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-17-taffy-animada',
+    date: '2026-10-17',
+    title: 'Taffy cobra vida',
+    description:
+      'Taffy ahora reacciona: se mueve cuando la tocas, inclina la cabeza mientras piensa, se alegra al responderte y te saluda de vez en cuando desde la burbuja. En la app del celular también vibra un poco al tocarla.',
+  },
+  {
     id: '2026-10-16-asistente-y-guias',
     date: '2026-10-16',
     title: 'Asistente de ayuda y guías de todas las funciones',

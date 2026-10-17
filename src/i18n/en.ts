@@ -2684,6 +2684,10 @@ export const en: Record<string, string> = {
   'Ayuda con la app y tus configuraciones': 'Help with the app and your settings',
   'Nueva conversación': 'New conversation',
   'Chat con {{name}}': 'Chat with {{name}}',
+  '¿Te ayudo?': 'Need a hand?',
+  'Taffy cobra vida': 'Taffy comes to life',
+  'Taffy ahora reacciona: se mueve cuando la tocas, inclina la cabeza mientras piensa, se alegra al responderte y te saluda de vez en cuando desde la burbuja. En la app del celular también vibra un poco al tocarla.':
+    'Taffy now reacts: she moves when you tap her, tilts her head while thinking, cheers up when she answers and waves at you from the bubble now and then. In the phone app she also gives a little buzz when you tap her.',
   'No encontré esa línea de crédito. Créala primero o elige una existente.': "I couldn't find that credit line. Create it first or pick an existing one.",
   'Te quedan {{n}} de {{limit}} mensajes hoy': 'You have {{n}} of {{limit}} messages left today',
   'Llegaste al máximo de mensajes de hoy. Mañana se reinicia.': "You reached today's message limit. It resets tomorrow.",
