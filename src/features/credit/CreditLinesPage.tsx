@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { confirmDialog } from '@/components/ui/DialogHost'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useCards } from '@/hooks/useCards'
@@ -66,7 +67,7 @@ export function CreditLinesPage() {
   const plans = plansQuery.data || []
   const installmentPayments = paymentsQuery.data || []
 
-  const handleDelete = (line: CreditLineRow) => {
+  const handleDelete = async (line: CreditLineRow) => {
     const lineCards = cards.filter((c) => c.credit_line_id === line.id)
     const msg = lineCards.length
       ? t('¿Eliminar la línea "{{name}}"? Sus {{n}} tarjetas quedarán sin línea asignada.', {
@@ -74,7 +75,7 @@ export function CreditLinesPage() {
           n: lineCards.length,
         })
       : t('¿Eliminar la línea "{{name}}"?', { name: line.name })
-    if (confirm(msg)) {
+    if (await confirmDialog(msg)) {
       deleteLine.mutate({ id: line.id, userId: userId! })
     }
   }
@@ -168,7 +169,7 @@ export function CreditLinesPage() {
                         </div>
                         <div>
                           <p className="text-slate-500 dark:text-slate-400">{t('Disponible')}</p>
-                          <p className="font-medium text-green-600">
+                          <p className="font-medium text-line-green">
                             <Money amount={usage.available} currency={line.currency} />
                           </p>
                         </div>

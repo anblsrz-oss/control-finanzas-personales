@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Modal } from '@/components/ui/Modal'
+import { CircleHelp } from 'lucide-react'
 import { getSectionHelp } from './tourSteps'
+import { StepIcon } from './StepIcon'
 
 /** Botón "?" que abre la misma explicación de esta sección que muestra el tutorial inicial. */
 export function SectionHelpButton({ sectionId }: { sectionId: string }) {
@@ -17,12 +19,12 @@ export function SectionHelpButton({ sectionId }: { sectionId: string }) {
         onClick={() => setOpen(true)}
         title={t('Ayuda de esta sección')}
         aria-label={t('Ayuda de esta sección')}
-        className="flex h-6 w-6 items-center justify-center rounded-full border border-slate-300 dark:border-slate-600 text-xs font-semibold text-slate-500 dark:text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+        className="flex h-7 w-7 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-brand-50 hover:text-brand-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-brand-500"
       >
-        ?
+        <CircleHelp className="h-5 w-5" aria-hidden="true" />
       </button>
-      <Modal open={open} title={`${step.icon} ${t(step.title)}`} onClose={() => setOpen(false)}>
-        <p className="text-sm text-slate-600 dark:text-slate-300">{t(step.body)}</p>
+      <Modal open={open} title={t(step.title)} icon={<StepIcon step={step} />} onClose={() => setOpen(false)}>
+        <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300">{t(step.body)}</p>
       </Modal>
     </>
   )

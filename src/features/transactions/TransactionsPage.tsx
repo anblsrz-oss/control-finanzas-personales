@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { Check, LayoutGrid, Pencil, Receipt, Table2, Trash2 } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import {
   useTransactions,
+  usePendingCount,
   useTransactionsCount,
   useDeleteTransaction,
   useConfirmTransaction,
@@ -46,10 +48,21 @@ import { Money } from '@/components/ui/Money'
 import { monthStartISO, todayISO, toISODate } from '@/lib/dates'
 import type { AmountlessSignalRow, TransactionRow } from '@/types/db'
 
+// Motivos más comunes para llenar el cuadro de eliminación con un toque.
+const QUICK_DELETE_REASONS = [
+  'Duplicado',
+  'Error de captura',
+  'Monto incorrecto',
+  'Cuenta equivocada',
+  'No es mío',
+  'Registro de prueba',
+] as const
+
 export function TransactionsPage() {
   const { t } = useTranslation()
   const { session, profile } = useAuth()
   const userId = session?.user?.id
+  const pendingCount = usePendingCount(userId).data ?? 0
   const mainCurrency = profile?.main_currency ?? 'MXN'
   const [showForm, setShowForm] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
@@ -388,20 +401,20 @@ export function TransactionsPage() {
       />
 
       {!showForm && transactionLimit !== Infinity && totalCount >= transactionLimit && (
-        <Card className="mb-4 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
+        <Card className="mb-4 border-line-amber/30 bg-line-amber/10">
+          <p className="text-sm text-line-amber">
             {t('Plan gratis: máximo {{n}} transacciones. Actualiza a Premium para registrar más.', { n: transactionLimit })}
           </p>
         </Card>
       )}
 
       {completarInfo && (
-        <Card className="mb-4 border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20">
+        <Card className="mb-4 border-line-green/30 bg-line-green/10">
           <div className="flex items-start justify-between gap-3">
-            <p className="text-sm text-emerald-800 dark:text-emerald-200">{completarInfo}</p>
+            <p className="text-sm text-line-green">{completarInfo}</p>
             <button
               type="button"
-              className="text-xs text-emerald-700 dark:text-emerald-300 underline"
+              className="text-xs text-line-green underline"
               onClick={() => setCompletarInfo(null)}
             >
               {t('Cerrar')}
@@ -418,8 +431,8 @@ export function TransactionsPage() {
       )}
 
       {showForm && !editingTx && completing && (
-        <Card className="mb-2 border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-900/20">
-          <p className="text-sm text-sky-800 dark:text-sky-200">
+        <Card className="mb-2 border-line-cobalt/30 bg-line-cobalt/10">
+          <p className="text-sm text-line-cobalt">
             {t('Falta el monto de este aviso de {{app}}. Escríbelo y guarda.', {
               app: completing.app_name ?? t('la app'),
             })}
@@ -474,7 +487,7 @@ export function TransactionsPage() {
 
       {/* Historial de eliminaciones */}
       {showHistory && (
-        <Card className="mb-4 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900">
+        <Card className="mb-4 border-slate-300 dark:border-slate-600 bg-canvas">
           <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-200">
             {t('Historial de transacciones eliminadas')}
           </h3>
@@ -485,7 +498,7 @@ export function TransactionsPage() {
               {deletions.map((d) => (
                 <div
                   key={d.id}
-                  className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 text-sm"
+                  className="rounded-lg border border-slate-200 dark:border-slate-700 bg-surface p-3 text-sm"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <span className="font-medium text-slate-800 dark:text-slate-100">
@@ -515,6 +528,7 @@ export function TransactionsPage() {
       )}
 
       <TransactionFilters
+        pendingCount={pendingCount}
         value={filters}
         onChange={setFilters}
         accounts={accounts}
@@ -526,15 +540,15 @@ export function TransactionsPage() {
       />
 
       {focusMissing && (
-        <Card className="mb-3 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-900/20">
+        <Card className="mb-3 border-line-amber/30 bg-line-amber/10 dark:border-line-amber/30">
           <div className="flex items-start justify-between gap-3">
-            <p className="text-sm text-amber-800 dark:text-amber-200">
+            <p className="text-sm text-line-amber">
               {t('Ese movimiento ya no está pendiente o es de otro periodo. Aquí tienes los pendientes que quedan.')}
             </p>
             <button
               type="button"
               onClick={() => setFocusMissing(false)}
-              className="shrink-0 text-xs font-medium text-amber-700 hover:underline dark:text-amber-300"
+              className="shrink-0 text-xs font-medium text-line-amber hover:underline"
             >
               {t('Entendido')}
             </button>
@@ -554,7 +568,7 @@ export function TransactionsPage() {
                 : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
             }`}
           >
-            🗂️ {t('Tarjetas')}
+            <LayoutGrid className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Tarjetas')}
           </button>
           <button
             type="button"
@@ -566,7 +580,7 @@ export function TransactionsPage() {
                 : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
             }`}
           >
-            📋 {t('Tabla')}
+            <Table2 className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Tabla')}
           </button>
         </div>
       )}
@@ -584,7 +598,7 @@ export function TransactionsPage() {
       ) : transactionsViewMode === 'table' ? (
         <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
           <table className="w-full text-left text-sm">
-            <thead className="bg-slate-50 dark:bg-slate-900 text-xs text-slate-500 dark:text-slate-400">
+            <thead className="bg-canvas text-xs text-slate-500 dark:text-slate-400">
               <tr>
                 <th className="px-3 py-2">{t('Fecha')}</th>
                 <th className="px-3 py-2">{t('Concepto')}</th>
@@ -607,7 +621,7 @@ export function TransactionsPage() {
                     className={`border-t border-slate-100 dark:border-slate-700 ${
                       hasLines ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800' : ''
                     } ${tx.pending && highlightId !== tx.id ? 'opacity-70' : ''} ${
-                      highlightId === tx.id ? 'bg-amber-50 dark:bg-amber-900/20' : ''
+                      highlightId === tx.id ? 'bg-line-amber/10' : ''
                     }`}
                   >
                     <td className="whitespace-nowrap px-3 py-2 text-slate-500 dark:text-slate-400">
@@ -619,11 +633,11 @@ export function TransactionsPage() {
                       </span>
                       {hasLines && (
                         <span className="ml-1.5 rounded bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 text-[10px] font-medium text-slate-500 dark:text-slate-300">
-                          🧾 {t('{{n}} líneas', { n: lines!.length })}
+                          <Receipt className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('{{n}} líneas', { n: lines!.length })}
                         </span>
                       )}
                       {tx.pending && (
-                        <span className="ml-1.5 rounded bg-amber-100 dark:bg-amber-900/40 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-300">
+                        <span className="ml-1.5 rounded bg-line-amber/10 px-1.5 py-0.5 text-[10px] font-medium text-line-amber">
                           {t('Pendiente')}
                         </span>
                       )}
@@ -639,7 +653,7 @@ export function TransactionsPage() {
                     <td
                       className={`whitespace-nowrap px-3 py-2 text-right font-semibold ${
                         tx.kind === 'income' || tx.kind === 'refund'
-                          ? 'text-green-600'
+                          ? 'text-line-green'
                           : 'text-slate-800 dark:text-slate-100'
                       }`}
                     >
@@ -656,9 +670,9 @@ export function TransactionsPage() {
                           <button
                             onClick={() => confirmTx.mutate({ id: tx.id, userId: userId! })}
                             disabled={confirmTx.isPending}
-                            className="text-xs font-medium text-green-600 transition-colors hover:text-green-700 disabled:opacity-50"
+                            className="text-xs font-medium text-line-green transition-colors hover:text-line-green disabled:opacity-50"
                           >
-                            ✓
+                            <Check className="inline h-4 w-4" aria-hidden="true" />
                           </button>
                         )}
                         <button
@@ -668,13 +682,13 @@ export function TransactionsPage() {
                           }}
                           className="text-xs font-medium text-brand-600 transition-colors hover:text-brand-800 dark:text-brand-400"
                         >
-                          ✏️
+                          <Pencil className="inline h-4 w-4" aria-hidden="true" />
                         </button>
                         <button
                           onClick={() => openDelete(tx)}
-                          className="text-xs font-medium text-red-500 transition-colors hover:text-red-700"
+                          className="text-xs font-medium text-line-scarlet transition-colors hover:text-line-scarlet"
                         >
-                          🗑
+                          <Trash2 className="inline h-4 w-4" aria-hidden="true" />
                         </button>
                       </div>
                     </td>
@@ -701,7 +715,7 @@ export function TransactionsPage() {
                     {kindLabel(tx.kind)}
                   </span>
                   {tx.pending && (
-                    <span className="rounded bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-300">
+                    <span className="rounded bg-line-amber/10 px-2 py-0.5 text-xs font-medium text-line-amber">
                       {t('Pendiente')}
                     </span>
                   )}
@@ -729,7 +743,7 @@ export function TransactionsPage() {
                     onClick={() => setViewingLinesTx(tx)}
                     className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400 underline transition-colors hover:text-brand-600"
                   >
-                    🧾 {t('Ver detalle ({{n}} líneas)', { n: linesByTx.get(tx.id)!.length })}
+                    <Receipt className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Ver detalle ({{n}} líneas)', { n: linesByTx.get(tx.id)!.length })}
                   </button>
                 )}
               </div>
@@ -737,7 +751,7 @@ export function TransactionsPage() {
                 <p
                   className={`text-lg font-semibold ${
                     tx.kind === 'income' || tx.kind === 'refund'
-                      ? 'text-green-600'
+                      ? 'text-line-green'
                       : 'text-slate-800 dark:text-slate-100'
                   }`}
                 >
@@ -762,9 +776,9 @@ export function TransactionsPage() {
                     <button
                       onClick={() => confirmTx.mutate({ id: tx.id, userId: userId! })}
                       disabled={confirmTx.isPending}
-                      className="text-xs font-medium text-green-600 transition-colors hover:text-green-700 disabled:opacity-50"
+                      className="text-xs font-medium text-line-green transition-colors hover:text-line-green disabled:opacity-50"
                     >
-                      ✓ {t('Confirmar')}
+                      <Check className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Confirmar')}
                     </button>
                   )}
                   {tx.kind === 'expense' && (
@@ -782,13 +796,13 @@ export function TransactionsPage() {
                     }}
                     className="text-xs font-medium text-brand-600 transition-colors hover:text-brand-800 dark:text-brand-400"
                   >
-                    ✏️ {t('Editar')}
+                    <Pencil className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Editar')}
                   </button>
                   <button
                     onClick={() => openDelete(tx)}
-                    className="text-xs font-medium text-red-500 transition-colors hover:text-red-700"
+                    className="text-xs font-medium text-line-scarlet transition-colors hover:text-line-scarlet"
                   >
-                    🗑 {t('Eliminar')}
+                    <Trash2 className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Eliminar')}
                   </button>
                 </div>
               </div>
@@ -814,16 +828,40 @@ export function TransactionsPage() {
             </p>
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
-                {t('Motivo de la eliminación')} <span className="text-red-500">*</span>
+                {t('Motivo de la eliminación')} <span className="text-line-scarlet">*</span>
               </label>
+              <div className="mb-2 flex flex-wrap gap-2" role="group" aria-label={t('Motivos frecuentes')}>
+                {QUICK_DELETE_REASONS.map((r) => {
+                  const text = t(r)
+                  const selected = reason.trim() === text
+                  return (
+                    <button
+                      key={r}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => {
+                        setReason(text)
+                        setError(null)
+                      }}
+                      className={`rounded-full border px-3 py-1 text-xs font-semibold transition-colors ${
+                        selected
+                          ? 'border-brand-600 bg-brand-600 text-white'
+                          : 'border-slate-300 bg-surface text-slate-700 hover:border-brand-600 dark:border-slate-600 dark:text-slate-200'
+                      }`}
+                    >
+                      {text}
+                    </button>
+                  )
+                })}
+              </div>
               <textarea
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
                 rows={3}
                 placeholder={t('Ej. Registrada por error, duplicada, monto incorrecto…')}
-                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                className="w-full rounded-md border bg-surface border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
               />
-              {error && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{error}</p>}
+              {error && <p className="mt-1 text-xs text-line-scarlet">{error}</p>}
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="ghost" onClick={() => setDeleting(null)}>

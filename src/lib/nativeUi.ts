@@ -12,7 +12,7 @@ export async function setNativeStatusBarStyle(dark: boolean): Promise<void> {
     if (Capacitor.getPlatform() === 'android') {
       // En Android 15+ el color de fondo lo ignora el sistema; en versiones
       // anteriores sí se aplica.
-      await StatusBar.setBackgroundColor({ color: dark ? '#0f172a' : '#0f766e' })
+      await StatusBar.setBackgroundColor({ color: dark ? '#080d20' : '#1a3fae' })
     }
   } catch {
     // Plugin no disponible en este entorno: ignorar.

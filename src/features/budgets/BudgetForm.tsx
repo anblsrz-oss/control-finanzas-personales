@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { Switch } from '@/components/ui/FormKit'
+import { showAlert } from '@/components/ui/DialogHost'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -92,7 +94,7 @@ export function BudgetForm({
 
   function onSubmit(data: FormData) {
     if (!userId) {
-      alert(t('No hay sesión activa'))
+      showAlert(t('No hay sesión activa'))
       return
     }
     setError(null)
@@ -149,7 +151,7 @@ export function BudgetForm({
   }
 
   return (
-    <Card className="mb-6 bg-slate-50 dark:bg-slate-900">
+    <Card className="mb-6">
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <Select
           label={t('Categoría')}
@@ -158,7 +160,7 @@ export function BudgetForm({
           error={form.formState.errors.category_id?.message}
         />
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
           <Input
             label={t('Monto máximo')}
             type="number"
@@ -197,28 +199,21 @@ export function BudgetForm({
         </p>
 
         {isEdit && (
-          <label className="flex items-start gap-2">
-            <input
-              type="checkbox"
-              {...form.register('is_active')}
-              className="mt-0.5 cursor-pointer"
-            />
-            <span className="text-sm text-slate-700 dark:text-slate-200">
-              {t('Activo')}
-              <span className="block text-xs text-slate-400 dark:text-slate-500">
-                {t('Al desactivarlo deja de calcularse y de avisarte, sin borrarlo.')}
-              </span>
-            </span>
-          </label>
+          <Switch
+          checked={!!form.watch('is_active')}
+          onChange={(v) => form.setValue('is_active', v)}
+          label={t('Activo')}
+          description={t('Al desactivarlo deja de calcularse y de avisarte, sin borrarlo.')}
+        />
         )}
 
         {error && (
-          <p className="rounded-md bg-red-50 p-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-200">
+          <p className="rounded-md bg-line-scarlet/10 p-2 text-sm text-line-scarlet">
             {error}
           </p>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 border-t border-slate-200 pt-5 dark:border-slate-700/70">
           <Button type="submit" disabled={pending}>
             {pending
               ? t('Guardando…')

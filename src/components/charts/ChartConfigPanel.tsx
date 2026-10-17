@@ -109,7 +109,7 @@ export function ChartConfigPanel({ chartId, open, onClose, points }: ChartConfig
                 <ConfigRow
                   key={name}
                   label={t(name)}
-                  color={config?.pointColors?.[name] ?? '#94a3b8'}
+                  color={config?.pointColors?.[name] ?? '#8593b3'}
                   hidden={hidden.includes(name)}
                   togglable
                   editing={editing === `p:${name}`}
@@ -129,7 +129,7 @@ export function ChartConfigPanel({ chartId, open, onClose, points }: ChartConfig
               resetChartConfig(chartId)
               setEditing(null)
             }}
-            className="text-sm font-medium text-red-600 hover:underline dark:text-red-400"
+            className="text-sm font-medium text-line-scarlet hover:underline"
           >
             {t('Restablecer colores')}
           </button>

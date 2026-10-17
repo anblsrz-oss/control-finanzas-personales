@@ -10,6 +10,8 @@ import { ProtectedRoute } from '@/features/auth/ProtectedRoute'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { ResetPasswordPage } from '@/features/auth/ResetPasswordPage'
 import { LandingPage } from '@/features/landing/LandingPage'
+import { MobileWelcomePage } from '@/features/welcome/MobileWelcomePage'
+import { SubscriptionPage } from '@/features/subscription/SubscriptionPage'
 import { PrivacyPolicyPage } from '@/features/legal/PrivacyPolicyPage'
 import { TermsPage } from '@/features/legal/TermsPage'
 import { CookiePolicyPage } from '@/features/legal/CookiePolicyPage'
@@ -40,6 +42,7 @@ import { AdminPage } from '@/features/admin/AdminPage'
 import { WebUpdatePrompt } from '@/components/WebUpdatePrompt'
 import { NativeUpdatePrompt } from '@/components/NativeUpdatePrompt'
 import { NotificationTapRouter } from '@/components/NotificationTapRouter'
+import { DialogHost } from '@/components/ui/DialogHost'
 import { isNative } from '@/lib/nativeAuth'
 import { isPlayBuild } from '@/lib/distribution'
 
@@ -66,8 +69,11 @@ export default function App() {
       {/* En Play la app solo se actualiza desde la tienda (ver lib/distribution.ts). */}
       {isNative() ? !isPlayBuild() && <NativeUpdatePrompt /> : <WebUpdatePrompt />}
       <NotificationTapRouter />
+      <DialogHost />
     <Routes>
       <Route path="/bienvenida" element={<PageGuard to="/bienvenida"><LandingPage /></PageGuard>} />
+      {/* Inicio de la app del celular: la web usa /bienvenida. */}
+      <Route path="/inicio" element={<MobileWelcomePage />} />
       <Route path="/privacidad" element={<PageGuard to="/privacidad"><PrivacyPolicyPage /></PageGuard>} />
       <Route path="/terminos" element={<PageGuard to="/terminos"><TermsPage /></PageGuard>} />
       <Route path="/cookies" element={<PageGuard to="/cookies"><CookiePolicyPage /></PageGuard>} />
@@ -96,6 +102,7 @@ export default function App() {
         <Route path="/recibos" element={<PageGuard to="/recibos"><FeatureGate feature="receipts"><ReceiptPage /></FeatureGate></PageGuard>} />
         <Route path="/conciliacion" element={<PageGuard to="/conciliacion"><ReconcilePage /></PageGuard>} />
         <Route path="/familia" element={<PageGuard to="/familia"><FamilyPage /></PageGuard>} />
+        <Route path="/suscripcion" element={<SubscriptionPage />} />
         <Route path="/configuracion" element={<SettingsPage />} />
         <Route path="/correo" element={<PageGuard to="/correo"><FeatureGate feature="email_sync"><EmailSyncPage /></FeatureGate></PageGuard>} />
         <Route path="/sms" element={<PageGuard to="/sms"><FeatureGate feature="sms_sync"><SmsSyncPage /></FeatureGate></PageGuard>} />

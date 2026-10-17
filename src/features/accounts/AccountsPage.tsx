@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { confirmDialog, showAlert } from '@/components/ui/DialogHost'
+import { GraduationCap, TrendingUp } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useQuery } from '@tanstack/react-query'
@@ -71,8 +73,8 @@ export function AccountsPage() {
     return balance?.current_balance ?? accounts.find(a => a.id === accountId)?.initial_balance ?? 0
   }
 
-  const handleDelete = (id: string) => {
-    if (confirm(t('¿Eliminar esta cuenta?'))) {
+  const handleDelete = async (id: string) => {
+    if (await confirmDialog(t('¿Eliminar esta cuenta?'))) {
       deleteAccount.mutate({ id, userId: userId! })
     }
   }
@@ -87,7 +89,7 @@ export function AccountsPage() {
           setMoveTargetId('')
         },
         onError: (error: any) => {
-          alert(`Error: ${error.message || 'Error desconocido'}`)
+          showAlert(`Error: ${error.message || 'Error desconocido'}`)
         },
       },
     )
@@ -202,8 +204,8 @@ export function AccountsPage() {
                     <h3 className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-100">
                       {acc.name}
                       {acc.is_scholarship && (
-                        <span className="inline-flex items-center rounded-full bg-violet-100 dark:bg-violet-900/40 px-2 py-0.5 text-xs font-medium text-violet-700 dark:text-violet-300">
-                          🎓 {acc.scholarship_name || t('Beca')}
+                        <span className="inline-flex items-center rounded-full bg-line-cobalt/10 px-2 py-0.5 text-xs font-medium text-line-cobalt">
+                          <GraduationCap className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {acc.scholarship_name || t('Beca')}
                         </span>
                       )}
                     </h3>
@@ -211,8 +213,8 @@ export function AccountsPage() {
                       {acc.bank_name || t('Sin banco')} • {t(ACCOUNT_TYPE_LABELS[acc.type] ?? acc.type)} • {acc.currency}
                     </p>
                     {acc.has_yield && (
-                      <p className="mt-1 text-xs text-green-600">
-                        📈 {t('Rendimiento:')} {acc.yield_rate}%{' '}
+                      <p className="mt-1 text-xs text-line-green">
+                        <TrendingUp className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Rendimiento:')} {acc.yield_rate}%{' '}
                         {acc.yield_rate_period === 'annual' ? t('anual') : t('mensual')}
                         {acc.yield_kind === 'term' && <> · {t('plazo fijo')}</>}
                       </p>
@@ -320,7 +322,7 @@ export function AccountsPage() {
                     </div>
                     {moveTargetId &&
                       rootAccounts.find((a) => a.id === moveTargetId)?.currency !== acc.currency && (
-                        <p className="mt-2 text-xs text-amber-600 dark:text-amber-400">
+                        <p className="mt-2 text-xs text-line-amber">
                           {t('Ojo: quedará en {{cur1}} dentro de una cuenta en {{cur2}}.', {
                             cur1: acc.currency,
                             cur2: rootAccounts.find((a) => a.id === moveTargetId)?.currency,
@@ -345,8 +347,8 @@ export function AccountsPage() {
                           {t('Apartado')} • {pocket.currency}
                         </p>
                         {pocket.has_yield && (
-                          <p className="mt-1 text-xs text-green-600">
-                            📈 {t('Rendimiento:')} {pocket.yield_rate}%{' '}
+                          <p className="mt-1 text-xs text-line-green">
+                            <TrendingUp className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Rendimiento:')} {pocket.yield_rate}%{' '}
                             {pocket.yield_rate_period === 'annual' ? t('anual') : t('mensual')}
                             {pocket.yield_kind === 'term' && <> · {t('plazo fijo')}</>}
                           </p>
@@ -388,8 +390,8 @@ export function AccountsPage() {
       )}
 
       {!profile?.is_premium && accountLimit !== Infinity && rootAccounts.length >= accountLimit && (
-        <Card className="mt-4 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
+        <Card className="mt-4 border-line-amber/30 bg-line-amber/10">
+          <p className="text-sm text-line-amber">
             {t('Plan gratis: máximo {{n}} cuentas. Actualiza a Premium para agregar más.', { n: accountLimit })}
           </p>
         </Card>

@@ -1,6 +1,8 @@
 import type { CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
+import { StepIcon } from './StepIcon'
 import type { TourStep } from './tourSteps'
 
 interface TourOverlayProps {
@@ -29,16 +31,24 @@ export function TourOverlay({ step, index, total, rect, appTitle, onNext, onPrev
   const isLast = index === total - 1
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 640
 
+  // Progreso como tramo de línea: lo recorrido va relleno y termina en una parada.
+  const pct = total > 1 ? (index / (total - 1)) * 100 : 100
   const dots = (
-    <div className="mt-4 flex items-center justify-center gap-1.5">
-      {Array.from({ length: total }).map((_, i) => (
-        <span
-          key={i}
-          className={`h-1.5 w-1.5 rounded-full ${
-            i === index ? 'bg-brand-600' : 'bg-slate-300 dark:bg-slate-600'
-          }`}
+    <div className="mt-5">
+      <div className="relative h-1 rounded-full bg-slate-200 dark:bg-slate-700">
+        <div
+          className="h-full rounded-full bg-brand-600 transition-[width] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none"
+          style={{ width: `${pct}%` }}
         />
-      ))}
+        <span
+          aria-hidden="true"
+          className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-brand-600 bg-surface transition-[left] duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none"
+          style={{ left: `${Math.min(Math.max(pct, 2), 98)}%` }}
+        />
+      </div>
+      <p className="mt-2 text-xs font-medium text-slate-500 dark:text-slate-400">
+        {t('Paso {{n}} de {{total}}', { n: index + 1, total })}
+      </p>
     </div>
   )
 
@@ -50,11 +60,13 @@ export function TourOverlay({ step, index, total, rect, appTitle, onNext, onPrev
       <div className="flex gap-2">
         {index > 0 && (
           <Button variant="ghost" size="sm" onClick={onPrev}>
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             {t('Anterior')}
           </Button>
         )}
         <Button size="sm" onClick={onNext}>
           {isLast ? t('Empezar') : t('Siguiente')}
+          {!isLast && <ArrowRight className="h-4 w-4" aria-hidden="true" />}
         </Button>
       </div>
     </div>
@@ -62,14 +74,17 @@ export function TourOverlay({ step, index, total, rect, appTitle, onNext, onPrev
 
   const card = (className: string, style?: CSSProperties) => (
     <div
-      className={`w-full rounded-xl bg-white dark:bg-slate-800 p-5 shadow-xl ${className}`}
+      className={`w-full rounded-lg border border-slate-200 bg-surface p-5 shadow-2xl dark:border-slate-700 ${className}`}
       style={{ maxWidth: TOOLTIP_WIDTH, ...style }}
       onClick={(e) => e.stopPropagation()}
     >
-      <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">
-        {step.icon} {t(step.title, { app: appTitle })}
-      </h3>
-      <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{t(step.body)}</p>
+      <div className="flex items-start gap-3">
+        <StepIcon step={step} />
+        <h3 className="pt-1.5 text-lg font-bold leading-tight tracking-tight text-slate-900 dark:text-slate-100">
+          {t(step.title, { app: appTitle })}
+        </h3>
+      </div>
+      <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{t(step.body)}</p>
       {dots}
       {controls}
     </div>
@@ -79,7 +94,7 @@ export function TourOverlay({ step, index, total, rect, appTitle, onNext, onPrev
   if (!rect) {
     return (
       <div
-        className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 p-4 sm:items-center"
+        className="fixed inset-0 z-[100] flex items-end justify-center bg-[rgb(8_13_32)]/60 p-4 sm:items-center"
         onClick={onSkip}
       >
         {card('')}
@@ -97,8 +112,8 @@ export function TourOverlay({ step, index, total, rect, appTitle, onNext, onPrev
     width: rect.width + spotlightPad * 2,
     height: rect.height + spotlightPad * 2,
     borderRadius: 10,
-    boxShadow: '0 0 0 9999px rgba(15, 23, 42, 0.6)',
-    outline: '2px solid rgba(59, 130, 246, 0.9)',
+    boxShadow: '0 0 0 9999px rgba(8, 13, 32, 0.68)',
+    outline: '2px solid rgba(74, 120, 240, 0.9)',
     outlineOffset: 2,
     pointerEvents: 'none',
     transition: 'left 150ms ease, top 150ms ease, width 150ms ease, height 150ms ease',

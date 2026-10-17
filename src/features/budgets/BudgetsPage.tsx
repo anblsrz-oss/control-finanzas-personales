@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { confirmDialog } from '@/components/ui/DialogHost'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useEntitlements } from '@/hooks/useAppConfig'
@@ -41,8 +42,8 @@ export function BudgetsPage() {
   // aparte para poder reactivarlos.
   const inactive = budgets.filter((b) => !b.is_active)
 
-  const handleDelete = (budgetId: string, label: string) => {
-    if (confirm(t('¿Eliminar el presupuesto de "{{name}}"?', { name: label }))) {
+  const handleDelete = async (budgetId: string, label: string) => {
+    if (await confirmDialog(t('¿Eliminar el presupuesto de "{{name}}"?', { name: label }))) {
       deleteBudget.mutate({ id: budgetId, userId: userId! })
     }
   }
@@ -172,8 +173,8 @@ export function BudgetsPage() {
       )}
 
       {!profile?.is_premium && budgetLimit !== Infinity && budgets.length >= budgetLimit && (
-        <Card className="mt-4 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
+        <Card className="mt-4 border-line-amber/30 bg-line-amber/10">
+          <p className="text-sm text-line-amber">
             {t('Plan gratis: máximo {{n}} presupuestos. Actualiza a Premium para agregar más.', {
               n: budgetLimit,
             })}

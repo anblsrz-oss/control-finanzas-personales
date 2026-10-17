@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
+import { Download } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import data from './guides.data.json'
 
@@ -70,7 +71,7 @@ export function GuidePdfLink({ id }: { id: GuideId }) {
       rel="noopener noreferrer"
       className="inline-flex w-fit items-center gap-1 text-xs font-medium text-brand-700 dark:text-brand-500 hover:underline"
     >
-      ⬇️ {t('Descargar PDF con imágenes')}
+      <Download className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Descargar PDF con imágenes')}
     </a>
   )
 }
@@ -133,7 +134,7 @@ export function GuideSteps({ id, showIntro = false }: { id: GuideId; showIntro?:
     <div className="grid gap-3">
       {showIntro && <p className={TEXT}>{t(guide.intro)}</p>}
       {guide.prereq && (GOOGLE_UNVERIFIED || !guide.prereq.unverified) && (
-        <p className="rounded-lg bg-amber-50 dark:bg-amber-900/20 px-3 py-2 text-sm text-amber-800 dark:text-amber-300">
+        <p className="rounded-lg bg-line-amber/10 px-3 py-2 text-sm text-line-amber">
           {renderRich(t(guide.prereq.text, VARS))}
         </p>
       )}

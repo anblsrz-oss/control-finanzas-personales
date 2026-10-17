@@ -180,10 +180,17 @@ export const TOUR_STEPS: TourStep[] = [
     target: 'ayuda',
   },
   {
+    id: 'suscripcion',
+    icon: '⭐',
+    title: 'Suscripción',
+    body: 'Tu plan actual y los planes Premium. Desde aquí te suscribes, gestionas o cancelas tu suscripción.',
+    inTour: false,
+  },
+  {
     id: 'configuracion',
     icon: '⚙️',
     title: 'Configuración',
-    body: 'Tema, moneda principal, privacidad (ocultar montos), tu suscripción Premium y demás preferencias de tu cuenta. Aquí también puedes eliminar tu cuenta y tus datos.',
+    body: 'Tema, moneda principal, privacidad (ocultar montos), el acceso a tu suscripción y demás preferencias de tu cuenta. Aquí también puedes eliminar tu cuenta y tus datos.',
     inTour: false,
   },
   {

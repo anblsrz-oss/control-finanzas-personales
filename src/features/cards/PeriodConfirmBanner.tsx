@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { TriangleAlert } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useConfirmCreditLinePeriod } from '@/hooks/useCreditLinePeriods'
@@ -55,14 +56,14 @@ export function PeriodConfirmBanner({ line, periods }: PeriodConfirmBannerProps)
   const max = toISODate(new Date(cut.getFullYear(), cut.getMonth(), cut.getDate() + MAX_SHIFT_DAYS))
 
   return (
-    <div className="rounded-lg border border-amber-300 bg-amber-50 p-3 dark:border-amber-700 dark:bg-amber-900/20">
-      <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
-        ⚠️ {t('¿Tu corte de {{name}} fue el {{date}}?', {
+    <div className="rounded-lg border border-line-amber/30 bg-line-amber/10 p-3 dark:border-amber-700">
+      <p className="text-sm font-medium text-line-amber">
+        <TriangleAlert className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('¿Tu corte de {{name}} fue el {{date}}?', {
           name: line.name,
           date: formatDate(period.cutDate),
         })}
       </p>
-      <p className="mt-1 text-xs text-amber-800 dark:text-amber-200">
+      <p className="mt-1 text-xs text-line-amber">
         {t('Marcaste que esta línea recorre sus fechas en días inhábiles. Confírmala para que los periodos cuadren.')}
       </p>
 

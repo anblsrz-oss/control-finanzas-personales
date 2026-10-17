@@ -1,4 +1,7 @@
 import { useEffect, useState } from 'react'
+import { optionalInt } from '@/lib/zodHelpers'
+import { showAlert } from '@/components/ui/DialogHost'
+import { Camera, Cloud, CreditCard } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -21,6 +24,8 @@ import { CURRENCIES_ARRAY, CURRENCIES } from '@/lib/format'
 import { recognizeImage } from '@/lib/ocr'
 import { parseCardText } from '@/lib/cardScanParser'
 import { CardColorPicker } from './CardColorPicker'
+import { CardVisual } from './CardVisual'
+import { FormSection, Segmented, Switch } from '@/components/ui/FormKit'
 import type { AccountRow, CardRow } from '@/types/db'
 
 // Valor del <Select> de línea de crédito cuando se quiere dar de alta una nueva.
@@ -41,8 +46,8 @@ const schema = z
     // Solo se usan al crear una línea nueva desde aquí.
     line_name: z.string().optional(),
     credit_limit: z.coerce.number().optional(),
-    cut_day: z.coerce.number().optional(),
-    payment_day: z.coerce.number().optional(),
+    cut_day: optionalInt(1, 31, 'Entre 1 y 31'),
+    payment_day: optionalInt(1, 31, 'Entre 1 y 31'),
     dates_may_shift: z.boolean().default(false),
     last4: z
       .string()
@@ -234,7 +239,7 @@ export function CardForm({ accounts, card, onSuccess, onCancel }: CardFormProps)
 
   async function onSubmit(data: FormData) {
     if (!session?.user?.id) {
-      alert(t('No hay sesión activa'))
+      showAlert(t('No hay sesión activa'))
       return
     }
     const userId = session.user.id
@@ -268,7 +273,7 @@ export function CardForm({ accounts, card, onSuccess, onCancel }: CardFormProps)
           creditLineId = line.id
         } catch (error: any) {
           console.error('Error al crear la línea de crédito:', error)
-          alert(`Error: ${error.message || 'Error desconocido'}`)
+          showAlert(`Error: ${error.message || 'Error desconocido'}`)
           return
         }
       } else {
@@ -301,7 +306,7 @@ export function CardForm({ accounts, card, onSuccess, onCancel }: CardFormProps)
       },
       onError: (error: any) => {
         console.error('Error al guardar tarjeta:', error)
-        alert(`Error: ${error.message || 'Error desconocido'}`)
+        showAlert(`Error: ${error.message || 'Error desconocido'}`)
       },
     }
     if (isEdit) {
@@ -323,8 +328,31 @@ export function CardForm({ accounts, card, onSuccess, onCancel }: CardFormProps)
     setHiddenError(messages.length ? messages.join('. ') : null)
   }
 
+  // Vista previa en vivo: lo que se captura se refleja de inmediato en la tarjeta.
+  const watchedBrandOther = form.watch('brand_other')
+  const previewBrand =
+    cardFormat === 'virtual'
+      ? null
+      : brandOption === 'other'
+        ? watchedBrandOther?.trim() || null
+        : brandOption
+          ? BRAND_LABELS[brandOption as keyof typeof BRAND_LABELS]
+          : null
+  const previewCard = {
+    id: 'preview',
+    name: form.watch('name') || t('Mi tarjeta'),
+    color: selectedColor ?? null,
+    brand: previewBrand,
+    card_format: cardFormat,
+    type: cardType,
+    last4: form.watch('last4') || null,
+    is_scholarship: form.watch('is_scholarship'),
+    scholarship_name: form.watch('scholarship_name') || null,
+    has_cashback: cardType === 'credit' && form.watch('has_cashback'),
+  } as unknown as CardRow
+
   return (
-    <Card className="mb-6 bg-slate-50 dark:bg-slate-900">
+    <Card className="mb-6">
       <form
         onSubmit={form.handleSubmit(
           (data) => {
@@ -333,303 +361,261 @@ export function CardForm({ accounts, card, onSuccess, onCancel }: CardFormProps)
           },
           onInvalid,
         )}
-        className="space-y-4"
+        className="grid gap-8 md:grid-cols-[19rem_1fr]"
       >
-        {/* Escanear tarjeta con la cámara */}
-        <div className="rounded-lg border border-dashed border-slate-300 dark:border-slate-600 p-3">
-          <label className="flex cursor-pointer items-center justify-center gap-2 text-sm font-medium text-brand-700 dark:text-brand-500">
-            📷 {scanning ? t('Leyendo tarjeta…') : t('Escanear tarjeta con la cámara')}
-            <input
-              type="file"
-              accept="image/*"
-              capture="environment"
-              className="hidden"
-              disabled={scanning}
-              onChange={(e) => {
-                const f = e.target.files?.[0]
-                if (f) void handleScan(f)
-                e.target.value = ''
-              }}
+        {/* Vista previa: fija a la vista mientras se llena el formulario en escritorio. */}
+        <aside className="md:sticky md:top-20 md:self-start">
+          <CardVisual card={previewCard} />
+          <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
+            {t('Así se verá tu tarjeta en la app.')}
+          </p>
+        </aside>
+
+        <div className="min-w-0 space-y-6">
+          <FormSection title={t('Datos de la tarjeta')}>
+            {/* Escanear tarjeta con la cámara */}
+            <div className="rounded-md border border-dashed border-slate-300 p-3 dark:border-slate-600">
+              <label className="flex cursor-pointer items-center justify-center gap-2 text-sm font-semibold text-brand-700 dark:text-brand-500">
+                <Camera className="h-4 w-4" aria-hidden="true" />
+                {scanning ? t('Leyendo tarjeta…') : t('Escanear tarjeta con la cámara')}
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  className="hidden"
+                  disabled={scanning}
+                  onChange={(e) => {
+                    const f = e.target.files?.[0]
+                    if (f) void handleScan(f)
+                    e.target.value = ''
+                  }}
+                />
+              </label>
+              {scanning && (
+                <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-600">
+                  <div className="h-full bg-brand-600 transition-all" style={{ width: `${Math.round(scanProgress * 100)}%` }} />
+                </div>
+              )}
+              {scanMsg && <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{scanMsg}</p>}
+              <p className="mt-1 text-center text-[11px] text-slate-400 dark:text-slate-500">
+                {t('Por tu seguridad solo se leen la marca y los últimos 4 dígitos. No se guarda el número completo, CVC ni la fecha.')}
+              </p>
+            </div>
+
+            <Input
+              label={t('Nombre de la tarjeta')}
+              placeholder={t('Mi Visa')}
+              {...form.register('name')}
+              error={form.formState.errors.name?.message}
             />
-          </label>
-          {scanning && (
-            <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-600">
-              <div
-                className="h-full bg-brand-600 transition-all"
-                style={{ width: `${Math.round(scanProgress * 100)}%` }}
+
+            <Segmented
+              label={t('Formato')}
+              value={cardFormat}
+              onChange={(v) => form.setValue('card_format', v, { shouldValidate: true })}
+              options={[
+                { value: 'physical', label: t('Física'), icon: <CreditCard className="h-4 w-4" aria-hidden="true" /> },
+                { value: 'virtual', label: t('Virtual'), icon: <Cloud className="h-4 w-4" aria-hidden="true" /> },
+              ]}
+            />
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Input
+                label={t('Banco (opcional)')}
+                placeholder={t('Ej: Nu, BBVA')}
+                list="card-bank-suggestions"
+                {...form.register('bank_name')}
+              />
+              <Input
+                label={t('Últimos 4 dígitos (opcional)')}
+                placeholder="1234"
+                inputMode="numeric"
+                maxLength={4}
+                {...form.register('last4')}
+                error={form.formState.errors.last4?.message}
               />
             </div>
-          )}
-          {scanMsg && (
-            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{scanMsg}</p>
-          )}
-          <p className="mt-1 text-center text-[11px] text-slate-400 dark:text-slate-500">
-            {t('Por tu seguridad solo se leen la marca y los últimos 4 dígitos. No se guarda el número completo, CVC ni la fecha.')}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <Input
-            label={t('Nombre de la tarjeta')}
-            placeholder={t('Mi Visa')}
-            {...form.register('name')}
-            error={form.formState.errors.name?.message}
-          />
-          <Select
-            label={t('Formato')}
-            options={[
-              { value: 'physical', label: t('💳 Física') },
-              { value: 'virtual', label: t('☁️ Virtual') },
-            ]}
-            {...form.register('card_format')}
-          />
-        </div>
-
-        <Input
-          label={t('Banco (opcional)')}
-          placeholder={t('Ej: Nu, BBVA')}
-          list="card-bank-suggestions"
-          {...form.register('bank_name')}
-        />
-        {bankSuggestions.length > 0 && (
-          <datalist id="card-bank-suggestions">
-            {bankSuggestions.map((b) => (
-              <option key={b} value={b} />
-            ))}
-          </datalist>
-        )}
-
-        {/* Las tarjetas virtuales no tienen marca impresa. */}
-        {cardFormat === 'physical' && (
-          <div className="space-y-2">
-            <Select
-              label={t('Marca')}
-              options={[
-                { value: '', label: t('Selecciona una marca') },
-                ...brandOptions(t('Otra…')),
-              ]}
-              {...form.register('brand_option')}
-              error={form.formState.errors.brand_option?.message}
-            />
-            {brandOption === 'other' && (
-              <Input
-                label={t('¿Cuál marca?')}
-                placeholder={t('Ej: Carnet, UnionPay')}
-                {...form.register('brand_other')}
-                error={form.formState.errors.brand_other?.message}
-              />
+            {bankSuggestions.length > 0 && (
+              <datalist id="card-bank-suggestions">
+                {bankSuggestions.map((b) => (
+                  <option key={b} value={b} />
+                ))}
+              </datalist>
             )}
-          </div>
-        )}
 
-        <Input
-          label={t('Últimos 4 dígitos (opcional)')}
-          placeholder="1234"
-          inputMode="numeric"
-          maxLength={4}
-          {...form.register('last4')}
-          error={form.formState.errors.last4?.message}
-        />
-
-        <CardColorPicker
-          value={selectedColor}
-          onChange={(color) => form.setValue('color', color)}
-        />
-
-        <div className="grid grid-cols-3 gap-4">
-          <Select
-            label={t('Tipo')}
-            options={[
-              { value: 'credit', label: t('💳 Crédito') },
-              { value: 'debit', label: t('💰 Débito') },
-              { value: 'voucher', label: t('🍎 Vales de despensa') },
-            ]}
-            {...form.register('type')}
-          />
-          <Select
-            label={t('Moneda')}
-            options={(canUseMulticurrency ? Array.from(CURRENCIES) : [form.formState.defaultValues?.currency ?? 'MXN']).map((c) => ({ value: c, label: c }))}
-            {...form.register('currency')}
-          />
-        </div>
-
-        {(cardType === 'debit' || cardType === 'voucher') && (
-          <Select
-            label={cardType === 'voucher' ? t('Cuenta de vales') : t('Cuenta ligada')}
-            options={[
-              { value: '', label: t('Selecciona una cuenta') },
-              ...accounts.map((a) => ({ value: a.id, label: a.name })),
-            ]}
-            {...form.register('account_id')}
-            error={form.formState.errors.account_id?.message}
-          />
-        )}
-
-        {cardType === 'credit' && (
-          <div className="space-y-3 rounded-lg border border-slate-200 p-3 dark:border-slate-700">
-            <Select
-              label={t('Línea de crédito')}
-              options={[
-                { value: '', label: t('Selecciona una línea') },
-                ...creditLines.map((l) => ({
-                  value: l.id,
-                  label: `${l.name} · ${formatMoney(l.credit_limit, l.currency)}`,
-                })),
-                { value: NEW_LINE, label: t('➕ Nueva línea de crédito') },
-              ]}
-              {...form.register('credit_line_id')}
-              error={form.formState.errors.credit_line_id?.message}
-            />
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              {t('Varias tarjetas del mismo banco comparten un solo límite y las mismas fechas de corte y pago. Selecciona la línea que ya usas o crea una nueva.')}
-            </p>
-
-            {isNewLine && (
-              <>
-                <Input
-                  label={t('Nombre de la línea')}
-                  placeholder={t('Ej: Nu')}
-                  {...form.register('line_name')}
-                  error={form.formState.errors.line_name?.message}
+            {/* Las tarjetas virtuales no tienen marca impresa. */}
+            {cardFormat === 'physical' && (
+              <div className="space-y-2">
+                <Select
+                  label={t('Marca')}
+                  options={[{ value: '', label: t('Selecciona una marca') }, ...brandOptions(t('Otra…'))]}
+                  {...form.register('brand_option')}
+                  error={form.formState.errors.brand_option?.message}
                 />
-                <div className="grid grid-cols-3 gap-4">
+                {brandOption === 'other' && (
                   <Input
-                    label={t('Límite de crédito')}
-                    type="number"
-                    placeholder="20000"
-                    step="0.01"
-                    {...form.register('credit_limit')}
-                    error={form.formState.errors.credit_limit?.message}
+                    label={t('¿Cuál marca?')}
+                    placeholder={t('Ej: Carnet, UnionPay')}
+                    {...form.register('brand_other')}
+                    error={form.formState.errors.brand_other?.message}
                   />
-                  <Input
-                    label={t('Día de corte')}
-                    type="number"
-                    placeholder="15"
-                    min="1"
-                    max="31"
-                    {...form.register('cut_day')}
-                  />
-                  <Input
-                    label={t('Día de pago')}
-                    type="number"
-                    placeholder="5"
-                    min="1"
-                    max="31"
-                    {...form.register('payment_day')}
-                  />
-                </div>
-                <label className="flex items-start gap-2">
-                  <input
-                    type="checkbox"
-                    {...form.register('dates_may_shift')}
-                    className="mt-0.5 cursor-pointer"
-                  />
-                  <span className="text-sm text-slate-700 dark:text-slate-200">
-                    📅 {t('Las fechas se recorren en días inhábiles')}
-                    <span className="block text-xs text-slate-400 dark:text-slate-500">
-                      {t('Te preguntaremos la fecha real cuando llegue el corte.')}
-                    </span>
-                  </span>
-                </label>
-              </>
-            )}
-
-            {/* Al reusar una línea existente, se muestra lo que hereda. El
-                corrimiento por días inhábiles se puede activar aquí, porque
-                es propiedad de la línea y afecta a todas sus tarjetas. */}
-            {inheritedLine && (
-              <div className="space-y-2 rounded-md bg-slate-100 p-3 dark:bg-slate-800">
-                <p className="text-xs text-slate-600 dark:text-slate-300">
-                  {t('Hereda de {{name}}: límite {{limit}}{{dates}}', {
-                    name: inheritedLine.name,
-                    limit: formatMoney(inheritedLine.credit_limit, inheritedLine.currency),
-                    dates:
-                      inheritedLine.cut_day && inheritedLine.payment_day
-                        ? t(', corte el día {{cut}} y pago el día {{pay}}', {
-                            cut: inheritedLine.cut_day,
-                            pay: inheritedLine.payment_day,
-                          })
-                        : '',
-                  })}
-                </p>
-                <label className="flex items-start gap-2">
-                  <input
-                    type="checkbox"
-                    className="mt-0.5 cursor-pointer"
-                    checked={inheritedLine.dates_may_shift}
-                    disabled={updateCreditLine.isPending}
-                    onChange={(e) =>
-                      updateCreditLine.mutate({
-                        id: inheritedLine.id,
-                        userId: session!.user.id,
-                        dates_may_shift: e.target.checked,
-                      })
-                    }
-                  />
-                  <span className="text-xs text-slate-700 dark:text-slate-200">
-                    📅 {t('Las fechas se recorren en días inhábiles')}
-                  </span>
-                </label>
+                )}
               </div>
             )}
-          </div>
-        )}
+          </FormSection>
 
-        {cardType === 'credit' && (
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              {...form.register('has_cashback')}
-              className="cursor-pointer"
-            />
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-              💸 {t('Ofrece cashback')}
-            </span>
-            <span className="text-xs text-slate-400 dark:text-slate-500">
-              {t('(regístralo como ingreso con la categoría Cashback)')}
-            </span>
-          </label>
-        )}
+          <FormSection title={t('Apariencia')}>
+            <CardColorPicker value={selectedColor} onChange={(color) => form.setValue('color', color)} />
+          </FormSection>
 
-        <div className="space-y-2">
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              {...form.register('is_scholarship')}
-              className="cursor-pointer"
+          <FormSection title={t('Tipo y moneda')}>
+            <Segmented
+              label={t('Tipo')}
+              value={cardType}
+              onChange={(v) => form.setValue('type', v, { shouldValidate: true })}
+              options={[
+                { value: 'credit', label: t('Crédito') },
+                { value: 'debit', label: t('Débito') },
+                { value: 'voucher', label: t('Vales de despensa') },
+              ]}
             />
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-              🎓 {t('Es una tarjeta de beca')}
-            </span>
-          </label>
-          {form.watch('is_scholarship') && (
-            <Input
-              label={t('Nombre de la beca (opcional)')}
-              placeholder={t('Ej: Beca Benito Juárez')}
-              {...form.register('scholarship_name')}
+
+            <Select
+              label={t('Moneda')}
+              options={(canUseMulticurrency ? Array.from(CURRENCIES) : [form.formState.defaultValues?.currency ?? 'MXN']).map((c) => ({ value: c, label: c }))}
+              {...form.register('currency')}
             />
+
+            {(cardType === 'debit' || cardType === 'voucher') && (
+              <Select
+                label={cardType === 'voucher' ? t('Cuenta de vales') : t('Cuenta ligada')}
+                options={[{ value: '', label: t('Selecciona una cuenta') }, ...accounts.map((a) => ({ value: a.id, label: a.name }))]}
+                {...form.register('account_id')}
+                error={form.formState.errors.account_id?.message}
+              />
+            )}
+
+            {cardType === 'credit' && (
+              <div className="space-y-3 rounded-md border border-slate-200 p-4 dark:border-slate-700">
+                <Select
+                  label={t('Línea de crédito')}
+                  options={[
+                    { value: '', label: t('Selecciona una línea') },
+                    ...creditLines.map((l) => ({
+                      value: l.id,
+                      label: `${l.name} · ${formatMoney(l.credit_limit, l.currency)}`,
+                    })),
+                    { value: NEW_LINE, label: t('➕ Nueva línea de crédito') },
+                  ]}
+                  {...form.register('credit_line_id')}
+                  error={form.formState.errors.credit_line_id?.message}
+                />
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {t('Varias tarjetas del mismo banco comparten un solo límite y las mismas fechas de corte y pago. Selecciona la línea que ya usas o crea una nueva.')}
+                </p>
+
+                {isNewLine && (
+                  <>
+                    <Input
+                      label={t('Nombre de la línea')}
+                      placeholder={t('Ej: Nu')}
+                      {...form.register('line_name')}
+                      error={form.formState.errors.line_name?.message}
+                    />
+                    <div className="grid gap-4 sm:grid-cols-3">
+                      <Input
+                        label={t('Límite de crédito')}
+                        type="number"
+                        placeholder="20000"
+                        step="0.01"
+                        {...form.register('credit_limit')}
+                        error={form.formState.errors.credit_limit?.message}
+                      />
+                      <Input label={t('Día de corte')} type="number" placeholder="15" min="1" max="31" {...form.register('cut_day')} error={form.formState.errors.cut_day?.message as string | undefined} />
+                      <Input label={t('Día de pago')} type="number" placeholder="5" min="1" max="31" {...form.register('payment_day')} error={form.formState.errors.payment_day?.message as string | undefined} />
+                    </div>
+                    <Switch
+                      checked={!!form.watch('dates_may_shift')}
+                      onChange={(v) => form.setValue('dates_may_shift', v)}
+                      label={t('Las fechas se recorren en días inhábiles')}
+                      description={t('Te preguntaremos la fecha real cuando llegue el corte.')}
+                    />
+                  </>
+                )}
+
+                {/* Al reusar una línea existente, se muestra lo que hereda. El
+                    corrimiento por días inhábiles se puede activar aquí, porque
+                    es propiedad de la línea y afecta a todas sus tarjetas. */}
+                {inheritedLine && (
+                  <div className="space-y-3 rounded-md bg-slate-100 p-3 dark:bg-slate-800">
+                    <p className="text-xs text-slate-600 dark:text-slate-300">
+                      {t('Hereda de {{name}}: límite {{limit}}{{dates}}', {
+                        name: inheritedLine.name,
+                        limit: formatMoney(inheritedLine.credit_limit, inheritedLine.currency),
+                        dates:
+                          inheritedLine.cut_day && inheritedLine.payment_day
+                            ? t(', corte el día {{cut}} y pago el día {{pay}}', {
+                                cut: inheritedLine.cut_day,
+                                pay: inheritedLine.payment_day,
+                              })
+                            : '',
+                      })}
+                    </p>
+                    <Switch
+                      checked={inheritedLine.dates_may_shift}
+                      disabled={updateCreditLine.isPending}
+                      onChange={(v) =>
+                        updateCreditLine.mutate({
+                          id: inheritedLine.id,
+                          userId: session!.user.id,
+                          dates_may_shift: v,
+                        })
+                      }
+                      label={t('Las fechas se recorren en días inhábiles')}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </FormSection>
+
+          <FormSection title={t('Opciones')}>
+            {cardType === 'credit' && (
+              <Switch
+                checked={!!form.watch('has_cashback')}
+                onChange={(v) => form.setValue('has_cashback', v)}
+                label={t('Ofrece cashback')}
+                description={t('(regístralo como ingreso con la categoría Cashback)')}
+              />
+            )}
+            <Switch
+              checked={!!form.watch('is_scholarship')}
+              onChange={(v) => form.setValue('is_scholarship', v)}
+              label={t('Es una tarjeta de beca')}
+            />
+            {form.watch('is_scholarship') && (
+              <Input
+                label={t('Nombre de la beca (opcional)')}
+                placeholder={t('Ej: Beca Benito Juárez')}
+                {...form.register('scholarship_name')}
+              />
+            )}
+          </FormSection>
+
+          {hiddenError && (
+            <p className="rounded-md bg-line-scarlet/10 p-2 text-sm text-line-scarlet">{hiddenError}</p>
           )}
-        </div>
 
-        {hiddenError && (
-          <p className="rounded-md bg-red-50 p-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-200">
-            {hiddenError}
-          </p>
-        )}
-
-        <div className="flex gap-2">
-          <Button type="submit" disabled={pending}>
-            {pending
-              ? t('Guardando…')
-              : isEdit
-                ? t('Guardar cambios')
-                : t('Crear tarjeta')}
-          </Button>
-          {isEdit && onCancel && (
-            <Button type="button" variant="ghost" onClick={onCancel}>
-              {t('Cancelar')}
+          <div className="flex gap-2 border-t border-slate-200 pt-5 dark:border-slate-700/70">
+            <Button type="submit" disabled={pending}>
+              {pending ? t('Guardando…') : isEdit ? t('Guardar cambios') : t('Crear tarjeta')}
             </Button>
-          )}
+            {onCancel && (
+              <Button type="button" variant="ghost" onClick={onCancel}>
+                {t('Cancelar')}
+              </Button>
+            )}
+          </div>
         </div>
       </form>
     </Card>

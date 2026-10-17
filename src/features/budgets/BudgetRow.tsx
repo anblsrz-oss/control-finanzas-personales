@@ -69,7 +69,7 @@ export function BudgetRow({ status, onEdit, onDelete, deleting }: BudgetRowProps
 
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
         {status.status === 'over' ? (
-          <span className="font-medium text-red-600 dark:text-red-400">
+          <span className="font-medium text-line-scarlet">
             {t('Excedido por')}{' '}
             <Money amount={status.spent - status.amount} currency={status.currency} />
           </span>
@@ -80,7 +80,7 @@ export function BudgetRow({ status, onEdit, onDelete, deleting }: BudgetRowProps
           </span>
         )}
         {status.spent_pending > 0 && (
-          <span className="text-amber-600 dark:text-amber-400">
+          <span className="text-line-amber">
             +<Money amount={status.spent_pending} currency={status.currency} />{' '}
             {t('por revisar')}
           </span>

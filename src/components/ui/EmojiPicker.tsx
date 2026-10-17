@@ -23,7 +23,7 @@ export function EmojiPicker({ value, onChange, label }: EmojiPickerProps) {
           {label} {value && <Emoji emoji={value} className="text-lg" />}
         </label>
       )}
-      <div className="max-h-44 space-y-3 overflow-y-auto rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 p-3">
+      <div className="max-h-44 space-y-3 overflow-y-auto rounded-lg border border-slate-300 dark:border-slate-600 bg-surface p-3">
         {EMOJI_GROUPS.map((group) => (
           <div key={group.label}>
             <p className="mb-1 text-xs font-medium text-slate-400 dark:text-slate-500">

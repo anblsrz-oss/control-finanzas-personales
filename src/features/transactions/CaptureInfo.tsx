@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { TriangleAlert } from 'lucide-react'
 import { signalLabel } from '@/hooks/useIngestSignals'
 import type { IngestSignalRow, TransactionRow } from '@/types/db'
 
@@ -24,7 +25,7 @@ export function PossibleDuplicateNotice({
   if (!tx.possible_duplicate_of) return null
   return (
     <span
-      className={`inline-flex flex-wrap items-center gap-1.5 rounded bg-orange-100 dark:bg-orange-900/40 px-1.5 py-0.5 font-medium text-orange-700 dark:text-orange-300 ${
+      className={`inline-flex flex-wrap items-center gap-1.5 rounded bg-line-amber/10 px-1.5 py-0.5 font-medium text-line-amber ${
         compact ? 'ml-1.5 text-[10px]' : 'mt-1 text-xs'
       }`}
       title={
@@ -36,7 +37,7 @@ export function PossibleDuplicateNotice({
           : undefined
       }
     >
-      ⚠️ {t('Posible duplicado')}
+      <TriangleAlert className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Posible duplicado')}
       {!compact && original?.concept && (
         <span className="font-normal">· {original.concept}</span>
       )}

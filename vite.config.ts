@@ -20,7 +20,7 @@ export default defineConfig({
         name: 'Mi Control de Finanzas Personales',
         short_name: 'Mi Control Finanzas',
         description: 'Control y organización de tus finanzas personales',
-        theme_color: '#0f766e',
+        theme_color: '#1a3fae',
         background_color: '#ffffff',
         display: 'standalone',
         start_url: '/',

@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Card } from '@/components/ui/Card'
+import { LinesDiagram } from '@/components/ui/LinesDiagram'
+import { Check } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { BrandLogo } from '@/components/ui/BrandLogo'
 import { supabase } from '@/lib/supabase'
-import { signInWithGoogle } from '@/lib/nativeAuth'
+import { signInWithGoogle, isNative } from '@/lib/nativeAuth'
 import { useAuth } from '@/store/useAuth'
 import { useAppConfig } from '@/hooks/useAppConfig'
 
@@ -44,11 +46,11 @@ export function LoginPage() {
 
   // Si ya hay sesión (p. ej. tras iniciar sesión o verificar el código), salir.
   // Si venía de un plan de la landing (/login?mode=signup&plan=…), se pasa a
-  // Configuración, que arranca el checkout de ese plan.
+  // Suscripción, que arranca el checkout de ese plan.
   if (session) {
     const plan = searchParams.get('plan')
     const to = plan === 'monthly' || plan === 'yearly'
-      ? `/configuracion?plan=${plan}`
+      ? `/suscripcion?plan=${plan}`
       : '/'
     return <Navigate to={to} replace />
   }
@@ -216,19 +218,56 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-900 p-6">
-      <Card className="w-full max-w-sm text-center">
-        <div className="mb-4">
-          <BrandLogo logoUrl={appConfig?.logo_url} size="h-12 w-12" emojiSize="text-4xl" />
+    <div className="flex min-h-screen flex-col bg-canvas md:flex-row">
+      {/* Panel de marca: esmalte medianoche, un tono más claro que la página para separarse en oscuro */}
+      <aside className="flex flex-col bg-[rgb(13_21_50)] px-6 py-6 text-white md:min-h-screen md:w-1/2 md:px-12 md:py-10">
+        <div className="flex items-center gap-2">
+          <BrandLogo logoUrl={appConfig?.logo_url} size="h-8 w-8" />
+          <span className="text-sm font-bold">Mi Control de Finanzas Personales</span>
         </div>
-        <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-100">Mi Control de Finanzas Personales</h1>
+        <div className="hidden flex-1 flex-col justify-center gap-8 md:flex">
+          <LinesDiagram className="w-full max-w-lg" />
+          <div className="max-w-md">
+            <p className="text-balance text-4xl font-bold leading-[1.05] tracking-tight">
+              {t('Tu dinero, en un mapa claro')}
+            </p>
+            <ul className="mt-6 space-y-3 text-base text-white/75">
+              {[
+                t('Tus movimientos se registran solos desde correos y notificaciones.'),
+                t('Tarjetas, meses sin intereses y rendimientos explicados.'),
+                t('Todas tus cuentas en un solo lugar.'),
+              ].map((text) => (
+                <li key={text} className="flex items-start gap-3">
+                  <Check className="mt-0.5 h-5 w-5 shrink-0 text-line-green" strokeWidth={2.6} aria-hidden="true" />
+                  {text}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </aside>
+
+      <main className="flex flex-1 items-center justify-center p-6">
+      <Card className="enter w-full max-w-sm text-center">
+        <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">{t('Entra a tu cuenta')}</h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           {t('Organiza tus ingresos, gastos y cuentas en un solo lugar.')}
         </p>
 
-        <Button className="mt-6 w-full" onClick={signInWithGoogle}>
+        {/* Estilo estándar de "continuar con proveedor": píldora blanca, logo a color. */}
+        <button
+          type="button"
+          onClick={signInWithGoogle}
+          className="mt-6 flex w-full items-center justify-center gap-3 rounded-full border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 transition-[background-color,transform] duration-150 hover:bg-slate-50 active:scale-[0.98] dark:border-slate-600"
+        >
+          <svg viewBox="0 0 48 48" className="h-5 w-5 shrink-0" aria-hidden="true">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+            <path fill="#FBBC05" d="M10.53 28.59A14.5 14.5 0 0 1 9.5 24c0-1.59.28-3.14.76-4.59l-7.98-6.19A23.99 23.99 0 0 0 0 24c0 3.77.9 7.35 2.56 10.78l7.97-6.19z" />
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+          </svg>
           {t('Continuar con Google')}
-        </Button>
+        </button>
 
         <div className="my-5 flex items-center gap-3">
           <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
@@ -416,11 +455,11 @@ export function LoginPage() {
         )}
 
         {info && <p className="mt-3 text-xs text-brand-700 dark:text-brand-500">{info}</p>}
-        {error && <p className="mt-3 text-xs text-red-600 dark:text-red-400">{error}</p>}
+        {error && <p className="mt-3 text-xs text-line-scarlet">{error}</p>}
 
         <div className="mt-5 border-t border-slate-100 dark:border-slate-700 pt-4">
           <Link
-            to="/bienvenida"
+            to={isNative() ? '/inicio' : '/bienvenida'}
             className="text-xs text-slate-400 dark:text-slate-500 underline"
           >
             {t('← Volver al inicio')}
@@ -439,6 +478,7 @@ export function LoginPage() {
           .
         </p>
       </Card>
+      </main>
     </div>
   )
 }

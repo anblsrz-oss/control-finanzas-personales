@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { confirmDialog } from '@/components/ui/DialogHost'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
@@ -107,8 +108,8 @@ export function CardsPage() {
     return cardUsages.find((cu) => cu.card_id === cardId)
   }
 
-  const handleDelete = (id: string) => {
-    if (confirm(t('¿Eliminar esta tarjeta?'))) {
+  const handleDelete = async (id: string) => {
+    if (await confirmDialog(t('¿Eliminar esta tarjeta?'))) {
       deleteCard.mutate({ id, userId: userId! })
     }
   }
@@ -307,8 +308,8 @@ export function CardsPage() {
       )}
 
       {!profile?.is_premium && cardLimit !== Infinity && cards.length >= cardLimit && (
-        <Card className="mt-4 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
+        <Card className="mt-4 border-line-amber/30 bg-line-amber/10">
+          <p className="text-sm text-line-amber">
             {t('Plan gratis: máximo {{n}} tarjetas. Actualiza a Premium para agregar más.', { n: cardLimit })}
           </p>
         </Card>

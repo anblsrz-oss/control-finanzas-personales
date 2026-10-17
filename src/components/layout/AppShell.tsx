@@ -5,6 +5,7 @@ import { useAuth } from '@/store/useAuth'
 import { useSettings } from '@/store/useSettings'
 import { useAppConfig } from '@/hooks/useAppConfig'
 import { BrandLogo } from '@/components/ui/BrandLogo'
+import { NavIcon } from '@/components/layout/NavIcon'
 import { usePendingCount } from '@/hooks/useTransactions'
 import { useUnreadBudgetAlertsCount } from '@/hooks/useBudgets'
 import { useUnreadSubscriptionAlertsCount } from '@/hooks/useSubscriptions'
@@ -34,7 +35,7 @@ const MOBILE_NAV: NavItem[] = [
 function PendingBadge({ count }: { count: number }) {
   if (count <= 0) return null
   return (
-    <span className="ml-auto inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-amber-500 px-1.5 text-[11px] font-semibold leading-5 text-white">
+    <span className="ml-auto inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-line-amber px-1.5 text-[11px] font-semibold leading-5 text-white">
       {count > 99 ? '99+' : count}
     </span>
   )
@@ -114,12 +115,12 @@ export function AppShell() {
     <div className="flex min-h-screen w-full overflow-x-clip bg-canvas">
       <TourGate />
       {/* Sidebar */}
-      <aside className="hidden w-60 flex-col border-r border-slate-200 dark:border-slate-700 bg-surface md:flex">
-        <div className="flex h-16 items-center gap-2 border-b border-slate-200 dark:border-slate-700 px-5">
+      <aside className="hidden w-60 shrink-0 flex-col overflow-hidden border-r border-slate-200 dark:border-slate-700 bg-surface md:sticky md:top-0 md:flex md:h-screen">
+        <div className="flex h-16 shrink-0 items-center gap-2 border-b border-slate-200 dark:border-slate-700 px-5">
           <BrandLogo logoUrl={appConfig?.logo_url} />
-          <span className="font-semibold text-slate-800 dark:text-slate-100">{appTitle}</span>
+          <span className="line-clamp-2 text-sm font-semibold leading-tight text-slate-800 dark:text-slate-100">{appTitle}</span>
         </div>
-        <nav className="flex-1 space-y-1 p-3">
+        <nav className="min-h-0 flex-1 space-y-1 overflow-y-auto p-3">
           {NAV.map((item) => (
             <NavLink
               key={item.to}
@@ -133,7 +134,7 @@ export function AppShell() {
                 }`
               }
             >
-              <span>{item.icon}</span>
+              <NavIcon to={item.to} />
               {t(item.label)}
               {item.to === '/transacciones' && <PendingBadge count={pendingCount} />}
               {item.to === '/presupuestos' && <PendingBadge count={budgetAlertCount} />}
@@ -153,7 +154,7 @@ export function AppShell() {
                 }`
               }
             >
-              <span>🛠️</span>
+              <NavIcon to="/admin" />
               Admin
             </NavLink>
           )}
@@ -163,16 +164,20 @@ export function AppShell() {
       {/* Main */}
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Topbar */}
-        <header className="safe-top sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-700 bg-surface px-3 py-3 sm:px-6">
+        <header className="safe-top sticky top-0 z-10 flex min-h-16 items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-700 bg-surface px-3 py-2 sm:px-6 md:h-16 md:py-0">
           <div className="flex min-w-0 items-center gap-2 md:hidden">
             <BrandLogo logoUrl={appConfig?.logo_url} />
             <span className="truncate font-semibold text-slate-800 dark:text-slate-100">{appTitle}</span>
           </div>
           <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-3">
-            {profile?.is_premium && (
-              <span className="hidden rounded-full bg-amber-100 dark:bg-amber-900/40 px-2.5 py-1 sm:inline text-xs font-semibold text-amber-700 dark:text-amber-300">
+            {profile?.is_premium ? (
+              <NavLink to="/suscripcion" className="hidden rounded-full bg-line-amber/15 px-2.5 py-1 text-xs font-semibold text-line-amber sm:inline">
                 Premium
-              </span>
+              </NavLink>
+            ) : (
+              <NavLink to="/suscripcion" className="rounded-full bg-brand-600 px-3 py-1 text-xs font-semibold text-white transition-colors hover:bg-brand-700">
+                {t('Mejorar plan')}
+              </NavLink>
             )}
             <span className="hidden text-sm text-slate-600 dark:text-slate-300 sm:inline">
               {profile?.full_name ?? profile?.email ?? t('Usuario')}
@@ -184,16 +189,16 @@ export function AppShell() {
               onClick={toggleHideAmounts}
               title={hideAmounts ? t('Mostrar montos') : t('Ocultar montos')}
               aria-label={hideAmounts ? t('Mostrar montos') : t('Ocultar montos')}
-              className="rounded-lg p-1.5 text-lg transition-colors sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-700"
+              className="rounded-md p-1.5 text-slate-600 dark:text-slate-300 transition-colors sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-700"
             >
-              {hideAmounts ? '🙈' : '👁️'}
+              <NavIcon to={hideAmounts ? 'eye-off' : 'eye'} />
             </button>
             <NavLink
               to="/configuracion"
               title={t('Configuración')}
-              className="rounded-lg p-1.5 text-lg transition-colors sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-700"
+              className="rounded-md p-1.5 text-slate-600 dark:text-slate-300 transition-colors sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-700"
             >
-              ⚙️
+              <NavIcon to="/configuracion" />
             </NavLink>
           </div>
         </header>
@@ -243,7 +248,7 @@ export function AppShell() {
                     }`
                   }
                 >
-                  <span className="text-2xl">{item.icon}</span>
+                  <NavIcon to={item.to} className="h-6 w-6" />
                   {t(item.label)}
                   {isHidden(item.to) && <HiddenTag />}
                 </NavLink>
@@ -258,7 +263,7 @@ export function AppShell() {
                   onClick={() => setMoreOpen(false)}
                   className="flex flex-col items-center gap-1 rounded-lg px-1 py-2 text-center text-[11px] font-medium text-slate-600 dark:text-slate-300 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
                 >
-                  <span className="text-2xl">⬇️</span>
+                  <NavIcon to="apk" className="h-6 w-6" />
                   {t('Descargar')}
                 </a>
               )}
@@ -275,15 +280,17 @@ export function AppShell() {
             to={item.to}
             end={item.to === '/'}
             className={({ isActive }) =>
-              `flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors ${
-                isActive ? 'text-brand-700 dark:text-brand-500' : 'text-slate-500 dark:text-slate-400'
+              `relative flex flex-1 flex-col items-center gap-0.5 py-2 text-[11px] font-semibold transition-colors before:absolute before:top-0 before:h-[3px] before:w-8 before:rounded-b-full before:transition-transform before:duration-200 ${
+                isActive
+                  ? 'text-brand-700 dark:text-brand-500 before:scale-x-100 before:bg-brand-600 dark:before:bg-brand-500'
+                  : 'text-slate-500 dark:text-slate-400 before:scale-x-0'
               }`
             }
           >
-            <span className="relative text-lg">
-              {item.icon}
+            <span className="relative">
+              <NavIcon to={item.to} className="h-[22px] w-[22px]" />
               {item.to === '/transacciones' && pendingCount > 0 && (
-                <span className="absolute -right-2 -top-1 inline-flex min-w-[1rem] items-center justify-center rounded-full bg-amber-500 px-1 text-[9px] font-semibold leading-4 text-white">
+                <span className="absolute -right-2 -top-1 inline-flex min-w-[1rem] items-center justify-center rounded-full bg-line-amber px-1 text-[10px] font-semibold leading-4 text-white">
                   {pendingCount > 99 ? '99+' : pendingCount}
                 </span>
               )}
@@ -298,13 +305,13 @@ export function AppShell() {
             moreActive || moreOpen ? 'text-brand-700 dark:text-brand-500' : 'text-slate-500 dark:text-slate-400'
           }`}
         >
-          <span className="relative text-lg">
-            ⋯
+          <span className="relative">
+            <NavIcon to="more" className="h-[22px] w-[22px]" />
             {/* Presupuestos, Suscripciones y Tarjetas viven dentro de "Más" en
                 móvil: sin este punto, un aviso pendiente quedaría invisible
                 hasta abrir la hoja. */}
             {(budgetAlertCount > 0 || subscriptionAlertCount > 0 || cardPaymentAlertCount > 0) && (
-              <span className="absolute -right-1.5 -top-0.5 h-2 w-2 rounded-full bg-amber-500" />
+              <span className="absolute -right-1.5 -top-0.5 h-2 w-2 rounded-full bg-line-amber" />
             )}
           </span>
           {t('Más')}

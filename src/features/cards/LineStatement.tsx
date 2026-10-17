@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { CreditCard } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { formatDate } from '@/lib/format'
 import { formatMonthLabel } from '@/lib/dates'
@@ -97,7 +98,7 @@ export function LineStatement({
           </p>
         </div>
         <Button size="sm" onClick={() => onPay(pending)}>
-          💳 {t('Pagar')}
+          <CreditCard className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Pagar')}
         </Button>
       </div>
 

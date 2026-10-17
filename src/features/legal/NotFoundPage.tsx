@@ -17,7 +17,7 @@ export function NotFoundPage() {
   const home = session ? '/' : '/bienvenida'
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-900 px-4 text-slate-800 dark:text-slate-100">
+    <div className="flex min-h-screen items-center justify-center bg-canvas px-4 text-slate-800 dark:text-slate-100">
       <Card className="w-full max-w-md text-center">
         <div className="mb-3 flex justify-center">
           <BrandLogo logoUrl={appConfig?.logo_url} size="h-10 w-10" emojiSize="text-4xl" />

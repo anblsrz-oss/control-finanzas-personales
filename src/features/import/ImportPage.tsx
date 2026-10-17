@@ -381,14 +381,14 @@ export function ImportPage() {
               </div>
 
               {!accountId && (
-                <p className="text-xs text-amber-600">
+                <p className="text-xs text-line-amber">
                   {t('Selecciona la cuenta destino para poder importar.')}
                 </p>
               )}
 
               <div className="max-h-96 overflow-auto rounded-lg border border-slate-200 dark:border-slate-700">
                 <table className="w-full text-left text-sm">
-                  <thead className="sticky top-0 bg-slate-50 dark:bg-slate-900 text-xs text-slate-500 dark:text-slate-400">
+                  <thead className="sticky top-0 bg-canvas text-xs text-slate-500 dark:text-slate-400">
                     <tr>
                       <th className="px-3 py-2">{t('Fecha')}</th>
                       <th className="px-3 py-2">{t('Concepto')}</th>
@@ -410,7 +410,7 @@ export function ImportPage() {
                         </td>
                         <td
                           className={`px-3 py-1.5 text-right font-medium ${
-                            r.kind === 'income' ? 'text-green-600' : 'text-slate-800 dark:text-slate-100'
+                            r.kind === 'income' ? 'text-line-green' : 'text-slate-800 dark:text-slate-100'
                           }`}
                         >
                           {r.kind === 'income' ? '+' : '-'}
@@ -430,8 +430,8 @@ export function ImportPage() {
           )}
 
           {result && (
-            <Card className="border-green-200 bg-green-50">
-              <p className="text-sm font-medium text-green-700">{result}</p>
+            <Card className="border-line-green/30 bg-line-green/10">
+              <p className="text-sm font-medium text-line-green">{result}</p>
             </Card>
           )}
         </div>

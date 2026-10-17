@@ -1,0 +1,24 @@
+{
+  "hook": {
+    "enabled": true,
+    "limits": {
+      "maxFindings": 5,
+      "maxChars": 8000
+    }
+  },
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "ai-color-palette",
+        "value": "*",
+        "files": [
+          "src/features/cards/CardVisual.tsx"
+        ],
+        "createdAt": "2026-10-16T03:31:23.639Z",
+        "reason": "Agent: arte de tarjeta física, los degradados son los colores reales de tarjeta que elige el usuario"
+      }
+    ]
+  }
+}

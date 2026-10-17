@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { showAlert } from '@/components/ui/DialogHost'
+import { Camera, FileText, Receipt } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -444,23 +446,23 @@ export function ReceiptPage() {
     // Un ingreso entra a una cuenta: no tiene sentido (ni lo reflejan las
     // vistas de saldo) asignarlo a una tarjeta.
     if (income && !data.accountId) {
-      alert(t('Selecciona la cuenta donde entró el dinero'))
+      showAlert(t('Selecciona la cuenta donde entró el dinero'))
       return
     }
     if (!income && !data.accountId && !data.cardId) {
-      alert(t('Selecciona una cuenta o tarjeta'))
+      showAlert(t('Selecciona una cuenta o tarjeta'))
       return
     }
     const rate = data.currency !== mainCurrency ? effectiveRate : 1
     if (data.currency !== mainCurrency && (!rate || rate <= 0)) {
-      alert(t('No se obtuvo el tipo de cambio. Intenta de nuevo o registra el gasto desde Transacciones.'))
+      showAlert(t('No se obtuvo el tipo de cambio. Intenta de nuevo o registra el gasto desde Transacciones.'))
       return
     }
     const validLines = lines.filter((l) => l.concept.trim() && l.amount > 0)
     if (validLines.length > 0) {
       const linesTotal = validLines.reduce((s, l) => s + l.amount, 0)
       if (Math.abs(data.amount - linesTotal) > 0.01) {
-        alert(
+        showAlert(
           t('La suma del detalle ({{sum}}) no cuadra con el total ({{total}}).', {
             sum: formatMoney(linesTotal, data.currency),
             total: formatMoney(data.amount, data.currency),
@@ -501,9 +503,9 @@ export function ReceiptPage() {
       setStep('done')
     } catch (error: any) {
       if (error?.code === '23505') {
-        alert(t('Este recibo ya fue registrado (movimiento duplicado).'))
+        showAlert(t('Este recibo ya fue registrado (movimiento duplicado).'))
       } else {
-        alert(`Error: ${error.message}`)
+        showAlert(`Error: ${error.message}`)
       }
     }
   }
@@ -528,16 +530,16 @@ export function ReceiptPage() {
     if (!userId) return
     const included = statementRows.filter((r) => r.include)
     if (included.length === 0) {
-      alert(t('Selecciona al menos un movimiento'))
+      showAlert(t('Selecciona al menos un movimiento'))
       return
     }
     for (const r of included) {
       if (!r.accountId && !r.cardId) {
-        alert(t('Cada movimiento marcado necesita una cuenta o tarjeta'))
+        showAlert(t('Cada movimiento marcado necesita una cuenta o tarjeta'))
         return
       }
       if (r.currency !== mainCurrency && !(Number(fxRates[r.currency]) > 0)) {
-        alert(
+        showAlert(
           t('Falta el tipo de cambio de {{currency}} → {{main}}. Complétalo arriba antes de guardar.', {
             currency: r.currency,
             main: mainCurrency,
@@ -627,13 +629,13 @@ export function ReceiptPage() {
       {step === 'capture' && !receiptLimit.reached && (
         <Card>
           {errorMsg && (
-            <p className="mb-4 rounded-lg bg-red-50 dark:bg-red-900/20 p-3 text-sm text-red-700 dark:text-red-300">
+            <p className="mb-4 rounded-lg bg-line-scarlet/10 p-3 text-sm text-line-scarlet">
               {errorMsg}
             </p>
           )}
           {lastFailedFile && (
-            <div className="mb-4 flex items-center justify-between gap-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 p-3">
-              <p className="text-sm text-amber-700 dark:text-amber-300">
+            <div className="mb-4 flex items-center justify-between gap-2 rounded-lg bg-line-amber/10 p-3">
+              <p className="text-sm text-line-amber">
                 {t('¿Quieres intentar con el OCR local (más lento y menos preciso)?')}
               </p>
               <Button type="button" size="sm" variant="secondary" onClick={runLocalFallback}>
@@ -652,7 +654,7 @@ export function ReceiptPage() {
                   : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
               }`}
             >
-              🧾 {t('Recibo')}
+              <Receipt className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Recibo')}
             </button>
             <button
               type="button"
@@ -663,7 +665,7 @@ export function ReceiptPage() {
                   : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
               }`}
             >
-              📄 {t('Estado de cuenta')}
+              <FileText className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Estado de cuenta')}
             </button>
           </div>
 
@@ -676,7 +678,7 @@ export function ReceiptPage() {
             </p>
             <label className="cursor-pointer" data-tour="recibos">
               <span className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-brand-700">
-                📷 {t('Tomar foto')}
+                <Camera className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Tomar foto')}
               </span>
               <input
                 type="file"
@@ -774,7 +776,7 @@ export function ReceiptPage() {
                 />
               </div>
               {needsFx && (
-                <div className="space-y-2 rounded-lg border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-900/20 p-3">
+                <div className="space-y-2 rounded-lg border border-line-cobalt/30 bg-line-cobalt/10 p-3">
                   <div className="grid grid-cols-2 gap-4">
                     <Input
                       label={t('Tipo de cambio ({{from}}→{{to}})', {
@@ -791,12 +793,12 @@ export function ReceiptPage() {
                       <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
                         {t('Equivale a')}
                       </label>
-                      <p className="rounded-lg bg-white dark:bg-slate-800 px-3 py-2 text-sm font-semibold text-slate-800 dark:text-slate-100">
+                      <p className="rounded-lg bg-surface px-3 py-2 text-sm font-semibold text-slate-800 dark:text-slate-100">
                         ≈ {formatMoney(basePreview, mainCurrency)}
                       </p>
                     </div>
                   </div>
-                  <p className="text-xs text-sky-700 dark:text-sky-300">
+                  <p className="text-xs text-line-cobalt">
                     {fxQuery.isError
                       ? t('No se obtuvo el tipo de cambio automático. Escríbelo manualmente.')
                       : t('Se toma el tipo de cambio de la fecha del movimiento. Puedes ajustarlo si lo necesitas.')}
@@ -893,7 +895,7 @@ export function ReceiptPage() {
               {showRaw ? t('Ocultar texto detectado') : t('Ver texto detectado')}
             </button>
             {showRaw && (
-              <pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap rounded-lg bg-slate-50 dark:bg-slate-900 p-3 text-xs text-slate-600 dark:text-slate-300">
+              <pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap rounded-lg bg-canvas p-3 text-xs text-slate-600 dark:text-slate-300">
                 {rawText || t('(sin texto)')}
               </pre>
             )}
@@ -904,7 +906,7 @@ export function ReceiptPage() {
       {step === 'review' && docMode === 'statement' && (
         <Card className="grid gap-4">
           {noticeMsg && (
-            <p className="rounded-lg bg-amber-50 dark:bg-amber-900/20 p-3 text-sm text-amber-700 dark:text-amber-300">
+            <p className="rounded-lg bg-line-amber/10 p-3 text-sm text-line-amber">
               {noticeMsg}
             </p>
           )}
@@ -918,7 +920,7 @@ export function ReceiptPage() {
           </div>
 
           {statementRows.some((r) => r.isCardPayment || r.isInstallment) && (
-            <p className="rounded-lg bg-amber-50 dark:bg-amber-900/20 p-3 text-xs text-amber-700 dark:text-amber-300">
+            <p className="rounded-lg bg-line-amber/10 p-3 text-xs text-line-amber">
               {t('Los marcados 💳 (pago a tarjeta) y 🔁 (compra a meses) se detectaron pero se dejaron sin seleccionar: regístralos desde "Nueva transacción" para que se contabilicen correctamente (línea de crédito, plazo, etc.).')}
             </p>
           )}
@@ -945,8 +947,8 @@ export function ReceiptPage() {
           </div>
 
           {foreignCurrenciesInRows.length > 0 && (
-            <div className="space-y-2 rounded-lg border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-900/20 p-3">
-              <p className="text-xs font-medium text-sky-700 dark:text-sky-300">
+            <div className="space-y-2 rounded-lg border border-line-cobalt/30 bg-line-cobalt/10 p-3">
+              <p className="text-xs font-medium text-line-cobalt">
                 {t('Tipo de cambio hacia {{main}} (se autocompleta, puedes corregirlo)', {
                   main: mainCurrency,
                 })}
@@ -963,7 +965,7 @@ export function ReceiptPage() {
                       value={fxRates[c] ?? ''}
                       onChange={(e) => setFxRates((prev) => ({ ...prev, [c]: e.target.value }))}
                       placeholder={t('Obteniendo…')}
-                      className="w-full rounded border border-slate-300 dark:border-slate-600 px-2 py-1 text-sm"
+                      className="w-full rounded-md border bg-surface border-slate-300 dark:border-slate-600 px-2 py-1 text-sm"
                     />
                   </div>
                 ))}
@@ -973,7 +975,7 @@ export function ReceiptPage() {
 
           <div className="max-h-[28rem] overflow-auto rounded-lg border border-slate-200 dark:border-slate-700">
             <table className="w-full text-left text-sm">
-              <thead className="sticky top-0 bg-slate-50 dark:bg-slate-900 text-xs text-slate-500 dark:text-slate-400">
+              <thead className="sticky top-0 bg-canvas text-xs text-slate-500 dark:text-slate-400">
                 <tr>
                   <th className="px-2 py-2"></th>
                   <th className="px-2 py-2">{t('Fecha')}</th>
@@ -1007,7 +1009,7 @@ export function ReceiptPage() {
                           type="date"
                           value={r.txDate}
                           onChange={(e) => updateRow(r.id, { txDate: e.target.value })}
-                          className="w-36 rounded border border-slate-300 dark:border-slate-600 px-1.5 py-1 text-sm"
+                          className="w-36 rounded-md border bg-surface border-slate-300 dark:border-slate-600 px-1.5 py-1 text-sm"
                         />
                       </td>
                       <td className="px-2 py-1.5">
@@ -1022,12 +1024,13 @@ export function ReceiptPage() {
                             type="text"
                             value={r.concept}
                             onChange={(e) => updateRow(r.id, { concept: e.target.value })}
-                            className="w-48 rounded border border-slate-300 dark:border-slate-600 px-1.5 py-1 text-sm"
+                            className="w-48 rounded-md border bg-surface border-slate-300 dark:border-slate-600 px-1.5 py-1 text-sm"
                           />
                         </div>
                       </td>
                       <td className="px-2 py-1.5">
-                        <select
+                        <Select
+                          compact
                           value={r.kind}
                           onChange={(e) =>
                             updateRow(r.id, {
@@ -1036,42 +1039,40 @@ export function ReceiptPage() {
                               cardId: e.target.value === 'income' ? '' : r.cardId,
                             })
                           }
-                          className="rounded border border-slate-300 dark:border-slate-600 px-1.5 py-1 text-sm"
-                        >
-                          <option value="expense">💸 {t('Egreso')}</option>
-                          <option value="income">💰 {t('Ingreso')}</option>
-                        </select>
+                          options={[
+                            { value: 'expense', label: t('Egreso') },
+                            { value: 'income', label: t('Ingreso') },
+                          ]}
+                        />
                       </td>
                       <td className="px-2 py-1.5">
-                        <select
+                        <Select
+                          compact
+                          className="w-36"
                           value={r.categoryId}
                           onChange={(e) => updateRow(r.id, { categoryId: e.target.value })}
-                          className="w-32 rounded border border-slate-300 dark:border-slate-600 px-1.5 py-1 text-sm"
-                        >
-                          <option value="">{t('Sin categoría')}</option>
-                          {rowCategories.map((c) => (
-                            <option key={c.id} value={c.id}>
-                              {c.icon} {t(c.name)}
-                            </option>
-                          ))}
-                        </select>
+                          options={[
+                            { value: '', label: t('Sin categoría') },
+                            ...rowCategories.map((c) => ({ value: c.id, label: `${c.icon} ${t(c.name)}` })),
+                          ]}
+                        />
                       </td>
                       <td className="px-2 py-1.5">
                         {r.kind === 'income' ? (
-                          <select
+                          <Select
+                            compact
+                            className="w-40"
                             value={r.accountId}
                             onChange={(e) => updateRow(r.id, { accountId: e.target.value })}
-                            className="w-36 rounded border border-slate-300 dark:border-slate-600 px-1.5 py-1 text-sm"
-                          >
-                            <option value="">{t('Selecciona una cuenta')}</option>
-                            {accounts.map((a) => (
-                              <option key={a.id} value={a.id}>
-                                {a.name}
-                              </option>
-                            ))}
-                          </select>
+                            options={[
+                              { value: '', label: t('Selecciona una cuenta') },
+                              ...accounts.map((a) => ({ value: a.id, label: a.name })),
+                            ]}
+                          />
                         ) : (
-                          <select
+                          <Select
+                            compact
+                            className="w-40"
                             value={r.accountId || r.cardId}
                             onChange={(e) => {
                               const val = e.target.value
@@ -1081,36 +1082,21 @@ export function ReceiptPage() {
                                 cardId: isCard ? val : '',
                               })
                             }}
-                            className="w-36 rounded border border-slate-300 dark:border-slate-600 px-1.5 py-1 text-sm"
-                          >
-                            <option value="">{t('Selecciona cuenta o tarjeta')}</option>
-                            {accounts.map((a) => (
-                              <option key={a.id} value={a.id}>
-                                {a.name}
-                              </option>
-                            ))}
-                            {cards.map((c) => (
-                              <option key={c.id} value={c.id}>
-                                💳 {c.name}
-                              </option>
-                            ))}
-                          </select>
+                            options={[
+                              { value: '', label: t('Selecciona cuenta o tarjeta') },
+                              ...accounts.map((a) => ({ value: a.id, label: a.name })),
+                              ...cards.map((c) => ({ value: c.id, label: c.name })),
+                            ]}
+                          />
                         )}
                       </td>
                       <td className="px-2 py-1.5">
-                        <select
+                        <Select
+                          compact
                           value={r.currency}
                           onChange={(e) => updateRow(r.id, { currency: e.target.value })}
-                          className="rounded border border-slate-300 dark:border-slate-600 px-1.5 py-1 text-sm"
-                        >
-                          {/* La IA a veces detecta una moneda fuera del catálogo fijo; se
-                              agrega como opción extra para no perderla. */}
-                          {Array.from(new Set([...CURRENCIES, r.currency])).map((c) => (
-                            <option key={c} value={c}>
-                              {c}
-                            </option>
-                          ))}
-                        </select>
+                          options={Array.from(new Set([...CURRENCIES, r.currency])).map((c) => ({ value: c, label: c }))}
+                        />
                       </td>
                       <td className="px-2 py-1.5 text-right">
                         <input
@@ -1118,7 +1104,7 @@ export function ReceiptPage() {
                           step="0.01"
                           value={r.amount}
                           onChange={(e) => updateRow(r.id, { amount: Number(e.target.value) || 0 })}
-                          className="w-24 rounded border border-slate-300 dark:border-slate-600 px-1.5 py-1 text-right text-sm"
+                          className="w-24 rounded-md border bg-surface border-slate-300 dark:border-slate-600 px-1.5 py-1 text-right text-sm"
                         />
                       </td>
                     </tr>

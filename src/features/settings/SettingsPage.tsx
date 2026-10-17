@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Select } from '@/components/ui/Select'
+import { confirmDialog, showAlert } from '@/components/ui/DialogHost'
+import { CalendarDays, Check, Coins, Download, Eye, Globe, GraduationCap, LogOut, Palette, Smartphone, Target, Trash2, User, Users } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useSettings, type ThemePref, type LanguagePref } from '@/store/useSettings'
 import { useMyFamilies, useMyInvitations } from '@/hooks/useFamily'
-import { useStartCheckout, useOpenBillingPortal } from '@/hooks/useBilling'
 import {
   useUpdateMainCurrency,
   useUpdateBudgetAlertThreshold,
@@ -29,13 +31,6 @@ import { useEntitlements } from '@/hooks/useAppConfig'
 import { CURRENCIES } from '@/lib/format'
 import { APK_URL, APP_VERSION } from '@/lib/appUpdate'
 import { isNative } from '@/lib/nativeAuth'
-import { isPlayBuild, canUsePlayBilling } from '@/lib/distribution'
-import {
-  usePlayProducts,
-  usePlayPurchase,
-  usePlayRestore,
-  usePlayManageSubscription,
-} from '@/hooks/usePlayBilling'
 import { PhoneSection } from './PhoneSection'
 import { DeleteAccountSection } from './DeleteAccountSection'
 import { PageHeader } from '@/components/ui/PageHeader'
@@ -90,49 +85,6 @@ export function SettingsPage() {
   const { data: invitations = [] } = useMyInvitations(email)
   const family = families[0]
 
-  const startCheckout = useStartCheckout()
-  const openPortal = useOpenBillingPortal()
-  // En Google Play no se puede comprar con Stripe ni mandar a comprar a la web:
-  // solo se muestra el estado del plan (ver lib/distribution.ts).
-  const playBuild = isPlayBuild()
-  // En Play la compra va por Google Play Billing (hooks/usePlayBilling.ts).
-  const playBilling = canUsePlayBilling()
-  const playProducts = usePlayProducts()
-  const playPurchase = usePlayPurchase()
-  const playRestore = usePlayRestore()
-  const playManage = usePlayManageSubscription()
-  // Compra hecha pero sin verificar (sin red, app cerrada) o teléfono nuevo:
-  // al abrir Configuración sin Premium se re-verifica lo que Play tenga. Una vez.
-  const playRestoreTried = useRef(false)
-  useEffect(() => {
-    if (!playBilling || !profile || profile.is_premium || playRestoreTried.current) return
-    playRestoreTried.current = true
-    playRestore.mutate(undefined, { onError: () => {} })
-  }, [playBilling, profile, playRestore])
-
-  // Llegada desde un plan de la landing: /configuracion?plan=monthly|yearly
-  // abre el checkout de una vez, para no obligar a buscar el botón después de
-  // registrarse. Se dispara una sola vez y se limpia el parámetro para que
-  // recargar la página no vuelva a mandar al pago.
-  const [searchParams, setSearchParams] = useSearchParams()
-  const autoCheckoutDone = useRef(false)
-  useEffect(() => {
-    const plan = searchParams.get('plan')
-    if (plan !== 'monthly' && plan !== 'yearly') return
-    if (playBuild) {
-      setSearchParams({}, { replace: true })
-      return
-    }
-    // Espera a tener el perfil: sin él no se sabe si ya es premium.
-    if (!profile) return
-
-    setSearchParams({}, { replace: true })
-    if (autoCheckoutDone.current || profile.is_premium) return
-    autoCheckoutDone.current = true
-    startCheckout.mutate(plan, {
-      onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
-    })
-  }, [searchParams, profile, setSearchParams, startCheckout, t, playBuild])
   const updateMainCurrency = useUpdateMainCurrency()
   const mainCurrency = profile?.main_currency ?? 'MXN'
   const updateThreshold = useUpdateBudgetAlertThreshold()
@@ -145,7 +97,7 @@ export function SettingsPage() {
   const reportEmailCustomDays = profile?.report_email_custom_days ?? 30
   const reportEmailWeekday = profile?.report_email_weekday ?? 1
   const reportEmailDayOfMonth = profile?.report_email_day_of_month ?? 1
-  const saveReportEmail = (partial: Partial<ReportEmailSettings>) => {
+  const saveReportEmail = async (partial: Partial<ReportEmailSettings>) => {
     if (!userId) return
     updateReportEmail.mutate(
       {
@@ -157,7 +109,7 @@ export function SettingsPage() {
         dayOfMonth: reportEmailDayOfMonth,
         ...partial,
       },
-      { onError: (err: any) => alert(`${t('Error:')} ${err.message}`) },
+      { onError: (err: any) => showAlert(`${t('Error:')} ${err.message}`) },
     )
   }
   const { canUseFamily, canUse } = useEntitlements()
@@ -200,17 +152,17 @@ export function SettingsPage() {
       sessionStorage.removeItem(EMAIL_SYNC_PROVIDER_KEY)
       setCalendarProviderToken(null)
     } catch (e) {
-      alert(`${t('Error:')} ${(e as Error).message}`)
+      showAlert(`${t('Error:')} ${(e as Error).message}`)
     }
   }
 
   async function handleDisconnectCalendar() {
     if (!userId) return
-    if (!window.confirm(t('¿Desconectar Google Calendar? Se borrará el calendario «Mi Control de Finanzas — Recordatorios» con sus recordatorios.'))) return
+    if (!await confirmDialog(t('¿Desconectar Google Calendar? Se borrará el calendario «Mi Control de Finanzas — Recordatorios» con sus recordatorios.'))) return
     try {
       await disconnectCalendar.mutateAsync({ userId })
     } catch (e) {
-      alert(`${t('Error:')} ${(e as Error).message}`)
+      showAlert(`${t('Error:')} ${(e as Error).message}`)
     }
   }
 
@@ -226,7 +178,7 @@ export function SettingsPage() {
         {/* Perfil */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            👤 {t('Perfil')}
+            <User className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Perfil')}
           </p>
           <div className="flex items-center gap-3">
             {profile?.avatar_url ? (
@@ -237,7 +189,7 @@ export function SettingsPage() {
               />
             ) : (
               <span className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-xl">
-                👤
+                <User className="h-6 w-6 text-slate-500 dark:text-slate-300" aria-hidden="true" />
               </span>
             )}
             <div>
@@ -249,7 +201,7 @@ export function SettingsPage() {
               </p>
             </div>
             {profile?.is_premium && (
-              <Badge className="ml-auto bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
+              <Badge className="ml-auto bg-line-amber/10 text-line-amber">
                 Premium
               </Badge>
             )}
@@ -262,7 +214,7 @@ export function SettingsPage() {
         {/* Apariencia */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            🎨 {t('Apariencia')}
+            <Palette className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Apariencia')}
           </p>
           <div className="flex gap-2">
             {THEME_OPTIONS.map((opt) => (
@@ -286,7 +238,7 @@ export function SettingsPage() {
         {/* Idioma */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            🌐 {t('Idioma')}
+            <Globe className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Idioma')}
           </p>
           <div className="flex gap-2">
             {LANGUAGE_OPTIONS.map((opt) => (
@@ -309,7 +261,7 @@ export function SettingsPage() {
         {/* Privacidad / visibilidad */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            👁️ {t('Visibilidad')}
+            <Eye className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Visibilidad')}
           </p>
           <label className="flex items-start gap-2">
             <input
@@ -330,7 +282,7 @@ export function SettingsPage() {
         {/* Moneda principal */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            💱 {t('Moneda principal')}
+            <Coins className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Moneda principal')}
           </p>
           <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
             {t('Tu balance y reportes se muestran en esta moneda. Los movimientos en otra moneda se convierten con el tipo de cambio.')}
@@ -345,7 +297,7 @@ export function SettingsPage() {
                   if (userId && cur !== mainCurrency) {
                     updateMainCurrency.mutate(
                       { userId, mainCurrency: cur },
-                      { onError: (e: any) => alert(`${t('Error:')} ${e.message}`) },
+                      { onError: (e: any) => showAlert(`${t('Error:')} ${e.message}`) },
                     )
                   }
                 }}
@@ -364,7 +316,7 @@ export function SettingsPage() {
         {/* Presupuestos */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            🎯 {t('Presupuestos')}
+            <Target className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Presupuestos')}
           </p>
           <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
             {t('Se usa en los presupuestos que no definen su propio umbral. Te avisamos una vez por periodo al cruzarlo, y otra si lo excedes.')}
@@ -389,10 +341,10 @@ export function SettingsPage() {
                 if (clamped === alertThreshold) return
                 updateThreshold.mutate(
                   { userId, threshold: clamped },
-                  { onError: (err: any) => alert(`${t('Error:')} ${err.message}`) },
+                  { onError: (err: any) => showAlert(`${t('Error:')} ${err.message}`) },
                 )
               }}
-              className="w-20 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+              className="w-20 rounded-md border bg-surface border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
             />
             <span className="text-sm text-slate-700 dark:text-slate-200">%</span>
             <Link
@@ -413,7 +365,7 @@ export function SettingsPage() {
                 if (!userId) return
                 updateAlertsEmail.mutate(
                   { userId, enabled: e.target.checked },
-                  { onError: (err: any) => alert(`${t('Error:')} ${err.message}`) },
+                  { onError: (err: any) => showAlert(`${t('Error:')} ${err.message}`) },
                 )
               }}
             />
@@ -446,32 +398,22 @@ export function SettingsPage() {
 
           {reportEmailEnabled && (
             <div className="mt-4 flex flex-wrap items-center gap-3">
-              <select
+              <Select
+                className="w-52"
                 value={reportEmailPeriod}
                 disabled={updateReportEmail.isPending}
                 onChange={(e) => saveReportEmail({ period: e.target.value as ReportEmailPeriod })}
-                className="rounded-lg border border-slate-300 dark:border-slate-600 bg-surface px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-              >
-                {REPORT_PERIOD_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {t(opt.label)}
-                  </option>
-                ))}
-              </select>
+                options={REPORT_PERIOD_OPTIONS.map((opt) => ({ value: opt.value, label: t(opt.label) }))}
+              />
 
               {(reportEmailPeriod === 'weekly' || reportEmailPeriod === 'biweekly') && (
-                <select
-                  value={reportEmailWeekday}
+                <Select
+                  className="w-44"
+                  value={String(reportEmailWeekday)}
                   disabled={updateReportEmail.isPending}
                   onChange={(e) => saveReportEmail({ weekday: Number(e.target.value) })}
-                  className="rounded-lg border border-slate-300 dark:border-slate-600 bg-surface px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
-                >
-                  {WEEKDAY_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {t(opt.label)}
-                    </option>
-                  ))}
-                </select>
+                  options={WEEKDAY_OPTIONS.map((opt) => ({ value: String(opt.value), label: t(opt.label) }))}
+                />
               )}
 
               {(reportEmailPeriod === 'monthly' || reportEmailPeriod === 'quarterly') && (
@@ -491,7 +433,7 @@ export function SettingsPage() {
                       if (clamped === reportEmailDayOfMonth) return
                       saveReportEmail({ dayOfMonth: clamped })
                     }}
-                    className="w-20 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                    className="w-20 rounded-md border bg-surface border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                   />
                 </label>
               )}
@@ -513,7 +455,7 @@ export function SettingsPage() {
                       if (clamped === reportEmailCustomDays) return
                       saveReportEmail({ customDays: clamped })
                     }}
-                    className="w-20 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+                    className="w-20 rounded-md border bg-surface border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                   />
                   {t('días')}
                 </label>
@@ -525,7 +467,7 @@ export function SettingsPage() {
         {/* Google Calendar */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            📅 {t('Recordatorios en Google Calendar')}
+            <CalendarDays className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Recordatorios en Google Calendar')}
           </p>
           <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
             {t('Crea en tu cuenta un calendario aparte, «Mi Control de Finanzas — Recordatorios», con un evento cuando se acerca el próximo cobro de una suscripción o la fecha de pago de una tarjeta/MSI. La app no ve tus otros calendarios ni eventos.')}
@@ -533,7 +475,7 @@ export function SettingsPage() {
 
           <div className="flex flex-wrap items-center gap-3">
             {!calendarConnected && !canUse('calendar_reminders') ? (
-              <p className="text-sm text-amber-700 dark:text-amber-300">
+              <p className="text-sm text-line-amber">
                 {t('Esta función es solo para Premium. Actualiza tu plan para usarla.')}
               </p>
             ) : !calendarConnected ? (
@@ -548,8 +490,8 @@ export function SettingsPage() {
               )
             ) : (
               <>
-                <span className="text-sm text-green-600">
-                  ✓ {t('Conectado{{email}}', {
+                <span className="text-sm text-line-green">
+                  <Check className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Conectado{{email}}', {
                     email: calendarConnQuery.data?.email ? ` (${calendarConnQuery.data.email})` : '',
                   })}
                 </span>
@@ -576,7 +518,7 @@ export function SettingsPage() {
                     if (!userId) return
                     updateCalendarSubReminders.mutate(
                       { userId, enabled: e.target.checked },
-                      { onError: (err: any) => alert(`${t('Error:')} ${err.message}`) },
+                      { onError: (err: any) => showAlert(`${t('Error:')} ${err.message}`) },
                     )
                   }}
                 />
@@ -594,7 +536,7 @@ export function SettingsPage() {
                     if (!userId) return
                     updateCalendarCardReminders.mutate(
                       { userId, enabled: e.target.checked },
-                      { onError: (err: any) => alert(`${t('Error:')} ${err.message}`) },
+                      { onError: (err: any) => showAlert(`${t('Error:')} ${err.message}`) },
                     )
                   }}
                 />
@@ -609,166 +551,37 @@ export function SettingsPage() {
         {/* Teléfono */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            📱 {t('Teléfono')}
+            <Smartphone className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Teléfono')}
           </p>
           <PhoneSection />
         </Card>
 
-        {/* Suscripción */}
+        {/* Suscripción: planes y compra viven en /suscripcion */}
         <Card>
-          <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            ⭐ {t('Suscripción')}
-          </p>
-          {profile?.is_premium ? (
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <Badge className="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
-                  Premium
-                </Badge>
-                <p className="text-sm text-slate-600 dark:text-slate-300">
-                  {t('Tienes acceso a todas las funciones.')}
-                </p>
-              </div>
-              {!playBuild && (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  disabled={openPortal.isPending}
-                  onClick={() =>
-                    openPortal.mutate(undefined, {
-                      onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
-                    })
-                  }
-                >
-                  {t('Gestionar suscripción')}
-                </Button>
-              )}
-              {playBilling && profile.premium_source === 'google' && (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  disabled={playManage.isPending}
-                  onClick={() =>
-                    playManage.mutate(undefined, {
-                      onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
-                    })
-                  }
-                >
-                  {t('Gestionar suscripción')}
-                </Button>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                {t('Suscripción')}
+              </p>
+              {profile?.is_premium && (
+                <Badge className="bg-line-amber/15 text-line-amber">Premium</Badge>
               )}
             </div>
-          ) : playBuild ? (
-            <div className="flex flex-col gap-3">
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                {t('Plan gratuito. Premium desbloquea plan familiar, MSI/diferidos y rendimientos.')}
-              </p>
-              {playBilling && (
-                <>
-                  <p className="text-xs text-slate-400 dark:text-slate-500">
-                    {t('El cobro lo hace Google Play. Cancela cuando quieras desde Google Play.')}
-                    {playProducts.data?.monthly?.hasTrial || playProducts.data?.yearly?.hasTrial
-                      ? ` ${t('7 días de prueba gratis.')}`
-                      : ''}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {playProducts.data?.monthly && (
-                      <Button
-                        disabled={playPurchase.isPending}
-                        onClick={() =>
-                          playPurchase.mutate(playProducts.data!.monthly!, {
-                            onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
-                          })
-                        }
-                      >
-                        {playPurchase.isPending
-                          ? t('Abriendo…')
-                          : `${t('Mensual')} · ${playProducts.data.monthly.priceString}`}
-                      </Button>
-                    )}
-                    {playProducts.data?.yearly && (
-                      <Button
-                        variant="secondary"
-                        disabled={playPurchase.isPending}
-                        onClick={() =>
-                          playPurchase.mutate(playProducts.data!.yearly!, {
-                            onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
-                          })
-                        }
-                      >
-                        {playPurchase.isPending
-                          ? t('Abriendo…')
-                          : `${t('Anual')} · ${playProducts.data.yearly.priceString}`}
-                      </Button>
-                    )}
-                  </div>
-                  {playProducts.isError && (
-                    <p className="text-xs text-red-500">
-                      {t('No se pudieron cargar los planes de Google Play. Inténtalo más tarde.')}
-                    </p>
-                  )}
-                  <button
-                    type="button"
-                    className="self-start text-xs text-emerald-600 underline dark:text-emerald-400"
-                    disabled={playRestore.isPending}
-                    onClick={() =>
-                      playRestore.mutate(undefined, {
-                        onSuccess: (n) => {
-                          if (n === 0) alert(t('No encontramos compras de Google Play para restaurar.'))
-                        },
-                        onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
-                      })
-                    }
-                  >
-                    {t('Restaurar compra')}
-                  </button>
-                </>
-              )}
-            </div>
-          ) : (
-            <div className="flex flex-col gap-3">
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                {t('Plan gratuito. Premium desbloquea plan familiar, MSI/diferidos y rendimientos.')}
-              </p>
-              <p className="text-xs text-slate-400 dark:text-slate-500">
-                {t('7 días de prueba gratis. Cancela cuando quieras.')}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  disabled={startCheckout.isPending}
-                  onClick={() =>
-                    startCheckout.mutate('monthly', {
-                      onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
-                    })
-                  }
-                >
-                  {startCheckout.isPending ? t('Abriendo…') : `${t('Mensual')} · $107`}
-                </Button>
-                <Button
-                  variant="secondary"
-                  disabled={startCheckout.isPending}
-                  onClick={() =>
-                    startCheckout.mutate('yearly', {
-                      onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
-                    })
-                  }
-                >
-                  {startCheckout.isPending
-                    ? t('Abriendo…')
-                    : `${t('Anual')} · $1,037 · ${t('2 meses gratis')}`}
-                </Button>
-              </div>
-            </div>
-          )}
+            <Link to="/suscripcion">
+              <Button size="sm" variant="secondary">
+                {profile?.is_premium ? t('Gestionar suscripción') : t('Ver planes')}
+              </Button>
+            </Link>
+          </div>
         </Card>
 
         {/* Familia */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            👨‍👩‍👧‍👦 {t('Plan familiar')}
+            <Users className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Plan familiar')}
           </p>
           {invitations.length > 0 && (
-            <p className="mb-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 p-2 text-sm text-amber-700 dark:text-amber-300">
+            <p className="mb-2 rounded-lg bg-line-amber/10 p-2 text-sm text-line-amber">
               {t('Tienes {{count}} invitación(es) pendiente(s).', {
                 count: invitations.length,
               })}
@@ -812,7 +625,7 @@ export function SettingsPage() {
         {!isNative() && (
           <Card>
             <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-              📲 {t('Aplicación')}
+              <Smartphone className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Aplicación')}
             </p>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -823,7 +636,7 @@ export function SettingsPage() {
               </p>
               <a href={APK_URL} target="_blank" rel="noopener noreferrer">
                 <Button size="sm" variant="secondary">
-                  ⬇️ {t('Descargar app (Android)')}
+                  <Download className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Descargar app (Android)')}
                 </Button>
               </a>
             </div>
@@ -835,7 +648,7 @@ export function SettingsPage() {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                🎓 {t('Tutorial')}
+                <GraduationCap className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Tutorial')}
               </p>
               <p className="text-sm text-slate-500 dark:text-slate-400">
                 {t('Vuelve a ver el recorrido guiado por las secciones de la app.')}
@@ -851,7 +664,7 @@ export function SettingsPage() {
                   { userId, seen: false },
                   {
                     onSuccess: () => setTourForceOpen(true),
-                    onError: (e: any) => alert(`${t('Error:')} ${e.message}`),
+                    onError: (e: any) => showAlert(`${t('Error:')} ${e.message}`),
                   },
                 )
               }}
@@ -865,7 +678,7 @@ export function SettingsPage() {
         <Card>
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-              🚪 {t('Sesión')}
+              <LogOut className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Sesión')}
             </p>
             <Button variant="danger" size="sm" onClick={() => signOut()}>
               {t('Cerrar sesión')}
@@ -874,9 +687,9 @@ export function SettingsPage() {
         </Card>
 
         {/* Eliminar cuenta (requisito de Google Play) */}
-        <Card className="border-red-200 dark:border-red-900/60">
+        <Card className="border-line-scarlet/30">
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            🗑️ {t('Eliminar mi cuenta')}
+            <Trash2 className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Eliminar mi cuenta')}
           </p>
           <DeleteAccountSection />
         </Card>

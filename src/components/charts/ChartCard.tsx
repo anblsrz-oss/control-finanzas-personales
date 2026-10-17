@@ -94,7 +94,7 @@ export const ChartCard = forwardRef<HTMLDivElement, ChartCardProps>(function Cha
       </div>
 
       {/* Área capturada por la exportación PNG. */}
-      <div ref={ref} className="bg-white dark:bg-slate-800">
+      <div ref={ref} className="bg-surface">
         {children}
       </div>
 

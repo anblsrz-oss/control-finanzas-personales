@@ -92,7 +92,7 @@ export function PhoneSection() {
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <p className="text-sm text-slate-700 dark:text-slate-200">{currentPhone}</p>
-          <Badge className="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
+          <Badge className="bg-line-green/10 text-line-green">
             {t('Verificado')}
           </Badge>
         </div>
@@ -148,7 +148,7 @@ export function PhoneSection() {
           </div>
         </>
       )}
-      {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-xs text-line-scarlet">{error}</p>}
     </div>
   )
 }

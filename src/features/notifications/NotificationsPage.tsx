@@ -36,14 +36,14 @@ function NotificationRow({
   const { t } = useTranslation()
   const toneClass = {
     amber:
-      'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-800 dark:bg-amber-900/20 dark:text-amber-200',
-    red: 'border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-900/20 dark:text-red-200',
-    teal: 'border-teal-200 bg-teal-50 text-teal-800 dark:border-teal-800 dark:bg-teal-900/20 dark:text-teal-200',
+      'border-line-amber/30 bg-line-amber/10 text-line-amber dark:border-line-amber/30',
+    red: 'border-line-scarlet/30 bg-line-scarlet/10 text-line-scarlet dark:border-line-scarlet/30',
+    teal: 'border-line-green/30 bg-line-green/10 text-line-green dark:border-line-green/30',
   }[tone]
 
   return (
     <div
-      className={`flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border p-3 text-sm ${toneClass}`}
+      className={`flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border p-3 text-sm ${toneClass}`}
     >
       <span className="flex-1">
         <span aria-hidden>{icon}</span> {message}

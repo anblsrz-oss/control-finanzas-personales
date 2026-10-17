@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { confirmDialog } from '@/components/ui/DialogHost'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import {
@@ -108,7 +109,7 @@ export function SmsSyncPage() {
 
   async function handleDeleteRule(r: ParsingRuleRow) {
     if (!userId) return
-    if (!window.confirm(t('¿Borrar el remitente "{{name}}"?', { name: r.bank_name }))) return
+    if (!await confirmDialog(t('¿Borrar el remitente "{{name}}"?', { name: r.bank_name }))) return
     if (editingId === r.id) resetForm()
     await deleteRule.mutateAsync({ userId, id: r.id })
   }
@@ -208,7 +209,7 @@ export function SmsSyncPage() {
                         type="button"
                         onClick={() => handleDeleteRule(r)}
                         disabled={deleteRule.isPending}
-                        className="text-xs font-medium text-red-600 hover:underline disabled:opacity-50"
+                        className="text-xs font-medium text-line-scarlet hover:underline disabled:opacity-50"
                       >
                         {t('Borrar')}
                       </button>

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ChevronDown } from 'lucide-react'
 import {
   CURRENCIES,
   CURRENCY_LABELS,
@@ -149,8 +150,8 @@ export function CurrencyCombobox({
           role="combobox"
           aria-expanded={open}
           onClick={() => setOpen((o) => !o)}
-          className={`flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
-            error ? 'border-red-500' : 'border-slate-300 dark:border-slate-600'
+          className={`flex w-full items-center justify-between gap-2 rounded-md border bg-surface px-3 py-2 text-left text-sm transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
+            error ? 'border-line-scarlet' : 'border-slate-300 dark:border-slate-600'
           }`}
         >
           <span className="flex min-w-0 items-baseline gap-1.5">
@@ -163,12 +164,12 @@ export function CurrencyCombobox({
               </span>
             )}
           </span>
-          <span className="shrink-0 text-slate-400">▾</span>
+          <ChevronDown className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-150 ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
         </button>
 
         {dropdownRendered && (
           <div
-            className={`absolute z-20 mt-1 w-full origin-top rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-lg transition-[transform,opacity] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:scale-100 motion-reduce:transition-opacity ${
+            className={`absolute z-20 mt-1 w-full origin-top rounded-md border border-slate-200 shadow-xl dark:border-slate-700 bg-surface shadow-lg transition-[transform,opacity] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:scale-100 motion-reduce:transition-opacity ${
               dropdownVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
             }`}
           >
@@ -200,10 +201,10 @@ export function CurrencyCombobox({
                   aria-selected={row.code === value}
                   onMouseEnter={() => setHighlight(idx)}
                   onClick={() => pick(row.code)}
-                  className={`flex w-full items-baseline gap-2 px-3 py-1.5 text-left text-sm ${
+                  className={`flex w-full items-baseline gap-2 px-3 py-2 text-left text-sm ${
                     idx === highlight
-                      ? 'bg-slate-100 dark:bg-slate-700'
-                      : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                      ? 'bg-brand-50 dark:bg-slate-800'
+                      : ''
                   }`}
                 >
                   <span className="font-medium text-slate-800 dark:text-slate-100">
@@ -218,7 +219,7 @@ export function CurrencyCombobox({
           </div>
         )}
       </div>
-      {error && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="mt-1 text-xs text-line-scarlet">{error}</p>}
     </div>
   )
 }

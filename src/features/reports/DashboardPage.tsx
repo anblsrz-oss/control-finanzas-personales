@@ -23,6 +23,8 @@ import { monthStartISO, todayISO } from '@/lib/dates'
 import { DEFAULT_ORDER, reconcileOrder } from '@/lib/charts'
 import type { ChartId } from '@/lib/charts'
 import { useSettings } from '@/store/useSettings'
+import { CalendarDays } from 'lucide-react'
+import { StatStrip } from '@/components/ui/StatStrip'
 
 export function DashboardPage() {
   const { t } = useTranslation()
@@ -123,45 +125,24 @@ export function DashboardPage() {
           />
         </Card>
       ) : (
-        <Card className="mb-6 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
-            📅 {t('Premium: elige el periodo del resumen (hoy, semana, mes o personalizado). Actualiza tu plan para más análisis.')}
+        <Card className="mb-6 flex items-center gap-3 !bg-line-amber/10 !border-line-amber/30">
+          <CalendarDays className="h-5 w-5 shrink-0 text-line-amber" aria-hidden="true" />
+          <p className="text-sm text-slate-700 dark:text-slate-200">
+            {t('Premium: elige el periodo del resumen (hoy, semana, mes o personalizado). Actualiza tu plan para más análisis.')}
           </p>
         </Card>
       )}
 
-      {/* Tarjetas de resumen */}
+      {/* Resumen del periodo: un tramo de línea por cifra */}
       {summary && (
-        <div className="mb-6 grid gap-3 sm:grid-cols-3">
-          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/30 dark:border-green-900/50">
-            <p className="text-xs text-slate-600 dark:text-slate-300">{t('Total Ingresos')}</p>
-            <p className="text-2xl font-semibold text-green-600 dark:text-green-400">
-              <Money amount={summary.totalIncome} currency={mainCurrency} />
-            </p>
-          </Card>
-          <Card className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/50 dark:to-rose-950/30 dark:border-red-900/50">
-            <p className="text-xs text-slate-600 dark:text-slate-300">{t('Total Egresos')}</p>
-            <p className="text-2xl font-semibold text-red-600 dark:text-red-400">
-              <Money amount={summary.totalExpense} currency={mainCurrency} />
-            </p>
-          </Card>
-          <Card
-            className={`bg-gradient-to-br ${
-              summary.balanceCash >= 0
-                ? 'from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/30 dark:border-blue-900/50'
-                : 'from-orange-50 to-yellow-50 dark:from-orange-950/50 dark:to-yellow-950/30 dark:border-orange-900/50'
-            }`}
-          >
-            <p className="text-xs text-slate-600 dark:text-slate-300">{t('Balance efectivo')}</p>
-            <p
-              className={`text-2xl font-semibold ${
-                summary.balanceCash >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'
-              }`}
-            >
-              <Money amount={summary.balanceCash} currency={mainCurrency} />
-            </p>
-          </Card>
-        </div>
+        <StatStrip
+          className="mb-6"
+          items={[
+            { label: t('Total Ingresos'), tone: 'green', value: <Money amount={summary.totalIncome} currency={mainCurrency} /> },
+            { label: t('Total Egresos'), tone: 'scarlet', value: <Money amount={summary.totalExpense} currency={mainCurrency} /> },
+            { label: t('Balance efectivo'), tone: summary.balanceCash >= 0 ? 'cobalt' : 'amber', value: <Money amount={summary.balanceCash} currency={mainCurrency} /> },
+          ]}
+        />
       )}
 
       {/* Gráficas */}

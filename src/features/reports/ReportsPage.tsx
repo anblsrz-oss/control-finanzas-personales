@@ -1,4 +1,6 @@
 import { useMemo, useRef, useState } from 'react'
+import { showAlert } from '@/components/ui/DialogHost'
+import { ChartColumn } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useEntitlements } from '@/hooks/useAppConfig'
@@ -14,6 +16,7 @@ import { useCreditUsageBreakdown } from '@/hooks/useCreditLines'
 import { useBudgetStatus } from '@/hooks/useBudgets'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { Card } from '@/components/ui/Card'
+import { StatStrip } from '@/components/ui/StatStrip'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
 import { Select } from '@/components/ui/Select'
@@ -205,7 +208,7 @@ export function ReportsPage() {
       })
     } catch (err: any) {
       console.error('Error al exportar a Excel:', err)
-      alert(t('No se pudo exportar: {{error}}', { error: err?.message || 'error' }))
+      showAlert(t('No se pudo exportar: {{error}}', { error: err?.message || 'error' }))
     } finally {
       setExporting(false)
     }
@@ -222,7 +225,7 @@ export function ReportsPage() {
 
       {/* Filtros (configurable como Premium) */}
       {canUseReportsFilters && (
-        <Card className="mb-6 bg-slate-50 dark:bg-slate-900">
+        <Card className="mb-6 bg-slate-50 dark:bg-slate-950">
           <p className="mb-3 text-xs font-semibold text-slate-700 dark:text-slate-200">
             {t('Rango de fechas')}
           </p>
@@ -245,76 +248,25 @@ export function ReportsPage() {
 
       {/* Resumen: ingresos, egresos y crédito usado. */}
       {summary && (
-        <div className="mb-3 grid gap-3 sm:grid-cols-3">
-          <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/30 dark:border-green-900/50">
-            <p className="text-xs text-slate-600 dark:text-slate-300">{t('Total Ingresos')}</p>
-            <p className="text-2xl font-semibold text-green-600 dark:text-green-400">
-              <Money amount={summary.totalIncome} currency={mainCurrency} />
-            </p>
-          </Card>
-          <Card className="bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/50 dark:to-rose-950/30 dark:border-red-900/50">
-            <p className="text-xs text-slate-600 dark:text-slate-300">{t('Total Egresos')}</p>
-            <p className="text-2xl font-semibold text-red-600 dark:text-red-400">
-              <Money amount={summary.totalExpense} currency={mainCurrency} />
-            </p>
-            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-              {t('Efectivo que salió (incluye pagos de tarjeta)')}
-            </p>
-          </Card>
-          <Card className="bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950/50 dark:to-violet-950/30 dark:border-indigo-900/50">
-            <p className="text-xs text-slate-600 dark:text-slate-300">{t('Crédito usado')}</p>
-            <p className="text-2xl font-semibold text-indigo-600 dark:text-indigo-400">
-              <Money amount={summary.creditUsed} currency={mainCurrency} />
-            </p>
-            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-              {t('Deuda generada con tarjeta en el periodo')}
-            </p>
-          </Card>
-        </div>
+        <StatStrip
+          className="mb-3"
+          items={[
+            { label: t('Total Ingresos'), tone: 'green', value: <Money amount={summary.totalIncome} currency={mainCurrency} /> },
+            { label: t('Total Egresos'), tone: 'scarlet', value: <Money amount={summary.totalExpense} currency={mainCurrency} />, hint: t('Efectivo que salió (incluye pagos de tarjeta)') },
+            { label: t('Crédito usado'), tone: 'cobalt', value: <Money amount={summary.creditUsed} currency={mainCurrency} />, hint: t('Deuda generada con tarjeta en el periodo') },
+          ]}
+        />
       )}
 
       {/* Dos balances: efectivo (caja) y económico (reconoce el crédito). */}
       {summary && (
-        <div className="mb-6 grid gap-3 sm:grid-cols-2">
-          <Card
-            className={`bg-gradient-to-br ${
-              summary.balanceCash >= 0 ? 'from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/30 dark:border-blue-900/50' : 'from-orange-50 to-yellow-50 dark:from-orange-950/50 dark:to-yellow-950/30 dark:border-orange-900/50'
-            }`}
-          >
-            <p className="text-xs text-slate-600 dark:text-slate-300">
-              {t('Balance efectivo')}
-            </p>
-            <p
-              className={`text-2xl font-semibold ${
-                summary.balanceCash >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'
-              }`}
-            >
-              <Money amount={summary.balanceCash} currency={mainCurrency} />
-            </p>
-            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-              {t('Ingresos − egresos de efectivo. El consumo a crédito no cuenta hasta que lo pagas.')}
-            </p>
-          </Card>
-          <Card
-            className={`bg-gradient-to-br ${
-              summary.balanceEconomic >= 0 ? 'from-blue-50 to-cyan-50 dark:from-blue-950/50 dark:to-cyan-950/30 dark:border-blue-900/50' : 'from-orange-50 to-yellow-50 dark:from-orange-950/50 dark:to-yellow-950/30 dark:border-orange-900/50'
-            }`}
-          >
-            <p className="text-xs text-slate-600 dark:text-slate-300">
-              {t('Balance económico')}
-            </p>
-            <p
-              className={`text-2xl font-semibold ${
-                summary.balanceEconomic >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-orange-600 dark:text-orange-400'
-              }`}
-            >
-              <Money amount={summary.balanceEconomic} currency={mainCurrency} />
-            </p>
-            <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
-              {t('Reconoce el gasto al consumir con tarjeta (resta el crédito usado).')}
-            </p>
-          </Card>
-        </div>
+        <StatStrip
+          className="mb-6"
+          items={[
+            { label: t('Balance efectivo'), tone: summary.balanceCash >= 0 ? 'cobalt' : 'amber', value: <Money amount={summary.balanceCash} currency={mainCurrency} />, hint: t('Ingresos − egresos de efectivo. El consumo a crédito no cuenta hasta que lo pagas.') },
+            { label: t('Balance económico'), tone: summary.balanceEconomic >= 0 ? 'cobalt' : 'amber', value: <Money amount={summary.balanceEconomic} currency={mainCurrency} />, hint: t('Reconoce el gasto al consumir con tarjeta (resta el crédito usado).') },
+          ]}
+        />
       )}
 
       {/* Gráficas */}
@@ -335,7 +287,7 @@ export function ReportsPage() {
                   onChange={(e) => setExportMode(e.target.value as ExportMode)}
                 />
                 <Button onClick={handleExport} disabled={exporting}>
-                  {exporting ? t('Exportando…') : `📊 ${t('Descargar Excel')}`}
+                  {exporting ? t('Exportando…') : t('Descargar Excel')}
                 </Button>
               </div>
             )}
@@ -354,9 +306,9 @@ export function ReportsPage() {
       </div>
 
       {!canUseReportsFilters && (
-        <Card className="mt-6 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
-            📊 {t('Premium: filtra por rango de fechas personalizado, cuenta o tarjeta. Actualiza tu plan para más análisis.')}
+        <Card className="mt-6 border-line-amber/30 bg-line-amber/10">
+          <p className="text-sm text-line-amber">
+            <ChartColumn className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Premium: filtra por rango de fechas personalizado, cuenta o tarjeta. Actualiza tu plan para más análisis.')}
           </p>
         </Card>
       )}

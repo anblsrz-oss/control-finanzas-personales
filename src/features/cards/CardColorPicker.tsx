@@ -136,7 +136,7 @@ export function CardColorPicker({ value, onChange }: CardColorPickerProps) {
                     max={255}
                     value={[r, g, b][i]}
                     onChange={(e) => setChannel(i as 0 | 1 | 2, e.target.value)}
-                    className="w-16 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-2 py-1.5 text-sm"
+                    className="w-16 rounded-md border border-slate-300 dark:border-slate-600 bg-surface px-2 py-1.5 text-sm"
                   />
                 </div>
               ))}

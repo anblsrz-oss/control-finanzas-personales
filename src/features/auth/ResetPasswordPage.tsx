@@ -52,7 +52,7 @@ export function ResetPasswordPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-900 p-6">
+    <div className="flex min-h-screen items-center justify-center bg-canvas p-6">
       <Card className="w-full max-w-sm text-center">
         <div className="mb-4 text-4xl">🔒</div>
         <h1 className="text-xl font-semibold text-slate-800 dark:text-slate-100">
@@ -94,7 +94,7 @@ export function ResetPasswordPage() {
           </div>
         )}
 
-        {error && <p className="mt-3 text-xs text-red-600 dark:text-red-400">{error}</p>}
+        {error && <p className="mt-3 text-xs text-line-scarlet">{error}</p>}
 
         <div className="mt-5 border-t border-slate-100 dark:border-slate-700 pt-4">
           <Link to="/login" className="text-xs text-slate-400 dark:text-slate-500 underline">

@@ -82,7 +82,7 @@ export function NativeUpdatePrompt() {
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center p-3">
-      <div className="flex w-full max-w-md items-center gap-3 rounded-xl border border-brand-200 dark:border-brand-800 bg-white dark:bg-slate-800 p-3 shadow-lg">
+      <div className="flex w-full max-w-md items-center gap-3 rounded-lg border border-brand-200 dark:border-brand-800 bg-surface p-3 shadow-lg">
         <span className="text-xl">⬇️</span>
         <p className="flex-1 text-sm text-slate-700 dark:text-slate-200">
           {notice ??

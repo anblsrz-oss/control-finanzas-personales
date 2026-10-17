@@ -1,4 +1,6 @@
 import { useForm, useFieldArray } from 'react-hook-form'
+import { FormSection, Switch } from '@/components/ui/FormKit'
+import { showAlert } from '@/components/ui/DialogHost'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
@@ -163,7 +165,7 @@ export function AccountForm({ account, parentAccount, onSuccess, onCancel }: Acc
 
   async function onSubmit(data: FormData) {
     if (!session?.user?.id) {
-      alert(t('No hay sesión activa'))
+      showAlert(t('No hay sesión activa'))
       return
     }
     const userId = session.user.id
@@ -201,7 +203,7 @@ export function AccountForm({ account, parentAccount, onSuccess, onCancel }: Acc
       },
       onError: (error: any) => {
         console.error('Error al guardar cuenta:', error)
-        alert(`Error: ${error.message || 'Error desconocido'}`)
+        showAlert(`Error: ${error.message || 'Error desconocido'}`)
       },
     }
 
@@ -224,9 +226,10 @@ export function AccountForm({ account, parentAccount, onSuccess, onCancel }: Acc
   }
 
   return (
-    <Card className="mb-6 bg-slate-50 dark:bg-slate-900">
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+    <Card className="mb-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormSection title={t('Datos de la cuenta')}>
+        <div className="grid gap-4 sm:grid-cols-2">
           <Input
             label={t('Nombre de la cuenta')}
             placeholder={t('Mi cuenta principal')}
@@ -248,9 +251,11 @@ export function AccountForm({ account, parentAccount, onSuccess, onCancel }: Acc
           </p>
         )}
 
+        </FormSection>
+
         {!isPocket && (
-          <>
-            <div className="grid grid-cols-2 gap-4">
+          <FormSection title={t('Identificación bancaria')} description={t('Opcional.')}>
+            <div className="grid gap-4 sm:grid-cols-2">
               <Input
                 label={t('CLABE (opcional)')}
                 placeholder="012345678901234567"
@@ -269,7 +274,7 @@ export function AccountForm({ account, parentAccount, onSuccess, onCancel }: Acc
                 error={form.formState.errors.account_last4?.message}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <Input
                 label={t('Número de cuenta (opcional)')}
                 placeholder="01234567890"
@@ -291,10 +296,11 @@ export function AccountForm({ account, parentAccount, onSuccess, onCancel }: Acc
             <p className="-mt-2 text-xs text-slate-400 dark:text-slate-500">
               {t('Sirven para identificar automáticamente depósitos y transferencias por SMS o correo. Solo los últimos 4 dígitos se usan para eso, aunque guardes el número completo. La CLABE y el número de cuenta no comparten terminación, por eso van por separado.')}
             </p>
-          </>
+          </FormSection>
         )}
 
-        <div className="grid grid-cols-3 gap-4">
+        <FormSection title={t('Tipo y saldo')}>
+        <div className="grid gap-4 sm:grid-cols-3">
           <Select
             label={t('Tipo')}
             options={(Object.keys(ACCOUNT_TYPE_LABELS) as AccountType[]).map((value) => ({
@@ -318,21 +324,18 @@ export function AccountForm({ account, parentAccount, onSuccess, onCancel }: Acc
             error={form.formState.errors.initial_balance?.message}
           />
         </div>
+        </FormSection>
 
-        <div className="space-y-2">
-          <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              {...form.register('has_yield')}
-              className="cursor-pointer"
-            />
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-              {t('Esta cuenta genera rendimientos')}
-            </span>
-          </label>
+        <FormSection title={t('Rendimientos')}>
+        <div className="space-y-4">
+          <Switch
+          checked={!!form.watch('has_yield')}
+          onChange={(v) => form.setValue('has_yield', v)}
+          label={t('Esta cuenta genera rendimientos')}
+        />
           {form.watch('has_yield') && (
             <div className="space-y-3 rounded-lg border border-slate-200 p-3 dark:border-slate-700">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <Input
                   label={t('Rendimiento (%)')}
                   type="number"
@@ -371,7 +374,7 @@ export function AccountForm({ account, parentAccount, onSuccess, onCancel }: Acc
               />
 
               {form.watch('yield_kind') === 'term' && (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <Input
                     label={t('Plazo (días)')}
                     type="number"
@@ -428,7 +431,7 @@ export function AccountForm({ account, parentAccount, onSuccess, onCancel }: Acc
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="text-red-600"
+                        className="text-line-scarlet"
                         onClick={() => tiersField.remove(index)}
                       >
                         ✕
@@ -449,7 +452,7 @@ export function AccountForm({ account, parentAccount, onSuccess, onCancel }: Acc
                         return (
                           <p
                             key={tier.fieldIndex}
-                            className={`text-xs ${isDuplicate ? 'font-medium text-amber-600 dark:text-amber-400' : 'text-slate-500 dark:text-slate-400'}`}
+                            className={`text-xs ${isDuplicate ? 'font-medium text-line-amber' : 'text-slate-500 dark:text-slate-400'}`}
                           >
                             {next
                               ? t('De {{from}} a {{to}}: {{rate}}%', {
@@ -470,19 +473,12 @@ export function AccountForm({ account, parentAccount, onSuccess, onCancel }: Acc
                 </div>
               )}
 
-              <label className="flex items-start gap-2">
-                <input
-                  type="checkbox"
-                  {...form.register('withhold_isr')}
-                  className="mt-0.5 cursor-pointer"
-                />
-                <span className="text-sm text-slate-700 dark:text-slate-200">
-                  {t('Descontar retención de ISR')}
-                  <span className="block text-xs text-slate-400 dark:text-slate-500">
-                    {t('Se retiene sobre el capital, no sobre el interés. La tasa la fija cada año la Ley de Ingresos.')}
-                  </span>
-                </span>
-              </label>
+              <Switch
+          checked={!!form.watch('withhold_isr')}
+          onChange={(v) => form.setValue('withhold_isr', v)}
+          label={t('Descontar retención de ISR')}
+          description={t('Se retiene sobre el capital, no sobre el interés. La tasa la fija cada año la Ley de Ingresos.')}
+        />
               {form.watch('withhold_isr') && (
                 <Input
                   label={t('Tasa de ISR anual (%)')}
@@ -496,18 +492,16 @@ export function AccountForm({ account, parentAccount, onSuccess, onCancel }: Acc
           )}
         </div>
 
+        </FormSection>
+
         {!isPocket && (
-          <div className="space-y-2">
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                {...form.register('is_scholarship')}
-                className="cursor-pointer"
-              />
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                🎓 {t('Es una cuenta de beca')}
-              </span>
-            </label>
+          <FormSection title={t('Opciones')}>
+          <div className="space-y-4">
+            <Switch
+          checked={!!form.watch('is_scholarship')}
+          onChange={(v) => form.setValue('is_scholarship', v)}
+          label={t('Es una cuenta de beca')}
+        />
             {form.watch('is_scholarship') && (
               <Input
                 label={t('Nombre de la beca (opcional)')}
@@ -516,9 +510,10 @@ export function AccountForm({ account, parentAccount, onSuccess, onCancel }: Acc
               />
             )}
           </div>
+          </FormSection>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 border-t border-slate-200 pt-5 dark:border-slate-700/70">
           <Button type="submit" disabled={pending}>
             {pending
               ? t('Guardando…')

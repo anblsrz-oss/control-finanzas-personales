@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next'
+import { Check } from 'lucide-react'
 import { useAuth } from '@/store/useAuth'
 import { useAccounts, useAccountBalances } from '@/hooks/useAccounts'
 import { useAccountYieldTiers } from '@/hooks/useAccountYieldTiers'
@@ -46,8 +47,8 @@ export function YieldsPage() {
           helpId="rendimientos"
           tourTarget="rendimientos"
         />
-        <Card className="border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
+        <Card className="border-line-amber/30 bg-line-amber/10">
+          <p className="text-sm text-line-amber">
             {t('Esta función es solo para Premium. Actualiza tu plan para usarla.')}
           </p>
         </Card>
@@ -138,7 +139,7 @@ function AccountYieldSection({
 
   return (
     <div className="space-y-3">
-      <Card className="bg-gradient-to-r from-green-50 to-emerald-50 dark:border-emerald-900/60 dark:from-emerald-950/60 dark:to-green-950/40">
+      <Card className="border-line-green/30">
         <h3 className="font-semibold text-slate-800 dark:text-slate-100">
           {parentAccount && <span className="text-slate-400">↳ </span>}
           {account.name}
@@ -149,7 +150,7 @@ function AccountYieldSection({
           )}
         </h3>
         <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
-          📈 {t('Rendimiento:')} {account.yield_rate}%{' '}
+          {t('Rendimiento:')} {account.yield_rate}%{' '}
           {account.yield_rate_period === 'annual' ? t('anual') : t('mensual')}
           {account.yield_kind === 'term' && account.yield_term_end && (
             <> · {t('plazo fijo, vence {{date}}', { date: formatDate(account.yield_term_end) })}</>
@@ -180,7 +181,7 @@ function AccountYieldSection({
           </div>
           <div>
             <p className="text-xs text-slate-500 dark:text-slate-400">{t('Crecimiento esperado')}</p>
-            <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+            <p className="text-lg font-semibold text-line-green">
               +{formatMoney(projection.net, account.currency)}
             </p>
           </div>
@@ -210,10 +211,10 @@ function AccountYieldSection({
               <Card
                 className={`flex items-center justify-between ${
                   y.verified
-                    ? 'border-green-200 bg-green-50 dark:border-green-900/60 dark:bg-green-950/30'
+                    ? 'border-line-green/30 bg-line-green/10'
                     : ''
                 } ${
-                  editingMonth === y.period_month ? 'border-blue-300 bg-blue-50 dark:bg-blue-900/20' : ''
+                  editingMonth === y.period_month ? 'border-line-cobalt/30 bg-line-cobalt/10' : ''
                 } hover:border-slate-300`}
               >
                 <div>
@@ -233,8 +234,8 @@ function AccountYieldSection({
                   </p>
                 </div>
                 {y.verified && (
-                  <span className="text-xs font-semibold text-green-600">
-                    ✓ {t('Verificado')}
+                  <span className="text-xs font-semibold text-line-green">
+                    <Check className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Verificado')}
                   </span>
                 )}
               </Card>

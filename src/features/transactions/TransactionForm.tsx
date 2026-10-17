@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
+import { showAlert } from '@/components/ui/DialogHost'
+import { ArrowDownToLine, ArrowLeftRight, ArrowUpFromLine, Banknote, CreditCard, TriangleAlert, Undo2, type LucideIcon } from 'lucide-react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -38,6 +40,7 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { CurrencyCombobox } from '@/components/ui/CurrencyCombobox'
 import { Card } from '@/components/ui/Card'
+import { FormSection, Switch } from '@/components/ui/FormKit'
 import { Money } from '@/components/ui/Money'
 import type {
   AccountRow,
@@ -132,6 +135,22 @@ interface TransactionFormProps {
   // Al crear recibe el id de la transacción nueva.
   onSuccess?: (createdId?: string) => void
   onCancel?: () => void
+}
+
+const KIND_OPTIONS: { value: FormData['kind']; label: string; Icon: LucideIcon }[] = [
+  { value: 'income', label: 'Ingreso', Icon: ArrowDownToLine },
+  { value: 'expense', label: 'Egreso', Icon: ArrowUpFromLine },
+  { value: 'transfer', label: 'Transferencia', Icon: ArrowLeftRight },
+  { value: 'card_payment', label: 'Pago de tarjeta', Icon: CreditCard },
+  { value: 'cash_withdrawal', label: 'Retiro de efectivo', Icon: Banknote },
+  { value: 'refund', label: 'Reembolso', Icon: Undo2 },
+]
+
+// Tinta del monto según el tipo de movimiento (entra / sale / neutro).
+const AMOUNT_TONE: Record<string, string> = {
+  income: 'text-line-green',
+  expense: 'text-line-scarlet',
+  refund: 'text-line-green',
 }
 
 export function TransactionForm({
@@ -361,19 +380,19 @@ export function TransactionForm({
 
     // Validaciones según tipo
     if (data.kind === 'income' && !data.accountId) {
-      alert(t('Selecciona la cuenta destino'))
+      showAlert(t('Selecciona la cuenta destino'))
       return
     }
     if (data.kind === 'expense' && !data.accountId && !data.cardId) {
-      alert(t('Selecciona una cuenta o tarjeta'))
+      showAlert(t('Selecciona una cuenta o tarjeta'))
       return
     }
     if (data.kind === 'transfer' && !data.accountId) {
-      alert(t('Selecciona la cuenta origen'))
+      showAlert(t('Selecciona la cuenta origen'))
       return
     }
     if (data.kind === 'transfer' && !data.isExternal && !data.toAccountId) {
-      alert(t('Selecciona la cuenta destino'))
+      showAlert(t('Selecciona la cuenta destino'))
       return
     }
     if (
@@ -381,28 +400,28 @@ export function TransactionForm({
       !data.isExternal &&
       data.accountId === data.toAccountId
     ) {
-      alert(t('Las cuentas no pueden ser la misma'))
+      showAlert(t('Las cuentas no pueden ser la misma'))
       return
     }
     if (data.kind === 'card_payment' && (!data.accountId || !data.toCreditLineId)) {
-      alert(t('Selecciona la cuenta origen y la línea de crédito a pagar'))
+      showAlert(t('Selecciona la cuenta origen y la línea de crédito a pagar'))
       return
     }
     if (data.kind === 'refund' && !data.refundOfTransactionId) {
-      alert(t('Selecciona la compra a reembolsar'))
+      showAlert(t('Selecciona la compra a reembolsar'))
       return
     }
     if (data.kind === 'cash_withdrawal') {
       if (!data.accountId) {
-        alert(t('Selecciona la cuenta de la que retiras el efectivo'))
+        showAlert(t('Selecciona la cuenta de la que retiras el efectivo'))
         return
       }
       if (!data.spentAsCash && !data.toAccountId) {
-        alert(t('Selecciona la cuenta de efectivo a la que va el retiro'))
+        showAlert(t('Selecciona la cuenta de efectivo a la que va el retiro'))
         return
       }
       if (!data.spentAsCash && data.accountId === data.toAccountId) {
-        alert(t('Las cuentas no pueden ser la misma'))
+        showAlert(t('Las cuentas no pueden ser la misma'))
         return
       }
     }
@@ -417,7 +436,7 @@ export function TransactionForm({
     const fxRate = data.currency !== mainCurrency ? effectiveRate : 1
     const baseAmount = toBaseAmount(data.amount, fxRate)
     if (data.currency !== mainCurrency && (!fxRate || fxRate <= 0)) {
-      alert(t('Escribe un tipo de cambio válido.'))
+      showAlert(t('Escribe un tipo de cambio válido.'))
       return
     }
 
@@ -637,7 +656,7 @@ export function TransactionForm({
       notifyBudgets()
       onSuccess?.(tx.id)
     } catch (error: any) {
-      alert(`Error: ${error.message}`)
+      showAlert(`Error: ${error.message}`)
     }
   }
 
@@ -645,50 +664,66 @@ export function TransactionForm({
     createTransaction.isPending || updateTransaction.isPending
 
   return (
-    <Card className="mb-6 bg-slate-50 dark:bg-slate-900">
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        {/* Tipo */}
-        <Select
-          label={t('Tipo')}
-          options={[
-            { value: 'income', label: t('📥 Ingreso') },
-            { value: 'expense', label: t('📤 Egreso') },
-            { value: 'transfer', label: t('🔄 Transferencia') },
-            { value: 'card_payment', label: t('💳 Pago de tarjeta') },
-            { value: 'cash_withdrawal', label: t('🏧 Retiro de efectivo') },
-            { value: 'refund', label: t('↩️ Reembolso') },
-          ]}
-          {...form.register('kind')}
-        />
+    <Card className="mb-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Tipo: todas las opciones a la vista, con icono */}
+        <div>
+          <span className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200">{t('Tipo')}</span>
+          <div role="radiogroup" aria-label={t('Tipo')} className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+            {KIND_OPTIONS.map((k) => {
+              const selected = txKind === k.value
+              return (
+                <button
+                  key={k.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  onClick={() => form.setValue('kind', k.value, { shouldValidate: true })}
+                  className={`flex flex-col items-center gap-1 rounded-md border px-2 py-2.5 text-xs font-semibold transition-colors ${
+                    selected
+                      ? 'border-brand-600 bg-brand-50 text-brand-700 dark:bg-brand-800/40 dark:text-brand-500'
+                      : 'border-slate-200 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  <k.Icon className="h-5 w-5" aria-hidden="true" />
+                  {t(k.label)}
+                </button>
+              )
+            })}
+          </div>
+        </div>
 
-        {/* Monto y moneda */}
-        <div className="grid grid-cols-3 gap-4">
+        {/* Monto: la cifra protagonista, con la tinta del tipo de movimiento */}
+        <FormSection title={t('Monto')}>
           <Input
-            label={t('Monto')}
+            aria-label={t('Monto')}
             type="number"
             step="0.01"
+            inputMode="decimal"
             placeholder="0.00"
+            className={`!py-3 !text-3xl !font-bold tracking-tight ${AMOUNT_TONE[txKind] ?? ''}`}
             {...form.register('amount')}
             error={form.formState.errors.amount?.message}
           />
-          <CurrencyCombobox
-            label={t('Moneda')}
-            value={currency}
-            onChange={(c) => form.setValue('currency', c, { shouldValidate: true })}
-            error={form.formState.errors.currency?.message}
-          />
-          <Input
-            label={t('Fecha')}
-            type="date"
-            {...form.register('txDate')}
-            error={form.formState.errors.txDate?.message}
-          />
-        </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <CurrencyCombobox
+              label={t('Moneda')}
+              value={currency}
+              onChange={(c) => form.setValue('currency', c, { shouldValidate: true })}
+              error={form.formState.errors.currency?.message}
+            />
+            <Input
+              label={t('Fecha')}
+              type="date"
+              {...form.register('txDate')}
+              error={form.formState.errors.txDate?.message}
+            />
+          </div>
 
         {/* Conversión a la moneda principal (solo si difiere) */}
         {needsFx && (
-          <div className="space-y-2 rounded-lg border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-900/20 p-3">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2 rounded-lg border border-line-cobalt/30 bg-line-cobalt/10 p-3">
+            <div className="grid gap-4 sm:grid-cols-2">
               <Input
                 label={t('Tipo de cambio ({{from}}→{{to}})', {
                   from: currency,
@@ -704,12 +739,12 @@ export function TransactionForm({
                 <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
                   {t('Equivale a')}
                 </label>
-                <p className="rounded-lg bg-white dark:bg-slate-800 px-3 py-2 text-sm font-semibold text-slate-800 dark:text-slate-100">
+                <p className="rounded-lg bg-surface px-3 py-2 text-sm font-semibold text-slate-800 dark:text-slate-100">
                   ≈ {formatMoney(basePreview, mainCurrency)}
                 </p>
               </div>
             </div>
-            <p className="text-xs text-sky-700 dark:text-sky-300">
+            <p className="text-xs text-line-cobalt">
               {fxQuery.isError
                 ? t('No se obtuvo el tipo de cambio automático. Escríbelo manualmente.')
                 : fxQuery.data?.historical === false
@@ -719,8 +754,11 @@ export function TransactionForm({
           </div>
         )}
 
+        </FormSection>
+
         {/* Concepto y categoría (no aplica a pago de tarjeta) */}
-        <div className="grid grid-cols-2 gap-4">
+        <FormSection title={t('Descripción')}>
+        <div className="grid gap-4 sm:grid-cols-2">
           <Input
             label={t('Concepto')}
             placeholder={t('Ej: Almuerzo')}
@@ -744,7 +782,10 @@ export function TransactionForm({
           )}
         </div>
 
+        </FormSection>
+
         {/* Cuentas/Tarjetas según tipo */}
+        <FormSection title={t('Cuentas')}>
         {txKind === 'income' && (
           <Select
             label={t('Cuenta destino')}
@@ -761,7 +802,7 @@ export function TransactionForm({
 
         {txKind === 'expense' && (
           <>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <Select
                 label={t('Cuenta')}
                 disabled={!!selectedForeignCard}
@@ -778,7 +819,7 @@ export function TransactionForm({
                   ...cards.map((c) => ({ value: c.id, label: c.name })),
                   ...foreignFamilyCards.map((c) => ({
                     value: c.card_id,
-                    label: `${c.name} · 👨‍👩‍👧 ${t('Familiar')}`,
+                    label: `${c.name} · ${t('Familiar')}`,
                   })),
                 ]}
                 {...form.register('cardId')}
@@ -786,20 +827,15 @@ export function TransactionForm({
             </div>
             {selectedForeignCard && (
               <p className="rounded-lg bg-brand-50 dark:bg-brand-800/40 p-2 text-xs text-brand-700 dark:text-brand-500">
-                👨‍👩‍👧 {t('Este gasto se registrará en el plan familiar, no en tus finanzas personales.')}
+                {t('Este gasto se registrará en el plan familiar, no en tus finanzas personales.')}
               </p>
             )}
             {ownSharedCard && !selectedForeignCard && (
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  {...form.register('familyExpense')}
-                  className="cursor-pointer"
-                />
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                  👨‍👩‍👧 {t('Gasto familiar (se registra en el plan familiar)')}
-                </span>
-              </label>
+              <Switch
+                checked={!!form.watch('familyExpense')}
+                onChange={(v) => form.setValue('familyExpense', v)}
+                label={t('Gasto familiar (se registra en el plan familiar)')}
+              />
             )}
             {canUse('transaction_lines') && (
               <TransactionLinesFields
@@ -818,7 +854,7 @@ export function TransactionForm({
               />
             )}
             {form.formState.errors.lines?.message && (
-              <p className="text-xs text-red-600 dark:text-red-400">
+              <p className="text-xs text-line-scarlet">
                 {form.formState.errors.lines.message as string}
               </p>
             )}
@@ -827,7 +863,7 @@ export function TransactionForm({
 
         {txKind === 'transfer' && (
           <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <Select
                 label={t('Cuenta origen')}
                 options={[
@@ -847,18 +883,13 @@ export function TransactionForm({
                 />
               )}
             </div>
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                {...form.register('isExternal')}
-                className="cursor-pointer"
+            <Switch
+                checked={!!form.watch('isExternal')}
+                onChange={(v) => form.setValue('isExternal', v)}
+                label={t('La cuenta destino no es mía (cuenta externa)')}
               />
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                {t('La cuenta destino no es mía (cuenta externa)')}
-              </span>
-            </label>
             {isExternal && (
-              <p className="rounded-lg bg-amber-50 dark:bg-amber-900/20 p-2 text-xs text-amber-700 dark:text-amber-300">
+              <p className="rounded-lg bg-line-amber/10 p-2 text-xs text-line-amber">
                 {t('Sale dinero de verdad: se contará como egreso en tus reportes.')}
               </p>
             )}
@@ -878,22 +909,15 @@ export function TransactionForm({
               {...form.register('accountId')}
             />
 
-            <label className="flex items-start gap-2">
-              <input
-                type="checkbox"
-                {...form.register('spentAsCash')}
-                className="mt-0.5 cursor-pointer"
+            <Switch
+                checked={!!form.watch('spentAsCash')}
+                onChange={(v) => form.setValue('spentAsCash', v)}
+                label={t('Ya lo gastaste o es para un pago')}
+                description={t('Actívalo si el efectivo ya se usó: contará como egreso ahora. Déjalo apagado si solo lo tienes en la cartera.')}
               />
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                {t('Ya lo gastaste o es para un pago')}
-                <span className="block text-xs font-normal text-slate-400 dark:text-slate-500">
-                  {t('Actívalo si el efectivo ya se usó: contará como egreso ahora. Déjalo apagado si solo lo tienes en la cartera.')}
-                </span>
-              </span>
-            </label>
 
             {spentAsCash ? (
-              <p className="rounded-lg bg-amber-50 dark:bg-amber-900/20 p-2 text-xs text-amber-700 dark:text-amber-300">
+              <p className="rounded-lg bg-line-amber/10 p-2 text-xs text-line-amber">
                 {t('Se registrará como egreso desde la cuenta de la que retiras.')}
               </p>
             ) : (
@@ -907,7 +931,7 @@ export function TransactionForm({
                   {...form.register('toAccountId')}
                 />
                 {cashAccounts.length === 0 && (
-                  <p className="rounded-lg bg-amber-50 dark:bg-amber-900/20 p-2 text-xs text-amber-700 dark:text-amber-300">
+                  <p className="rounded-lg bg-line-amber/10 p-2 text-xs text-line-amber">
                     {t('No tienes una cuenta de tipo Efectivo. Crea una en Cuentas para guardar el efectivo de la cartera.')}
                   </p>
                 )}
@@ -921,7 +945,7 @@ export function TransactionForm({
 
         {txKind === 'card_payment' && (
           <div className="space-y-3">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4 sm:grid-cols-2">
               <Select
                 label={t('Cuenta origen')}
                 options={[
@@ -942,9 +966,9 @@ export function TransactionForm({
 
             {/* Conciliación MSI: marcar la mensualidad del periodo por plan. */}
             {linePlans.length > 0 && (
-              <div className="space-y-2 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 p-3">
+              <div className="space-y-2 rounded-lg border border-line-amber/30 bg-line-amber/10 p-3">
                 <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                  💳 {t('Meses sin intereses de esta línea')}
+                  <CreditCard className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Meses sin intereses de esta línea')}
                 </p>
                 <p className="text-xs text-slate-600 dark:text-slate-300">
                   {t('Marca las mensualidades que cubre este pago.')}
@@ -1024,17 +1048,12 @@ export function TransactionForm({
           txKind === 'expense' &&
           !isFamilyTx &&
           isCredit && (
-            <div className="space-y-2 rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 p-3">
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  {...form.register('msi')}
-                  className="cursor-pointer"
-                />
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                  💳 {t('Meses sin intereses / Diferido')}
-                </span>
-              </label>
+            <div className="space-y-2 rounded-lg border border-line-amber/30 bg-line-amber/10 p-3">
+              <Switch
+                checked={!!form.watch('msi')}
+                onChange={(v) => form.setValue('msi', v)}
+                label={t('Meses sin intereses / Diferido')}
+              />
               {msi && (
                 <div className="grid grid-cols-3 gap-3">
                   <Input
@@ -1079,9 +1098,9 @@ export function TransactionForm({
               {/* Plan que arrancó en un periodo anterior: hay que saber si
                   esas mensualidades ya se pagaron. */}
               {msiIsRetroactive && (
-                <div className="space-y-2 rounded-md border border-amber-300 bg-white p-3 dark:border-amber-700 dark:bg-slate-800">
+                <div className="space-y-2 rounded-md border border-line-amber/30 bg-white p-3 dark:border-amber-700 dark:bg-slate-800">
                   <p className="text-sm font-medium text-slate-800 dark:text-slate-100">
-                    ⚠️ {t('Este plan empezó en {{month}} (hace {{n}} meses).', {
+                    <TriangleAlert className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Este plan empezó en {{month}} (hace {{n}} meses).', {
                       month: formatMonthLabel(msiStartDate),
                       n: msiElapsed,
                     })}
@@ -1089,16 +1108,11 @@ export function TransactionForm({
                   <p className="text-xs text-slate-600 dark:text-slate-300">
                     {t('¿Ya pagaste mensualidades anteriores?')}
                   </p>
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      {...form.register('msiPaidPrevious')}
-                      className="cursor-pointer"
-                    />
-                    <span className="text-sm text-slate-700 dark:text-slate-200">
-                      {t('Sí, ya pagué algunas')}
-                    </span>
-                  </label>
+                  <Switch
+                checked={!!form.watch('msiPaidPrevious')}
+                onChange={(v) => form.setValue('msiPaidPrevious', v)}
+                label={t('Sí, ya pagué algunas')}
+              />
                   {msiPaidPrevious && (
                     <>
                       <Input
@@ -1109,7 +1123,7 @@ export function TransactionForm({
                         {...form.register('msiPaidCount')}
                       />
                       {msiPaidCount > 0 && (
-                        <p className="rounded bg-emerald-50 p-2 text-xs text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-200">
+                        <p className="rounded bg-line-green/10 p-2 text-xs text-line-green">
                           {t('Se marcarán {{n}} mensualidades ({{amount}}) como ya pagadas.', {
                             n: msiPaidCount,
                             amount: formatMoney(msiMonthly * msiPaidCount, currency),
@@ -1123,15 +1137,19 @@ export function TransactionForm({
             </div>
           )}
 
+        </FormSection>
+
         {/* Notas */}
-        <Input
-          label={t('Notas (opcional)')}
-          placeholder={t('Detalles adicionales...')}
-          {...form.register('notes')}
-        />
+        <FormSection title={t('Notas')}>
+          <Input
+            aria-label={t('Notas (opcional)')}
+            placeholder={t('Detalles adicionales...')}
+            {...form.register('notes')}
+          />
+        </FormSection>
 
         {/* Botones */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 border-t border-slate-200 pt-5 dark:border-slate-700/70">
           <Button type="submit" disabled={submitting}>
             {submitting
               ? t('Guardando…')

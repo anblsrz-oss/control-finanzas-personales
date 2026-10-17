@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { Switch } from '@/components/ui/FormKit'
+import { showAlert } from '@/components/ui/DialogHost'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -118,7 +120,7 @@ export function SubscriptionForm({ subscription, onSuccess, onCancel }: Subscrip
 
   function onSubmit(data: FormData) {
     if (!userId) {
-      alert(t('No hay sesión activa'))
+      showAlert(t('No hay sesión activa'))
       return
     }
     setError(null)
@@ -187,7 +189,7 @@ export function SubscriptionForm({ subscription, onSuccess, onCancel }: Subscrip
   }
 
   return (
-    <Card className="mb-6 bg-slate-50 dark:bg-slate-900">
+    <Card className="mb-6">
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         {!isEdit && (
           <Select
@@ -205,7 +207,7 @@ export function SubscriptionForm({ subscription, onSuccess, onCancel }: Subscrip
           error={form.formState.errors.name?.message}
         />
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
           <Input
             label={t('Monto')}
             type="number"
@@ -222,7 +224,7 @@ export function SubscriptionForm({ subscription, onSuccess, onCancel }: Subscrip
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
           <Select
             label={t('Ciclo de cobro')}
             options={SUBSCRIPTION_BILLING_CYCLES.map((c) => ({
@@ -245,21 +247,14 @@ export function SubscriptionForm({ subscription, onSuccess, onCancel }: Subscrip
         />
 
         {canUse('subscriptions_auto') && (
-          <label className="flex items-start gap-2">
-            <input
-              type="checkbox"
-              {...form.register('auto_generate')}
-              className="mt-0.5 cursor-pointer"
-            />
-            <span className="text-sm text-slate-700 dark:text-slate-200">
-              {t('Generar el cargo automáticamente')}
-              <span className="block text-xs text-slate-400 dark:text-slate-500">
-                {t(
+          <Switch
+          checked={!!form.watch('auto_generate')}
+          onChange={(v) => form.setValue('auto_generate', v)}
+          label={t('Generar el cargo automáticamente')}
+          description={t(
                   'Úsalo si este comercio NO te manda un correo o SMS que la app pueda leer: se registrará solo cada ciclo, cargado a la tarjeta/cuenta de arriba.',
                 )}
-              </span>
-            </span>
-          </label>
+        />
         )}
 
         <Select
@@ -269,12 +264,12 @@ export function SubscriptionForm({ subscription, onSuccess, onCancel }: Subscrip
         />
 
         {error && (
-          <p className="rounded-md bg-red-50 p-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-200">
+          <p className="rounded-md bg-line-scarlet/10 p-2 text-sm text-line-scarlet">
             {error}
           </p>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 border-t border-slate-200 pt-5 dark:border-slate-700/70">
           <Button type="submit" disabled={pending}>
             {pending
               ? t('Guardando…')

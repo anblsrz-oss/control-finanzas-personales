@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { confirmDialog, showAlert } from '@/components/ui/DialogHost'
+import { Banknote, Repeat } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useCards } from '@/hooks/useCards'
@@ -18,6 +20,7 @@ import { PremiumLocked } from '@/components/ui/PremiumLocked'
 import { useEntitlements } from '@/hooks/useAppConfig'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
+import { StatStrip } from '@/components/ui/StatStrip'
 import { Money } from '@/components/ui/Money'
 import { Emoji } from '@/components/ui/Emoji'
 import { SubscriptionForm } from './SubscriptionForm'
@@ -88,20 +91,20 @@ export function SubscriptionsPage() {
   )
   const annualTotal = monthlyTotal * 12
 
-  const handleDismiss = (s: SubscriptionRow) => {
-    if (confirm(t('¿"{{name}}" no es una suscripción? No se volverá a sugerir.', { name: s.name }))) {
+  const handleDismiss = async (s: SubscriptionRow) => {
+    if (await confirmDialog(t('¿"{{name}}" no es una suscripción? No se volverá a sugerir.', { name: s.name }))) {
       dismissSuggested.mutate({ id: s.id, userId: userId! })
     }
   }
 
-  const handleCancel = (s: SubscriptionRow) => {
-    if (confirm(t('¿Cancelar "{{name}}"? Si vuelve a cobrar, se sugerirá de nuevo.', { name: s.name }))) {
+  const handleCancel = async (s: SubscriptionRow) => {
+    if (await confirmDialog(t('¿Cancelar "{{name}}"? Si vuelve a cobrar, se sugerirá de nuevo.', { name: s.name }))) {
       updateSubscription.mutate({ id: s.id, userId: userId!, status: 'cancelled' })
     }
   }
 
-  const handleDelete = (s: SubscriptionRow) => {
-    if (confirm(t('¿Eliminar "{{name}}" definitivamente?', { name: s.name }))) {
+  const handleDelete = async (s: SubscriptionRow) => {
+    if (await confirmDialog(t('¿Eliminar "{{name}}" definitivamente?', { name: s.name }))) {
       deleteSubscription.mutate({ id: s.id, userId: userId! })
     }
   }
@@ -116,19 +119,19 @@ export function SubscriptionsPage() {
     try {
       const created = await generateChargeNow.mutateAsync({ subscriptionId: s.id, userId })
       if (created.length === 0) {
-        alert(t('No había ningún cobro pendiente por registrar.'))
+        showAlert(t('No había ningún cobro pendiente por registrar.'))
       } else if (created.length === 1) {
-        alert(
+        showAlert(
           t('Cobro de {{amount}} registrado ({{date}}).', {
             amount: formatMoney(created[0].amount, s.currency),
             date: created[0].tx_date,
           }),
         )
       } else {
-        alert(t('Se registraron {{n}} cobros pendientes.', { n: created.length }))
+        showAlert(t('Se registraron {{n}} cobros pendientes.', { n: created.length }))
       }
     } catch (e: any) {
-      alert(e?.message || t('No se pudo registrar el cobro.'))
+      showAlert(e?.message || t('No se pudo registrar el cobro.'))
     }
   }
 
@@ -178,20 +181,13 @@ export function SubscriptionsPage() {
       )}
 
       {active.length > 0 && (
-        <div className="mb-6 grid gap-3 sm:grid-cols-2">
-          <Card className="bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-950/50 dark:to-cyan-950/30 dark:border-teal-900/50">
-            <p className="text-xs text-slate-600 dark:text-slate-300">{t('Gasto mensual equivalente')}</p>
-            <p className="text-2xl font-semibold text-teal-600 dark:text-teal-400">
-              <Money amount={monthlyTotal} currency={mainCurrency} />
-            </p>
-          </Card>
-          <Card className="bg-gradient-to-br from-indigo-50 to-violet-50 dark:from-indigo-950/50 dark:to-violet-950/30 dark:border-indigo-900/50">
-            <p className="text-xs text-slate-600 dark:text-slate-300">{t('Gasto anual equivalente')}</p>
-            <p className="text-2xl font-semibold text-indigo-600 dark:text-indigo-400">
-              <Money amount={annualTotal} currency={mainCurrency} />
-            </p>
-          </Card>
-        </div>
+        <StatStrip
+          className="mb-6"
+          items={[
+            { label: t('Gasto mensual equivalente'), tone: 'green', value: <Money amount={monthlyTotal} currency={mainCurrency} /> },
+            { label: t('Gasto anual equivalente'), tone: 'cobalt', value: <Money amount={annualTotal} currency={mainCurrency} /> },
+          ]}
+        />
       )}
 
       {suggested.length > 0 && (
@@ -200,7 +196,7 @@ export function SubscriptionsPage() {
             {t('Sugeridas')} ({suggested.length})
           </h2>
           {suggested.map((s) => (
-            <Card key={s.id} className="flex flex-wrap items-center justify-between gap-3 border-teal-200 dark:border-teal-800">
+            <Card key={s.id} className="flex flex-wrap items-center justify-between gap-3 border-line-green/30">
               <div className="flex items-center gap-3">
                 <span className="text-2xl"><Emoji emoji={s.icon ?? '🔁'} /></span>
                 <div>
@@ -266,10 +262,10 @@ export function SubscriptionsPage() {
                         {s.name}
                         {s.auto_generate && (
                           <span
-                            className="rounded bg-teal-100 dark:bg-teal-900/40 px-1.5 py-0.5 text-[10px] font-medium text-teal-700 dark:text-teal-300"
+                            className="rounded bg-line-green/10 px-1.5 py-0.5 text-[10px] font-medium text-line-green"
                             title={t('Se registra sola cada ciclo, sin esperar correo/SMS')}
                           >
-                            🔁 {t('Automático')}
+                            <Repeat className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Automático')}
                           </span>
                         )}
                       </p>
@@ -294,7 +290,7 @@ export function SubscriptionsPage() {
                         disabled={generateChargeNow.isPending}
                         title={t('El próximo cobro ya venció y todavía no se ha contabilizado')}
                       >
-                        💸 {t('Registrar cobro')}
+                        <Banknote className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Registrar cobro')}
                       </Button>
                     )}
                     <Button size="sm" variant="ghost" onClick={() => { setShowForm(false); setEditing(s) }}>

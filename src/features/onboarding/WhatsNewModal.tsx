@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useOnboarding } from '@/store/useOnboarding'
 import { Modal } from '@/components/ui/Modal'
@@ -47,15 +48,15 @@ export function WhatsNewButton({ className = '' }: { className?: string }) {
         onClick={openModal}
         title={t('Novedades')}
         aria-label={t('Novedades')}
-        className={`relative rounded-lg p-1.5 text-lg transition-colors sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-700 ${className}`}
+        className={`relative rounded-md p-1.5 text-slate-600 dark:text-slate-300 transition-colors sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 ${className}`}
       >
-        🆕
+        <Sparkles className="h-5 w-5" aria-hidden="true" />
         {hasUnseen && (
-          <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500" />
+          <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-line-scarlet" />
         )}
       </button>
 
-      <Modal open={open} title={`🆕 ${t('Novedades')}`} onClose={() => setOpen(false)}>
+      <Modal open={open} title={t('Novedades')} icon={<span aria-hidden="true" className="flex h-10 w-10 items-center justify-center rounded-md bg-brand-50 text-brand-700 dark:bg-brand-800/40 dark:text-brand-500"><Sparkles className="h-5 w-5" /></span>} onClose={() => setOpen(false)}>
         {CHANGELOG.length === 0 ? (
           <p className="text-sm text-slate-500 dark:text-slate-400">{t('No hay novedades por ahora.')}</p>
         ) : (

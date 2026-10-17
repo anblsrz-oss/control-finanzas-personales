@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useConfirmLineBalance } from '@/hooks/useCreditLinePeriods'
@@ -92,8 +93,8 @@ export function LineBalanceConfirm({ line, periods, statement }: LineBalanceConf
   if (settled) {
     return (
       <div className="mt-2 space-y-1">
-        <p className="text-xs text-green-600 dark:text-green-400">
-          ✓ {t('Periodo pagado')}{' '}
+        <p className="text-xs text-line-green">
+          <Check className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Periodo pagado')}{' '}
           <button
             type="button"
             onClick={startEditing}
@@ -119,8 +120,8 @@ export function LineBalanceConfirm({ line, periods, statement }: LineBalanceConf
   return (
     <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
       {confirmedBalance != null ? (
-        <span className="text-green-600 dark:text-green-400">
-          ✓ {t('Saldo confirmado:')} <Money amount={confirmedBalance} currency={statement.currency} />
+        <span className="text-line-green">
+          <Check className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Saldo confirmado:')} <Money amount={confirmedBalance} currency={statement.currency} />
         </span>
       ) : (
         t('¿Coincide con tu estado de cuenta?')

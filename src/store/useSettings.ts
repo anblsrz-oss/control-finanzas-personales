@@ -95,7 +95,7 @@ function applyTheme(theme: ThemePref) {
   document.documentElement.classList.toggle('dark', dark)
   // Color de la barra del navegador / status bar coherente con el tema.
   const meta = document.querySelector('meta[name="theme-color"]')
-  if (meta) meta.setAttribute('content', dark ? '#0f172a' : '#0f766e')
+  if (meta) meta.setAttribute('content', dark ? '#080d20' : '#1a3fae')
   // App nativa: íconos de la barra de estado claros u oscuros según el tema.
   void setNativeStatusBarStyle(dark)
 }

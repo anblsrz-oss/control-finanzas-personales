@@ -12,11 +12,11 @@ export interface ThemeColors {
   dark: { bg: string; surface: string }
 }
 
-// Valores por defecto: equivalen al tema teal original y a los fondos slate.
+// Valores por defecto: cobalto sobre porcelana (claro) y esmalte medianoche (oscuro).
 export const DEFAULT_THEME_COLORS: ThemeColors = {
-  brand: '#0d9488',
-  light: { bg: '#f8fafc', surface: '#ffffff' },
-  dark: { bg: '#0f172a', surface: '#1e293b' },
+  brand: '#1f4fd8',
+  light: { bg: '#f3f5fa', surface: '#ffffff' },
+  dark: { bg: '#080d20', surface: '#111a36' },
 }
 
 // Deriva la rampa brand (50,100,500,600,700,800) desde un color de acento.

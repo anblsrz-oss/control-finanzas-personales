@@ -262,7 +262,7 @@ export function NotificationCapturePage() {
               </div>
             )}
             {granted && serviceDown && (
-              <div className="grid gap-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 px-3 py-2 text-sm text-amber-800 dark:text-amber-300">
+              <div className="grid gap-2 rounded-lg bg-line-amber/10 px-3 py-2 text-sm text-line-amber">
                 <p>
                   {t('⚠️ El permiso está dado, pero Android tiene desconectada la lectura de notificaciones y por eso no se captura nada. Abre los ajustes de acceso, apaga "Permitir acceso a las notificaciones" y vuelve a encenderlo.')}
                 </p>
@@ -627,7 +627,7 @@ function AppSettingsModal({
               <button
                 type="button"
                 onClick={() => setRoutes((prev) => prev.filter((_, j) => j !== i))}
-                className="w-fit text-xs font-medium text-red-600 dark:text-red-400 hover:underline"
+                className="w-fit text-xs font-medium text-line-scarlet hover:underline"
               >
                 {t('Quitar regla')}
               </button>

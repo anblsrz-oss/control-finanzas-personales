@@ -1,5 +1,7 @@
 ﻿import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { confirmDialog, showAlert } from '@/components/ui/DialogHost'
+import { Banknote, CreditCard, User, Users } from 'lucide-react'
 import { useAuth } from '@/store/useAuth'
 import {
   useMyFamilies,
@@ -28,8 +30,8 @@ import { Badge } from '@/components/ui/Badge'
 import type { FamilyMemberProfileRow } from '@/types/db'
 
 const STATUS_BADGE: Record<string, { label: string; cls: string }> = {
-  pending: { label: 'Pendiente', cls: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300' },
-  accepted: { label: 'Activo', cls: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300' },
+  pending: { label: 'Pendiente', cls: 'bg-line-amber/10 text-line-amber' },
+  accepted: { label: 'Activo', cls: 'bg-line-green/10 text-line-green' },
   rejected: { label: 'Rechazó', cls: 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400' },
 }
 
@@ -64,10 +66,10 @@ export function FamilyPage() {
 
       {/* Invitaciones pendientes (cualquier usuario) */}
       {invitations.map((inv) => (
-        <Card key={inv.id} className="mb-4 border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
+        <Card key={inv.id} className="mb-4 border-line-amber/30 bg-line-amber/10">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-slate-700 dark:text-slate-200">
-              👨‍👩‍👧‍👦 {t('Te invitaron a la familia')}{' '}
+              <Users className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Te invitaron a la familia')}{' '}
               <span className="font-semibold">
                 {inv.families?.name ?? t('Sin nombre')}
               </span>
@@ -130,7 +132,7 @@ export function FamilyPage() {
                   userId &&
                   createFamily.mutate(
                     { userId, name: familyName.trim() },
-                    { onError: (e: any) => alert(`Error: ${e.message}`) },
+                    { onError: (e: any) => showAlert(`Error: ${e.message}`) },
                   )
                 }
               >
@@ -139,9 +141,9 @@ export function FamilyPage() {
             </div>
           </Card>
         ) : (
-          <Card className="border-amber-200 dark:border-amber-800">
+          <Card className="border-line-amber/30">
             <div className="flex flex-col items-center gap-3 py-4 text-center">
-              <Badge className="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
+              <Badge className="bg-line-amber/10 text-line-amber">
                 {t('Función Premium')}
               </Badge>
               <p className="max-w-md text-sm text-slate-600 dark:text-slate-300">
@@ -213,10 +215,10 @@ function FamilyDetail({
     return map
   }, [familyCards])
 
-  function handleLeave() {
+  async function handleLeave() {
     const mine = members.find((m) => m.user_id === userId)
     if (!mine) return
-    if (!confirm(t('¿Salir de la familia? Tus gastos familiares pasados seguirán en el historial de la familia.'))) return
+    if (!await confirmDialog(t('¿Salir de la familia? Tus gastos familiares pasados seguirán en el historial de la familia.'))) return
     removeMember.mutate({ memberId: mine.member_id, familyId })
   }
 
@@ -226,23 +228,23 @@ function FamilyDetail({
       <Card>
         <div className="mb-3 flex items-center justify-between">
           <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-            👨‍👩‍👧‍👦 {familyName} — {t('miembros')}
+            <Users className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {familyName} — {t('miembros')}
           </p>
           {isOwner ? (
             <Button
               size="sm"
               variant="danger"
               disabled={deleteFamily.isPending}
-              onClick={() => {
+              onClick={async () => {
                 if (
                   userId &&
-                  confirm(
+                  await confirmDialog(
                     t('¿Eliminar la familia "{{name}}"? Se borrarán los gastos familiares, los miembros y las tarjetas compartidas. Esta acción no se puede deshacer.', { name: familyName }),
                   )
                 ) {
                   deleteFamily.mutate(
                     { familyId, userId },
-                    { onError: (e: any) => alert(`Error: ${e.message}`) },
+                    { onError: (e: any) => showAlert(`Error: ${e.message}`) },
                   )
                 }
               }}
@@ -281,7 +283,7 @@ function FamilyDetail({
                         )
                       },
                       onError: (e: any) =>
-                        alert(
+                        showAlert(
                           e?.code === '23505'
                             ? t('Ese correo ya fue invitado.')
                             : `Error: ${e.message}`,
@@ -318,7 +320,7 @@ function FamilyDetail({
                     />
                   ) : (
                     <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-sm">
-                      👤
+                      <User className="inline h-4 w-4" aria-hidden="true" />
                     </span>
                   )}
                   <div>
@@ -337,9 +339,9 @@ function FamilyDetail({
                     <Button
                       size="sm"
                       variant="ghost"
-                      onClick={() => {
+                      onClick={async () => {
                         if (
-                          confirm(
+                          await confirmDialog(
                             t('¿Quitar a {{name}}? Sus gastos familiares pasados se conservan en el historial.', { name: memberLabel(m) }),
                           )
                         ) {
@@ -366,7 +368,7 @@ function FamilyDetail({
       {/* Tarjetas compartidas */}
       <Card>
         <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-          💳 {t('Tarjetas compartidas')}
+          <CreditCard className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Tarjetas compartidas')}
         </p>
 
         {isOwner ? (
@@ -415,7 +417,7 @@ function FamilyDetail({
                               { familyId, cardId: c.id },
                               {
                                 onError: (e: any) =>
-                                  alert(`Error: ${e.message}`),
+                                  showAlert(`Error: ${e.message}`),
                               },
                             )
                       }
@@ -460,7 +462,7 @@ function FamilyDetail({
       {/* Movimientos familiares */}
       <Card>
         <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-          💸 {t('Movimientos familiares')}
+          <Banknote className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Movimientos familiares')}
         </p>
         {familyTxs.length === 0 ? (
           <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -483,7 +485,7 @@ function FamilyDetail({
                     {cardNameById[tx.card_id ?? ''] ?? t('Tarjeta')}
                   </p>
                 </div>
-                <span className="text-sm font-medium text-red-600 dark:text-red-400">
+                <span className="text-sm font-medium text-line-scarlet">
                   -{formatMoney(tx.amount, tx.currency)}
                 </span>
               </li>

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ChevronDown, Search } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
@@ -66,6 +67,8 @@ interface TransactionFiltersProps {
   resultCount: number
   /** Si puede usar el selector de periodo (Hoy/Semana/Mes/Personalizado) o solo Desde/Hasta crudos. */
   canUsePeriodFilter: boolean
+  /** Movimientos pendientes de confirmar (total, sin importar los filtros). */
+  pendingCount: number
 }
 
 export function TransactionFilters({
@@ -77,6 +80,7 @@ export function TransactionFilters({
   currencyOptions,
   resultCount,
   canUsePeriodFilter,
+  pendingCount,
 }: TransactionFiltersProps) {
   const { t } = useTranslation()
   const active = countActiveFilters(value)
@@ -87,7 +91,45 @@ export function TransactionFilters({
   const set = <K extends keyof FilterState>(key: K, v: FilterState[K]) =>
     onChange({ ...value, [key]: v })
 
+  const chips: { id: FilterState['status']; label: string; count?: number }[] = [
+    { id: '', label: t('Todas') },
+    { id: 'pending', label: t('Pendientes'), count: pendingCount },
+    { id: 'settled', label: t('Confirmadas') },
+  ]
+
   return (
+    <>
+      {/* Filtro rápido: siempre visible, sin abrir el panel de filtros. */}
+      <div role="group" aria-label={t('Estado')} className="mb-3 flex flex-wrap gap-2">
+        {chips.map((c) => {
+          const selected = value.status === c.id
+          return (
+            <button
+              key={c.id || 'all'}
+              type="button"
+              aria-pressed={selected}
+              onClick={() => set('status', c.id)}
+              className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 text-sm font-semibold transition-colors ${
+                selected
+                  ? 'border-brand-600 bg-brand-600 text-white'
+                  : 'border-slate-300 bg-surface text-slate-700 hover:border-brand-600 dark:border-slate-600 dark:text-slate-200'
+              }`}
+            >
+              {c.label}
+              {c.count != null && c.count > 0 && (
+                <span
+                  className={`min-w-[1.25rem] rounded-full px-1.5 text-center text-xs font-bold leading-5 ${
+                    selected ? 'bg-white/25 text-white' : 'bg-line-amber text-white'
+                  }`}
+                >
+                  {c.count > 99 ? '99+' : c.count}
+                </span>
+              )}
+            </button>
+          )
+        })}
+      </div>
+
     <Card className="mb-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <button
@@ -96,13 +138,13 @@ export function TransactionFilters({
           className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200"
           aria-expanded={open}
         >
-          <span>🔍 {t('Filtros')}</span>
+          <span className="inline-flex items-center gap-1.5"><Search className="h-4 w-4" aria-hidden="true" /> {t('Filtros')}</span>
           {active > 0 && (
-            <span className="rounded-full bg-brand-500 px-2 py-0.5 text-xs font-medium text-white">
+            <span className="rounded-full bg-brand-600 px-2 py-0.5 text-xs font-medium text-white">
               {active}
             </span>
           )}
-          <span className="text-slate-400">{open ? '▴' : '▾'}</span>
+          <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
         </button>
         <div className="flex items-center gap-3">
           <span className="text-xs text-slate-500 dark:text-slate-400">
@@ -230,5 +272,6 @@ export function TransactionFilters({
         </div>
       )}
     </Card>
+    </>
   )
 }

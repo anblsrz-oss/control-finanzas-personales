@@ -105,7 +105,7 @@ export function ColorPickerFull({
         </button>
 
         {open && (
-          <div className="space-y-3 rounded-lg bg-slate-50 dark:bg-slate-900 p-3">
+          <div className="space-y-3 rounded-lg bg-canvas p-3">
             <div className="flex flex-wrap items-end gap-3">
               <div>
                 <label className="mb-1 block text-xs text-slate-600 dark:text-slate-300">
@@ -129,7 +129,7 @@ export function ColorPickerFull({
                     max={255}
                     value={[r, g, b][i]}
                     onChange={(e) => setChannel(i as 0 | 1 | 2, e.target.value)}
-                    className="w-16 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-2 py-1.5 text-sm"
+                    className="w-16 rounded-md border border-slate-300 dark:border-slate-600 bg-surface px-2 py-1.5 text-sm"
                   />
                 </div>
               ))}
@@ -142,7 +142,7 @@ export function ColorPickerFull({
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
                   placeholder="#3b82f6"
-                  className={`w-24 rounded-lg border bg-white dark:bg-slate-800 px-2 py-1.5 font-mono text-sm ${
+                  className={`w-24 rounded-lg border bg-surface px-2 py-1.5 font-mono text-sm ${
                     isHexColor(draft)
                       ? 'border-slate-300 dark:border-slate-600'
                       : 'border-red-500'

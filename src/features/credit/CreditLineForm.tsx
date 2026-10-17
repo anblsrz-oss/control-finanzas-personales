@@ -1,4 +1,7 @@
 import { useState } from 'react'
+import { optionalInt } from '@/lib/zodHelpers'
+import { Switch } from '@/components/ui/FormKit'
+import { showAlert } from '@/components/ui/DialogHost'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -18,8 +21,8 @@ const schema = z.object({
   bank_name: z.string().optional(),
   credit_limit: z.coerce.number().positive('El límite debe ser mayor a 0'),
   currency: z.enum(CURRENCIES_ARRAY),
-  cut_day: z.coerce.number().optional(),
-  payment_day: z.coerce.number().optional(),
+  cut_day: optionalInt(1, 31, 'Entre 1 y 31'),
+  payment_day: optionalInt(1, 31, 'Entre 1 y 31'),
   dates_may_shift: z.boolean().default(false),
 })
 
@@ -58,7 +61,7 @@ export function CreditLineForm({ line, onSuccess, onCancel }: CreditLineFormProp
 
   function onSubmit(data: FormData) {
     if (!session?.user?.id) {
-      alert(t('No hay sesión activa'))
+      showAlert(t('No hay sesión activa'))
       return
     }
     setError(null)
@@ -90,9 +93,9 @@ export function CreditLineForm({ line, onSuccess, onCancel }: CreditLineFormProp
   }
 
   return (
-    <Card className="mb-6 bg-slate-50 dark:bg-slate-900">
+    <Card className="mb-6">
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
           <Input
             label={t('Nombre de la línea')}
             placeholder={t('Ej: Nu')}
@@ -106,7 +109,7 @@ export function CreditLineForm({ line, onSuccess, onCancel }: CreditLineFormProp
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
           <Input
             label={t('Límite de crédito')}
             type="number"
@@ -122,7 +125,7 @@ export function CreditLineForm({ line, onSuccess, onCancel }: CreditLineFormProp
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
           <Input
             label={t('Día de corte')}
             type="number"
@@ -130,6 +133,7 @@ export function CreditLineForm({ line, onSuccess, onCancel }: CreditLineFormProp
             min="1"
             max="31"
             {...form.register('cut_day')}
+            error={form.formState.errors.cut_day?.message}
           />
           <Input
             label={t('Día de pago')}
@@ -138,30 +142,24 @@ export function CreditLineForm({ line, onSuccess, onCancel }: CreditLineFormProp
             min="1"
             max="31"
             {...form.register('payment_day')}
+            error={form.formState.errors.payment_day?.message}
           />
         </div>
 
-        <label className="flex items-start gap-2">
-          <input
-            type="checkbox"
-            {...form.register('dates_may_shift')}
-            className="mt-0.5 cursor-pointer"
-          />
-          <span className="text-sm text-slate-700 dark:text-slate-200">
-            📅 {t('Las fechas se recorren en días inhábiles')}
-            <span className="block text-xs text-slate-400 dark:text-slate-500">
-              {t('Te preguntaremos la fecha real cuando llegue el corte.')}
-            </span>
-          </span>
-        </label>
+        <Switch
+          checked={!!form.watch('dates_may_shift')}
+          onChange={(v) => form.setValue('dates_may_shift', v)}
+          label={t('Las fechas se recorren en días inhábiles')}
+          description={t('Te preguntaremos la fecha real cuando llegue el corte.')}
+        />
 
         {error && (
-          <p className="rounded-md bg-red-50 p-2 text-sm text-red-700 dark:bg-red-900/30 dark:text-red-200">
+          <p className="rounded-md bg-line-scarlet/10 p-2 text-sm text-line-scarlet">
             {error}
           </p>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 border-t border-slate-200 pt-5 dark:border-slate-700/70">
           <Button type="submit" disabled={pending}>
             {pending
               ? t('Guardando…')

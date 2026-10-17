@@ -111,7 +111,7 @@ export function RulePatternEditor({
         onChange={(e) => onSampleChange(e.target.value)}
         rows={4}
         placeholder={t('Pega aquí el texto de un correo de tu banco (asunto y cuerpo)…')}
-        className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-transparent px-3 py-2 text-sm placeholder-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+        className="w-full rounded-md border border-slate-300 dark:border-slate-600 bg-transparent px-3 py-2 text-sm placeholder-slate-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20"
       />
     </div>
   )
@@ -258,7 +258,7 @@ export function RulePatternEditor({
           <p className="mb-1 font-semibold">{t('Vista previa con el correo de ejemplo:')}</p>
           <p>
             {t('Monto')}:{' '}
-            {preview.amount != null ? formatMoney(preview.amount, 'MXN') : <span className="text-red-600">{t('no encontrado (el correo se omitiría)')}</span>}
+            {preview.amount != null ? formatMoney(preview.amount, 'MXN') : <span className="text-line-scarlet">{t('no encontrado (el correo se omitiría)')}</span>}
             {preview.autoAmount && preview.amount != null && <span className="text-slate-400"> · {t('automático')}</span>}
           </p>
           <p>

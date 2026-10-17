@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { CalendarDays, Check } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { formatDate } from '@/lib/format'
 import { currentPeriod, cutDateForMonth, shiftDays } from '@/lib/creditDates'
@@ -38,12 +39,12 @@ export function LinePeriodInfo({ line, periods }: LinePeriodInfoProps) {
   return (
     <div className="mt-3 space-y-2">
       <p className="text-xs text-slate-600 dark:text-slate-300">
-        📅 {t('Corte:')} {formatDate(cutDate)} · {relativeLabel(t, cutDate)}
+        <CalendarDays className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Corte:')} {formatDate(cutDate)} · {relativeLabel(t, cutDate)}
         {' | '}
         {t('Pago:')} {formatDate(paymentDate)} · {relativeLabel(t, paymentDate)}
         {confirmed?.confirmed && (
-          <span className="ml-1 text-green-600 dark:text-green-400">
-            ✓ {t('confirmado')}
+          <span className="ml-1 text-line-green">
+            <Check className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('confirmado')}
           </span>
         )}
       </p>
@@ -69,7 +70,7 @@ export function LinePeriodInfo({ line, periods }: LinePeriodInfoProps) {
                   <li key={p.id}>
                     {formatMonthLabel(p.period_month)}: {t('corte')} {formatDate(p.cut_date)}
                     {shift !== 0 && (
-                      <span className="ml-1 text-amber-600 dark:text-amber-400">
+                      <span className="ml-1 text-line-amber">
                         ({shift > 0 ? '+' : ''}{shift} {t('días')})
                       </span>
                     )}
@@ -78,7 +79,7 @@ export function LinePeriodInfo({ line, periods }: LinePeriodInfoProps) {
                     {p.confirmed_balance != null && (
                       <>
                         {' · '}
-                        <span className="text-green-600 dark:text-green-400">
+                        <span className="text-line-green">
                           {t('pagado')} <Money amount={p.confirmed_balance} currency={line.currency} />
                         </span>
                       </>

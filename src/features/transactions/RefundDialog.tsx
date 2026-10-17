@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { CircleCheck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import {
   useCreateTransaction,
@@ -105,8 +106,8 @@ export function RefundDialog({ transaction, userId, plans, onClose }: RefundDial
         <div className="grid gap-3">
           {cancelledPlan ? (
             <div className="space-y-3">
-              <p className="rounded-lg bg-emerald-50 dark:bg-emerald-900/20 p-3 text-sm text-emerald-800 dark:text-emerald-200">
-                ✅ {t('Reembolso registrado. Este plan de MSI se canceló: ya no se te cobrarán las mensualidades restantes.')}
+              <p className="rounded-lg bg-line-green/10 p-3 text-sm text-line-green">
+                <CircleCheck className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Reembolso registrado. Este plan de MSI se canceló: ya no se te cobrarán las mensualidades restantes.')}
               </p>
               <div className="flex justify-end">
                 <Button onClick={onClose}>{t('Cerrar')}</Button>
@@ -126,7 +127,7 @@ export function RefundDialog({ transaction, userId, plans, onClose }: RefundDial
                 </p>
               )}
               {remaining <= 0 ? (
-                <p className="rounded-lg bg-amber-50 dark:bg-amber-900/20 p-2 text-xs text-amber-700 dark:text-amber-300">
+                <p className="rounded-lg bg-line-amber/10 p-2 text-xs text-line-amber">
                   {t('Esta compra ya se reembolsó por completo.')}
                 </p>
               ) : (
@@ -153,7 +154,7 @@ export function RefundDialog({ transaction, userId, plans, onClose }: RefundDial
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                   />
-                  {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
+                  {error && <p className="text-xs text-line-scarlet">{error}</p>}
                   <div className="flex justify-end gap-2">
                     <Button variant="ghost" onClick={onClose}>
                       {t('Cancelar')}

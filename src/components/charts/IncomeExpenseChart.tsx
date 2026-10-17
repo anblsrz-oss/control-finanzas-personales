@@ -11,11 +11,12 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { useTranslation } from 'react-i18next'
-import { useSettings, resolveIsDark } from '@/store/useSettings'
+import { useSettings } from '@/store/useSettings'
 import type { IncomeExpenseChartType } from '@/store/useSettings'
 import { useMoneyFormat } from '@/components/ui/Money'
 import { CHART_META, seriesColor } from '@/lib/charts'
 import type { ChartId } from '@/lib/charts'
+import { useChartTheme, ChartTooltip, ChartLegend, AXIS_TICK, compact, stationDot } from './chartTheme'
 
 interface DataPoint {
   month: string
@@ -41,14 +42,11 @@ export function IncomeExpenseChart({
   chartId = 'incomeExpense',
 }: IncomeExpenseChartProps) {
   const { t } = useTranslation()
-  const theme = useSettings((s) => s.theme)
   const prefType = useSettings((s) => s.incomeExpenseChartType)
   const config = useSettings((s) => s.chartConfigs[chartId])
   const money = useMoneyFormat()
   const chartType = type ?? prefType
-  const dark = resolveIsDark(theme)
-  const axisColor = dark ? '#94a3b8' : '#475569'
-  const gridColor = dark ? '#334155' : '#e2e8f0'
+  const { axisColor, gridColor, surface, cursorFill } = useChartTheme()
 
   const meta = CHART_META.incomeExpense
   const incomeColor = seriesColor(config, meta, 'income')
@@ -61,48 +59,40 @@ export function IncomeExpenseChart({
   const hasCredit = data.some((d) => (d.credit ?? 0) !== 0)
   const showCredit = hasCredit && !hidden.includes('credit')
 
-  const tooltip = (
-    <Tooltip
-      formatter={(value: number) => money(value, currency)}
-      contentStyle={{
-        backgroundColor: dark ? '#1e293b' : '#ffffff',
-        border: `1px solid ${gridColor}`,
-        borderRadius: 8,
-      }}
-      labelStyle={{ color: dark ? '#f1f5f9' : '#000' }}
-      itemStyle={{ color: axisColor }}
-    />
+  const axes = (
+    <>
+      <CartesianGrid vertical={false} stroke={gridColor} />
+      <XAxis dataKey="monthLabel" tick={{ ...AXIS_TICK, fill: axisColor }} tickLine={false} axisLine={{ stroke: gridColor }} tickMargin={8} />
+      <YAxis tick={{ ...AXIS_TICK, fill: axisColor }} tickLine={false} axisLine={false} tickFormatter={compact} width={44} />
+      <Tooltip
+        cursor={{ stroke: gridColor, fill: cursorFill }}
+        content={<ChartTooltip format={(v) => money(v, currency)} />}
+      />
+      <Legend content={<ChartLegend />} />
+    </>
   )
 
   return (
     <ResponsiveContainer width="100%" height={300}>
       {chartType === 'line' ? (
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-          <XAxis dataKey="monthLabel" tick={{ fill: axisColor }} stroke={gridColor} />
-          <YAxis tick={{ fill: axisColor }} stroke={gridColor} />
-          {tooltip}
-          <Legend wrapperStyle={{ color: axisColor }} />
+        <LineChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+          {axes}
           {showIncome && (
-            <Line type="monotone" dataKey="income" stroke={incomeColor} name={t('Ingresos')} strokeWidth={2} />
+            <Line type="linear" dataKey="income" stroke={incomeColor} name={t('Ingresos')} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" dot={stationDot(incomeColor, surface)} activeDot={stationDot(incomeColor, surface, 6)} />
           )}
           {showExpense && (
-            <Line type="monotone" dataKey="expense" stroke={expenseColor} name={t('Egresos')} strokeWidth={2} />
+            <Line type="linear" dataKey="expense" stroke={expenseColor} name={t('Egresos')} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" dot={stationDot(expenseColor, surface)} activeDot={stationDot(expenseColor, surface, 6)} />
           )}
           {showCredit && (
-            <Line type="monotone" dataKey="credit" stroke={creditColor} name={t('Crédito usado')} strokeWidth={2} />
+            <Line type="linear" dataKey="credit" stroke={creditColor} name={t('Crédito usado')} strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" dot={stationDot(creditColor, surface)} activeDot={stationDot(creditColor, surface, 6)} />
           )}
         </LineChart>
       ) : (
-        <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-          <XAxis dataKey="monthLabel" tick={{ fill: axisColor }} stroke={gridColor} />
-          <YAxis tick={{ fill: axisColor }} stroke={gridColor} />
-          {tooltip}
-          <Legend wrapperStyle={{ color: axisColor }} />
-          {showIncome && <Bar dataKey="income" fill={incomeColor} name={t('Ingresos')} />}
-          {showExpense && <Bar dataKey="expense" fill={expenseColor} name={t('Egresos')} />}
-          {showCredit && <Bar dataKey="credit" fill={creditColor} name={t('Crédito usado')} />}
+        <BarChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 0 }} barGap={3} barCategoryGap="16%">
+          {axes}
+          {showIncome && <Bar dataKey="income" fill={incomeColor} name={t('Ingresos')} radius={[4, 4, 0, 0]} maxBarSize={30} />}
+          {showExpense && <Bar dataKey="expense" fill={expenseColor} name={t('Egresos')} radius={[4, 4, 0, 0]} maxBarSize={30} />}
+          {showCredit && <Bar dataKey="credit" fill={creditColor} name={t('Crédito usado')} radius={[4, 4, 0, 0]} maxBarSize={30} />}
         </BarChart>
       )}
     </ResponsiveContainer>

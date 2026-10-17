@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { Select } from '@/components/ui/Select'
+import { confirmDialog } from '@/components/ui/DialogHost'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import {
@@ -98,9 +100,9 @@ export function YieldForm({
     })
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!session?.user?.id || !currentRecord) return
-    if (confirm(t('¿Eliminar este registro?'))) {
+    if (await confirmDialog(t('¿Eliminar este registro?'))) {
       deleteYield.mutate(
         { id: currentRecord.id, userId: session.user.id },
         {
@@ -115,7 +117,7 @@ export function YieldForm({
   }
 
   return (
-    <Card className="border-blue-200 bg-blue-50 dark:bg-blue-900/20">
+    <Card className="border-line-cobalt/30 bg-line-cobalt/10">
       <p className="mb-3 text-xs font-semibold text-slate-700 dark:text-slate-200">
         {t('Confirma el rendimiento calculado')}{' '}
         {currentRecord ? t('(Editar)') : selectedMonth === monthStartISO() ? t('de este mes') : ''}
@@ -126,23 +128,15 @@ export function YieldForm({
       <div className="space-y-3">
         <div className="flex gap-3">
           <div className="flex-1">
-            <label className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
-              {t('Mes')}
-            </label>
-            <select
+            <Select
+              label={t('Mes')}
               value={selectedMonth}
               onChange={(e) => {
                 setSelectedMonth(e.target.value)
                 setTouched(false)
               }}
-              className="w-full rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm"
-            >
-              {months.map((m) => (
-                <option key={m.value} value={m.value}>
-                  {m.label}
-                </option>
-              ))}
-            </select>
+              options={months.map((m) => ({ value: m.value, label: m.label }))}
+            />
           </div>
           <Input
             label={t('Monto a contabilizar ($)')}
@@ -176,7 +170,7 @@ export function YieldForm({
         {actualGrowth && (
           <div className="text-sm text-slate-600 dark:text-slate-300">
             <p
-              className={`font-semibold ${difference >= 0 ? 'text-green-600' : 'text-red-600 dark:text-red-400'}`}
+              className={`font-semibold ${difference >= 0 ? 'text-line-green' : 'text-line-scarlet'}`}
             >
               {difference >= 0 ? '+' : ''}{formatMoney(difference, account.currency)} ({percentDiff}% {t('vs esperado')})
             </p>

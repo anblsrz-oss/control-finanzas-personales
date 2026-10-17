@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ChevronDown } from 'lucide-react'
 
 interface MultiSelectProps {
   label?: string
@@ -76,8 +77,8 @@ export function MultiSelect({
           type="button"
           onClick={() => setOpen((o) => !o)}
           aria-expanded={open}
-          className={`flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
-            error ? 'border-red-500' : 'border-slate-300 dark:border-slate-600'
+          className={`flex w-full items-center justify-between gap-2 rounded-md border bg-surface px-3 py-2 text-left text-sm transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
+            error ? 'border-line-scarlet' : 'border-slate-300 dark:border-slate-600'
           }`}
         >
           <span className="flex min-w-0 flex-wrap gap-1">
@@ -116,12 +117,12 @@ export function MultiSelect({
               ))
             )}
           </span>
-          <span className="shrink-0 text-slate-400">▾</span>
+          <ChevronDown className={`h-4 w-4 shrink-0 text-slate-400 transition-transform duration-150 ${open ? 'rotate-180' : ''}`} aria-hidden="true" />
         </button>
 
         {dropdownRendered && (
           <div
-            className={`absolute z-20 mt-1 max-h-60 w-full origin-top overflow-auto rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 py-1 shadow-lg transition-[transform,opacity] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:scale-100 motion-reduce:transition-opacity ${
+            className={`absolute z-20 mt-1 max-h-60 w-full origin-top overflow-auto rounded-md border border-slate-200 shadow-xl dark:border-slate-600 bg-surface py-1 shadow-lg transition-[transform,opacity] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:scale-100 motion-reduce:transition-opacity ${
               dropdownVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
             }`}
           >
@@ -133,7 +134,7 @@ export function MultiSelect({
             {options.map((o) => (
               <label
                 key={o.value}
-                className="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700"
+                className="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-800"
               >
                 <input
                   type="checkbox"
@@ -147,7 +148,7 @@ export function MultiSelect({
           </div>
         )}
       </div>
-      {error && <p className="mt-1 text-xs text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="mt-1 text-xs text-line-scarlet">{error}</p>}
     </div>
   )
 }

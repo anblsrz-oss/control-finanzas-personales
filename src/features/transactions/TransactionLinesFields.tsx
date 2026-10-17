@@ -83,7 +83,7 @@ export function TransactionLinesFields({
               <button
                 type="button"
                 onClick={() => onRemove(i)}
-                className="text-slate-400 hover:text-red-500"
+                className="text-slate-400 hover:text-line-scarlet"
                 aria-label={t('Quitar línea')}
                 title={t('Quitar línea')}
               >
@@ -97,7 +97,7 @@ export function TransactionLinesFields({
       {lines.length > 0 && (
         <p
           className={`text-xs font-medium ${
-            matches ? 'text-green-600' : remaining > 0 ? 'text-amber-600' : 'text-red-600'
+            matches ? 'text-line-green' : remaining > 0 ? 'text-line-amber' : 'text-line-scarlet'
           }`}
         >
           {matches

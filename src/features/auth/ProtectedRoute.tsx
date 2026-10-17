@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
+import { isNative } from '@/lib/nativeAuth'
 
 /**
  * Protege las rutas privadas. En la Fase 1 se conecta con el login real de Google.
@@ -20,9 +21,9 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
   }
 
   if (!session) {
-    // Sin sesión: mostrar la landing pública (que a su vez tiene los accesos a
-    // iniciar sesión / crear cuenta).
-    return <Navigate to="/bienvenida" replace />
+    // Sin sesión: la app nativa abre su propio inicio (/inicio); la web, la landing
+    // pública. Ambas tienen los accesos a iniciar sesión / crear cuenta.
+    return <Navigate to={isNative() ? '/inicio' : '/bienvenida'} replace />
   }
 
   return <>{children}</>

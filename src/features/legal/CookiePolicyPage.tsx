@@ -63,7 +63,7 @@ export function CookiePolicyPage() {
   const { data: appConfig } = useAppConfig()
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100">
+    <div className="min-h-screen bg-canvas text-slate-800 dark:text-slate-100">
       <div className="mx-auto max-w-3xl px-6 py-10">
         <Link to="/bienvenida" className="text-xs text-slate-400 dark:text-slate-500 underline">
           {t('← Volver al inicio')}

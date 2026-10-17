@@ -9,11 +9,12 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { useTranslation } from 'react-i18next'
-import { useSettings, resolveIsDark } from '@/store/useSettings'
+import { useSettings } from '@/store/useSettings'
 import { useMoneyFormat } from '@/components/ui/Money'
 import { CHART_META, seriesColor } from '@/lib/charts'
 import type { ChartId } from '@/lib/charts'
 import type { Breakdown } from '@/hooks/useReports'
+import { useChartTheme, ChartTooltip, ChartLegend, AXIS_TICK, compact } from './chartTheme'
 
 interface BreakdownBarChartProps {
   data: Breakdown[]
@@ -26,12 +27,9 @@ interface BreakdownBarChartProps {
 // tanto el desglose por tarjeta como el de por cuenta.
 export function BreakdownBarChart({ data, currency = 'MXN', chartId }: BreakdownBarChartProps) {
   const { t } = useTranslation()
-  const theme = useSettings((s) => s.theme)
   const config = useSettings((s) => s.chartConfigs[chartId])
   const money = useMoneyFormat()
-  const dark = resolveIsDark(theme)
-  const axisColor = dark ? '#94a3b8' : '#475569'
-  const gridColor = dark ? '#334155' : '#e2e8f0'
+  const { axisColor, gridColor, cursorFill } = useChartTheme()
 
   const meta = CHART_META[chartId]
   const incomeColor = seriesColor(config, meta, 'income')
@@ -52,33 +50,18 @@ export function BreakdownBarChart({ data, currency = 'MXN', chartId }: Breakdown
 
   // Horizontal: los nombres de tarjetas/cuentas no caben en un eje X vertical.
   // La altura crece con el número de filas para que las barras no se aplasten.
-  const height = Math.max(220, chartData.length * 48 + 60)
+  const height = Math.max(220, chartData.length * 56 + 60)
 
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <BarChart data={chartData} layout="vertical" margin={{ left: 8, right: 16 }}>
-        <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-        <XAxis type="number" tick={{ fill: axisColor, fontSize: 12 }} stroke={gridColor} />
-        <YAxis
-          type="category"
-          dataKey="name"
-          width={110}
-          tick={{ fill: axisColor, fontSize: 12 }}
-          stroke={gridColor}
-        />
-        <Tooltip
-          formatter={(value: number) => money(value, currency)}
-          contentStyle={{
-            backgroundColor: dark ? '#1e293b' : '#ffffff',
-            border: `1px solid ${gridColor}`,
-            borderRadius: 8,
-          }}
-          labelStyle={{ color: dark ? '#f1f5f9' : '#000' }}
-          itemStyle={{ color: axisColor }}
-        />
-        <Legend wrapperStyle={{ color: axisColor }} />
-        {showIncome && <Bar dataKey="income" fill={incomeColor} name={t('Ingresos')} />}
-        {showExpense && <Bar dataKey="expense" fill={expenseColor} name={t('Egresos')} />}
+      <BarChart data={chartData} layout="vertical" margin={{ top: 4, left: 0, right: 16, bottom: 0 }} barGap={3} barCategoryGap="30%">
+        <CartesianGrid horizontal={false} stroke={gridColor} />
+        <XAxis type="number" tick={{ ...AXIS_TICK, fill: axisColor }} tickLine={false} axisLine={false} tickFormatter={compact} />
+        <YAxis type="category" dataKey="name" width={110} tick={{ ...AXIS_TICK, fill: axisColor }} tickLine={false} axisLine={false} />
+        <Tooltip cursor={{ fill: cursorFill }} content={<ChartTooltip format={(v) => money(v, currency)} />} />
+        <Legend content={<ChartLegend />} />
+        {showIncome && <Bar dataKey="income" fill={incomeColor} name={t('Ingresos')} radius={[0, 4, 4, 0]} maxBarSize={16} />}
+        {showExpense && <Bar dataKey="expense" fill={expenseColor} name={t('Egresos')} radius={[0, 4, 4, 0]} maxBarSize={16} />}
       </BarChart>
     </ResponsiveContainer>
   )

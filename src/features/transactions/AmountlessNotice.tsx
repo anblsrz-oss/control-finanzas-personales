@@ -25,11 +25,11 @@ export function AmountlessNotice({
       minute: '2-digit',
     })
   return (
-    <Card className="mb-4 border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-900/20">
-      <h3 className="text-sm font-semibold text-sky-900 dark:text-sky-100">
+    <Card className="mb-4 border-line-cobalt/30 bg-line-cobalt/10">
+      <h3 className="text-sm font-semibold text-line-cobalt">
         {t('Movimientos sin monto ({{count}})', { count: signals.length })}
       </h3>
-      <p className="mt-1 text-xs text-sky-800 dark:text-sky-200">
+      <p className="mt-1 text-xs text-line-cobalt">
         {t('La app avisó de estos envíos sin decir cuánto. Si llega el correo o SMS con el monto se completan solos; si no, regístralos tú.')}
       </p>
       <ul className="mt-3 space-y-2">

@@ -32,9 +32,9 @@ export interface ChartMeta {
   perPointColors: boolean
 }
 
-const INCOME_COLOR = '#16a34a'
-const EXPENSE_COLOR = '#ef4444'
-const CREDIT_COLOR = '#6366f1'
+const INCOME_COLOR = '#10b981'
+const EXPENSE_COLOR = '#f0505f'
+const CREDIT_COLOR = '#4a78f0'
 
 // Series ingreso/egreso compartidas por las barras agrupadas.
 const incomeExpenseSeries: ChartSeriesMeta[] = [
@@ -79,9 +79,9 @@ export const CHART_META: Record<ChartId, ChartMeta> = {
     titleKey: 'Uso de línea de crédito',
     // Los tres umbrales del semáforo + el color del disponible. No se ocultan.
     series: [
-      { key: 'low', labelKey: 'Uso bajo', defaultColor: '#16a34a', togglable: false },
+      { key: 'low', labelKey: 'Uso bajo', defaultColor: '#10b981', togglable: false },
       { key: 'medium', labelKey: 'Uso medio', defaultColor: '#f59e0b', togglable: false },
-      { key: 'high', labelKey: 'Uso alto', defaultColor: '#ef4444', togglable: false },
+      { key: 'high', labelKey: 'Uso alto', defaultColor: '#f0505f', togglable: false },
       { key: 'available', labelKey: 'Disponible', defaultColor: '#e2e8f0', togglable: false },
     ],
     perPointColors: false,
@@ -93,9 +93,9 @@ export const CHART_META: Record<ChartId, ChartMeta> = {
     // aquí los cortes del semáforo no son fijos, los pone el umbral de cada
     // presupuesto (ver BUDGET_STATUS_COLORS en lib/budgets.ts).
     series: [
-      { key: 'ok', labelKey: 'Dentro del presupuesto', defaultColor: '#16a34a', togglable: false },
+      { key: 'ok', labelKey: 'Dentro del presupuesto', defaultColor: '#10b981', togglable: false },
       { key: 'warn', labelKey: 'Cerca del límite', defaultColor: '#f59e0b', togglable: false },
-      { key: 'over', labelKey: 'Excedido', defaultColor: '#ef4444', togglable: false },
+      { key: 'over', labelKey: 'Excedido', defaultColor: '#f0505f', togglable: false },
       { key: 'available', labelKey: 'Restante', defaultColor: '#e2e8f0', togglable: false },
     ],
     perPointColors: false,

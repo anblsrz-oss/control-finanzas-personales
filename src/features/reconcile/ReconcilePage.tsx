@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { CircleCheck, Minus, Plus, TriangleAlert } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
@@ -340,9 +341,9 @@ export function ReconcilePage() {
           )}
         </div>
 
-        {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
+        {error && <p className="mt-2 text-sm text-line-scarlet">{error}</p>}
         {notice && (
-          <p className="mt-2 rounded-lg bg-amber-50 dark:bg-amber-900/20 p-2 text-xs text-amber-700 dark:text-amber-300">
+          <p className="mt-2 rounded-lg bg-line-amber/10 p-2 text-xs text-line-amber">
             {notice}
           </p>
         )}
@@ -410,7 +411,7 @@ export function ReconcilePage() {
               {/* Falta en la app */}
               <Card>
                 <h3 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  ➕ {t('En el estado de cuenta, no en la app')} ({result.missingInApp.length})
+                  <Plus className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('En el estado de cuenta, no en la app')} ({result.missingInApp.length})
                 </h3>
                 {result.missingInApp.length === 0 ? (
                   <p className="text-xs text-slate-500 dark:text-slate-400">{t('Nada 🎉')}</p>
@@ -464,7 +465,7 @@ export function ReconcilePage() {
               {/* Monto distinto */}
               <Card>
                 <h3 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  ⚠️ {t('Monto distinto')} ({result.amountMismatch.length})
+                  <TriangleAlert className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Monto distinto')} ({result.amountMismatch.length})
                 </h3>
                 {result.amountMismatch.length === 0 ? (
                   <p className="text-xs text-slate-500 dark:text-slate-400">{t('Nada 🎉')}</p>
@@ -473,7 +474,7 @@ export function ReconcilePage() {
                     {result.amountMismatch.map((m, i) => (
                       <div
                         key={i}
-                        className="flex flex-wrap items-center gap-2 rounded border border-amber-200 dark:border-amber-800 p-2 text-sm"
+                        className="flex flex-wrap items-center gap-2 rounded border border-line-amber/30 p-2 text-sm"
                       >
                         <span className="flex-1">
                           {m.line.concept || t('Sin concepto')}{' '}
@@ -500,7 +501,7 @@ export function ReconcilePage() {
               {/* Falta en el estado de cuenta */}
               <Card>
                 <h3 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  ➖ {t('En la app, no en el estado de cuenta')} ({result.missingInStatement.length})
+                  <Minus className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('En la app, no en el estado de cuenta')} ({result.missingInStatement.length})
                 </h3>
                 {result.missingInStatement.length === 0 ? (
                   <p className="text-xs text-slate-500 dark:text-slate-400">{t('Nada 🎉')}</p>
@@ -525,7 +526,7 @@ export function ReconcilePage() {
               {/* Coinciden */}
               <Card>
                 <h3 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  ✅ {t('Coinciden')} ({result.matched.length})
+                  <CircleCheck className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Coinciden')} ({result.matched.length})
                 </h3>
                 <div className="grid gap-1">
                   {result.matched.map((m, i) => (
@@ -544,7 +545,7 @@ export function ReconcilePage() {
                   {t('Guardar conciliación')}
                 </Button>
                 {savedNote && (
-                  <span className="text-xs text-green-600 dark:text-green-400">{savedNote}</span>
+                  <span className="text-xs text-line-green">{savedNote}</span>
                 )}
               </div>
             </div>
@@ -575,12 +576,12 @@ export function ReconcilePage() {
                     </span>
                   </span>
                   <span className="text-xs text-slate-500 dark:text-slate-400">
-                    ✅ {r.matched_count} · ⚠️ {r.amount_mismatch_count} · ➕ {r.missing_in_app_count} · ➖{' '}
+                    <CircleCheck className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {r.matched_count} · ⚠️ {r.amount_mismatch_count} · ➕ {r.missing_in_app_count} · ➖{' '}
                     {r.missing_in_statement_count}
                   </span>
                 </button>
                 {openHistoryId === r.id && r.result && 'missingInApp' in r.result && (
-                  <pre className="mt-2 max-h-64 overflow-auto rounded bg-slate-50 dark:bg-slate-900 p-2 text-xs text-slate-600 dark:text-slate-300">
+                  <pre className="mt-2 max-h-64 overflow-auto rounded bg-canvas p-2 text-xs text-slate-600 dark:text-slate-300">
                     {JSON.stringify(r.result, null, 2)}
                   </pre>
                 )}

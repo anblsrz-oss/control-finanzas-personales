@@ -45,7 +45,7 @@ export function DeleteAccountSection() {
         />
       </label>
       {deleteAccount.error && (
-        <p className="break-words text-sm text-red-600">
+        <p className="break-words text-sm text-line-scarlet">
           {(deleteAccount.error as Error).message}
         </p>
       )}

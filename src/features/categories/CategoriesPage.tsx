@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { confirmDialog } from '@/components/ui/DialogHost'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import {
@@ -18,7 +19,14 @@ import { Select } from '@/components/ui/Select'
 import { EmojiPicker } from '@/components/ui/EmojiPicker'
 import { Emoji } from '@/components/ui/Emoji'
 import { ColorPicker } from '@/components/ui/ColorPicker'
+import { CATEGORY_COLORS } from '@/lib/categoryColors'
 import type { CategoryRow } from '@/types/db'
+
+// Si no se elige ícono se usa una etiqueta; el color se reparte por nombre entre la paleta, para
+// que categorías sin color propio no salgan todas iguales en las gráficas.
+const DEFAULT_ICON = '🏷️'
+const autoColor = (name: string) =>
+  CATEGORY_COLORS[[...name.trim().toLowerCase()].reduce((n, ch) => n + ch.charCodeAt(0), 0) % CATEGORY_COLORS.length]
 
 export function CategoriesPage() {
   const { t } = useTranslation()
@@ -70,21 +78,23 @@ export function CategoriesPage() {
 
   const handleSubmit = async () => {
     if (!name.trim() || !userId) return
+    const finalIcon = icon || DEFAULT_ICON
+    const finalColor = color || autoColor(name)
     if (editingId) {
       updateCategory.mutate(
-        { id: editingId, userId, name, icon, color },
+        { id: editingId, userId, name, icon: finalIcon, color: finalColor },
         { onSuccess: resetForm },
       )
     } else {
       createCategory.mutate(
-        { userId, name, kind, icon, color },
+        { userId, name, kind, icon: finalIcon, color: finalColor },
         { onSuccess: resetForm },
       )
     }
   }
 
-  const handleDelete = (id: string) => {
-    if (confirm(t('¿Eliminar esta categoría?'))) {
+  const handleDelete = async (id: string) => {
+    if (await confirmDialog(t('¿Eliminar esta categoría?'))) {
       deleteCategory.mutate({ id, userId: userId! })
     }
   }
@@ -133,7 +143,7 @@ export function CategoriesPage() {
 
       {showForm && (
         <div ref={formRef} className="scroll-mt-4">
-        <Card className="mb-6 bg-slate-50 dark:bg-slate-900">
+        <Card className="mb-6 bg-canvas">
           <div className="space-y-3">
             <Input
               label={t('Nombre')}
@@ -153,7 +163,13 @@ export function CategoriesPage() {
               disabled={!!editingId}
             />
             <EmojiPicker label={t('Ícono')} value={icon} onChange={setIcon} />
+            {!icon && (
+              <p className="-mt-2 text-xs text-slate-500 dark:text-slate-400">{t('Si no eliges ícono, se usará una etiqueta.')}</p>
+            )}
             <ColorPicker label={t('Color')} value={color} onChange={setColor} />
+            {!color && (
+              <p className="-mt-2 text-xs text-slate-500 dark:text-slate-400">{t('Si no eliges color, se asigna uno automáticamente.')}</p>
+            )}
             <Button onClick={handleSubmit} disabled={pending || !name.trim()}>
               {pending
                 ? t('Guardando…')
