@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { CircleCheck, Minus, Plus, TriangleAlert } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -159,6 +160,8 @@ export function ReconcilePage() {
 
   async function runComparison() {
     if (!file || !target) return
+    // Primero y de forma síncrona: el botón responde al instante, antes de re-renderizar el resto.
+    flushSync(() => setBusy(true))
     setError(null)
     setNotice(null)
     setExtraction(null)
@@ -166,7 +169,6 @@ export function ReconcilePage() {
     setAddResult(null)
     setSelectedMissing({})
     setProgress(0)
-    setBusy(true)
     // Deja pintar el botón en "Analizando…" antes de que pdfjs ocupe el hilo principal.
     await new Promise<void>((r) => requestAnimationFrame(() => setTimeout(r, 0)))
     try {
@@ -361,6 +363,12 @@ export function ReconcilePage() {
             disabled={!file || !target || busy || reconcileLimit.reached}
             className={busy ? 'animate-pulse' : ''}
           >
+            {busy && (
+              <span
+                aria-hidden
+                className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
+              />
+            )}
             {busy ? t('Analizando…') : t('Comparar')}
           </Button>
           {busy && progress > 0 && (
