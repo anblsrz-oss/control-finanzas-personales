@@ -305,6 +305,7 @@ export const en: Record<string, string> = {
   'Ej: Carnet, UnionPay': 'E.g. Carnet, UnionPay',
   // Líneas de crédito
   'Línea de crédito': 'Credit line',
+  'Línea': 'Line',
   'Selecciona una línea': 'Select a line',
   '➕ Nueva línea de crédito': '➕ New credit line',
   'Varias tarjetas del mismo banco comparten un solo límite y las mismas fechas de corte y pago. Selecciona la línea que ya usas o crea una nueva.':

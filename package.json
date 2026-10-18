@@ -1,13 +1,13 @@
 {
   "name": "ahorbit",
   "private": true,
-  "version": "0.19.1",
+  "version": "0.19.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "node --test src/lib/seoRoutes.test.ts",
+    "test": "node --test src/lib/seoRoutes.test.ts src/lib/statementReconcile.test.ts src/lib/statementForeign.test.ts src/lib/interest.test.ts",
     "lint": "tsc --noEmit",
     "emoji:sync": "node scripts/sync-emoji-assets.mjs",
     "cap:sync": "npm run build && npx cap sync",

@@ -15,6 +15,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-18-conciliacion-mas-confiable',
+    date: '2026-10-18',
+    title: 'Conciliación más confiable',
+    description:
+      'Compara el estado de cuenta contra una línea de crédito completa (tarjeta física y virtual juntas) con el nuevo selector "Línea". Los movimientos se empatan aunque el banco cambie el nombre o la fecha unos días, y ya se leen bien los cargos en moneda extranjera y las compras de los estados de NU. Además el botón Comparar responde al instante, muestra el avance real y la lectura de los estados de cuenta escaneados es mucho más precisa.',
+  },
+  {
     id: '2026-10-17-pago-tarjeta-y-diferir',
     date: '2026-10-17',
     title: 'Pago de tarjeta a tu medida y compras a meses con intereses',
@@ -27,26 +34,5 @@ export const CHANGELOG: ChangelogEntry[] = [
     title: 'Taffy cobra vida',
     description:
       'Taffy ahora reacciona: se mueve cuando la tocas, inclina la cabeza mientras piensa, se alegra al responderte y te saluda de vez en cuando desde la burbuja. En la app del celular también vibra un poco al tocarla.',
-  },
-  {
-    id: '2026-10-16-asistente-y-guias',
-    date: '2026-10-16',
-    title: 'Asistente de ayuda y guías de todas las funciones',
-    description:
-      'Conoce a Taffy, el nuevo asistente (la burbuja de abajo a la derecha): contesta tus dudas sobre la app y te ayuda a crear cuentas, tarjetas, categorías, presupuestos y suscripciones; antes de guardar nada te pide confirmación. Además, Preguntas frecuentes ahora trae una guía paso a paso de cada sección.',
-  },
-  {
-    id: '2026-10-16-nuevo-diseno',
-    date: '2026-10-16',
-    title: 'Nuevo diseño, inicio de la app y página de Suscripción',
-    description:
-      'Estrenamos diseño: nueva paleta, tipografía y gráficas, ventanas de confirmación propias, listas desplegables con búsqueda y formularios más claros. En la app del celular hay una pantalla de inicio propia y la pantalla de arranque con tu logo, y los planes viven ahora en la página de Suscripción. En Transacciones puedes filtrar rápido lo pendiente de confirmar y elegir un motivo rápido (duplicado, error de captura…) al eliminar.',
-  },
-  {
-    id: '2026-10-11-captura-cuenta-o-tarjeta-por-palabras',
-    date: '2026-10-11',
-    title: 'Captura automática: cuenta o tarjeta según el aviso, y menos falsos movimientos',
-    description:
-      'En Captura por notificaciones → Ajustes de cada app ahora puedes decir a qué cuenta o tarjeta va un aviso según sus palabras (por ejemplo, en Mercado Pago "debitamos" a tu cuenta y "compra" a tu tarjeta de crédito), para las apps que no dicen la terminación. Además: las compras de DiDi Card que avisa DiDi Food ya se registran, las promociones con monto ("¿Vas por los $30,000 mensuales?", "¡Continúas con el 12% anual!") ya no entran como movimientos, un SMS ya no se registra dos veces, y una transferencia entre tus cuentas avisada por los dos bancos queda como un solo movimiento.',
   },
 ]

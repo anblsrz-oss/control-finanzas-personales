@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { CircleCheck, Minus, Plus, TriangleAlert } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useAccounts } from '@/hooks/useAccounts'
 import { useCards } from '@/hooks/useCards'
+import { useCreditLines } from '@/hooks/useCreditLines'
 import { useEntitlements, useMonthlyLimit } from '@/hooks/useAppConfig'
 import { useCreateTransaction } from '@/hooks/useTransactions'
 import { useOcrReceipt, type StatementExtraction } from '@/hooks/useOcrReceipt'
@@ -21,7 +23,7 @@ import {
   type ReconcileResult,
   type StatementLine,
 } from '@/lib/statementReconcile'
-import { monthStartISO, todayISO } from '@/lib/dates'
+import { monthStartISO, parseLocalDate, toISODate, todayISO } from '@/lib/dates'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { PremiumLocked } from '@/components/ui/PremiumLocked'
 import { Card } from '@/components/ui/Card'
@@ -49,6 +51,12 @@ function reconcileExternalId(instrumentId: string, l: StatementLine): string {
   return 'rec_' + hashRow([instrumentId, l.txDate, l.amount, l.concept]).slice(4)
 }
 
+function shiftISO(iso: string, days: number): string {
+  const d = parseLocalDate(iso)
+  d.setDate(d.getDate() + days)
+  return toISODate(d)
+}
+
 export function ReconcilePage() {
   const { t } = useTranslation()
   const { session } = useAuth()
@@ -58,17 +66,20 @@ export function ReconcilePage() {
 
   const accounts = useAccounts(userId).data || []
   const cards = useCards(userId).data || []
+  const creditLines = useCreditLines(userId).data || []
   const historyQuery = useReconciliations(userId)
   const ocr = useOcrReceipt()
   const createTx = useCreateTransaction()
   const saveReconciliation = useSaveReconciliation()
 
-  // target = "account:<id>" | "card:<id>"
+  // target = "account:<id>" | "card:<id>" | "line:<id>" (línea de crédito: todas sus tarjetas)
   const [target, setTarget] = useState('')
   const [periodStart, setPeriodStart] = useState(monthStartISO())
   const [periodEnd, setPeriodEnd] = useState(todayISO())
   const [file, setFile] = useState<File | null>(null)
   const [progress, setProgress] = useState(0)
+  // `ocr.isPending` solo cubre la llamada a la edge; leer el PDF antes también tarda.
+  const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [extraction, setExtraction] = useState<StatementExtraction | null>(null)
@@ -82,18 +93,34 @@ export function ReconcilePage() {
 
   const [type, id] = target.split(':')
   const account = type === 'account' ? accounts.find((a) => a.id === id) : undefined
-  const card = type === 'card' ? cards.find((c) => c.id === id) : undefined
-  const creditLineId = card?.credit_line_id ?? null
-  const targetCurrency = account?.currency || card?.currency || 'MXN'
-  const instrumentName = account?.name || card?.name || ''
+  const selectedCard = type === 'card' ? cards.find((c) => c.id === id) : undefined
+  const creditLine = type === 'line' ? creditLines.find((l) => l.id === id) : undefined
+  const creditLineId = creditLine?.id ?? selectedCard?.credit_line_id ?? null
+  const lineCards = creditLine ? cards.filter((c) => c.credit_line_id === creditLine.id) : []
+  // Tarjetas cuyas compras entran a la comparación (una línea trae física y virtual).
+  const cardIds = selectedCard ? [selectedCard.id] : lineCards.map((c) => c.id)
+  const lastLast4 = extraction?.accountLast4
+  // Tarjeta a la que se asignan las compras faltantes que se agreguen / se guarda la conciliación.
+  const bookCard = selectedCard ?? (lastLast4 ? lineCards.find((c) => c.last4 === lastLast4) : undefined) ?? lineCards[0]
+  const targetCurrency = account?.currency || selectedCard?.currency || creditLine?.currency || 'MXN'
+  const instrumentName = account?.name || selectedCard?.name || creditLine?.name || ''
+
+  // Las transacciones de la app se piden según las fechas del propio estado de
+  // cuenta (± margen), no las de Desde/Hasta: un corte que cruza de mes las recortaba.
+  const queryRange = useMemo(() => {
+    const dates = (extraction?.transactions ?? []).map((tx) => tx.txDate).filter(Boolean).sort()
+    if (dates.length === 0) return null
+    const pad = Math.max(Number(dateWindowDays) || 4, 10)
+    return { start: shiftISO(dates[0], -pad), end: shiftISO(dates[dates.length - 1], pad) }
+  }, [extraction, dateWindowDays])
 
   const txnsQuery = useReconcileTransactions({
     userId,
-    cardId: card?.id,
+    cardIds,
     accountId: account?.id,
     creditLineId,
-    startDate: extraction ? periodStart : undefined,
-    endDate: extraction ? periodEnd : undefined,
+    startDate: queryRange?.start,
+    endDate: queryRange?.end,
   })
 
   const lines: StatementLine[] = useMemo(
@@ -142,6 +169,8 @@ export function ReconcilePage() {
 
   async function runComparison() {
     if (!file || !target) return
+    // Primero y de forma síncrona: el botón responde al instante, antes de re-renderizar el resto.
+    flushSync(() => setBusy(true))
     setError(null)
     setNotice(null)
     setExtraction(null)
@@ -149,12 +178,32 @@ export function ReconcilePage() {
     setAddResult(null)
     setSelectedMissing({})
     setProgress(0)
+    // Deja pintar el botón en "Analizando…" antes de que pdfjs ocupe el hilo principal.
+    await new Promise<void>((r) => requestAnimationFrame(() => setTimeout(r, 0)))
     try {
-      const { extraction: ex, truncated } = await ingestStatementFile(
-        file,
-        (input) => ocr.mutateAsync(input) as Promise<StatementExtraction>,
-        setProgress,
-      )
+      // Mitad del avance = leer el archivo; la otra mitad = análisis (no mide su avance,
+      // así que se acerca al 95% poco a poco y solo llega a 100% cuando hay resultado).
+      let analyzing = false
+      let creep: ReturnType<typeof setInterval> | undefined
+      let ex: StatementExtraction
+      let truncated: boolean | undefined
+      try {
+        ;({ extraction: ex, truncated } = await ingestStatementFile(
+          file,
+          (input) => {
+            analyzing = true
+            setProgress(0.5)
+            creep = setInterval(() => setProgress((p) => Math.min(0.95, p + (0.95 - p) * 0.06)), 400)
+            return ocr.mutateAsync(input) as Promise<StatementExtraction>
+          },
+          (p) => {
+            if (!analyzing) setProgress(p * 0.5)
+          },
+        ))
+      } finally {
+        clearInterval(creep)
+      }
+      setProgress(1)
       if (!ex.transactions || ex.transactions.length === 0) {
         setError(t('No se detectaron movimientos en el documento. Intenta con otro archivo.'))
         return
@@ -162,10 +211,13 @@ export function ReconcilePage() {
       if (truncated) {
         setNotice(t('El PDF tiene más de 8 páginas; solo se analizaron las primeras 8.'))
       }
+      // Una línea agrupa física y virtual (y puede traer una no registrada): no se avisa por last4.
+      const knownLast4 = (selectedCard ? [selectedCard] : []).map((c) => c.last4).filter(Boolean)
       if (
         ex.accountLast4 &&
-        card?.last4 &&
-        ex.accountLast4 !== card.last4 &&
+        (knownLast4.length > 0 || !!account) &&
+        // El OCR a veces corta un dígito (362 por 2362): se acepta si uno termina en el otro.
+        !knownLast4.some((k) => k && (k.endsWith(ex.accountLast4 as string) || (ex.accountLast4 as string).endsWith(k))) &&
         account?.account_last4 !== ex.accountLast4 &&
         account?.account_number_last4 !== ex.accountLast4
       ) {
@@ -176,6 +228,13 @@ export function ReconcilePage() {
         )
       }
       setExtraction(ex)
+      setBusy(false) // el resultado ya se muestra; las tasas de cambio siguen en segundo plano
+      // El periodo guardado refleja lo que realmente cubre el estado de cuenta.
+      const ds = ex.transactions.map((tx) => tx.txDate).filter(Boolean).sort()
+      if (ds.length > 0) {
+        setPeriodStart(ds[0])
+        setPeriodEnd(ds[ds.length - 1])
+      }
 
       // Tasas de cambio para las líneas en otra moneda distinta a la del
       // instrumento (en segundo plano; el matcher las usa cuando llegan).
@@ -196,6 +255,8 @@ export function ReconcilePage() {
       }
     } catch (e) {
       setError((e as Error).message)
+    } finally {
+      setBusy(false)
     }
   }
 
@@ -216,7 +277,7 @@ export function ReconcilePage() {
           currency: l.currency || targetCurrency,
           concept: l.concept,
           accountId: account?.id,
-          cardId: card?.id,
+          cardId: bookCard?.id,
           txDate: l.txDate,
           source: 'receipt',
           externalId: reconcileExternalId(id, l),
@@ -241,7 +302,7 @@ export function ReconcilePage() {
     if (!userId || !result || !buckets) return
     await saveReconciliation.mutateAsync({
       userId,
-      cardId: card?.id,
+      cardId: bookCard?.id,
       accountId: account?.id,
       periodStart,
       periodEnd,
@@ -295,6 +356,7 @@ export function ReconcilePage() {
             options={[
               { value: '', label: t('Selecciona…') },
               ...accounts.map((a) => ({ value: `account:${a.id}`, label: `🏦 ${a.name}` })),
+              ...creditLines.map((l) => ({ value: `line:${l.id}`, label: `🗂️ ${t('Línea')} ${l.name}` })),
               ...cards.map((c) => ({ value: `card:${c.id}`, label: `💳 ${c.name}` })),
             ]}
           />
@@ -330,11 +392,18 @@ export function ReconcilePage() {
           <Button
             data-tour="conciliacion"
             onClick={runComparison}
-            disabled={!file || !target || ocr.isPending || reconcileLimit.reached}
+            disabled={!file || !target || busy || reconcileLimit.reached}
+            className={busy ? 'animate-pulse' : ''}
           >
-            {ocr.isPending ? t('Analizando…') : t('Comparar')}
+            {busy && (
+              <span
+                aria-hidden
+                className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
+              />
+            )}
+            {busy ? t('Analizando…') : t('Comparar')}
           </Button>
-          {ocr.isPending && progress > 0 && (
+          {busy && progress > 0 && (
             <span className="text-xs text-slate-500 dark:text-slate-400">
               {Math.round(progress * 100)}%
             </span>

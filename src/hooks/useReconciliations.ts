@@ -13,27 +13,28 @@ import type {
 // aparece en el estado de cuenta.
 export function useReconcileTransactions(params: {
   userId?: string
-  cardId?: string
+  /** Una o varias tarjetas (una línea de crédito trae física y virtual). */
+  cardIds?: string[]
   accountId?: string
   creditLineId?: string | null
   startDate?: string
   endDate?: string
 }) {
-  const { userId, cardId, accountId, creditLineId, startDate, endDate } = params
+  const { userId, cardIds, accountId, creditLineId, startDate, endDate } = params
   return useQuery({
     queryKey: [
       'reconcile_transactions',
       userId,
-      cardId,
+      cardIds?.join(','),
       accountId,
       creditLineId,
       startDate,
       endDate,
     ],
     queryFn: async () => {
-      if (!userId || (!cardId && !accountId) || !startDate || !endDate) return []
+      if (!userId || (!cardIds?.length && !accountId) || !startDate || !endDate) return []
       const ors: string[] = []
-      if (cardId) ors.push(`card_id.eq.${cardId}`)
+      if (cardIds?.length) ors.push(`card_id.in.(${cardIds.join(',')})`)
       if (accountId) {
         ors.push(`account_id.eq.${accountId}`, `to_account_id.eq.${accountId}`)
       }
@@ -51,7 +52,7 @@ export function useReconcileTransactions(params: {
       if (error) throw error
       return (data || []) as TransactionRow[]
     },
-    enabled: !!userId && (!!cardId || !!accountId) && !!startDate && !!endDate,
+    enabled: !!userId && (!!cardIds?.length || !!accountId) && !!startDate && !!endDate,
   })
 }
 
