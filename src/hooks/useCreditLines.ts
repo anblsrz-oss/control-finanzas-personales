@@ -371,6 +371,8 @@ export function useUpdateCreditLine() {
       cut_day?: number | null
       payment_day?: number | null
       dates_may_shift?: boolean
+      /** null = descartar/aplicar la sugerencia de límite del banco. */
+      suggested_limit?: null
     }) => {
       const { id, userId, ...rest } = input
       const updates: Record<string, any> = {}
@@ -381,6 +383,7 @@ export function useUpdateCreditLine() {
       if (rest.cut_day !== undefined) updates.cut_day = rest.cut_day
       if (rest.payment_day !== undefined) updates.payment_day = rest.payment_day
       if (rest.dates_may_shift !== undefined) updates.dates_may_shift = rest.dates_may_shift
+      if (rest.suggested_limit !== undefined) updates.suggested_limit = rest.suggested_limit
 
       const { data, error } = await supabase
         .from('credit_lines')

@@ -83,6 +83,8 @@ export interface AccountRow {
   created_at: string
 }
 
+export type PaymentScope = 'partial' | 'period' | 'full'
+
 export interface CreditLineRow {
   id: string
   user_id: string
@@ -93,6 +95,9 @@ export interface CreditLineRow {
   cut_day: number | null
   payment_day: number | null
   dates_may_shift: boolean
+  /** Límite nuevo avisado por el banco ("aumentamos tu límite"), por aplicar. */
+  suggested_limit: number | null
+  suggested_limit_at: string | null
   created_at: string
 }
 
@@ -171,6 +176,8 @@ export interface TransactionRow {
   card_id: string | null
   /** Pago de tarjeta: línea de crédito a la que se abona. */
   to_credit_line_id: string | null
+  /** Pago de tarjeta: abono parcial, pago del periodo o liquidación total. */
+  payment_scope: PaymentScope | null
   /** Transferencia cuya cuenta destino no es del usuario (cuenta como egreso). */
   is_external: boolean
   tx_date: string
@@ -333,6 +340,9 @@ export interface InstallmentPlanRow {
   months: number
   is_interest_free: boolean
   interest_amount: number
+  /** Tasa con la que se calculó interest_amount (solo informativa). */
+  interest_rate: number | null
+  interest_rate_mode: 'monthly' | 'total' | null
   monthly_payment: number
   start_date: string
   /** Si la compra se reembolsó por completo, cuándo se canceló el plan. */

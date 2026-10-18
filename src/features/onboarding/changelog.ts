@@ -15,6 +15,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-17-pago-tarjeta-y-diferir',
+    date: '2026-10-17',
+    title: 'Pago de tarjeta a tu medida y compras a meses con intereses',
+    description:
+      'Al pagar una tarjeta ahora eliges si es un abono parcial, el pago del periodo o el total adeudado (el monto se llena solo). Si el banco te pasó una compra a meses después de hacerla, usa Diferir en Transacciones: eliges meses y tasa (% mensual o total) y ves la mensualidad y el total con intereses. Además, la captura automática ya no registra avisos de aumento de límite (te lo sugerimos en Líneas de crédito), promociones tipo "50% de devolución" ni el cobro bruto de Stripe antes del depósito.',
+  },
+  {
     id: '2026-10-17-taffy-animada',
     date: '2026-10-17',
     title: 'Taffy cobra vida',

@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, Search } from 'lucide-react'
 
 interface MultiSelectProps {
   label?: string
@@ -12,6 +12,11 @@ interface MultiSelectProps {
   placeholder?: string
   className?: string
 }
+
+// Con más opciones que esto se muestra un buscador dentro de la lista.
+const SEARCHABLE_FROM = 6
+
+const norm = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 
 // Selección múltiple con chips. Mismo lenguaje visual que Select, pero no se
 // puede construir sobre <select multiple>: en móvil es inusable.
@@ -28,7 +33,9 @@ export function MultiSelect({
   const [open, setOpen] = useState(false)
   const [dropdownRendered, setDropdownRendered] = useState(false)
   const [dropdownVisible, setDropdownVisible] = useState(false)
+  const [query, setQuery] = useState('')
   const containerRef = useRef<HTMLDivElement>(null)
+  const searchRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (!open) return
@@ -64,6 +71,17 @@ export function MultiSelect({
   }
 
   const selected = options.filter((o) => value.includes(o.value))
+  const searchable = options.length >= SEARCHABLE_FROM
+  const visible = useMemo(() => {
+    const q = norm(query.trim())
+    return q ? options.filter((o) => norm(o.label).includes(q)) : options
+  }, [options, query])
+
+  // Al abrir, el cursor cae en el buscador; al cerrar, se limpia la búsqueda.
+  useEffect(() => {
+    if (open && searchable) searchRef.current?.focus()
+    if (!open) setQuery('')
+  }, [open, searchable])
 
   return (
     <div className={className} ref={containerRef}>
@@ -122,16 +140,34 @@ export function MultiSelect({
 
         {dropdownRendered && (
           <div
-            className={`absolute z-20 mt-1 max-h-60 w-full origin-top overflow-auto rounded-md border border-slate-200 shadow-xl dark:border-slate-600 bg-surface py-1 shadow-lg transition-[transform,opacity] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:scale-100 motion-reduce:transition-opacity ${
+            className={`absolute z-20 mt-1 flex max-h-72 w-full origin-top flex-col overflow-hidden rounded-md border border-slate-200 shadow-xl dark:border-slate-600 bg-surface shadow-lg transition-[transform,opacity] duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:scale-100 motion-reduce:transition-opacity ${
               dropdownVisible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'
             }`}
           >
+            {searchable && (
+              <div className="flex items-center gap-2 border-b border-slate-200 px-3 py-2 dark:border-slate-700">
+                <Search className="h-4 w-4 shrink-0 text-slate-400" aria-hidden="true" />
+                <input
+                  ref={searchRef}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={t('Buscar…')}
+                  className="w-full bg-transparent text-sm text-slate-900 placeholder-slate-400 outline-none focus-visible:outline-none dark:text-slate-100"
+                />
+              </div>
+            )}
+            <div className="overflow-y-auto overscroll-contain py-1">
             {options.length === 0 && (
               <p className="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">
                 {t('Sin opciones')}
               </p>
             )}
-            {options.map((o) => (
+            {options.length > 0 && visible.length === 0 && (
+              <p className="px-3 py-2 text-xs text-slate-500 dark:text-slate-400">
+                {t('Sin resultados')}
+              </p>
+            )}
+            {visible.map((o) => (
               <label
                 key={o.value}
                 className="flex cursor-pointer items-center gap-2 px-3 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-800"
@@ -145,6 +181,7 @@ export function MultiSelect({
                 <span className="truncate">{o.label}</span>
               </label>
             ))}
+            </div>
           </div>
         )}
       </div>
