@@ -60,3 +60,12 @@ test('un pago real a la tarjeta no se empareja con un gasto del mismo monto', ()
   const r = reconcileStatement([l], [tx('u', 'Uber', 25.97, '2026-07-08')], opts)
   assert.equal(r.matched.length, 0)
 })
+
+test('movimientos de la app fuera del periodo del estado de cuenta no cuentan como faltantes', () => {
+  const r = reconcileStatement(
+    [line('OXXO', 50, '2026-06-10'), line('FARMACIA', 80, '2026-06-20')],
+    [tx('a', 'Oxxo', 50, '2026-06-10'), tx('b', 'Farmacia', 80, '2026-06-20'), tx('viejo', 'Antes', 30, '2026-05-25'), tx('nuevo', 'Despues', 30, '2026-07-05'), tx('borde', 'Borde', 30, '2026-06-22')],
+    opts,
+  )
+  assert.deepEqual(r.missingInStatement.map((t) => t.id), ['borde'])
+})

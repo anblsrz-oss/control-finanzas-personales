@@ -215,7 +215,8 @@ export function ReconcilePage() {
       if (
         ex.accountLast4 &&
         knownLast4.length > 0 &&
-        !knownLast4.includes(ex.accountLast4) &&
+        // El OCR a veces corta un dígito (362 por 2362): se acepta si uno termina en el otro.
+        !knownLast4.some((k) => k && (k.endsWith(ex.accountLast4 as string) || (ex.accountLast4 as string).endsWith(k))) &&
         account?.account_last4 !== ex.accountLast4 &&
         account?.account_number_last4 !== ex.accountLast4
       ) {

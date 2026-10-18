@@ -226,9 +226,17 @@ export function reconcileStatement(
     else if (!mismatchLines.has(line)) matched.push({ line, tx })
   })
 
-  const missingInStatement = txns.filter((tx) => !usedTx.has(tx.id))
+  // La consulta trae movimientos de más (ventana ancha del 2º pase); "falta en el estado de
+  // cuenta" y el total registrado solo cuentan lo que cae dentro del periodo de sus renglones.
+  const lo = sortedLines.length ? sortedLines[0].txDate : ''
+  const hi = sortedLines.length ? sortedLines[sortedLines.length - 1].txDate : ''
+  const inPeriod = (tx: TransactionRow) =>
+    !sortedLines.length || (daysBetween(tx.tx_date, lo) <= win || tx.tx_date.slice(0, 10) >= lo) &&
+    (daysBetween(tx.tx_date, hi) <= win || tx.tx_date.slice(0, 10) <= hi)
+  const periodTxns = txns.filter(inPeriod)
+  const missingInStatement = periodTxns.filter((tx) => !usedTx.has(tx.id))
   const statementTotal = round2(targets.reduce((sum, v) => sum + v, 0))
-  const appTotal = round2(txns.reduce((sum, tx) => sum + (txVals.get(tx.id) as number), 0))
+  const appTotal = round2(periodTxns.reduce((sum, tx) => sum + (txVals.get(tx.id) as number), 0))
 
   return { matched, amountMismatch, missingInApp, missingInStatement, statementTotal, appTotal }
 }
