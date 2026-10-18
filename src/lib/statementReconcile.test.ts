@@ -69,3 +69,13 @@ test('movimientos de la app fuera del periodo del estado de cuenta no cuentan co
   )
   assert.deepEqual(r.missingInStatement.map((t) => t.id), ['borde'])
 })
+
+test('las líneas de MSI (fecha de compra antigua) no estiran el periodo', () => {
+  const msi = { ...line('MERPAGO 4/12', 666.33, '2026-05-26'), isInstallment: true }
+  const r = reconcileStatement(
+    [msi, line('OXXO', 50, '2026-08-20'), line('FARMACIA', 80, '2026-09-10')],
+    [tx('a', 'Oxxo', 50, '2026-08-20'), tx('b', 'Farmacia', 80, '2026-09-10'), tx('jun', 'Compra de junio', 30, '2026-06-15')],
+    opts,
+  )
+  assert.deepEqual(r.missingInStatement.map((t) => t.id), [])
+})

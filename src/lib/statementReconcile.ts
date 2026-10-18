@@ -228,10 +228,14 @@ export function reconcileStatement(
 
   // La consulta trae movimientos de más (ventana ancha del 2º pase); "falta en el estado de
   // cuenta" y el total registrado solo cuentan lo que cae dentro del periodo de sus renglones.
-  const lo = sortedLines.length ? sortedLines[0].txDate : ''
-  const hi = sortedLines.length ? sortedLines[sortedLines.length - 1].txDate : ''
+  // Los renglones de MSI traen la fecha de la compra original (meses atrás): no definen el periodo.
+  const periodLines = sortedLines.some((l) => !l.isInstallment)
+    ? sortedLines.filter((l) => !l.isInstallment)
+    : sortedLines
+  const lo = periodLines.length ? periodLines[0].txDate : ''
+  const hi = periodLines.length ? periodLines[periodLines.length - 1].txDate : ''
   const inPeriod = (tx: TransactionRow) =>
-    !sortedLines.length || (daysBetween(tx.tx_date, lo) <= win || tx.tx_date.slice(0, 10) >= lo) &&
+    !periodLines.length || (daysBetween(tx.tx_date, lo) <= win || tx.tx_date.slice(0, 10) >= lo) &&
     (daysBetween(tx.tx_date, hi) <= win || tx.tx_date.slice(0, 10) <= hi)
   const periodTxns = txns.filter(inPeriod)
   const missingInStatement = periodTxns.filter((tx) => !usedTx.has(tx.id))

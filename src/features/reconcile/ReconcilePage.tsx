@@ -211,10 +211,11 @@ export function ReconcilePage() {
       if (truncated) {
         setNotice(t('El PDF tiene más de 8 páginas; solo se analizaron las primeras 8.'))
       }
-      const knownLast4 = (selectedCard ? [selectedCard] : lineCards).map((c) => c.last4).filter(Boolean)
+      // Una línea agrupa física y virtual (y puede traer una no registrada): no se avisa por last4.
+      const knownLast4 = (selectedCard ? [selectedCard] : []).map((c) => c.last4).filter(Boolean)
       if (
         ex.accountLast4 &&
-        knownLast4.length > 0 &&
+        (knownLast4.length > 0 || !!account) &&
         // El OCR a veces corta un dígito (362 por 2362): se acepta si uno termina en el otro.
         !knownLast4.some((k) => k && (k.endsWith(ex.accountLast4 as string) || (ex.accountLast4 as string).endsWith(k))) &&
         account?.account_last4 !== ex.accountLast4 &&
