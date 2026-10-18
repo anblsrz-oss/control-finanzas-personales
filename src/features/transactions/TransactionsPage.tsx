@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { CalendarClock, Check, LayoutGrid, Pencil, Receipt, Table2, Trash2 } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { userDeleteReasons } from '@/lib/deleteReasons'
 import { useAuth } from '@/store/useAuth'
 import {
   useTransactions,
@@ -273,6 +274,14 @@ export function TransactionsPage() {
   const creditLines = creditLinesQuery.data || []
   const categories = categoriesQuery.data || []
   const deletions = deletionsQuery.data || []
+  // Atajos del cuadro de eliminar: los de siempre + los motivos que el usuario ya escribió.
+  const deleteReasonChips = [
+    ...QUICK_DELETE_REASONS.map((r) => t(r)),
+    ...userDeleteReasons(
+      deletions,
+      QUICK_DELETE_REASONS.flatMap((r) => [r, t(r)]),
+    ),
+  ]
   const familyCards = familyCardsQuery.data || []
   const plans = plansQuery.data || []
 
@@ -881,12 +890,11 @@ export function TransactionsPage() {
                 {t('Motivo de la eliminación')} <span className="text-line-scarlet">*</span>
               </label>
               <div className="mb-2 flex flex-wrap gap-2" role="group" aria-label={t('Motivos frecuentes')}>
-                {QUICK_DELETE_REASONS.map((r) => {
-                  const text = t(r)
+                {deleteReasonChips.map((text) => {
                   const selected = reason.trim() === text
                   return (
                     <button
-                      key={r}
+                      key={text}
                       type="button"
                       aria-pressed={selected}
                       onClick={() => {

@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
-    "test": "node --test src/lib/seoRoutes.test.ts src/lib/statementReconcile.test.ts src/lib/statementForeign.test.ts src/lib/interest.test.ts",
+    "test": "node --test src/lib/seoRoutes.test.ts src/lib/statementReconcile.test.ts src/lib/statementForeign.test.ts src/lib/interest.test.ts src/lib/deleteReasons.test.ts",
     "lint": "tsc --noEmit",
     "emoji:sync": "node scripts/sync-emoji-assets.mjs",
     "cap:sync": "npm run build && npx cap sync",
