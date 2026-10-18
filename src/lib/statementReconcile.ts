@@ -14,6 +14,7 @@
 // `card_payment` es salida desde la cuenta origen pero abono (entra) en la
 // tarjeta/línea.
 
+import type { StatementExtraction } from '@/hooks/useOcrReceipt'
 import type { StatementLine, TransactionRow } from '@/types/db'
 
 export type { StatementLine }
@@ -230,4 +231,18 @@ export function reconcileStatement(
   const appTotal = round2(txns.reduce((sum, tx) => sum + (txVals.get(tx.id) as number), 0))
 
   return { matched, amountMismatch, missingInApp, missingInStatement, statementTotal, appTotal }
+}
+
+// "MONEDA EXTRANJERA: 5.00 USD TCT: 17.41": el importe del renglón ya viene convertido a la
+// moneda del estado de cuenta; el OCR a veces lo etiqueta con la moneda extranjera (87.05 USD).
+// Se quita la moneda para que se tome como la del instrumento.
+const FOREIGN_RE = /\d[\d,]*(?:\.\d+)?\s*[A-Za-z]{3}\s*TCT/i
+
+export function fixForeignCurrency(e: StatementExtraction): StatementExtraction {
+  return {
+    ...e,
+    transactions: e.transactions.map((t) =>
+      t.currency && FOREIGN_RE.test(t.concept ?? '') ? { ...t, currency: null } : t,
+    ),
+  }
 }

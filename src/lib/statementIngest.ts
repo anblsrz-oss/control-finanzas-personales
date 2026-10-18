@@ -5,6 +5,7 @@
 import { extractPagesFromPdf } from '@/lib/pdfExtract'
 import { downscaleImage } from '@/lib/ocr'
 import type { StatementExtraction } from '@/hooks/useOcrReceipt'
+import { fixForeignCurrency } from '@/lib/statementReconcile'
 
 export function blobToDataUrl(blob: Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -28,7 +29,7 @@ type RunOcr = (input: {
   text?: string
 }) => Promise<StatementExtraction>
 
-export async function ingestStatementFile(
+async function ingestRaw(
   file: File,
   runOcr: RunOcr,
   onProgress?: (p: number) => void,
@@ -54,4 +55,13 @@ export async function ingestStatementFile(
   const extraction = await runOcr({ mode: 'statement', images: [dataUrl] })
   onProgress?.(1)
   return { extraction, previewDataUrl: dataUrl }
+}
+
+export async function ingestStatementFile(
+  file: File,
+  runOcr: RunOcr,
+  onProgress?: (p: number) => void,
+): Promise<StatementIngestResult> {
+  const r = await ingestRaw(file, runOcr, onProgress)
+  return { ...r, extraction: fixForeignCurrency(r.extraction) }
 }
