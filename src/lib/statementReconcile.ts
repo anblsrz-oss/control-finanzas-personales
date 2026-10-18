@@ -123,6 +123,8 @@ export function tokenOverlap(a: string, b: string): number {
   return n
 }
 
+const PAYMENT_WORDS = /pago|gracias|abono|deposito|depósito|payment/i
+
 interface Pair {
   li: number
   tx: TransactionRow
@@ -134,7 +136,8 @@ interface Pair {
 /**
  * Empareja por mejor puntaje global (no línea por línea) en tres pasos:
  *  1. monto dentro de la tolerancia y fecha dentro de la ventana -> `matched`;
- *  2. lo restante, con ventana ancha, solo si el concepto se parece -> `matched`;
+ *  2. lo restante, con ventana ancha, si el concepto se parece o el monto trae centavos
+ *     (también ignorando el signo si el OCR confundió una compra con un pago) -> `matched`;
  *  3. lo restante con monto cercano (<= 15%) -> `amountMismatch`.
  * Las líneas sin pareja van a `missingInApp`.
  */
@@ -153,14 +156,14 @@ export function reconcileStatement(
   const lineTx = new Map<number, TransactionRow>()
 
   // Candidatas (línea, tx) del mismo signo dentro de `window` y con `accept(pair)`.
-  function pairs(window: number, accept: (p: Pair) => boolean): Pair[] {
+  function pairs(window: number, accept: (p: Pair) => boolean, anySign = false): Pair[] {
     const out: Pair[] = []
     sortedLines.forEach((line, li) => {
       if (lineTx.has(li)) return
       for (const tx of txns) {
         if (usedTx.has(tx.id)) continue
         const s = txVals.get(tx.id) as number
-        if (Math.sign(s) !== Math.sign(targets[li])) continue
+        if (!anySign && Math.sign(s) !== Math.sign(targets[li])) continue
         const dateDiff = daysBetween(tx.tx_date, line.txDate)
         if (dateDiff > window) continue
         const p = {
@@ -194,7 +197,19 @@ export function reconcileStatement(
 
   const isMatch = (p: Pair) => p.amountDiff <= tol || p.amountDiff <= EPSILON
   assign(pairs(win, isMatch))
-  assign(pairs(Math.max(win, WIDE_WINDOW_DAYS), (p) => isMatch(p) && p.overlap > 0))
+  const wide = Math.max(win, WIDE_WINDOW_DAYS)
+  // Un monto con centavos casi no coincide por casualidad; uno redondo sí, y ahí exige concepto.
+  const distinctive = (p: Pair) => p.overlap > 0 || Math.abs(Math.round(targets[p.li] * 100) % 100) !== 0
+  assign(pairs(wide, (p) => isMatch(p) && distinctive(p)))
+  // El OCR a veces marca como abono/pago una compra (Uber, Spotify…): reintenta sin signo,
+  // salvo que el concepto sea de verdad un pago.
+  assign(
+    pairs(
+      wide,
+      (p) => isMatch(p) && distinctive(p) && !PAYMENT_WORDS.test(sortedLines[p.li].concept),
+      true,
+    ),
+  )
   const amountMismatch: MismatchPair[] = []
   assign(
     pairs(win, (p) => p.amountDiff / Math.max(Math.abs(targets[p.li]), EPSILON) <= MISMATCH_MAX_RATIO),

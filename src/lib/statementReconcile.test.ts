@@ -43,3 +43,20 @@ test('monto cercano pero distinto va a amountMismatch', () => {
   assert.equal(r.amountMismatch.length, 1)
   assert.equal(r.amountMismatch[0].diff, -16)
 })
+
+test('compra marcada como pago por el OCR (signo invertido) aún empata con su gasto', () => {
+  const l = { ...line('DME 18021244 DLO*UBER RIDE CIU', 25.95, '2026-07-10'), isCardPayment: true }
+  const r = reconcileStatement([l], [tx('u', 'Uber', 25.95, '2026-07-09')], opts)
+  assert.equal(r.matched.length, 1)
+})
+
+test('monto con centavos empata a 6 días aunque el concepto no se parezca', () => {
+  const r = reconcileStatement([line('DME 18021244 DLO*UBER RIDE CIU', 49.94, '2026-07-16')], [tx('u', 'Taxi', 49.94, '2026-07-10')], opts)
+  assert.equal(r.matched.length, 1)
+})
+
+test('un pago real a la tarjeta no se empareja con un gasto del mismo monto', () => {
+  const l = { ...line('SU PAGO GRACIAS', 25.97, '2026-07-08'), isCardPayment: true }
+  const r = reconcileStatement([l], [tx('u', 'Uber', 25.97, '2026-07-08')], opts)
+  assert.equal(r.matched.length, 0)
+})
