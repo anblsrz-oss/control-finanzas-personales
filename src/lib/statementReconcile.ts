@@ -239,6 +239,10 @@ export function reconcileStatement(
 const FOREIGN_RE = /\d[\d,]*(?:\.\d+)?\s*[A-Za-z]{3}\s*TCT/i
 
 export function fixForeignCurrency(e: StatementExtraction): StatementExtraction {
+  return fixInvertedKind(mergeForeignRows(e))
+}
+
+function mergeForeignRows(e: StatementExtraction): StatementExtraction {
   const out: StatementExtraction['transactions'] = []
   for (const raw of e.transactions) {
     const t =
@@ -253,4 +257,23 @@ export function fixForeignCurrency(e: StatementExtraction): StatementExtraction 
     }
   }
   return { ...e, transactions: out }
+}
+
+// Algunos estados de cuenta (NU) muestran las compras como importes positivos y el OCR las
+// marca todas como "income". En una tarjeta lo normal es que casi todo sea compra: si más del
+// 80% de los renglones que no son pago vienen como ingreso, se invierten (salvo devoluciones).
+const REFUND_WORDS = /devoluci|reembolso|cancelaci|bonificaci|refund/i
+
+function fixInvertedKind(e: StatementExtraction): StatementExtraction {
+  const purchases = e.transactions.filter((t) => !t.isCardPayment)
+  const incomes = purchases.filter((t) => t.kind === 'income')
+  if (purchases.length < 3 || incomes.length / purchases.length <= 0.8) return e
+  return {
+    ...e,
+    transactions: e.transactions.map((t) =>
+      t.kind === 'income' && !t.isCardPayment && !REFUND_WORDS.test(t.concept ?? '')
+        ? { ...t, kind: 'expense' as const }
+        : t,
+    ),
+  }
 }

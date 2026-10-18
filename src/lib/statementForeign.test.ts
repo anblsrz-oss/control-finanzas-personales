@@ -27,3 +27,21 @@ test('el 2º renglón "MONEDA EXTRANJERA" se une al comercio anterior en un solo
   assert.equal(out[0].amount, 87.05)
   assert.match(out[0].concept, /PGSHARP.*MONEDA EXTRANJERA/)
 })
+
+test('si casi todo viene como ingreso (NU), las compras se corrigen a gasto', () => {
+  const r = (concept: string, kind: 'income' | 'expense', isCardPayment = false) =>
+    ({ ...row(concept, 'MXN'), kind, isCardPayment })
+  const e = { accountLast4: null, transactions: [
+    r('Sams', 'income'), r('Udemy', 'income'), r('Oxxo', 'income'), r('Takis', 'income'),
+    r('Devolución Amazon', 'income'), r('¡Gracias por tu pago!', 'income', true),
+  ] } as StatementExtraction
+  const kinds = fixForeignCurrency(e).transactions.map((t) => t.kind)
+  assert.deepEqual(kinds, ['expense', 'expense', 'expense', 'expense', 'income', 'income'])
+})
+
+test('un estado de cuenta normal (gastos) no se toca', () => {
+  const e = { accountLast4: null, transactions: [
+    row('A', null), row('B', null), row('C', null),
+  ] } as StatementExtraction
+  assert.equal(fixForeignCurrency(e).transactions.every((t) => t.kind === 'expense'), true)
+})
