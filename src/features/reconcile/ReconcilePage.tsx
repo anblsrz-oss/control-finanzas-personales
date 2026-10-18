@@ -172,11 +172,29 @@ export function ReconcilePage() {
     // Deja pintar el botón en "Analizando…" antes de que pdfjs ocupe el hilo principal.
     await new Promise<void>((r) => requestAnimationFrame(() => setTimeout(r, 0)))
     try {
-      const { extraction: ex, truncated } = await ingestStatementFile(
-        file,
-        (input) => ocr.mutateAsync(input) as Promise<StatementExtraction>,
-        setProgress,
-      )
+      // Mitad del avance = leer el archivo; la otra mitad = análisis (no mide su avance,
+      // así que se acerca al 95% poco a poco y solo llega a 100% cuando hay resultado).
+      let analyzing = false
+      let creep: ReturnType<typeof setInterval> | undefined
+      let ex: StatementExtraction
+      let truncated: boolean | undefined
+      try {
+        ;({ extraction: ex, truncated } = await ingestStatementFile(
+          file,
+          (input) => {
+            analyzing = true
+            setProgress(0.5)
+            creep = setInterval(() => setProgress((p) => Math.min(0.95, p + (0.95 - p) * 0.06)), 400)
+            return ocr.mutateAsync(input) as Promise<StatementExtraction>
+          },
+          (p) => {
+            if (!analyzing) setProgress(p * 0.5)
+          },
+        ))
+      } finally {
+        clearInterval(creep)
+      }
+      setProgress(1)
       if (!ex.transactions || ex.transactions.length === 0) {
         setError(t('No se detectaron movimientos en el documento. Intenta con otro archivo.'))
         return
@@ -198,6 +216,7 @@ export function ReconcilePage() {
         )
       }
       setExtraction(ex)
+      setBusy(false) // el resultado ya se muestra; las tasas de cambio siguen en segundo plano
       // El periodo guardado refleja lo que realmente cubre el estado de cuenta.
       const ds = ex.transactions.map((tx) => tx.txDate).filter(Boolean).sort()
       if (ds.length > 0) {
