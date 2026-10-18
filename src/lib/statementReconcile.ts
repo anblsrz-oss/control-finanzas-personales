@@ -239,10 +239,18 @@ export function reconcileStatement(
 const FOREIGN_RE = /\d[\d,]*(?:\.\d+)?\s*[A-Za-z]{3}\s*TCT/i
 
 export function fixForeignCurrency(e: StatementExtraction): StatementExtraction {
-  return {
-    ...e,
-    transactions: e.transactions.map((t) =>
-      t.currency && FOREIGN_RE.test(t.concept ?? '') ? { ...t, currency: null } : t,
-    ),
+  const out: StatementExtraction['transactions'] = []
+  for (const raw of e.transactions) {
+    const t =
+      raw.currency && FOREIGN_RE.test(raw.concept ?? '') ? { ...raw, currency: null } : raw
+    const prev = out[out.length - 1]
+    // "MONEDA EXTRANJERA…" es el 2º renglón del cargo anterior (mismo importe, el del
+    // renglón con la tasa): el OCR a veces lo parte en dos movimientos y inventa el monto del 1º.
+    if (prev && /^\s*moneda extranjera/i.test(t.concept ?? '') && daysBetween(prev.txDate, t.txDate) <= 3) {
+      out[out.length - 1] = { ...t, concept: `${prev.concept} ${t.concept}`.trim() }
+    } else {
+      out.push(t)
+    }
   }
+  return { ...e, transactions: out }
 }
