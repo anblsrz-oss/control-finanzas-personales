@@ -1,5 +1,5 @@
 {
-  "version": "0.19.2",
-  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.19.2/finzen-v0.19.2.apk",
-  "notes": "Conciliación más confiable: compara contra una línea de crédito completa, empata mejor los movimientos y lee con más precisión los estados de cuenta."
+  "version": "0.19.3",
+  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.19.3/finzen-v0.19.3.apk",
+  "notes": "Conciliación con meses sin intereses: las mensualidades se empatan con su plan. Además, tus motivos al eliminar quedan como atajos para la próxima vez."
 }
