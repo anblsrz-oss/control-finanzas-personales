@@ -1,5 +1,5 @@
 {
-  "version": "0.19.0",
-  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.19.0/finzen-v0.19.0.apk",
+  "version": "0.19.1",
+  "apkUrl": "https://github.com/anblsrz-oss/control-finanzas-personales/releases/download/v0.19.1/finzen-v0.19.1.apk",
   "notes": "Pago de tarjeta parcial, del periodo o total; Diferir compras a meses con intereses; filtros múltiples en Transacciones; y Taffy cobra vida."
 }
