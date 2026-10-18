@@ -2762,4 +2762,11 @@ export const en: Record<string, string> = {
     'Flexible card payments and installments with interest',
   'Al pagar una tarjeta ahora eliges si es un abono parcial, el pago del periodo o el total adeudado (el monto se llena solo). Si el banco te pasó una compra a meses después de hacerla, usa Diferir en Transacciones: eliges meses y tasa (% mensual o total) y ves la mensualidad y el total con intereses. Además, la captura automática ya no registra avisos de aumento de límite (te lo sugerimos en Líneas de crédito), promociones tipo "50% de devolución" ni el cobro bruto de Stripe antes del depósito.':
     'When you pay a card you now choose whether it is a partial payment, the statement balance or the full balance (the amount fills in by itself). If your bank moved a purchase to installments after you made it, use Installments in Transactions: pick months and rate (% monthly or total) and see the monthly payment and total with interest. Also, automatic capture no longer records credit-limit increase notices (we suggest them in Credit lines), "50% back" promotions or Stripe\'s gross charge before the payout.',
+  'Probador de Gmail': 'Gmail tester',
+  'Hacer probador de Gmail': 'Make Gmail tester',
+  'Quitar probador de Gmail': 'Remove Gmail tester',
+  'Mientras gmail.readonly no esté verificado en producción, solo los probadores ven "Conectar Gmail".':
+    'While gmail.readonly isn\'t verified for production, only testers see "Connect Gmail".',
+  'Gmail está disponible solo para cuentas de prueba mientras completamos una revisión de seguridad con Google. Mientras tanto, usa Outlook (abajo) o escribe a soporte si necesitas Gmail.':
+    'Gmail is available only to test accounts while we complete a security review with Google. In the meantime, use Outlook (below) or contact support if you need Gmail.',
 }

@@ -21,6 +21,8 @@ export interface ProfileRow {
   /** Quién activó Premium: 'stripe' | 'google' | 'admin' (null si no es premium). */
   premium_source?: 'stripe' | 'google' | 'admin' | null
   is_admin: boolean
+  /** Puede ver/usar "Conectar Gmail" mientras gmail.readonly no esté verificado en producción (requiere CASA). Lo activa un admin. */
+  is_gmail_tester: boolean
   main_currency: string
   /** Umbral de aviso por defecto (1-100) para presupuestos sin umbral propio. */
   budget_alert_threshold: number
