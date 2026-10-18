@@ -29,3 +29,14 @@ export async function initNativeUi(): Promise<void> {
     // Plugin no disponible en este entorno: ignorar.
   }
 }
+
+// Vibración corta (tocar a Taffy, llega una respuesta). En web no hace nada.
+export async function lightHaptic(): Promise<void> {
+  if (!Capacitor.isNativePlatform()) return
+  try {
+    const { Haptics, ImpactStyle } = await import('@capacitor/haptics')
+    await Haptics.impact({ style: ImpactStyle.Light })
+  } catch {
+    // Plugin no disponible (APK anterior al plugin): ignorar.
+  }
+}

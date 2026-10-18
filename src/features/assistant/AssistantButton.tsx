@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Send, SquarePen, X } from 'lucide-react'
-import { ASSISTANT_NAME, TaffyAvatar } from './TaffyAvatar'
+import { ASSISTANT_NAME, TaffyAvatar, type TaffyMood } from './TaffyAvatar'
 import { Button } from '@/components/ui/Button'
 import { useAuth } from '@/store/useAuth'
 import { useEntitlements } from '@/hooks/useAppConfig'
@@ -13,6 +13,23 @@ import { useCategories, useCreateCategory } from '@/hooks/useCategories'
 import { useCreateBudget } from '@/hooks/useBudgets'
 import { useCreateSubscription } from '@/hooks/useSubscriptions'
 import { DEFAULT_CATEGORY_ICON, autoCategoryColor } from '@/lib/categoryColors'
+import { lightHaptic } from '@/lib/nativeUi'
+
+// Banderas por sesión de Taffy (sessionStorage puede fallar en modo privado: entonces solo duran en memoria).
+function readFlag(key: string): boolean {
+  try {
+    return sessionStorage.getItem(key) === '1'
+  } catch {
+    return false
+  }
+}
+function writeFlag(key: string) {
+  try {
+    sessionStorage.setItem(key, '1')
+  } catch {
+    // sin storage: se ignora
+  }
+}
 
 type ProposalStatus = 'pending' | 'saving' | 'done' | 'cancelled' | 'error'
 interface ChatItem extends AssistantMessage {
@@ -93,6 +110,53 @@ export function AssistantButton() {
   const createBudget = useCreateBudget()
   const createSubscription = useCreateSubscription()
 
+  // Vida de Taffy: pop al tocarla (taps re-monta el contenedor), cara feliz breve al responder,
+  // saltito (nudge) hasta que se abra el chat en la sesión y un globo "¿Te ayudo?" una vez por sesión.
+  const [taps, setTaps] = useState(0)
+  const [cheer, setCheer] = useState(false)
+  const [seen, setSeen] = useState(() => readFlag('taffy-seen'))
+  const [bubble, setBubble] = useState<'hidden' | 'shown' | 'leaving'>('hidden')
+  function poke() {
+    setTaps((n) => n + 1)
+    void lightHaptic()
+  }
+  function celebrate() {
+    setCheer(true)
+    void lightHaptic()
+  }
+  useEffect(() => {
+    if (!cheer) return
+    const timeout = setTimeout(() => setCheer(false), 1500)
+    return () => clearTimeout(timeout)
+  }, [cheer])
+  useEffect(() => {
+    if (!canUse || readFlag('taffy-seen') || readFlag('taffy-bubble')) return
+    const timeout = setTimeout(() => {
+      writeFlag('taffy-bubble')
+      setBubble('shown')
+    }, 4000)
+    return () => clearTimeout(timeout)
+  }, [canUse])
+  useEffect(() => {
+    if (bubble === 'hidden') return
+    const timeout = setTimeout(() => setBubble(bubble === 'shown' ? 'leaving' : 'hidden'), bubble === 'shown' ? 6000 : 150)
+    return () => clearTimeout(timeout)
+  }, [bubble])
+  function toggle() {
+    if (!open) {
+      poke()
+      setBubble('hidden')
+      if (!seen) {
+        setSeen(true)
+        writeFlag('taffy-seen')
+      }
+    }
+    setOpen((v) => !v)
+  }
+  const sleeping = quota?.remaining === 0
+  const headerMood: TaffyMood = sleeping ? 'sleeping' : assistant.isPending ? 'thinking' : chatError ? 'sad' : cheer ? 'happy' : 'idle'
+  const buttonMood: TaffyMood = sleeping ? 'sleeping' : seen ? 'idle' : 'nudge'
+
   useEffect(() => {
     endRef.current?.scrollIntoView({ block: 'end' })
   }, [items, assistant.isPending])
@@ -115,6 +179,7 @@ export function AssistantButton() {
           proposals: res.proposals.map((p) => ({ p, status: 'pending' as const })),
         },
       ])
+      celebrate()
     } catch (e) {
       setChatError(e instanceof Error ? e.message : t('No se pudo contactar al asistente.'))
     }
@@ -186,6 +251,7 @@ export function AssistantButton() {
     try {
       await save(p)
       setStatus(msgIdx, pIdx, 'done')
+      celebrate()
     } catch (e) {
       // Incluye el aviso del límite del plan (trigger enforce_plan_limits).
       setStatus(msgIdx, pIdx, 'error', e instanceof Error ? e.message : t('No se pudo guardar.'))
@@ -206,8 +272,14 @@ export function AssistantButton() {
           }`}
         >
           <header className="flex shrink-0 items-center gap-3 bg-brand-600 px-4 py-3 text-white">
-            <span aria-hidden="true" className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20">
-              <TaffyAvatar className="h-8 w-8" />
+            {/* Decorativa: tocarla solo la hace reaccionar. */}
+            <span
+              key={taps}
+              aria-hidden="true"
+              onClick={poke}
+              className={`flex h-9 w-9 cursor-pointer select-none items-center justify-center rounded-full bg-white/20 ${taps ? 'taffy-tap' : ''}`}
+            >
+              <TaffyAvatar className="h-8 w-8" mood={headerMood} />
             </span>
             <div className="min-w-0 flex-1">
               <h2 className="text-sm font-bold leading-tight">{ASSISTANT_NAME}</h2>
@@ -324,16 +396,35 @@ export function AssistantButton() {
         </section>
       )}
 
+      {bubble !== 'hidden' && !open && (
+        <div
+          data-leaving={bubble === 'leaving' || undefined}
+          className="taffy-bubble fixed bottom-[calc(8.75rem+env(safe-area-inset-bottom))] right-4 z-30 flex items-center gap-1 rounded-2xl rounded-br-sm bg-surface py-1 pl-3 pr-1 text-sm font-medium text-slate-700 shadow-lg ring-1 ring-slate-200 dark:text-slate-100 dark:ring-slate-700 md:bottom-[5.5rem] md:right-6"
+        >
+          <button type="button" onClick={toggle} className="py-1">
+            {t('¿Te ayudo?')}
+          </button>
+          <button
+            type="button"
+            onClick={() => setBubble('leaving')}
+            aria-label={t('Cerrar')}
+            className="rounded-full p-1 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700"
+          >
+            <X className="h-3.5 w-3.5" aria-hidden="true" />
+          </button>
+        </div>
+      )}
+
       {/* Burbuja flotante: abre/cierra el chat. z-30: bajo la hoja "Más" (z-40) y los modales (z-50). */}
       <button
         type="button"
-        onClick={() => setOpen((v) => !v)}
+        onClick={toggle}
         title={open ? t('Cerrar') : t('Chat con {{name}}', { name: ASSISTANT_NAME })}
         aria-label={open ? t('Cerrar') : t('Chat con {{name}}', { name: ASSISTANT_NAME })}
         aria-expanded={open}
         className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-white shadow-lg transition-[transform,background-color] duration-150 hover:bg-brand-700 active:scale-95 motion-reduce:transition-none md:bottom-6 md:right-6"
       >
-        {open ? <X className="h-6 w-6" aria-hidden="true" /> : <TaffyAvatar className="h-12 w-12" />}
+        {open ? <X className="h-6 w-6" aria-hidden="true" /> : <TaffyAvatar className="h-12 w-12" mood={buttonMood} />}
       </button>
     </>
   )
