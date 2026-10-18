@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
 import { useAccounts } from '@/hooks/useAccounts'
 import { useCards } from '@/hooks/useCards'
+import { useCreditLines } from '@/hooks/useCreditLines'
 import { useEntitlements, useMonthlyLimit } from '@/hooks/useAppConfig'
 import { useCreateTransaction } from '@/hooks/useTransactions'
 import { useOcrReceipt, type StatementExtraction } from '@/hooks/useOcrReceipt'
@@ -65,12 +66,13 @@ export function ReconcilePage() {
 
   const accounts = useAccounts(userId).data || []
   const cards = useCards(userId).data || []
+  const creditLines = useCreditLines(userId).data || []
   const historyQuery = useReconciliations(userId)
   const ocr = useOcrReceipt()
   const createTx = useCreateTransaction()
   const saveReconciliation = useSaveReconciliation()
 
-  // target = "account:<id>" | "card:<id>"
+  // target = "account:<id>" | "card:<id>" | "line:<id>" (línea de crédito: todas sus tarjetas)
   const [target, setTarget] = useState('')
   const [periodStart, setPeriodStart] = useState(monthStartISO())
   const [periodEnd, setPeriodEnd] = useState(todayISO())
@@ -91,10 +93,17 @@ export function ReconcilePage() {
 
   const [type, id] = target.split(':')
   const account = type === 'account' ? accounts.find((a) => a.id === id) : undefined
-  const card = type === 'card' ? cards.find((c) => c.id === id) : undefined
-  const creditLineId = card?.credit_line_id ?? null
-  const targetCurrency = account?.currency || card?.currency || 'MXN'
-  const instrumentName = account?.name || card?.name || ''
+  const selectedCard = type === 'card' ? cards.find((c) => c.id === id) : undefined
+  const creditLine = type === 'line' ? creditLines.find((l) => l.id === id) : undefined
+  const creditLineId = creditLine?.id ?? selectedCard?.credit_line_id ?? null
+  const lineCards = creditLine ? cards.filter((c) => c.credit_line_id === creditLine.id) : []
+  // Tarjetas cuyas compras entran a la comparación (una línea trae física y virtual).
+  const cardIds = selectedCard ? [selectedCard.id] : lineCards.map((c) => c.id)
+  const lastLast4 = extraction?.accountLast4
+  // Tarjeta a la que se asignan las compras faltantes que se agreguen / se guarda la conciliación.
+  const bookCard = selectedCard ?? (lastLast4 ? lineCards.find((c) => c.last4 === lastLast4) : undefined) ?? lineCards[0]
+  const targetCurrency = account?.currency || selectedCard?.currency || creditLine?.currency || 'MXN'
+  const instrumentName = account?.name || selectedCard?.name || creditLine?.name || ''
 
   // Las transacciones de la app se piden según las fechas del propio estado de
   // cuenta (± margen), no las de Desde/Hasta: un corte que cruza de mes las recortaba.
@@ -107,7 +116,7 @@ export function ReconcilePage() {
 
   const txnsQuery = useReconcileTransactions({
     userId,
-    cardId: card?.id,
+    cardIds,
     accountId: account?.id,
     creditLineId,
     startDate: queryRange?.start,
@@ -202,10 +211,11 @@ export function ReconcilePage() {
       if (truncated) {
         setNotice(t('El PDF tiene más de 8 páginas; solo se analizaron las primeras 8.'))
       }
+      const knownLast4 = (selectedCard ? [selectedCard] : lineCards).map((c) => c.last4).filter(Boolean)
       if (
         ex.accountLast4 &&
-        card?.last4 &&
-        ex.accountLast4 !== card.last4 &&
+        knownLast4.length > 0 &&
+        !knownLast4.includes(ex.accountLast4) &&
         account?.account_last4 !== ex.accountLast4 &&
         account?.account_number_last4 !== ex.accountLast4
       ) {
@@ -265,7 +275,7 @@ export function ReconcilePage() {
           currency: l.currency || targetCurrency,
           concept: l.concept,
           accountId: account?.id,
-          cardId: card?.id,
+          cardId: bookCard?.id,
           txDate: l.txDate,
           source: 'receipt',
           externalId: reconcileExternalId(id, l),
@@ -290,7 +300,7 @@ export function ReconcilePage() {
     if (!userId || !result || !buckets) return
     await saveReconciliation.mutateAsync({
       userId,
-      cardId: card?.id,
+      cardId: bookCard?.id,
       accountId: account?.id,
       periodStart,
       periodEnd,
@@ -344,6 +354,7 @@ export function ReconcilePage() {
             options={[
               { value: '', label: t('Selecciona…') },
               ...accounts.map((a) => ({ value: `account:${a.id}`, label: `🏦 ${a.name}` })),
+              ...creditLines.map((l) => ({ value: `line:${l.id}`, label: `🗂️ ${l.name}` })),
               ...cards.map((c) => ({ value: `card:${c.id}`, label: `💳 ${c.name}` })),
             ]}
           />
