@@ -354,7 +354,7 @@ export function ReconcilePage() {
             options={[
               { value: '', label: t('Selecciona…') },
               ...accounts.map((a) => ({ value: `account:${a.id}`, label: `🏦 ${a.name}` })),
-              ...creditLines.map((l) => ({ value: `line:${l.id}`, label: `🗂️ ${l.name}` })),
+              ...creditLines.map((l) => ({ value: `line:${l.id}`, label: `🗂️ ${t('Línea')} ${l.name}` })),
               ...cards.map((c) => ({ value: `card:${c.id}`, label: `💳 ${c.name}` })),
             ]}
           />
