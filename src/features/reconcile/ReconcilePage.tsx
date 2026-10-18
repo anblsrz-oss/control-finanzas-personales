@@ -167,6 +167,8 @@ export function ReconcilePage() {
     setSelectedMissing({})
     setProgress(0)
     setBusy(true)
+    // Deja pintar el botón en "Analizando…" antes de que pdfjs ocupe el hilo principal.
+    await new Promise<void>((r) => requestAnimationFrame(() => setTimeout(r, 0)))
     try {
       const { extraction: ex, truncated } = await ingestStatementFile(
         file,
@@ -357,6 +359,7 @@ export function ReconcilePage() {
             data-tour="conciliacion"
             onClick={runComparison}
             disabled={!file || !target || busy || reconcileLimit.reached}
+            className={busy ? 'animate-pulse' : ''}
           >
             {busy ? t('Analizando…') : t('Comparar')}
           </Button>
