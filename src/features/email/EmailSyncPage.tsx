@@ -34,8 +34,12 @@ import { RulePatternEditor, effectiveRegexes, type PatternMode } from './RulePat
 
 export function EmailSyncPage() {
   const { t } = useTranslation()
-  const { session } = useAuth()
+  const { session, profile } = useAuth()
   const userId = session?.user?.id
+  // gmail.readonly es un scope restringido: mientras Google no lo verifique, solo
+  // se ofrece "Conectar Gmail" a admins y a quien un admin marque como probador
+  // (ver 0082_gmail_tester_role.sql). Outlook no requiere esto.
+  const canUseGmail = !!(profile?.is_admin || profile?.is_gmail_tester)
 
   const accountsQuery = useAccounts(userId)
   const categoriesQuery = useCategories(userId)
@@ -482,6 +486,16 @@ export function EmailSyncPage() {
         </Card>
 
         {/* Conectar + sincronizar */}
+        {!canUseGmail ? (
+          <Card className="grid min-w-0 grid-cols-1 gap-2">
+            <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
+              {t('2. Conecta Gmail y sincroniza')}
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              {t('Gmail está disponible solo para cuentas de prueba mientras completamos una revisión de seguridad con Google. Mientras tanto, usa Outlook (abajo) o escribe a soporte si necesitas Gmail.')}
+            </p>
+          </Card>
+        ) : (
         <Card className="grid min-w-0 grid-cols-1 gap-3">
           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
             {t('2. Conecta Gmail y sincroniza')}
@@ -541,8 +555,10 @@ export function EmailSyncPage() {
             {t('Los movimientos se crean como pendientes: revísalos y confírmalos en Transacciones para que cuenten en tus saldos.')}
           </p>
         </Card>
+        )}
 
         {/* Captura automática en tiempo real (Gmail push) */}
+        {canUseGmail && (
         <Card className="grid min-w-0 grid-cols-1 gap-3">
           <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
             {t('3. Captura automática en tiempo real (Gmail)')}
@@ -579,6 +595,7 @@ export function EmailSyncPage() {
             {t('Requiere conectar Gmail arriba. En modo de prueba de Google, cada cuenta debe reconectar Gmail cada 7 días.')}
           </p>
         </Card>
+        )}
 
         {/* Conectar + sincronizar Outlook */}
         <Card className="grid min-w-0 grid-cols-1 gap-3">

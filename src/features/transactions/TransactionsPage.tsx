@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Check, LayoutGrid, Pencil, Receipt, Table2, Trash2 } from 'lucide-react'
+import { CalendarClock, Check, LayoutGrid, Pencil, Receipt, Table2, Trash2 } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
@@ -29,6 +29,7 @@ import { Card } from '@/components/ui/Card'
 import { Modal } from '@/components/ui/Modal'
 import { TransactionForm } from './TransactionForm'
 import { RefundDialog } from './RefundDialog'
+import { DeferDialog } from './DeferDialog'
 import { PossibleDuplicateNotice, ReceivedVia } from './CaptureInfo'
 import { AmountlessNotice } from './AmountlessNotice'
 import {
@@ -46,7 +47,13 @@ import type { FilterState } from './TransactionFilters'
 import { formatMoney, formatDate, CURRENCIES } from '@/lib/format'
 import { Money } from '@/components/ui/Money'
 import { monthStartISO, todayISO, toISODate } from '@/lib/dates'
-import type { AmountlessSignalRow, TransactionRow } from '@/types/db'
+import type { AmountlessSignalRow, PaymentScope, TransactionRow } from '@/types/db'
+
+const PAYMENT_SCOPE_LABEL: Record<PaymentScope, string> = {
+  partial: 'Abono parcial',
+  period: 'Pago del periodo',
+  full: 'Liquidación',
+}
 
 // Motivos más comunes para llenar el cuadro de eliminación con un toque.
 const QUICK_DELETE_REASONS = [
@@ -69,6 +76,7 @@ export function TransactionsPage() {
   const [editingTx, setEditingTx] = useState<TransactionRow | null>(null)
   const [deleting, setDeleting] = useState<TransactionRow | null>(null)
   const [refunding, setRefunding] = useState<TransactionRow | null>(null)
+  const [deferring, setDeferring] = useState<TransactionRow | null>(null)
   const [reason, setReason] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [viewingLinesTx, setViewingLinesTx] = useState<TransactionRow | null>(null)
@@ -114,6 +122,8 @@ export function TransactionsPage() {
   // El texto se debounce; el resto de los filtros se aplican de inmediato.
   const debouncedSearch = useDebouncedValue(filters.search, 300)
 
+  const cardsQuery = useCards(userId)
+
   // Memoizado: el objeto va dentro del queryKey de useTransactions, y una
   // identidad nueva en cada render refetchearía la lista sin motivo.
   const txFilter = useMemo<TransactionFilter>(() => {
@@ -122,11 +132,19 @@ export function TransactionsPage() {
       return v.trim() !== '' && Number.isFinite(n) ? n : undefined
     }
     return {
-      kind: filters.kind || undefined,
+      kinds: filters.kinds.length ? filters.kinds : undefined,
       accountIds: filters.accountIds,
       cardIds: filters.cardIds,
+      creditLines: filters.creditLineIds.length
+        ? {
+            lineIds: filters.creditLineIds,
+            cardIds: (cardsQuery.data || [])
+              .filter((c) => c.credit_line_id && filters.creditLineIds.includes(c.credit_line_id))
+              .map((c) => c.id),
+          }
+        : undefined,
       categoryIds: filters.categoryIds,
-      currency: filters.currency || undefined,
+      currencies: filters.currencies.length ? filters.currencies : undefined,
       startDate: filters.startDate || undefined,
       endDate: filters.endDate || undefined,
       search: debouncedSearch.trim() || undefined,
@@ -136,11 +154,13 @@ export function TransactionsPage() {
       maxAmount: parseAmount(filters.maxAmount),
     }
   }, [
-    filters.kind,
+    filters.kinds,
     filters.accountIds,
     filters.cardIds,
+    filters.creditLineIds,
+    cardsQuery.data,
     filters.categoryIds,
-    filters.currency,
+    filters.currencies,
     filters.startDate,
     filters.endDate,
     filters.status,
@@ -152,7 +172,6 @@ export function TransactionsPage() {
   const transactionsQuery = useTransactions(userId, txFilter)
   const totalCountQuery = useTransactionsCount(userId)
   const accountsQuery = useAccounts(userId)
-  const cardsQuery = useCards(userId)
   const creditLinesQuery = useCreditLines(userId)
   const categoriesQuery = useCategories(userId)
   const deletionsQuery = useTransactionDeletions(userId)
@@ -160,7 +179,7 @@ export function TransactionsPage() {
   const deleteTx = useDeleteTransaction()
   const confirmTx = useConfirmTransaction()
   const dismissDuplicate = useDismissPossibleDuplicate()
-  const { transactionLimit, canUseTransactionsPeriodFilter } = useEntitlements()
+  const { transactionLimit, canUseTransactionsPeriodFilter, canUseInstallments } = useEntitlements()
 
   // Tarjetas compartidas de mi familia (para registrar gastos familiares).
   const familiesQuery = useMyFamilies(userId)
@@ -290,6 +309,18 @@ export function TransactionsPage() {
   const getAccountName = (id?: string) =>
     accounts.find((a) => a.id === id)?.name || '—'
   const getCardName = (id?: string) => cards.find((c) => c.id === id)?.name || '—'
+
+  // Diferir: compras con tarjeta de crédito que aún no tienen plan a meses.
+  const plannedTxIds = useMemo(
+    () => new Set(plans.filter((p) => !p.cancelled_at).map((p) => p.transaction_id).filter(Boolean)),
+    [plans],
+  )
+  const canDefer = (tx: TransactionRow) =>
+    canUseInstallments &&
+    tx.kind === 'expense' &&
+    !tx.family_id &&
+    !plannedTxIds.has(tx.id) &&
+    cards.find((c) => c.id === tx.card_id)?.type === 'credit'
   const getLineName = (id?: string) =>
     creditLines.find((l) => l.id === id)?.name || '—'
   const getCategoryName = (id?: string) =>
@@ -533,6 +564,7 @@ export function TransactionsPage() {
         onChange={setFilters}
         accounts={accounts}
         cards={cards}
+        creditLines={creditLines}
         categories={categories}
         currencyOptions={currencyOptions}
         resultCount={transactions.length}
@@ -714,6 +746,16 @@ export function TransactionsPage() {
                   <span className="rounded bg-slate-100 dark:bg-slate-700 px-2 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-300">
                     {kindLabel(tx.kind)}
                   </span>
+                  {tx.payment_scope && (
+                    <span className="rounded bg-brand-600/10 px-2 py-0.5 text-xs font-medium text-brand-700 dark:text-brand-300">
+                      {t(PAYMENT_SCOPE_LABEL[tx.payment_scope])}
+                    </span>
+                  )}
+                  {plannedTxIds.has(tx.id) && (
+                    <span className="rounded bg-line-amber/10 px-2 py-0.5 text-xs font-medium text-line-amber">
+                      {t('A meses')}
+                    </span>
+                  )}
                   {tx.pending && (
                     <span className="rounded bg-line-amber/10 px-2 py-0.5 text-xs font-medium text-line-amber">
                       {t('Pendiente')}
@@ -787,6 +829,14 @@ export function TransactionsPage() {
                       className="text-xs font-medium text-brand-600 transition-colors hover:text-brand-800 dark:text-brand-400"
                     >
                       ↩️ {t('Reembolsar')}
+                    </button>
+                  )}
+                  {canDefer(tx) && (
+                    <button
+                      onClick={() => setDeferring(tx)}
+                      className="text-xs font-medium text-brand-600 transition-colors hover:text-brand-800 dark:text-brand-400"
+                    >
+                      <CalendarClock className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Diferir')}
                     </button>
                   )}
                   <button
@@ -884,6 +934,12 @@ export function TransactionsPage() {
         userId={userId}
         plans={plans}
         onClose={() => setRefunding(null)}
+      />
+
+      <DeferDialog
+        transaction={deferring}
+        userId={userId}
+        onClose={() => setDeferring(null)}
       />
 
       {/* Detalle de subpartidas: modal superpuesto, no un expandir hacia abajo

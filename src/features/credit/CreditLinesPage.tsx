@@ -26,6 +26,7 @@ import { Modal } from '@/components/ui/Modal'
 import { TransactionForm } from '@/features/transactions/TransactionForm'
 import { Money } from '@/components/ui/Money'
 import { CreditLineForm } from './CreditLineForm'
+import { SuggestedLimitBanner } from './SuggestedLimitBanner'
 import type { CreditLineRow } from '@/types/db'
 
 export function CreditLinesPage() {
@@ -176,6 +177,7 @@ export function CreditLinesPage() {
                       </div>
                     )}
                   </div>
+                  {userId && <SuggestedLimitBanner line={line} userId={userId} />}
                   <LinePeriodInfo line={line} periods={periods} />
                   <LineStatement
                     line={line}

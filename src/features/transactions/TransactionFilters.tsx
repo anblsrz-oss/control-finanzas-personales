@@ -7,7 +7,7 @@ import { Select } from '@/components/ui/Select'
 import { MultiSelect } from '@/components/ui/MultiSelect'
 import { PeriodSelector } from '@/components/ui/PeriodSelector'
 import { CURRENCY_LABELS } from '@/lib/format'
-import type { AccountRow, CardRow, CategoryRow } from '@/types/db'
+import type { AccountRow, CardRow, CategoryRow, CreditLineRow, TxKind } from '@/types/db'
 
 // Estado crudo del formulario. Los montos viven como string porque un input
 // vacío no es 0: "" significa "sin filtro" y 0 es un filtro legítimo.
@@ -15,11 +15,12 @@ export interface FilterState {
   startDate: string
   endDate: string
   cardIds: string[]
+  creditLineIds: string[]
   accountIds: string[]
   categoryIds: string[]
-  kind: '' | 'income' | 'expense' | 'transfer' | 'card_payment' | 'refund'
+  kinds: TxKind[]
   status: '' | 'pending' | 'settled'
-  currency: string
+  currencies: string[]
   minAmount: string
   maxAmount: string
   search: string
@@ -29,11 +30,12 @@ export const EMPTY_FILTERS: FilterState = {
   startDate: '',
   endDate: '',
   cardIds: [],
+  creditLineIds: [],
   accountIds: [],
   categoryIds: [],
-  kind: '',
+  kinds: [],
   status: '',
-  currency: '',
+  currencies: [],
   minAmount: '',
   maxAmount: '',
   search: '',
@@ -44,11 +46,12 @@ export function countActiveFilters(f: FilterState): number {
   if (f.startDate) n++
   if (f.endDate) n++
   if (f.cardIds.length) n++
+  if (f.creditLineIds.length) n++
   if (f.accountIds.length) n++
   if (f.categoryIds.length) n++
-  if (f.kind) n++
+  if (f.kinds.length) n++
   if (f.status) n++
-  if (f.currency) n++
+  if (f.currencies.length) n++
   if (f.minAmount) n++
   if (f.maxAmount) n++
   if (f.search.trim()) n++
@@ -60,6 +63,7 @@ interface TransactionFiltersProps {
   onChange: (next: FilterState) => void
   accounts: AccountRow[]
   cards: CardRow[]
+  creditLines: CreditLineRow[]
   categories: CategoryRow[]
   /** Monedas que se ofrecen en el filtro de moneda. */
   currencyOptions: string[]
@@ -76,6 +80,7 @@ export function TransactionFilters({
   onChange,
   accounts,
   cards,
+  creditLines,
   categories,
   currencyOptions,
   resultCount,
@@ -201,6 +206,12 @@ export function TransactionFilters({
             onChange={(v) => set('cardIds', v)}
           />
           <MultiSelect
+            label={t('Línea de crédito')}
+            options={creditLines.map((l) => ({ value: l.id, label: l.name }))}
+            value={value.creditLineIds}
+            onChange={(v) => set('creditLineIds', v)}
+          />
+          <MultiSelect
             label={t('Cuenta')}
             options={accounts.map((a) => ({ value: a.id, label: a.name }))}
             value={value.accountIds}
@@ -216,12 +227,12 @@ export function TransactionFilters({
             onChange={(v) => set('categoryIds', v)}
           />
 
-          <Select
+          <MultiSelect
             label={t('Tipo')}
-            value={value.kind}
-            onChange={(e) => set('kind', e.target.value as FilterState['kind'])}
+            placeholder={t('Todos')}
+            value={value.kinds}
+            onChange={(v) => set('kinds', v as TxKind[])}
             options={[
-              { value: '', label: t('Todos') },
               { value: 'income', label: t('Ingreso') },
               { value: 'expense', label: t('Egreso') },
               { value: 'transfer', label: t('Transferencia') },
@@ -240,12 +251,11 @@ export function TransactionFilters({
             ]}
           />
           {currencyOptions.length > 1 && (
-            <Select
+            <MultiSelect
               label={t('Moneda')}
-              value={value.currency}
-              onChange={(e) => set('currency', e.target.value)}
+              value={value.currencies}
+              onChange={(v) => set('currencies', v)}
               options={[
-                { value: '', label: t('Todas') },
                 ...currencyOptions.map((c) => ({
                   value: c,
                   label: CURRENCY_LABELS[c] ? `${c} — ${CURRENCY_LABELS[c]}` : c,

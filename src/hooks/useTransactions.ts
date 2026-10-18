@@ -1,7 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { monthlyPayment } from '@/lib/installments'
+import type { InterestRateMode } from '@/lib/interest'
 import type {
+  PaymentScope,
   TransactionRow,
   TxKind,
   TxSource,
@@ -12,11 +14,17 @@ import type {
 
 export interface TransactionFilter {
   kind?: TxKind
+  /** Varios tipos a la vez (filtro de la lista de Transacciones). */
+  kinds?: TxKind[]
   accountIds?: string[]
   cardIds?: string[]
+  /** Líneas de crédito: compras de sus tarjetas y pagos abonados a ellas. */
+  creditLines?: { lineIds: string[]; cardIds: string[] }
   categoryIds?: string[]
   /** Código de moneda exacto (MXN, USD, DOP…). */
   currency?: string
+  /** Varias monedas a la vez (filtro de la lista de Transacciones). */
+  currencies?: string[]
   startDate?: string
   endDate?: string
   /** Búsqueda libre sobre concepto y notas. */
@@ -53,6 +61,9 @@ export function useTransactions(
       if (filter?.kind) {
         query = query.eq('kind', filter.kind)
       }
+      if (filter?.kinds?.length) {
+        query = query.in('kind', filter.kinds)
+      }
       if (filter?.accountIds?.length) {
         const list = filter.accountIds.join(',')
         // Una transferencia toca dos cuentas: filtrar solo por account_id
@@ -62,8 +73,18 @@ export function useTransactions(
       if (filter?.cardIds?.length) {
         query = query.in('card_id', filter.cardIds)
       }
+      if (filter?.creditLines?.lineIds.length) {
+        const { lineIds, cardIds } = filter.creditLines
+        // Pagos abonados a la línea + consumos de las tarjetas que la comparten.
+        const parts = [`to_credit_line_id.in.(${lineIds.join(',')})`]
+        if (cardIds.length) parts.push(`card_id.in.(${cardIds.join(',')})`)
+        query = query.or(parts.join(','))
+      }
       if (filter?.categoryIds?.length) {
         query = query.in('category_id', filter.categoryIds)
+      }
+      if (filter?.currencies?.length) {
+        query = query.in('currency', filter.currencies)
       }
       if (filter?.currency) {
         query = query.eq('currency', filter.currency)
@@ -186,6 +207,8 @@ export function useCreateTransaction() {
       cardId?: string
       /** Pago de tarjeta: línea de crédito a la que se abona. */
       toCreditLineId?: string
+      /** Pago de tarjeta: abono parcial, pago del periodo o liquidación. */
+      paymentScope?: PaymentScope
       /** Transferencia a una cuenta que no es del usuario (cuenta como egreso). */
       isExternal?: boolean
       /** Reembolso: compra original que cancela parcial o totalmente. */
@@ -216,6 +239,7 @@ export function useCreateTransaction() {
       if (input.toAccountId) txData.to_account_id = input.toAccountId
       if (input.cardId) txData.card_id = input.cardId
       if (input.toCreditLineId) txData.to_credit_line_id = input.toCreditLineId
+      if (input.paymentScope) txData.payment_scope = input.paymentScope
       if (input.isExternal) txData.is_external = true
       if (input.refundOfTransactionId) txData.refund_of_transaction_id = input.refundOfTransactionId
       if (input.notes?.trim()) txData.notes = input.notes
@@ -282,6 +306,7 @@ export function useUpdateTransaction() {
       toAccountId?: string | null
       cardId?: string | null
       toCreditLineId?: string | null
+      paymentScope?: PaymentScope | null
       isExternal?: boolean
       refundOfTransactionId?: string | null
       txDate: string
@@ -298,6 +323,7 @@ export function useUpdateTransaction() {
         to_account_id: input.toAccountId || null,
         card_id: input.cardId || null,
         to_credit_line_id: input.toCreditLineId || null,
+        payment_scope: input.kind === 'card_payment' ? input.paymentScope ?? null : null,
         is_external: input.isExternal ?? false,
         refund_of_transaction_id: input.refundOfTransactionId || null,
         notes: input.notes?.trim() || null,
@@ -508,6 +534,9 @@ export function useCreateInstallmentPlan() {
       months: number
       isInterestFree: boolean
       interestAmount: number
+      /** Tasa con la que se calculó interestAmount (solo informativa). */
+      interestRate?: number | null
+      interestRateMode?: InterestRateMode | null
       /** Cuándo arrancó el plan; puede ser un mes anterior al registro. */
       startDate?: string
     }) => {
@@ -529,6 +558,8 @@ export function useCreateInstallmentPlan() {
             months: input.months,
             is_interest_free: input.isInterestFree,
             interest_amount: input.interestAmount,
+            interest_rate: input.isInterestFree ? null : input.interestRate ?? null,
+            interest_rate_mode: input.isInterestFree ? null : input.interestRateMode ?? null,
             monthly_payment: monthly,
             ...(input.startDate ? { start_date: input.startDate } : {}),
           },

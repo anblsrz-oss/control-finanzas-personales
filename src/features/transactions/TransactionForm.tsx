@@ -21,7 +21,14 @@ import {
 } from '@/hooks/useTransactions'
 import { TransactionLinesFields } from './TransactionLinesFields'
 import { remainingRefundable, checkAndCancelMsiPlan } from '@/lib/refunds'
-import { useCreditLines } from '@/hooks/useCreditLines'
+import {
+  computeLineStatement,
+  useCreditActivity,
+  useCreditLineUsage,
+  useCreditLines,
+} from '@/hooks/useCreditLines'
+import { useCreditLinePeriods } from '@/hooks/useCreditLinePeriods'
+import { InterestFields, interestOf, type InterestValue } from './InterestFields'
 import { useFxRate } from '@/hooks/useFxRate'
 import { useEntitlements } from '@/hooks/useAppConfig'
 import { useRecordBudgetAlerts } from '@/hooks/useBudgets'
@@ -40,7 +47,7 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { CurrencyCombobox } from '@/components/ui/CurrencyCombobox'
 import { Card } from '@/components/ui/Card'
-import { FormSection, Switch } from '@/components/ui/FormKit'
+import { FormSection, Segmented, Switch } from '@/components/ui/FormKit'
 import { Money } from '@/components/ui/Money'
 import type {
   AccountRow,
@@ -65,6 +72,8 @@ const schema = z.object({
   cardId: z.string().optional(),
   // Pago de tarjeta: línea de crédito a la que se abona.
   toCreditLineId: z.string().optional(),
+  // Pago de tarjeta: abono parcial, pago del periodo o liquidación total.
+  paymentScope: z.enum(['partial', 'period', 'full']).default('partial'),
   // Transferencia a una cuenta que no es mía (cuenta como egreso).
   isExternal: z.boolean().default(false),
   // Reembolso: compra original que cancela parcial o totalmente.
@@ -74,7 +83,9 @@ const schema = z.object({
   msi: z.boolean().default(false),
   msiMonths: z.coerce.number().optional(),
   msiInterestFree: z.boolean().default(true),
-  msiInterest: z.coerce.number().default(0),
+  // Diferido con intereses: tasa (%) mensual o total; el monto se calcula.
+  msiRateMode: z.enum(['monthly', 'total']).default('monthly'),
+  msiRate: z.coerce.number().min(0).default(0),
   // Un MSI puede registrarse tarde, con mensualidades ya pagadas.
   msiStartDate: z.string().optional(),
   msiPaidPrevious: z.boolean().default(false),
@@ -197,6 +208,7 @@ export function TransactionForm({
           toAccountId: transaction.to_account_id ?? '',
           cardId: transaction.card_id ?? '',
           toCreditLineId: transaction.to_credit_line_id ?? '',
+          paymentScope: transaction.payment_scope ?? 'partial',
           isExternal: transaction.is_external,
           refundOfTransactionId: transaction.refund_of_transaction_id ?? '',
           txDate: transaction.tx_date,
@@ -214,6 +226,8 @@ export function TransactionForm({
           concept: initial?.concept ?? '',
           accountId: initial?.accountId ?? '',
           toCreditLineId: initial?.toCreditLineId ?? '',
+          // El botón "Pagar" de una línea trae el monto del periodo.
+          paymentScope: initial?.toCreditLineId && initial?.amount ? 'period' : 'partial',
           refundOfTransactionId: '',
           txDate: initial?.txDate ?? todayISO(),
           isExternal: initial?.isExternal ?? false,
@@ -319,7 +333,13 @@ export function TransactionForm({
     Number(form.watch('msiPaidCount')) || 0,
     msiMonths || 0,
   )
-  const msiMonthly = monthlyPayment(amountNum, Number(form.watch('msiInterest')) || 0, msiMonths)
+  const msiInterestValue: InterestValue = {
+    interestFree: form.watch('msiInterestFree'),
+    rateMode: form.watch('msiRateMode'),
+    rate: Number(form.watch('msiRate')) || 0,
+  }
+  const msiInterestAmount = interestOf(msiInterestValue, amountNum, msiMonths)
+  const msiMonthly = monthlyPayment(amountNum, msiInterestAmount, msiMonths)
 
   // Al marcar "ya pagué", se propone por defecto lo transcurrido.
   useEffect(() => {
@@ -374,6 +394,42 @@ export function TransactionForm({
   }, [txKind, toCreditLineId, plans, paidByPlan, cards])
 
   const [msiToPay, setMsiToPay] = useState<Record<string, boolean>>({})
+
+  // --- Alcance del pago de tarjeta ---------------------------------------
+  // "Del periodo" = lo a pagar del estado de cuenta vigente menos lo ya
+  // abonado; "Total" = toda la deuda de la línea (incluye lo no facturado y
+  // las mensualidades MSI que faltan).
+  const paymentScope = form.watch('paymentScope')
+  const activityQuery = useCreditActivity(userId)
+  const periodsQuery = useCreditLinePeriods(userId)
+  const lineUsageQuery = useCreditLineUsage(userId)
+  const selectedLine = creditLines.find((l) => l.id === toCreditLineId)
+  const lineDue = useMemo(() => {
+    if (txKind !== 'card_payment' || !selectedLine) return null
+    const st = computeLineStatement(
+      selectedLine, cards, activityQuery.data || [], periodsQuery.data || [], plans, payments,
+    )
+    const used = (lineUsageQuery.data || []).find((u) => u.credit_line_id === selectedLine.id)?.used ?? 0
+    return {
+      period: Math.max(0, Math.round((st.amount - st.paid) * 100) / 100),
+      full: Math.max(0, used),
+      currency: selectedLine.currency,
+    }
+  }, [txKind, selectedLine, cards, activityQuery.data, periodsQuery.data, lineUsageQuery.data, plans, payments])
+
+  function choosePaymentScope(scope: FormData['paymentScope']) {
+    form.setValue('paymentScope', scope)
+    if (scope === 'partial') {
+      setMsiToPay({})
+      return
+    }
+    const due = scope === 'period' ? lineDue?.period : lineDue?.full
+    if (due && due > 0) {
+      form.setValue('amount', due as any)
+      if (lineDue) form.setValue('currency', lineDue.currency)
+    }
+    setMsiToPay(Object.fromEntries(linePlans.map((x) => [x.plan.id, true])))
+  }
 
   async function onSubmit(data: FormData) {
     if (!userId) return
@@ -521,6 +577,7 @@ export function TransactionForm({
           toAccountId: resolvedToAccountId ?? null,
           cardId: resolvedCardId ?? null,
           toCreditLineId: resolvedToCreditLineId ?? null,
+          paymentScope: data.paymentScope,
           isExternal: external,
           refundOfTransactionId: data.refundOfTransactionId || null,
           txDate: data.txDate,
@@ -559,6 +616,7 @@ export function TransactionForm({
         toAccountId: resolvedToAccountId,
         cardId: resolvedCardId,
         toCreditLineId: resolvedToCreditLineId,
+        paymentScope: data.kind === 'card_payment' ? data.paymentScope : undefined,
         isExternal: external,
         refundOfTransactionId: data.refundOfTransactionId || undefined,
         txDate: data.txDate,
@@ -597,17 +655,15 @@ export function TransactionForm({
           currency: data.currency,
           months: data.msiMonths,
           isInterestFree: data.msiInterestFree,
-          interestAmount: data.msiInterest || 0,
+          interestAmount: msiInterestAmount,
+          interestRate: data.msiRate,
+          interestRateMode: data.msiRateMode,
           startDate: data.msiStartDate,
         })
 
         const paid = Math.min(data.msiPaidCount || 0, data.msiMonths)
         if (data.msiPaidPrevious && paid > 0) {
-          const monthly = monthlyPayment(
-            data.amount,
-            data.msiInterest || 0,
-            data.msiMonths,
-          )
+          const monthly = monthlyPayment(data.amount, msiInterestAmount, data.msiMonths)
           const schedule = installmentSchedule(
             data.msiStartDate || todayISO(),
             data.msiMonths,
@@ -638,14 +694,17 @@ export function TransactionForm({
       }
 
       // Pago de tarjeta: conciliar las mensualidades MSI marcadas del periodo.
+      // Una liquidación total salda TODAS las que le faltan a cada plan marcado.
       if (data.kind === 'card_payment') {
+        const paidSet = (planId: string) => paidByPlan.get(planId) ?? new Set<string>()
         const rows = linePlans
           .filter((x) => msiToPay[x.plan.id] && x.progress.nextDuePeriod)
-          .map((x) => ({
-            planId: x.plan.id,
-            periodMonth: x.progress.nextDuePeriod!,
-            amount: x.progress.monthly,
-          }))
+          .flatMap((x) =>
+            (data.paymentScope === 'full'
+              ? x.progress.schedule.filter((s) => !paidSet(x.plan.id).has(s.periodMonth))
+              : x.progress.schedule.filter((s) => s.periodMonth === x.progress.nextDuePeriod)
+            ).map((s) => ({ planId: x.plan.id, periodMonth: s.periodMonth, amount: s.amount })),
+          )
         if (rows.length > 0) {
           await confirmInstallments.mutateAsync({ userId, rows })
         }
@@ -669,7 +728,7 @@ export function TransactionForm({
         {/* Tipo: todas las opciones a la vista, con icono */}
         <div>
           <span className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200">{t('Tipo')}</span>
-          <div role="radiogroup" aria-label={t('Tipo')} className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+          <div role="radiogroup" aria-label={t('Tipo')} className="grid grid-cols-[repeat(auto-fit,minmax(6rem,1fr))] gap-2">
             {KIND_OPTIONS.map((k) => {
               const selected = txKind === k.value
               return (
@@ -679,7 +738,7 @@ export function TransactionForm({
                   role="radio"
                   aria-checked={selected}
                   onClick={() => form.setValue('kind', k.value, { shouldValidate: true })}
-                  className={`flex flex-col items-center gap-1 rounded-md border px-2 py-2.5 text-xs font-semibold transition-colors ${
+                  className={`flex min-w-0 flex-col items-center gap-1 rounded-md border px-2 py-2.5 text-center text-xs font-semibold transition-colors ${
                     selected
                       ? 'border-brand-600 bg-brand-50 text-brand-700 dark:bg-brand-800/40 dark:text-brand-500'
                       : 'border-slate-200 text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:text-slate-300'
@@ -964,6 +1023,30 @@ export function TransactionForm({
               />
             </div>
 
+            <Segmented<FormData['paymentScope']>
+              label={t('¿Qué estás pagando?')}
+              value={paymentScope}
+              onChange={choosePaymentScope}
+              options={[
+                { value: 'partial', label: t('Abono parcial') },
+                { value: 'period', label: t('Pago del periodo') },
+                { value: 'full', label: t('Total adeudado') },
+              ]}
+            />
+            {lineDue && (
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                {paymentScope === 'partial'
+                  ? t('Abonas una parte; el resto del periodo sigue pendiente.')
+                  : paymentScope === 'period'
+                    ? t('Lo que pide el estado de cuenta para no generar intereses: {{amount}}.', {
+                        amount: formatMoney(lineDue.period, lineDue.currency),
+                      })
+                    : t('Liquidas toda la deuda de la línea, incluido lo aún no facturado y los meses que faltan: {{amount}}.', {
+                        amount: formatMoney(lineDue.full, lineDue.currency),
+                      })}
+              </p>
+            )}
+
             {/* Conciliación MSI: marcar la mensualidad del periodo por plan. */}
             {linePlans.length > 0 && (
               <div className="space-y-2 rounded-lg border border-line-amber/30 bg-line-amber/10 p-3">
@@ -1055,36 +1138,27 @@ export function TransactionForm({
                 label={t('Meses sin intereses / Diferido')}
               />
               {msi && (
-                <div className="grid grid-cols-3 gap-3">
+                <>
                   <Input
                     label={t('Meses')}
                     type="number"
                     min="1"
-                    max="24"
+                    max="48"
                     {...form.register('msiMonths')}
                     error={form.formState.errors.msiMonths?.message}
                   />
-                  <div>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        {...form.register('msiInterestFree')}
-                        className="cursor-pointer"
-                      />
-                      <span className="text-sm font-medium text-slate-600 dark:text-slate-300">
-                        MSI
-                      </span>
-                    </label>
-                  </div>
-                  {!form.watch('msiInterestFree') && (
-                    <Input
-                      label={t('Interés ($)')}
-                      type="number"
-                      step="0.01"
-                      {...form.register('msiInterest')}
-                    />
-                  )}
-                </div>
+                  <InterestFields
+                    value={msiInterestValue}
+                    onChange={(v) => {
+                      form.setValue('msiInterestFree', v.interestFree)
+                      form.setValue('msiRateMode', v.rateMode)
+                      form.setValue('msiRate', v.rate)
+                    }}
+                    total={amountNum}
+                    months={msiMonths}
+                    currency={currency}
+                  />
+                </>
               )}
 
               {msi && (
