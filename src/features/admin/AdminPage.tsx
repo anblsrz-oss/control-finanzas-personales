@@ -2,7 +2,7 @@
 import { useTranslation } from 'react-i18next'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAuth } from '@/store/useAuth'
-import { useListUsers, useSetUserPremium, useSetUserAdmin } from '@/hooks/useAdmin'
+import { useListUsers, useSetUserPremium, useSetUserAdmin, useSetUserGmailTester } from '@/hooks/useAdmin'
 import { useAppConfig, useUpdateAppConfig } from '@/hooks/useAppConfig'
 import { supabase } from '@/lib/supabase'
 import { PageHeader } from '@/components/ui/PageHeader'
@@ -477,6 +477,7 @@ export function AdminPage() {
   const { data: users, isLoading, error } = useListUsers()
   const { mutate: setPremium, isPending } = useSetUserPremium()
   const { mutate: setAdmin, isPending: isAdminPending } = useSetUserAdmin()
+  const { mutate: setGmailTester, isPending: isGmailTesterPending } = useSetUserGmailTester()
   const [loadingId, setLoadingId] = useState<string | null>(null)
 
   const refreshUsers = () =>
@@ -516,6 +517,23 @@ export function AdminPage() {
     )
   }
 
+  const handleToggleGmailTester = (userId: string, currentGmailTester: boolean) => {
+    setLoadingId(userId)
+    setGmailTester(
+      { userId, isGmailTester: !currentGmailTester },
+      {
+        onSuccess: () => {
+          refreshUsers()
+          setLoadingId(null)
+        },
+        onError: (e: any) => {
+          alert(`${t('Error:')} ${e.message}`)
+          setLoadingId(null)
+        },
+      },
+    )
+  }
+
   const statusBadges = (user: NonNullable<typeof users>[number]) => (
     <div className="flex flex-wrap gap-2">
       {user.is_premium && (
@@ -523,6 +541,11 @@ export function AdminPage() {
       )}
       {user.is_admin && (
         <Badge className="bg-blue-100 dark:bg-blue-900/40 text-blue-800">Admin</Badge>
+      )}
+      {user.is_gmail_tester && (
+        <Badge className="bg-amber-100 dark:bg-amber-900/40 text-amber-800">
+          {t('Probador de Gmail')}
+        </Badge>
       )}
       {!user.is_premium && !user.is_admin && (
         <Badge className="bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-100">{t('Gratis')}</Badge>
@@ -557,6 +580,15 @@ export function AdminPage() {
         }
       >
         {user.is_admin ? t('Quitar Admin') : t('Hacer Admin')}
+      </Button>
+      <Button
+        size="sm"
+        variant={user.is_gmail_tester ? 'danger' : 'secondary'}
+        onClick={() => handleToggleGmailTester(user.id, user.is_gmail_tester)}
+        disabled={isPending || isAdminPending || isGmailTesterPending || loadingId === user.id}
+        title={t('Mientras gmail.readonly no esté verificado en producción, solo los probadores ven "Conectar Gmail".')}
+      >
+        {user.is_gmail_tester ? t('Quitar probador de Gmail') : t('Hacer probador de Gmail')}
       </Button>
     </div>
   )

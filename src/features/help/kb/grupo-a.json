@@ -88,7 +88,9 @@
         "a": "Sí, pero elegir una moneda distinta a la tuya es una función de cuentas en otras monedas que puede ser Premium según tu plan; si no la tienes, el selector de **Moneda** solo muestra la actual."
       }
     ],
-    "canCreate": ["account"]
+    "canCreate": [
+      "account"
+    ]
   },
   {
     "id": "tarjetas",
@@ -137,7 +139,9 @@
         "a": "La app te pregunta \"¿Eliminar esta tarjeta?\" antes de borrarla. Si la usas en transacciones, revisa antes tu historial."
       }
     ],
-    "canCreate": ["card"]
+    "canCreate": [
+      "card"
+    ]
   },
   {
     "id": "lineas-credito",
@@ -180,6 +184,10 @@
       {
         "q": "El pago de la línea, ¿es un gasto?",
         "a": "No. Un pago de tarjeta mueve dinero de tu cuenta hacia la línea de crédito para bajar la deuda; el gasto ya se contó cuando hiciste la compra."
+      },
+      {
+        "q": "Me llegó un aviso de que me subieron el límite, ¿se registra como gasto?",
+        "a": "No. Cuando el banco avisa \"aumentamos tu límite de crédito\", la app no crea ningún movimiento: en **Líneas de crédito** aparece un aviso con el nuevo límite para que lo **Apliques** o lo **Descartes**."
       }
     ],
     "canCreate": []
@@ -233,6 +241,14 @@
       {
         "q": "No me deja registrar más transacciones.",
         "a": "El plan gratis tiene un máximo de transacciones (según tu plan). Al llegar al límite verás un aviso para actualizar a Premium. Las subpartidas y los MSI también pueden ser funciones Premium según tu plan."
+      },
+      {
+        "q": "¿Cómo registro que el banco me pasó una compra a meses después de hacerla?",
+        "a": "En **Transacciones**, busca la compra con tarjeta de crédito y toca **Diferir**. Escribe en cuántos meses, si es **sin intereses** o con tasa (**% mensual** como te la da el banco, o **% total**) y el mes en que empezó. La app calcula la mensualidad, el interés y el total, y desde ese momento el estado de cuenta suma solo la mensualidad de cada mes."
+      },
+      {
+        "q": "Al pagar la tarjeta, ¿qué diferencia hay entre abono parcial, pago del periodo y total adeudado?",
+        "a": "**Abono parcial**: pagas una parte y el resto del periodo sigue pendiente. **Pago del periodo**: lo que pide el estado de cuenta para no generar intereses; el monto se llena solo y marca las mensualidades de meses del ciclo. **Total adeudado**: liquidas toda la deuda de la línea, incluido lo aún no facturado, y se marcan como pagadas todas las mensualidades que faltaban."
       }
     ],
     "canCreate": []

@@ -2206,10 +2206,10 @@ export const en: Record<string, string> = {
     'Register your cash, debit or savings accounts. Every transaction you add is subtracted from or added to them here. Inside an account you can set money aside in pockets with "Move to pocket".',
   'Tus tarjetas de crédito o débito. Las de crédito se agrupan en una línea de crédito (siguiente sección) para calcular su estado de cuenta.':
     'Your credit or debit cards. Credit cards are grouped into a credit line (next section) to calculate their statement.',
-  'Fechas de corte y pago, cuánto llevas gastado del periodo y cuánto debes pagar. Cada cargo nuevo actualiza el monto a pagar automáticamente.':
-    'Statement and due dates, how much you\'ve spent this period and how much you owe. Every new charge updates the amount due automatically.',
-  'Todos tus movimientos: gastos, ingresos, pagos de tarjeta y transferencias. Aquí puedes editarlos o corregir su categoría.':
-    'All your transactions: expenses, income, card payments and transfers. Here you can edit them or fix their category.',
+  'Fechas de corte y pago, cuánto llevas gastado del periodo y cuánto debes pagar. Cada cargo nuevo actualiza el monto a pagar automáticamente, y si el banco te sube el límite te lo sugerimos aquí.':
+    'Statement and due dates, how much you\'ve spent this period and how much you owe. Every new charge updates the amount due automatically, and if your bank raises your limit we suggest it here.',
+  'Todos tus movimientos: gastos, ingresos, pagos de tarjeta y transferencias. Aquí puedes editarlos, corregir su categoría o diferir una compra con tarjeta a meses (con o sin intereses).':
+    'All your transactions: expenses, income, card payments and transfers. Here you can edit them, fix their category or move a card purchase to monthly installments (with or without interest).',
   'Define un límite mensual por categoría y recibe un aviso cuando estés por pasarte.':
     'Set a monthly limit per category and get an alert when you\'re about to go over.',
   'Detecta Netflix, Spotify y demás cargos recurrentes por SMS/correo, o agrégalos a mano. Si un comercio no manda correo/SMS, activa "Generar el cargo automáticamente" para que se registre solo cada ciclo.':
@@ -2685,6 +2685,10 @@ export const en: Record<string, string> = {
   'Ayuda con la app y tus configuraciones': 'Help with the app and your settings',
   'Nueva conversación': 'New conversation',
   'Chat con {{name}}': 'Chat with {{name}}',
+  '¿Te ayudo?': 'Need a hand?',
+  'Taffy cobra vida': 'Taffy comes to life',
+  'Taffy ahora reacciona: se mueve cuando la tocas, inclina la cabeza mientras piensa, se alegra al responderte y te saluda de vez en cuando desde la burbuja. En la app del celular también vibra un poco al tocarla.':
+    'Taffy now reacts: she moves when you tap her, tilts her head while thinking, cheers up when she answers and waves at you from the bubble now and then. In the phone app she also gives a little buzz when you tap her.',
   'No encontré esa línea de crédito. Créala primero o elige una existente.': "I couldn't find that credit line. Create it first or pick an existing one.",
   'Te quedan {{n}} de {{limit}} mensajes hoy': 'You have {{n}} of {{limit}} messages left today',
   'Llegaste al máximo de mensajes de hoy. Mañana se reinicia.': "You reached today's message limit. It resets tomorrow.",
@@ -2709,4 +2713,61 @@ export const en: Record<string, string> = {
   'Asistente de ayuda y guías de todas las funciones': 'Help assistant and guides for every feature',
   'Conoce a Taffy, el nuevo asistente (la burbuja de abajo a la derecha): contesta tus dudas sobre la app y te ayuda a crear cuentas, tarjetas, categorías, presupuestos y suscripciones; antes de guardar nada te pide confirmación. Además, Preguntas frecuentes ahora trae una guía paso a paso de cada sección.':
     'Meet Taffy, the new assistant (the bubble at the bottom right): it answers your questions about the app and helps you create accounts, cards, categories, budgets and subscriptions; it asks for confirmation before saving anything. Also, Frequently asked questions now includes a step-by-step guide for each section.',
+  '¿Qué estás pagando?':
+    'What are you paying?',
+  'Abono parcial':
+    'Partial payment',
+  'Pago del periodo':
+    'Statement balance',
+  'Total adeudado':
+    'Full balance',
+  'Liquidación':
+    'Paid in full',
+  'Abonas una parte; el resto del periodo sigue pendiente.':
+    'You pay part of it; the rest of the period stays pending.',
+  'Lo que pide el estado de cuenta para no generar intereses: {{amount}}.':
+    'What the statement asks for to avoid interest: {{amount}}.',
+  'Liquidas toda la deuda de la línea, incluido lo aún no facturado y los meses que faltan: {{amount}}.':
+    'You pay off the whole line, including unbilled charges and the remaining installments: {{amount}}.',
+  'Sin intereses (MSI)':
+    'Interest-free',
+  'Tipo de tasa':
+    'Rate type',
+  '% mensual':
+    '% monthly',
+  '% total':
+    '% total',
+  'Tasa mensual (%)':
+    'Monthly rate (%)',
+  'Interés total (%)':
+    'Total interest (%)',
+  'Mensualidad {{monthly}} · Interés {{interest}} · Total {{total}}':
+    'Monthly {{monthly}} · Interest {{interest}} · Total {{total}}',
+  'Diferir':
+    'Installments',
+  'Diferir compra a meses':
+    'Move purchase to installments',
+  'A meses':
+    'In installments',
+  'Escribe en cuántos meses (2 o más).':
+    'Enter the number of months (2 or more).',
+  'Escribe la tasa de interés o marca "Sin intereses".':
+    'Enter the interest rate or turn on "Interest-free".',
+  '¿Cuántas mensualidades ya pagaste? (empezó en {{month}}, van {{n}})':
+    'How many installments have you already paid? (started in {{month}}, {{n}} so far)',
+  '{{name}} subió tu límite a {{amount}}. ¿Lo actualizo?':
+    '{{name}} raised your limit to {{amount}}. Update it?',
+  'Aplicar':
+    'Apply',
+  'Pago de tarjeta a tu medida y compras a meses con intereses':
+    'Flexible card payments and installments with interest',
+  'Al pagar una tarjeta ahora eliges si es un abono parcial, el pago del periodo o el total adeudado (el monto se llena solo). Si el banco te pasó una compra a meses después de hacerla, usa Diferir en Transacciones: eliges meses y tasa (% mensual o total) y ves la mensualidad y el total con intereses. Además, la captura automática ya no registra avisos de aumento de límite (te lo sugerimos en Líneas de crédito), promociones tipo "50% de devolución" ni el cobro bruto de Stripe antes del depósito.':
+    'When you pay a card you now choose whether it is a partial payment, the statement balance or the full balance (the amount fills in by itself). If your bank moved a purchase to installments after you made it, use Installments in Transactions: pick months and rate (% monthly or total) and see the monthly payment and total with interest. Also, automatic capture no longer records credit-limit increase notices (we suggest them in Credit lines), "50% back" promotions or Stripe\'s gross charge before the payout.',
+  'Probador de Gmail': 'Gmail tester',
+  'Hacer probador de Gmail': 'Make Gmail tester',
+  'Quitar probador de Gmail': 'Remove Gmail tester',
+  'Mientras gmail.readonly no esté verificado en producción, solo los probadores ven "Conectar Gmail".':
+    'While gmail.readonly isn\'t verified for production, only testers see "Connect Gmail".',
+  'Gmail está disponible solo para cuentas de prueba mientras completamos una revisión de seguridad con Google. Mientras tanto, usa Outlook (abajo) o escribe a soporte si necesitas Gmail.':
+    'Gmail is available only to test accounts while we complete a security review with Google. In the meantime, use Outlook (below) or contact support if you need Gmail.',
 }
