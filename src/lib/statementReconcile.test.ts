@@ -79,3 +79,62 @@ test('las líneas de MSI (fecha de compra antigua) no estiran el periodo', () =>
   )
   assert.deepEqual(r.missingInStatement.map((t) => t.id), [])
 })
+
+// --- MSI: el estado de cuenta trae la mensualidad; la app, la compra completa + un plan ---
+import { parseInstallmentIndex } from './statementReconcile.ts'
+const plan = (id: string, monthly: number, months: number, txId: string | null, desc = 'Consola') => ({
+  id, transaction_id: txId, description: desc, months, monthly_payment: monthly, currency: 'MXN',
+})
+const msiLine = (concept: string, amount: number, txDate = '2026-05-26') => ({ ...line(concept, amount, txDate), isInstallment: true })
+
+test('parseInstallmentIndex entiende "4 de 12", "8/12" y descarta lo que no es', () => {
+  assert.deepEqual(parseInstallmentIndex('Compra en MERPAGO*MERCADOLIBRE 4 de 12'), { n: 4, m: 12 })
+  assert.deepEqual(parseInstallmentIndex('Mercadopago *Mercadol - 8/12 | RFC: S.I.'), { n: 8, m: 12 })
+  assert.equal(parseInstallmentIndex('Compra 13/12'), null)
+  assert.equal(parseInstallmentIndex('Tienda 2026'), null)
+})
+
+test('la mensualidad MSI empata con su plan y oculta la compra completa', () => {
+  const r = reconcileStatement(
+    [msiLine('Compra en MERPAGO*MERCADOLIBRE 4 de 12', 666.33)],
+    [tx('compra', 'Consola Ps5', 7995.96, '2026-06-26')],
+    { ...opts, plans: [plan('p1', 666.33, 12, 'compra')] },
+  )
+  assert.equal(r.installments.length, 1)
+  assert.equal(r.installments[0].n, 4)
+  assert.equal(r.missingInApp.length, 0)
+  assert.equal(r.missingInStatement.length, 0)
+  assert.equal(r.appTotal, r.statementTotal)
+})
+
+test('MSI: mismo monto pero otro plazo no empata, y queda como faltante', () => {
+  const r = reconcileStatement([msiLine('Mercadol 5/12', 166.67)], [], { ...opts, plans: [plan('p1', 166.67, 6, null)] })
+  assert.equal(r.installments.length, 0)
+  assert.equal(r.missingInApp.length, 1)
+})
+
+test('MSI: un plan empata una sola mensualidad por estado de cuenta', () => {
+  const r = reconcileStatement(
+    [msiLine('Mercadol 4/12', 100), msiLine('Otra tienda 2/12', 100)],
+    [],
+    { ...opts, plans: [plan('p1', 100, 12, null)] },
+  )
+  assert.equal(r.installments.length, 1)
+  assert.equal(r.missingInApp.length, 1)
+})
+
+test('MSI: los renglones de intereses/IVA del plan no se empatan como mensualidad', () => {
+  const r = reconcileStatement([msiLine('Compra diferida - Cm Del Mayab - intereses 3/3', 56.48)], [], { ...opts, plans: [plan('p1', 56.48, 3, null)] })
+  assert.equal(r.installments.length, 0)
+})
+
+test('MSI: con intereses empata por el monto de la mensualidad registrada', () => {
+  const p = { ...plan('p1', 500, 6, null), payments: [512.34] }
+  const r = reconcileStatement([msiLine('Tienda 2 de 6', 512.34)], [], { ...opts, plans: [p] })
+  assert.equal(r.installments.length, 1)
+})
+
+test('MSI: "iva" solo cuenta como palabra (Activa/Nativa no son renglón de IVA)', () => {
+  const r = reconcileStatement([msiLine('Tienda Nativa 3/12', 80)], [], { ...opts, plans: [plan('p1', 80, 12, null)] })
+  assert.equal(r.installments.length, 1)
+})

@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import type { InstallmentPlanLite } from '@/lib/statementReconcile'
 import { supabase } from '@/lib/supabase'
 import type {
   ReconcileBuckets,
@@ -11,6 +12,37 @@ import type {
 // crédito se incluyen también los pagos hechos a su línea (kind
 // 'card_payment', que no llevan card_id) para poder casar el abono que
 // aparece en el estado de cuenta.
+// Planes MSI vigentes de las tarjetas que se concilian: el estado de cuenta solo trae la
+// mensualidad, así que se empata contra el plan y no contra la compra completa.
+export function useReconcilePlans(params: { userId?: string; cardIds?: string[] }) {
+  const { userId, cardIds } = params
+  return useQuery({
+    queryKey: ['reconcile_plans', userId, cardIds?.join(',')],
+    queryFn: async (): Promise<InstallmentPlanLite[]> => {
+      if (!userId || !cardIds?.length) return []
+      const { data, error } = await supabase
+        .from('installment_plans')
+        .select(
+          'id, transaction_id, description, months, monthly_payment, currency, installment_plan_payments(amount)',
+        )
+        .eq('user_id', userId)
+        .in('card_id', cardIds)
+        .is('cancelled_at', null)
+      if (error) throw error
+      return (data || []).map((p) => ({
+        id: p.id,
+        transaction_id: p.transaction_id,
+        description: p.description,
+        months: Number(p.months),
+        monthly_payment: Number(p.monthly_payment),
+        currency: p.currency,
+        payments: ((p.installment_plan_payments as { amount: number }[] | null) ?? []).map((x) => Number(x.amount)),
+      }))
+    },
+    enabled: !!userId && !!cardIds?.length,
+  })
+}
+
 export function useReconcileTransactions(params: {
   userId?: string
   /** Una o varias tarjetas (una línea de crédito trae física y virtual). */

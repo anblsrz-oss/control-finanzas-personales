@@ -12,6 +12,7 @@ import { useCreateTransaction } from '@/hooks/useTransactions'
 import { useOcrReceipt, type StatementExtraction } from '@/hooks/useOcrReceipt'
 import {
   useReconciliations,
+  useReconcilePlans,
   useReconcileTransactions,
   useSaveReconciliation,
 } from '@/hooks/useReconciliations'
@@ -123,13 +124,15 @@ export function ReconcilePage() {
     endDate: queryRange?.end,
   })
 
+  const plansQuery = useReconcilePlans({ userId, cardIds })
+
   const lines: StatementLine[] = useMemo(
     () => (extraction?.transactions ?? []).map(toLine),
     [extraction],
   )
 
   const result: ReconcileResult | null = useMemo(() => {
-    if (!extraction || txnsQuery.isLoading) return null
+    if (!extraction || txnsQuery.isLoading || plansQuery.isLoading) return null
     return reconcileStatement(lines, txnsQuery.data || [], {
       targetCurrency,
       instrument: account ? 'account' : 'card',
@@ -137,12 +140,15 @@ export function ReconcilePage() {
       lineRates,
       amountTolerance: Number(amountTolerance) || 0.5,
       dateWindowDays: Number(dateWindowDays) || 4,
+      plans: plansQuery.data,
     })
   }, [
     extraction,
     lines,
     txnsQuery.data,
     txnsQuery.isLoading,
+    plansQuery.data,
+    plansQuery.isLoading,
     targetCurrency,
     account,
     lineRates,
@@ -151,7 +157,11 @@ export function ReconcilePage() {
   ])
 
   const buckets: ReconcileBuckets | null = result && {
-    matched: result.matched.map((m) => ({ line: m.line, txId: m.tx.id })),
+    matched: [
+      ...result.matched.map((m) => ({ line: m.line, txId: m.tx.id })),
+      // Mensualidad MSI: se guarda con la compra del plan (o el id del plan si no tiene compra).
+      ...result.installments.map((i) => ({ line: i.line, txId: i.plan.transaction_id ?? i.plan.id })),
+    ],
     amountMismatch: result.amountMismatch.map((m) => ({
       line: m.line,
       txId: m.tx.id,
@@ -263,7 +273,7 @@ export function ReconcilePage() {
   async function addSelectedMissing() {
     if (!userId || !result) return
     const toAdd = result.missingInApp.filter(
-      (l, i) => selectedMissing[i] && !l.isCardPayment,
+      (l, i) => selectedMissing[i] && !l.isCardPayment && !l.isInstallment,
     )
     let added = 0
     let existed = 0
@@ -494,7 +504,7 @@ export function ReconcilePage() {
                         >
                           <input
                             type="checkbox"
-                            disabled={l.isCardPayment}
+                            disabled={l.isCardPayment || l.isInstallment}
                             checked={!!selectedMissing[i]}
                             onChange={(e) =>
                               setSelectedMissing((p) => ({ ...p, [i]: e.target.checked }))
@@ -505,7 +515,8 @@ export function ReconcilePage() {
                             <span className="text-xs text-slate-400">
                               {formatDate(l.txDate)}
                               {l.isCardPayment && ` · ${t('pago a tarjeta — regístralo desde Transacciones')}`}
-                              {l.isInstallment && ` · ${t('meses sin intereses')}`}
+                              {l.isInstallment &&
+                                ` · ${t('meses sin intereses — regístrala como compra a meses en Transacciones')}`}
                             </span>
                           </span>
                           <Money amount={l.amount} currency={l.currency || targetCurrency} />
@@ -591,6 +602,26 @@ export function ReconcilePage() {
                   </div>
                 )}
               </Card>
+
+              {/* Mensualidades MSI empatadas con un plan */}
+              {result.installments.length > 0 && (
+                <Card>
+                  <h3 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                    <CircleCheck className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Mensualidades a meses')} ({result.installments.length})
+                  </h3>
+                  <div className="grid gap-1">
+                    {result.installments.map((i, k) => (
+                      <div key={k} className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                        <span className="flex-1 truncate">
+                          {i.plan.description || i.line.concept || t('Sin concepto')}
+                          {i.n && i.m ? ` · ${i.n}/${i.m}` : ''} · {t('plan registrado')}
+                        </span>
+                        <Money amount={i.line.amount} currency={i.line.currency || targetCurrency} />
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              )}
 
               {/* Coinciden */}
               <Card>

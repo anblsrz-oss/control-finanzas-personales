@@ -15,6 +15,13 @@ export interface ChangelogEntry {
 
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    id: '2026-10-18-conciliacion-msi-y-motivos',
+    date: '2026-10-18',
+    title: 'Conciliación con meses sin intereses y tus motivos al eliminar',
+    description:
+      'Al conciliar un estado de cuenta, las mensualidades de tus compras a meses sin intereses ya se empatan con su plan ("4 de 12"): la compra completa deja de aparecer como faltante y los totales cuadran. Además, cuando eliminas una transacción y escribes un motivo nuevo, queda guardado como atajo para la próxima vez.',
+  },
+  {
     id: '2026-10-18-conciliacion-mas-confiable',
     date: '2026-10-18',
     title: 'Conciliación más confiable',

@@ -32,6 +32,29 @@ export interface ReconcileOptions {
   amountTolerance?: number
   /** Ventana de días entre la fecha del estado de cuenta y la de la transacción. */
   dateWindowDays?: number
+  /** Planes MSI de las tarjetas que se concilian (el estado de cuenta trae solo la mensualidad). */
+  plans?: InstallmentPlanLite[]
+}
+
+/** Lo mínimo de un plan MSI de la app para empatarlo con una mensualidad del estado de cuenta. */
+export interface InstallmentPlanLite {
+  id: string
+  /** La compra completa (se oculta de "falta en el estado de cuenta" si su plan empata). */
+  transaction_id: string | null
+  description: string | null
+  months: number
+  monthly_payment: number
+  currency: string
+  /** Mensualidades registradas (con intereses el monto puede variar por mes). */
+  payments?: number[]
+}
+
+export interface InstallmentMatch {
+  line: StatementLine
+  plan: InstallmentPlanLite
+  /** Número de mensualidad ("4 de 12" -> 4); null si el texto no lo trae. */
+  n: number | null
+  m: number | null
 }
 
 export interface MatchedPair {
@@ -48,6 +71,8 @@ export interface ReconcileResult {
   amountMismatch: MismatchPair[]
   missingInApp: StatementLine[]
   missingInStatement: TransactionRow[]
+  /** Mensualidades MSI del estado de cuenta empatadas con un plan de la app. */
+  installments: InstallmentMatch[]
   /** Suma con signo de las líneas del estado de cuenta, en targetCurrency. */
   statementTotal: number
   /** Suma con signo de las transacciones consideradas, en targetCurrency. */
@@ -126,6 +151,49 @@ export function tokenOverlap(a: string, b: string): number {
 
 const PAYMENT_WORDS = /pago|gracias|abono|deposito|depósito|payment/i
 
+/** "4 de 12" / "8/12" -> {n:4, m:12}; null si no hay (n <= m y m >= 2). */
+export function parseInstallmentIndex(concept: string): { n: number; m: number } | null {
+  const hit = /(?:^|[^\d])(\d{1,2})\s*(?:\/|de)\s*(\d{1,2})(?!\d)/i.exec(concept)
+  if (!hit) return null
+  const n = Number(hit[1])
+  const m = Number(hit[2])
+  return n >= 1 && m >= 2 && n <= m ? { n, m } : null
+}
+
+// Renglones de intereses/IVA de un plan: no son la mensualidad.
+const INTEREST_ROW = /intereses|\biva\b/i
+
+/**
+ * Empata cada mensualidad MSI del estado de cuenta con un plan de la app por monto y plazo (las
+ * fechas no sirven: el banco usa la de la compra y la app la de alta). Un plan empata una vez.
+ */
+function matchInstallments(lines: StatementLine[], opts: ReconcileOptions, tol: number): InstallmentMatch[] {
+  const plans = (opts.plans ?? []).filter((p) => p.currency === opts.targetCurrency)
+  const used = new Set<string>()
+  const out: InstallmentMatch[] = []
+  for (const line of lines) {
+    const idx = parseInstallmentIndex(line.concept)
+    if ((!line.isInstallment && !idx) || line.isCardPayment || INTEREST_ROW.test(line.concept)) continue
+    const abs = Math.abs(lineSigned(line, opts))
+    const best = plans
+      .filter((p) => !used.has(p.id) && (!idx || p.months === idx.m))
+      .map((p) => ({
+        p,
+        diff: Math.min(
+          Math.abs(p.monthly_payment - abs),
+          ...(p.payments ?? []).map((a) => Math.abs(a - abs)),
+        ),
+        overlap: tokenOverlap(line.concept, p.description ?? ''),
+      }))
+      .filter((c) => c.diff <= tol)
+      .sort((a, b) => a.diff - b.diff || b.overlap - a.overlap)[0]
+    if (!best) continue
+    used.add(best.p.id)
+    out.push({ line, plan: best.p, n: idx?.n ?? null, m: idx?.m ?? null })
+  }
+  return out
+}
+
 interface Pair {
   li: number
   tx: TransactionRow
@@ -143,12 +211,24 @@ interface Pair {
  * Las líneas sin pareja van a `missingInApp`.
  */
 export function reconcileStatement(
-  lines: StatementLine[],
-  txns: TransactionRow[],
+  allLines: StatementLine[],
+  allTxns: TransactionRow[],
   opts: ReconcileOptions,
 ): ReconcileResult {
   const tol = opts.amountTolerance ?? DEFAULTS.amountTolerance
   const win = opts.dateWindowDays ?? DEFAULTS.dateWindowDays
+
+  // Mensualidades MSI primero: salen del emparejado normal y ocultan la compra completa del plan.
+  const installments = matchInstallments(
+    [...allLines].sort((a, b) => a.txDate.localeCompare(b.txDate)),
+    opts,
+    tol,
+  )
+  const msiLines = new Set(installments.map((i) => i.line))
+  const planTxIds = new Set(installments.map((i) => i.plan.transaction_id).filter(Boolean))
+  const lines = allLines.filter((l) => !msiLines.has(l))
+  const txns = allTxns.filter((tx) => !planTxIds.has(tx.id))
+  const msiTotal = installments.reduce((sum, i) => sum + lineSigned(i.line, opts), 0)
 
   const sortedLines = [...lines].sort((a, b) => a.txDate.localeCompare(b.txDate))
   const targets = sortedLines.map((l) => lineSigned(l, opts))
@@ -239,10 +319,11 @@ export function reconcileStatement(
     (daysBetween(tx.tx_date, hi) <= win || tx.tx_date.slice(0, 10) <= hi)
   const periodTxns = txns.filter(inPeriod)
   const missingInStatement = periodTxns.filter((tx) => !usedTx.has(tx.id))
-  const statementTotal = round2(targets.reduce((sum, v) => sum + v, 0))
-  const appTotal = round2(periodTxns.reduce((sum, tx) => sum + (txVals.get(tx.id) as number), 0))
+  const statementTotal = round2(targets.reduce((sum, v) => sum + v, 0) + msiTotal)
+  // La mensualidad empatada cuenta como registrada (la compra completa vive en su plan).
+  const appTotal = round2(periodTxns.reduce((sum, tx) => sum + (txVals.get(tx.id) as number), 0) + msiTotal)
 
-  return { matched, amountMismatch, missingInApp, missingInStatement, statementTotal, appTotal }
+  return { matched, amountMismatch, missingInApp, missingInStatement, installments, statementTotal, appTotal }
 }
 
 // "MONEDA EXTRANJERA: 5.00 USD TCT: 17.41": el importe del renglón ya viene convertido a la
