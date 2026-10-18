@@ -21,7 +21,7 @@ import {
   type ReconcileResult,
   type StatementLine,
 } from '@/lib/statementReconcile'
-import { monthStartISO, todayISO } from '@/lib/dates'
+import { monthStartISO, parseLocalDate, toISODate, todayISO } from '@/lib/dates'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { PremiumLocked } from '@/components/ui/PremiumLocked'
 import { Card } from '@/components/ui/Card'
@@ -49,6 +49,12 @@ function reconcileExternalId(instrumentId: string, l: StatementLine): string {
   return 'rec_' + hashRow([instrumentId, l.txDate, l.amount, l.concept]).slice(4)
 }
 
+function shiftISO(iso: string, days: number): string {
+  const d = parseLocalDate(iso)
+  d.setDate(d.getDate() + days)
+  return toISODate(d)
+}
+
 export function ReconcilePage() {
   const { t } = useTranslation()
   const { session } = useAuth()
@@ -69,6 +75,8 @@ export function ReconcilePage() {
   const [periodEnd, setPeriodEnd] = useState(todayISO())
   const [file, setFile] = useState<File | null>(null)
   const [progress, setProgress] = useState(0)
+  // `ocr.isPending` solo cubre la llamada a la edge; leer el PDF antes también tarda.
+  const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [extraction, setExtraction] = useState<StatementExtraction | null>(null)
@@ -87,13 +95,22 @@ export function ReconcilePage() {
   const targetCurrency = account?.currency || card?.currency || 'MXN'
   const instrumentName = account?.name || card?.name || ''
 
+  // Las transacciones de la app se piden según las fechas del propio estado de
+  // cuenta (± margen), no las de Desde/Hasta: un corte que cruza de mes las recortaba.
+  const queryRange = useMemo(() => {
+    const dates = (extraction?.transactions ?? []).map((tx) => tx.txDate).filter(Boolean).sort()
+    if (dates.length === 0) return null
+    const pad = Math.max(Number(dateWindowDays) || 4, 10)
+    return { start: shiftISO(dates[0], -pad), end: shiftISO(dates[dates.length - 1], pad) }
+  }, [extraction, dateWindowDays])
+
   const txnsQuery = useReconcileTransactions({
     userId,
     cardId: card?.id,
     accountId: account?.id,
     creditLineId,
-    startDate: extraction ? periodStart : undefined,
-    endDate: extraction ? periodEnd : undefined,
+    startDate: queryRange?.start,
+    endDate: queryRange?.end,
   })
 
   const lines: StatementLine[] = useMemo(
@@ -149,6 +166,7 @@ export function ReconcilePage() {
     setAddResult(null)
     setSelectedMissing({})
     setProgress(0)
+    setBusy(true)
     try {
       const { extraction: ex, truncated } = await ingestStatementFile(
         file,
@@ -176,6 +194,12 @@ export function ReconcilePage() {
         )
       }
       setExtraction(ex)
+      // El periodo guardado refleja lo que realmente cubre el estado de cuenta.
+      const ds = ex.transactions.map((tx) => tx.txDate).filter(Boolean).sort()
+      if (ds.length > 0) {
+        setPeriodStart(ds[0])
+        setPeriodEnd(ds[ds.length - 1])
+      }
 
       // Tasas de cambio para las líneas en otra moneda distinta a la del
       // instrumento (en segundo plano; el matcher las usa cuando llegan).
@@ -196,6 +220,8 @@ export function ReconcilePage() {
       }
     } catch (e) {
       setError((e as Error).message)
+    } finally {
+      setBusy(false)
     }
   }
 
@@ -330,11 +356,11 @@ export function ReconcilePage() {
           <Button
             data-tour="conciliacion"
             onClick={runComparison}
-            disabled={!file || !target || ocr.isPending || reconcileLimit.reached}
+            disabled={!file || !target || busy || reconcileLimit.reached}
           >
-            {ocr.isPending ? t('Analizando…') : t('Comparar')}
+            {busy ? t('Analizando…') : t('Comparar')}
           </Button>
-          {ocr.isPending && progress > 0 && (
+          {busy && progress > 0 && (
             <span className="text-xs text-slate-500 dark:text-slate-400">
               {Math.round(progress * 100)}%
             </span>

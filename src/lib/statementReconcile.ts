@@ -14,7 +14,6 @@
 // `card_payment` es salida desde la cuenta origen pero abono (entra) en la
 // tarjeta/línea.
 
-import { parseLocalDate } from '@/lib/dates'
 import type { StatementLine, TransactionRow } from '@/types/db'
 
 export type { StatementLine }
@@ -55,6 +54,8 @@ export interface ReconcileResult {
 }
 
 const DEFAULTS = { amountTolerance: 0.5, dateWindowDays: 4 }
+// Segundo pase: el banco suele fechar el cargo días después/antes de la fecha registrada.
+const WIDE_WINDOW_DAYS = 10
 // Por encima de este % de diferencia relativa (y fuera de la tolerancia
 // absoluta) se considera "monto distinto" en vez de descartar el emparejado.
 const MISMATCH_MAX_RATIO = 0.15
@@ -64,9 +65,9 @@ function round2(n: number): number {
   return Math.round((n + Number.EPSILON) * 100) / 100
 }
 
+// tx_date / txDate son 'YYYY-MM-DD'; se compara en UTC para no depender de la zona.
 function daysBetween(a: string, b: string): number {
-  const ms = parseLocalDate(a).getTime() - parseLocalDate(b).getTime()
-  return Math.abs(ms) / 86_400_000
+  return Math.abs(Date.parse(a.slice(0, 10)) - Date.parse(b.slice(0, 10))) / 86_400_000
 }
 
 /** Importe con signo de una línea del estado de cuenta, en targetCurrency. */
@@ -98,31 +99,44 @@ function txSigned(tx: TransactionRow, opts: ReconcileOptions): number {
   }
 }
 
-function tokenize(s: string): Set<string> {
-  return new Set(
-    s
-      .normalize('NFD')
-      .replace(/[̀-ͯ]/g, '')
-      .toLowerCase()
-      .split(/[^a-z0-9]+/)
-      .filter((w) => w.length >= 3),
-  )
+// Prefijos de ruido que los bancos anteponen al comercio (CCO/NME/ANE/OCI…).
+const NOISE = new Set(['cco', 'nme', 'ane', 'oci', 'nwm', 'mer', 'ciu', 'mex', 'str', 'pos', 'com'])
+
+function tokenize(s: string): string[] {
+  return s
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    // Los códigos de referencia (con dígitos) no identifican al comercio.
+    .filter((w) => w.length >= 3 && !/\d/.test(w) && !NOISE.has(w))
 }
 
-function tokenOverlap(a: string, b: string): number {
-  const ta = tokenize(a)
+/** Tokens del concepto del banco que aparecen (igual o por prefijo) en el de la app. */
+export function tokenOverlap(a: string, b: string): number {
+  const ta = new Set(tokenize(a))
   const tb = tokenize(b)
-  if (ta.size === 0 || tb.size === 0) return 0
   let n = 0
-  for (const w of ta) if (tb.has(w)) n++
+  for (const w of ta) {
+    if (tb.some((x) => x === w || (Math.min(x.length, w.length) >= 4 && (x.startsWith(w) || w.startsWith(x))))) n++
+  }
   return n
 }
 
+interface Pair {
+  li: number
+  tx: TransactionRow
+  amountDiff: number
+  dateDiff: number
+  overlap: number
+}
+
 /**
- * Empareja de forma voraz: por cada línea del estado de cuenta (en orden de
- * fecha) busca la transacción no usada del mismo signo más parecida en importe
- * y fecha. Si el importe difiere poco -> `matched`; si difiere dentro de un
- * margen razonable -> `amountMismatch`; si no hay candidata -> `missingInApp`.
+ * Empareja por mejor puntaje global (no línea por línea) en tres pasos:
+ *  1. monto dentro de la tolerancia y fecha dentro de la ventana -> `matched`;
+ *  2. lo restante, con ventana ancha, solo si el concepto se parece -> `matched`;
+ *  3. lo restante con monto cercano (<= 15%) -> `amountMismatch`.
+ * Las líneas sin pareja van a `missingInApp`.
  */
 export function reconcileStatement(
   lines: StatementLine[],
@@ -133,75 +147,72 @@ export function reconcileStatement(
   const win = opts.dateWindowDays ?? DEFAULTS.dateWindowDays
 
   const sortedLines = [...lines].sort((a, b) => a.txDate.localeCompare(b.txDate))
-  const used = new Set<string>()
+  const targets = sortedLines.map((l) => lineSigned(l, opts))
+  const txVals = new Map(txns.map((tx) => [tx.id, txSigned(tx, opts)]))
+  const usedTx = new Set<string>()
+  const lineTx = new Map<number, TransactionRow>()
 
-  const matched: MatchedPair[] = []
-  const amountMismatch: MismatchPair[] = []
-  const missingInApp: StatementLine[] = []
-
-  for (const line of sortedLines) {
-    const targetVal = lineSigned(line, opts)
-    const candidates = txns.filter((tx) => {
-      if (used.has(tx.id)) return false
-      const s = txSigned(tx, opts)
-      return Math.sign(s) === Math.sign(targetVal) && daysBetween(tx.tx_date, line.txDate) <= win
-    })
-
-    if (candidates.length === 0) {
-      missingInApp.push(line)
-      continue
-    }
-
-    // Mejor candidata: menor diferencia de importe, luego fecha más cercana,
-    // luego mayor solape de concepto.
-    const scored = candidates
-      .map((tx) => {
-        const s = txSigned(tx, opts)
-        return {
+  // Candidatas (línea, tx) del mismo signo dentro de `window` y con `accept(pair)`.
+  function pairs(window: number, accept: (p: Pair) => boolean): Pair[] {
+    const out: Pair[] = []
+    sortedLines.forEach((line, li) => {
+      if (lineTx.has(li)) return
+      for (const tx of txns) {
+        if (usedTx.has(tx.id)) continue
+        const s = txVals.get(tx.id) as number
+        if (Math.sign(s) !== Math.sign(targets[li])) continue
+        const dateDiff = daysBetween(tx.tx_date, line.txDate)
+        if (dateDiff > window) continue
+        const p = {
+          li,
           tx,
-          amountDiff: Math.abs(Math.abs(s) - Math.abs(targetVal)),
-          dateDiff: daysBetween(tx.tx_date, line.txDate),
-          overlap: tokenOverlap(tx.concept ?? '', line.concept),
+          amountDiff: Math.abs(Math.abs(s) - Math.abs(targets[li])),
+          dateDiff,
+          overlap: tokenOverlap(line.concept, tx.concept ?? ''),
         }
-      })
-      .sort(
-        (a, b) =>
-          a.amountDiff - b.amountDiff ||
-          a.dateDiff - b.dateDiff ||
-          b.overlap - a.overlap,
-      )
+        if (accept(p)) out.push(p)
+      }
+    })
+    return out
+  }
 
-    const best = scored[0]
-    const rel = Math.abs(targetVal) > 0 ? best.amountDiff / Math.abs(targetVal) : 1
-
-    if (best.amountDiff <= tol || best.amountDiff <= EPSILON) {
-      used.add(best.tx.id)
-      matched.push({ line, tx: best.tx })
-    } else if (rel <= MISMATCH_MAX_RATIO) {
-      used.add(best.tx.id)
-      amountMismatch.push({
-        line,
-        tx: best.tx,
-        diff: round2(targetVal - txSigned(best.tx, opts)),
-      })
-    } else {
-      missingInApp.push(line)
+  function assign(cands: Pair[], mismatch?: MismatchPair[]) {
+    cands.sort((a, b) => b.overlap - a.overlap || a.dateDiff - b.dateDiff || a.amountDiff - b.amountDiff)
+    for (const p of cands) {
+      if (lineTx.has(p.li) || usedTx.has(p.tx.id)) continue
+      lineTx.set(p.li, p.tx)
+      usedTx.add(p.tx.id)
+      if (mismatch) {
+        mismatch.push({
+          line: sortedLines[p.li],
+          tx: p.tx,
+          diff: round2(targets[p.li] - (txVals.get(p.tx.id) as number)),
+        })
+      }
     }
   }
 
-  const missingInStatement = txns.filter((tx) => !used.has(tx.id))
-
-  const statementTotal = round2(
-    sortedLines.reduce((sum, l) => sum + lineSigned(l, opts), 0),
-  )
-  const appTotal = round2(txns.reduce((sum, tx) => sum + txSigned(tx, opts), 0))
-
-  return {
-    matched,
+  const isMatch = (p: Pair) => p.amountDiff <= tol || p.amountDiff <= EPSILON
+  assign(pairs(win, isMatch))
+  assign(pairs(Math.max(win, WIDE_WINDOW_DAYS), (p) => isMatch(p) && p.overlap > 0))
+  const amountMismatch: MismatchPair[] = []
+  assign(
+    pairs(win, (p) => p.amountDiff / Math.max(Math.abs(targets[p.li]), EPSILON) <= MISMATCH_MAX_RATIO),
     amountMismatch,
-    missingInApp,
-    missingInStatement,
-    statementTotal,
-    appTotal,
-  }
+  )
+
+  const mismatchLines = new Set(amountMismatch.map((m) => m.line))
+  const matched: MatchedPair[] = []
+  const missingInApp: StatementLine[] = []
+  sortedLines.forEach((line, li) => {
+    const tx = lineTx.get(li)
+    if (!tx) missingInApp.push(line)
+    else if (!mismatchLines.has(line)) matched.push({ line, tx })
+  })
+
+  const missingInStatement = txns.filter((tx) => !usedTx.has(tx.id))
+  const statementTotal = round2(targets.reduce((sum, v) => sum + v, 0))
+  const appTotal = round2(txns.reduce((sum, tx) => sum + (txVals.get(tx.id) as number), 0))
+
+  return { matched, amountMismatch, missingInApp, missingInStatement, statementTotal, appTotal }
 }
