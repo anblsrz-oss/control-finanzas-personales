@@ -1030,6 +1030,9 @@ export const en: Record<string, string> = {
     'You are at {{percent}}% of your {{name}} budget ({{spent}} of {{amount}}).',
   'Excediste tu presupuesto de {{name}}: llevas {{spent}} de {{amount}}.':
     'You went over your {{name}} budget: {{spent}} of {{amount}}.',
+  'Llegaste al límite de tu presupuesto de {{name}}: llevas {{spent}} de {{amount}}.':
+    'You reached your {{name}} budget limit: {{spent}} of {{amount}}.',
+  'Llegaste al límite': 'Limit reached',
   'tu presupuesto': 'your budget',
   Ver: 'View',
   Entendido: 'Got it',

@@ -187,7 +187,13 @@ export function NotificationsPage() {
                   viewTo="/presupuestos"
                   onMarkRead={() => markBudgetRead.mutate({ id: alert.id, userId: userId! })}
                   message={
-                    isOver
+                    isOver && alert.spent <= alert.amount
+                      ? t('Llegaste al límite de tu presupuesto de {{name}}: llevas {{spent}} de {{amount}}.', {
+                          name,
+                          spent: money(alert.spent, undefined),
+                          amount: money(alert.amount, undefined),
+                        })
+                      : isOver
                       ? t('Excediste tu presupuesto de {{name}}: llevas {{spent}} de {{amount}}.', {
                           name,
                           spent: money(alert.spent, undefined),

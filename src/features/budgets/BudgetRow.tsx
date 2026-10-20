@@ -70,8 +70,14 @@ export function BudgetRow({ status, onEdit, onDelete, deleting }: BudgetRowProps
       <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
         {status.status === 'over' ? (
           <span className="font-medium text-line-scarlet">
-            {t('Excedido por')}{' '}
-            <Money amount={status.spent - status.amount} currency={status.currency} />
+            {status.spent > status.amount ? (
+              <>
+                {t('Excedido por')}{' '}
+                <Money amount={status.spent - status.amount} currency={status.currency} />
+              </>
+            ) : (
+              t('Llegaste al límite')
+            )}
           </span>
         ) : (
           <span className="text-slate-500 dark:text-slate-400">
