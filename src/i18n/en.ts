@@ -1670,6 +1670,18 @@ export const en: Record<string, string> = {
     'This email already has an account. Sign in or use "Forgot your password?".',
   'Te enviamos un correo a {{email}} para confirmar que es tuyo. Abre el enlace para activar tu cuenta.':
     'We sent an email to {{email}} to confirm it\'s yours. Open the link to activate your account.',
+  'Este enlace ya se usó o venció. Inicia sesión; si aún no puedes entrar, pide un correo nuevo desde el registro.':
+    'This link was already used or has expired. Sign in; if you still cannot, request a new email from sign-up.',
+  '¡Cuenta confirmada!': 'Account confirmed!',
+  'Confirma tu correo': 'Confirm your email',
+  'El enlace no es válido.': 'The link is not valid.',
+  'Continuar': 'Continue',
+  'Abrir la app': 'Open the app',
+  'Pulsa el botón para activar tu cuenta.': 'Press the button to activate your account.',
+  'Confirmando…': 'Confirming…',
+  'Confirmar mi cuenta': 'Confirm my account',
+  'Ir a iniciar sesión': 'Go to sign in',
+  'Reenviar correo': 'Resend email',
   'Escribe tu correo y contraseña.':
     'Enter your email and password.',
   'Correo o contraseña incorrectos.':

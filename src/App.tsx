@@ -8,6 +8,7 @@ import { PageGuard } from '@/components/layout/PageGuard'
 import { FeatureGate } from '@/components/ui/FeatureGate'
 import { ProtectedRoute } from '@/features/auth/ProtectedRoute'
 import { LoginPage } from '@/features/auth/LoginPage'
+import { ConfirmEmailPage } from '@/features/auth/ConfirmEmailPage'
 import { ResetPasswordPage } from '@/features/auth/ResetPasswordPage'
 import { RouteMeta } from '@/components/RouteMeta'
 import { publicRoutes } from '@/publicRoutes'
@@ -74,6 +75,7 @@ export default function App() {
       {/* Sin PageGuard: Google Play exige que esta URL esté siempre disponible. */}
       <Route path="/eliminar-cuenta" element={<DeleteAccountPage />} />
       <Route path="/login" element={<PageGuard to="/login"><LoginPage /></PageGuard>} />
+      <Route path="/auth/confirmar" element={<ConfirmEmailPage />} />
       <Route path="/reset-password" element={<PageGuard to="/reset-password"><ResetPasswordPage /></PageGuard>} />
       <Route
         element={

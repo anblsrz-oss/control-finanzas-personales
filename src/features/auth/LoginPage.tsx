@@ -45,6 +45,7 @@ export function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [info, setInfo] = useState<string | null>(null)
+  const [pendingConfirm, setPendingConfirm] = useState(false)
 
   // Si ya hay sesión (p. ej. tras iniciar sesión o verificar el código), salir.
   // Si venía de un plan de la landing (/login?mode=signup&plan=…), se pasa a
@@ -60,6 +61,12 @@ export function LoginPage() {
   function resetFeedback() {
     setError(null)
     setInfo(null)
+    setPendingConfirm(false)
+  }
+
+  async function resendConfirmation() {
+    const { error: err } = await supabase.auth.resend({ type: 'signup', email: email.trim().toLowerCase() })
+    if (err) setError(err.message)
   }
 
   async function handleSignUp() {
@@ -113,6 +120,7 @@ export function LoginPage() {
     // Con confirmación de correo activada no hay sesión hasta confirmar: se
     // envía un enlace de verificación (que vence) al correo indicado.
     if (!data.session) {
+      setPendingConfirm(true)
       setInfo(
         t('Te enviamos un correo a {{email}} para confirmar que es tuyo. Abre el enlace para activar tu cuenta.', {
           email: normalized,
@@ -457,6 +465,11 @@ export function LoginPage() {
         )}
 
         {info && <p className="mt-3 text-xs text-brand-700 dark:text-brand-500">{info}</p>}
+        {pendingConfirm && (
+          <button type="button" onClick={resendConfirmation} className="mt-2 text-xs text-slate-500 underline">
+            {t('Reenviar correo')}
+          </button>
+        )}
         {error && <p className="mt-3 text-xs text-line-scarlet">{error}</p>}
 
         <div className="mt-5 border-t border-slate-100 dark:border-slate-700 pt-4">
