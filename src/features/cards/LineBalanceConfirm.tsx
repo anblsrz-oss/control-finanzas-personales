@@ -94,7 +94,7 @@ export function LineBalanceConfirm({ line, periods, statement }: LineBalanceConf
     return (
       <div className="mt-2 space-y-1">
         <p className="text-xs text-line-green">
-          <Check className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Periodo pagado')}{' '}
+          <Check className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Periodo pagado')}{' '}
           <button
             type="button"
             onClick={startEditing}
@@ -121,7 +121,7 @@ export function LineBalanceConfirm({ line, periods, statement }: LineBalanceConf
     <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
       {confirmedBalance != null ? (
         <span className="text-line-green">
-          <Check className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Saldo confirmado:')} <Money amount={confirmedBalance} currency={statement.currency} />
+          <Check className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Saldo confirmado:')} <Money amount={confirmedBalance} currency={statement.currency} />
         </span>
       ) : (
         t('¿Coincide con tu estado de cuenta?')

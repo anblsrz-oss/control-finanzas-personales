@@ -95,7 +95,7 @@ export function MultiSelect({
           type="button"
           onClick={() => setOpen((o) => !o)}
           aria-expanded={open}
-          className={`flex w-full items-center justify-between gap-2 rounded-md border bg-surface px-3 py-2 text-left text-sm transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
+          className={`flex w-full items-center justify-between gap-2 rounded-md border bg-surface px-3 py-2 text-start text-sm transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
             error ? 'border-line-scarlet' : 'border-slate-300 dark:border-slate-600'
           }`}
         >

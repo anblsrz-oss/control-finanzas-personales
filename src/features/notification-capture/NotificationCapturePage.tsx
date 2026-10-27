@@ -321,12 +321,12 @@ export function NotificationCapturePage() {
                       <span className="min-w-0 flex-1 truncate text-sm text-slate-700 dark:text-slate-200">
                         {app.label}
                         {cat && (
-                          <span className="ml-1.5 rounded bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 text-[10px] font-medium text-slate-500 dark:text-slate-300">
+                          <span className="ms-1.5 rounded bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 text-[10px] font-medium text-slate-500 dark:text-slate-300">
                             {t(KIND_LABEL[cat.kind])}
                           </span>
                         )}
                         {rule && (
-                          <span className="ml-1 text-[10px] text-brand-600 dark:text-brand-400">⚙️</span>
+                          <span className="ms-1 text-[10px] text-brand-600 dark:text-brand-400">⚙️</span>
                         )}
                       </span>
                       {on && (
@@ -392,7 +392,7 @@ export function NotificationCapturePage() {
                     <span className="text-slate-700 dark:text-slate-200">
                       {signalLabel(s, t)}
                       {s.amount != null && (
-                        <strong className="ml-1.5">{formatMoney(s.amount, s.currency ?? 'MXN')}</strong>
+                        <strong className="ms-1.5">{formatMoney(s.amount, s.currency ?? 'MXN')}</strong>
                       )}
                     </span>
                     <span className="text-xs text-slate-500 dark:text-slate-400">
@@ -415,7 +415,7 @@ export function NotificationCapturePage() {
           <p>
             {t('Para registrar tus cargos automáticamente, esta app necesita leer las notificaciones que llegan a tu teléfono.')}
           </p>
-          <ul className="list-disc space-y-1 pl-5">
+          <ul className="list-disc space-y-1 ps-5">
             <li>{t('Solo lee las notificaciones de las apps que tú marques (tu banco, wallet o tiendas).')}</li>
             <li>{t('Solo envía a nuestro servidor las que traen un monto o confirman un envío o pago, para sacar monto, fecha, comercio y terminación de tarjeta.')}</li>
             <li>{t('No guarda el texto de la notificación ni lee las de otras apps. No se usa para publicidad ni se comparte.')}</li>
@@ -479,7 +479,7 @@ function TroubleshootGuide() {
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="flex items-center justify-between text-left"
+        className="flex items-center justify-between text-start"
       >
         <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
           {t('🔧 ¿No te está funcionando?')}

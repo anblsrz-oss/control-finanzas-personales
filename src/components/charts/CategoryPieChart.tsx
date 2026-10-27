@@ -126,7 +126,7 @@ export function CategoryPieChart({ data, type, palette, currency = 'MXN' }: Cate
             <span aria-hidden="true" className="h-1.5 w-5 shrink-0 rounded-full" style={{ backgroundColor: d.color }} />
             <span className="min-w-0 flex-1 truncate text-slate-700 dark:text-slate-200">{d.name}</span>
             <span className="tabular-nums text-slate-500 dark:text-slate-400">{money(d.value, currency)}</span>
-            <span className="w-10 text-right font-semibold tabular-nums text-slate-900 dark:text-slate-100">
+            <span className="w-10 text-end font-semibold tabular-nums text-slate-900 dark:text-slate-100">
               {Math.round((d.value / total) * 100)}%
             </span>
           </li>

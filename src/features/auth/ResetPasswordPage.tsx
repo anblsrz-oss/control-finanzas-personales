@@ -68,7 +68,7 @@ export function ResetPasswordPage() {
             {t('Abre esta página desde el enlace que te enviamos por correo.')}
           </p>
         ) : (
-          <div className="mt-5 space-y-3 text-left">
+          <div className="mt-5 space-y-3 text-start">
             <Input
               type="password"
               label={t('Nueva contraseña')}

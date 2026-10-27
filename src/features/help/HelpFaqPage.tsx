@@ -115,7 +115,7 @@ function buildTopics(t: (key: string, opts?: Record<string, unknown>) => string)
           id: 'privacidad',
           q: t('¿Qué datos se leen y cuáles se guardan?'),
           a: (
-            <ul className={`grid list-disc gap-1.5 pl-5 ${p}`}>
+            <ul className={`grid list-disc gap-1.5 ps-5 ${p}`}>
               <li>{t('Solo se leen las notificaciones de las apps que tú marques, y solo se envían al servidor las que traen un monto o confirman un envío o pago.')}</li>
               <li>{t('No se leen las de apps que no marcaste (WhatsApp, redes sociales…) ni los avisos sin monto.')}</li>
               <li>{t('Se guarda el movimiento detectado: monto, fecha, comercio y de qué app vino. El texto original de la notificación no se guarda.')}</li>
@@ -128,7 +128,7 @@ function buildTopics(t: (key: string, opts?: Record<string, unknown>) => string)
           a: (
             <div className="grid gap-2">
               <p className={p}>{t('La app compara monto, moneda y hora entre los tres canales:')}</p>
-              <ul className={`grid list-disc gap-1.5 pl-5 ${p}`}>
+              <ul className={`grid list-disc gap-1.5 ps-5 ${p}`}>
                 <li>{t('Si coincide todo y llegan con menos de 10 minutos de diferencia, se registra una sola vez y se juntan los datos (el banco aporta la cuenta, la tienda aporta el comercio).')}</li>
                 <li>{t('Si coincide pero con más diferencia de tiempo o entre cuentas distintas, se registra igual pero marcado como "Posible duplicado" en Transacciones, con botones para decir si es el mismo cargo o no.')}</li>
                 <li>{t('Dos avisos de la misma app con el mismo monto (dos cafés del mismo precio) nunca se fusionan: se registran como dos movimientos.')}</li>
@@ -228,7 +228,7 @@ function buildTopics(t: (key: string, opts?: Record<string, unknown>) => string)
           q: t('¿Cómo se usa?'),
           a: (
             <div className="grid gap-2">
-              <ol className={`grid list-decimal gap-1.5 pl-5 ${p}`}>
+              <ol className={`grid list-decimal gap-1.5 ps-5 ${p}`}>
                 {e.steps.map((s, i) => (
                   <li key={i}>{renderRich(t(s))}</li>
                 ))}
@@ -265,7 +265,7 @@ function FaqTopicCard({ topic, autoOpen }: { topic: FaqTopic; autoOpen: boolean 
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className="flex items-center justify-between gap-3 text-left"
+        className="flex items-center justify-between gap-3 text-start"
       >
         <span>
           <span className="block text-base font-semibold text-slate-800 dark:text-slate-100">
@@ -296,7 +296,7 @@ function FaqTopicCard({ topic, autoOpen }: { topic: FaqTopic; autoOpen: boolean 
                   type="button"
                   onClick={() => setOpenItem(isOpen ? null : item.id)}
                   aria-expanded={isOpen}
-                  className="flex w-full items-center justify-between gap-3 py-1 text-left text-sm font-medium text-slate-700 dark:text-slate-200"
+                  className="flex w-full items-center justify-between gap-3 py-1 text-start text-sm font-medium text-slate-700 dark:text-slate-200"
                 >
                   {item.q}
                   <span className="shrink-0 text-xs text-slate-400">{isOpen ? '▲' : '▼'}</span>

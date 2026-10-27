@@ -46,7 +46,7 @@ export function BudgetRow({ status, onEdit, onDelete, deleting }: BudgetRowProps
             {budgetRangeLabel(status.period_start, status.period_end)}
           </p>
         </div>
-        <div className="text-right">
+        <div className="text-end">
           <p className="font-semibold text-slate-800 dark:text-slate-100">
             <Money amount={status.spent} currency={status.currency} />
             <span className="text-slate-400 dark:text-slate-500">

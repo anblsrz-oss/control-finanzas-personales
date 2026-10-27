@@ -6,6 +6,7 @@ import { persist } from 'zustand/middleware'
 import { reconcileOrder } from '@/lib/charts'
 import type { ChartId, ChartPage } from '@/lib/charts'
 import { setNativeStatusBarStyle } from '@/lib/nativeUi'
+import type { Lang } from '@/i18n/languages'
 
 const SETTINGS_KEY = 'ahorbit-settings'
 const LEGACY_SETTINGS_KEY = 'finzen-settings'
@@ -28,7 +29,7 @@ function migrateLegacySettings(): void {
 migrateLegacySettings()
 
 export type ThemePref = 'light' | 'dark' | 'system'
-export type LanguagePref = 'es' | 'en'
+export type LanguagePref = Lang
 export type IncomeExpenseChartType = 'bar' | 'line'
 export type CategoryChartType = 'pie' | 'donut' | 'bar'
 export type TransactionsViewMode = 'cards' | 'table'

@@ -1,9 +1,9 @@
 {
   "redirects": [{ "source": "/bienvenida", "destination": "/", "permanent": true }],
   "rewrites": [
-    { "source": "/en", "destination": "/en/index.html" },
+    { "source": "/:lang(en|pt|it|fr|de|zh|ja|ko|ru|cs|el|ar)", "destination": "/:lang/index.html" },
     { "source": "/:page(registrar-gastos-automaticamente|escanear-tickets|control-de-tarjetas-y-msi|presupuesto-personal-y-familiar|quienes-somos|instalar-android|privacidad|terminos|cookies)", "destination": "/:page/index.html" },
-    { "source": "/en/:page(registrar-gastos-automaticamente|escanear-tickets|control-de-tarjetas-y-msi|presupuesto-personal-y-familiar|quienes-somos|instalar-android|privacidad|terminos|cookies)", "destination": "/en/:page/index.html" },
+    { "source": "/:lang(en|pt|it|fr|de|zh|ja|ko|ru|cs|el|ar)/:page(registrar-gastos-automaticamente|escanear-tickets|control-de-tarjetas-y-msi|presupuesto-personal-y-familiar|quienes-somos|instalar-android|privacidad|terminos|cookies)", "destination": "/:lang/:page/index.html" },
     { "source": "/(.*)", "destination": "/app-shell.html" }
   ],
   "headers": [

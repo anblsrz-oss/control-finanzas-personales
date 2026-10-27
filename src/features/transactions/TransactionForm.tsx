@@ -1051,7 +1051,7 @@ export function TransactionForm({
             {linePlans.length > 0 && (
               <div className="space-y-2 rounded-lg border border-line-amber/30 bg-line-amber/10 p-3">
                 <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
-                  <CreditCard className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Meses sin intereses de esta línea')}
+                  <CreditCard className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Meses sin intereses de esta línea')}
                 </p>
                 <p className="text-xs text-slate-600 dark:text-slate-300">
                   {t('Marca las mensualidades que cubre este pago.')}
@@ -1174,7 +1174,7 @@ export function TransactionForm({
               {msiIsRetroactive && (
                 <div className="space-y-2 rounded-md border border-line-amber/30 bg-white p-3 dark:border-amber-700 dark:bg-slate-800">
                   <p className="text-sm font-medium text-slate-800 dark:text-slate-100">
-                    <TriangleAlert className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Este plan empezó en {{month}} (hace {{n}} meses).', {
+                    <TriangleAlert className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Este plan empezó en {{month}} (hace {{n}} meses).', {
                       month: formatMonthLabel(msiStartDate),
                       n: msiElapsed,
                     })}

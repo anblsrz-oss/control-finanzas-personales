@@ -144,7 +144,7 @@ function AccountYieldSection({
           {parentAccount && <span className="text-slate-400">↳ </span>}
           {account.name}
           {parentAccount && (
-            <span className="ml-1 text-xs font-normal text-slate-500 dark:text-slate-400">
+            <span className="ms-1 text-xs font-normal text-slate-500 dark:text-slate-400">
               {t('(apartado de {{name}})', { name: parentAccount.name })}
             </span>
           )}
@@ -235,7 +235,7 @@ function AccountYieldSection({
                 </div>
                 {y.verified && (
                   <span className="text-xs font-semibold text-line-green">
-                    <Check className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Verificado')}
+                    <Check className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Verificado')}
                   </span>
                 )}
               </Card>

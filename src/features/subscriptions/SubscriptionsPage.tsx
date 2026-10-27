@@ -265,7 +265,7 @@ export function SubscriptionsPage() {
                             className="rounded bg-line-green/10 px-1.5 py-0.5 text-[10px] font-medium text-line-green"
                             title={t('Se registra sola cada ciclo, sin esperar correo/SMS')}
                           >
-                            <Repeat className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Automático')}
+                            <Repeat className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Automático')}
                           </span>
                         )}
                       </p>
@@ -290,7 +290,7 @@ export function SubscriptionsPage() {
                         disabled={generateChargeNow.isPending}
                         title={t('El próximo cobro ya venció y todavía no se ha contabilizado')}
                       >
-                        <Banknote className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Registrar cobro')}
+                        <Banknote className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Registrar cobro')}
                       </Button>
                     )}
                     <Button size="sm" variant="ghost" onClick={() => { setShowForm(false); setEditing(s) }}>

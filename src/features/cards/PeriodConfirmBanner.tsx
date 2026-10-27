@@ -58,7 +58,7 @@ export function PeriodConfirmBanner({ line, periods }: PeriodConfirmBannerProps)
   return (
     <div className="rounded-lg border border-line-amber/30 bg-line-amber/10 p-3 dark:border-amber-700">
       <p className="text-sm font-medium text-line-amber">
-        <TriangleAlert className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('¿Tu corte de {{name}} fue el {{date}}?', {
+        <TriangleAlert className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('¿Tu corte de {{name}} fue el {{date}}?', {
           name: line.name,
           date: formatDate(period.cutDate),
         })}

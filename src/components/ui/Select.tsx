@@ -206,7 +206,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             disabled={disabled}
             onClick={() => (open ? closeList() : openList())}
             onKeyDown={onKeyDown}
-            className={`flex w-full items-center justify-between gap-2 rounded-md border bg-surface ${compact ? 'px-2 py-1' : 'px-3 py-2'} text-left text-sm transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400 dark:disabled:bg-slate-800 dark:disabled:text-slate-500 ${
+            className={`flex w-full items-center justify-between gap-2 rounded-md border bg-surface ${compact ? 'px-2 py-1' : 'px-3 py-2'} text-start text-sm transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400 dark:disabled:bg-slate-800 dark:disabled:text-slate-500 ${
               error ? 'border-line-scarlet' : 'border-slate-300 dark:border-slate-600'
             } ${current === '' ? 'text-slate-400 dark:text-slate-500' : 'text-slate-900 dark:text-slate-100'}`}
           >
@@ -272,7 +272,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
                       data-idx={i}
                       onMouseEnter={() => setHighlight(i)}
                       onClick={() => choose(o.value)}
-                      className={`flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm ${
+                      className={`flex w-full items-center justify-between gap-3 px-3 py-2 text-start text-sm ${
                         i === highlight ? 'bg-brand-50 dark:bg-slate-800' : ''
                       } ${
                         isSel

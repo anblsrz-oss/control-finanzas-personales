@@ -103,7 +103,7 @@ function PricingSection() {
             <h3 className="font-semibold">{p.name}</h3>
             <p className="mt-3">
               <span className="text-3xl font-bold">{p.price}</span>
-              <span className="ml-1 text-sm text-slate-500 dark:text-slate-400">
+              <span className="ms-1 text-sm text-slate-500 dark:text-slate-400">
                 {p.period}
               </span>
             </p>
@@ -309,15 +309,15 @@ export function LandingPage() {
         <section className="mx-auto max-w-5xl px-6 py-14">
           <h2 className="mb-10 text-2xl font-bold tracking-tight">{t('Lleva el control de tus gastos en 3 pasos')}</h2>
           <ol ref={stepsRef} className="relative grid gap-8 sm:grid-cols-3">
-            <span aria-hidden="true" className="absolute left-[10px] top-3 h-[calc(100%-1.5rem)] w-1 rounded-full bg-slate-200 dark:bg-slate-700 sm:left-3 sm:top-[10px] sm:h-1 sm:w-[calc(100%-1.5rem)]" />
+            <span aria-hidden="true" className="absolute start-[10px] top-3 h-[calc(100%-1.5rem)] w-1 rounded-full bg-slate-200 dark:bg-slate-700 sm:start-3 sm:top-[10px] sm:h-1 sm:w-[calc(100%-1.5rem)]" />
             {/* Tramo recorrido: crece de estación en estación al entrar en pantalla */}
             <span
               aria-hidden="true"
-              className={`absolute left-[10px] top-3 w-1 origin-top rounded-full bg-brand-600 transition-transform duration-[1400ms] ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none dark:bg-brand-500 sm:left-3 sm:top-[10px] sm:h-1 sm:w-[calc(100%-1.5rem)] sm:origin-left h-[calc(100%-1.5rem)] ${stepsSeen ? 'scale-100' : 'scale-0'}`}
+              className={`absolute start-[10px] top-3 w-1 origin-top rounded-full bg-brand-600 transition-transform duration-[1400ms] ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none dark:bg-brand-500 sm:start-3 sm:top-[10px] sm:h-1 sm:w-[calc(100%-1.5rem)] sm:origin-left h-[calc(100%-1.5rem)] ${stepsSeen ? 'scale-100' : 'scale-0'}`}
             />
             {steps.map((s, i) => (
-              <Reveal as="li" key={i} delay={i * 220} className="relative pl-10 sm:pl-0 sm:pt-10">
-                <span className="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full border-4 border-slate-900 bg-white dark:border-white dark:bg-slate-900" />
+              <Reveal as="li" key={i} delay={i * 220} className="relative ps-10 sm:ps-0 sm:pt-10">
+                <span className="absolute start-0 top-0 flex h-6 w-6 items-center justify-center rounded-full border-4 border-slate-900 bg-white dark:border-white dark:bg-slate-900" />
                 <s.Icon className={`h-6 w-6 ${s.color}`} strokeWidth={2} aria-hidden="true" />
                 <h3 className="mt-2 font-semibold">{s.title}</h3>
                 <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{s.text}</p>

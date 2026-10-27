@@ -312,7 +312,7 @@ export function LoginPage() {
         </div>
 
         {method === 'password' && (
-          <div className="space-y-3 text-left">
+          <div className="space-y-3 text-start">
             {pwMode === 'signup' && (
               <div className="grid grid-cols-2 gap-3">
                 <Input
@@ -414,7 +414,7 @@ export function LoginPage() {
         {method === 'otp' && (
           <>
             {otpStep === 'email' ? (
-              <div className="space-y-3 text-left">
+              <div className="space-y-3 text-start">
                 <Input
                   type="email"
                   label={t('Correo')}
@@ -431,7 +431,7 @@ export function LoginPage() {
                 </Button>
               </div>
             ) : (
-              <div className="space-y-3 text-left">
+              <div className="space-y-3 text-start">
                 <Input
                   type="text"
                   inputMode="numeric"

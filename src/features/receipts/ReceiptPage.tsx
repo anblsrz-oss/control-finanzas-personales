@@ -654,7 +654,7 @@ export function ReceiptPage() {
                   : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
               }`}
             >
-              <Receipt className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Recibo')}
+              <Receipt className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Recibo')}
             </button>
             <button
               type="button"
@@ -665,7 +665,7 @@ export function ReceiptPage() {
                   : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
               }`}
             >
-              <FileText className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Estado de cuenta')}
+              <FileText className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Estado de cuenta')}
             </button>
           </div>
 
@@ -678,7 +678,7 @@ export function ReceiptPage() {
             </p>
             <label className="cursor-pointer" data-tour="recibos">
               <span className="inline-flex items-center justify-center gap-2 rounded-lg bg-brand-600 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-brand-700">
-                <Camera className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Tomar foto')}
+                <Camera className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Tomar foto')}
               </span>
               <input
                 type="file"
@@ -974,7 +974,7 @@ export function ReceiptPage() {
           )}
 
           <div className="max-h-[28rem] overflow-auto rounded-lg border border-slate-200 dark:border-slate-700">
-            <table className="w-full text-left text-sm">
+            <table className="w-full text-start text-sm">
               <thead className="sticky top-0 bg-canvas text-xs text-slate-500 dark:text-slate-400">
                 <tr>
                   <th className="px-2 py-2"></th>
@@ -984,7 +984,7 @@ export function ReceiptPage() {
                   <th className="px-2 py-2">{t('Categoría')}</th>
                   <th className="px-2 py-2">{t('Cuenta / tarjeta')}</th>
                   <th className="px-2 py-2">{t('Moneda')}</th>
-                  <th className="px-2 py-2 text-right">{t('Monto')}</th>
+                  <th className="px-2 py-2 text-end">{t('Monto')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -1098,13 +1098,13 @@ export function ReceiptPage() {
                           options={Array.from(new Set([...CURRENCIES, r.currency])).map((c) => ({ value: c, label: c }))}
                         />
                       </td>
-                      <td className="px-2 py-1.5 text-right">
+                      <td className="px-2 py-1.5 text-end">
                         <input
                           type="number"
                           step="0.01"
                           value={r.amount}
                           onChange={(e) => updateRow(r.id, { amount: Number(e.target.value) || 0 })}
-                          className="w-24 rounded-md border bg-surface border-slate-300 dark:border-slate-600 px-1.5 py-1 text-right text-sm"
+                          className="w-24 rounded-md border bg-surface border-slate-300 dark:border-slate-600 px-1.5 py-1 text-end text-sm"
                         />
                       </td>
                     </tr>

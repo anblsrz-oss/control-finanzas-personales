@@ -71,7 +71,7 @@ export function GuidePdfLink({ id }: { id: GuideId }) {
       rel="noopener noreferrer"
       className="inline-flex w-fit items-center gap-1 text-xs font-medium text-brand-700 dark:text-brand-500 hover:underline"
     >
-      <Download className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Descargar PDF con imágenes')}
+      <Download className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Descargar PDF con imágenes')}
     </a>
   )
 }

@@ -267,7 +267,7 @@ export function AssistantButton() {
         <section
           role="dialog"
           aria-label={ASSISTANT_NAME}
-          className={`fixed inset-x-3 bottom-[calc(8.25rem+env(safe-area-inset-bottom))] z-30 flex h-[min(34rem,calc(100dvh-12rem))] origin-bottom-right flex-col overflow-hidden rounded-2xl border border-slate-200 bg-surface shadow-2xl transition-[transform,opacity] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-opacity dark:border-slate-700 md:inset-x-auto md:bottom-24 md:right-6 md:h-[min(36rem,calc(100dvh-8rem))] md:w-96 ${
+          className={`fixed inset-x-3 bottom-[calc(8.25rem+env(safe-area-inset-bottom))] z-30 flex h-[min(34rem,calc(100dvh-12rem))] origin-bottom-right flex-col overflow-hidden rounded-2xl border border-slate-200 bg-surface shadow-2xl transition-[transform,opacity] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-opacity dark:border-slate-700 md:inset-x-auto md:bottom-24 md:end-6 md:h-[min(36rem,calc(100dvh-8rem))] md:w-96 ${
             visible ? 'translate-y-0 scale-100 opacity-100' : 'translate-y-3 scale-95 opacity-0 motion-reduce:translate-y-0 motion-reduce:scale-100'
           }`}
         >
@@ -399,7 +399,7 @@ export function AssistantButton() {
       {bubble !== 'hidden' && !open && (
         <div
           data-leaving={bubble === 'leaving' || undefined}
-          className="taffy-bubble fixed bottom-[calc(8.75rem+env(safe-area-inset-bottom))] right-4 z-30 flex items-center gap-1 rounded-2xl rounded-br-sm bg-surface py-1 pl-3 pr-1 text-sm font-medium text-slate-700 shadow-lg ring-1 ring-slate-200 dark:text-slate-100 dark:ring-slate-700 md:bottom-[5.5rem] md:right-6"
+          className="taffy-bubble fixed bottom-[calc(8.75rem+env(safe-area-inset-bottom))] end-4 z-30 flex items-center gap-1 rounded-2xl rounded-br-sm bg-surface py-1 ps-3 pe-1 text-sm font-medium text-slate-700 shadow-lg ring-1 ring-slate-200 dark:text-slate-100 dark:ring-slate-700 md:bottom-[5.5rem] md:end-6"
         >
           <button type="button" onClick={toggle} className="py-1">
             {t('¿Te ayudo?')}
@@ -422,7 +422,7 @@ export function AssistantButton() {
         title={open ? t('Cerrar') : t('Chat con {{name}}', { name: ASSISTANT_NAME })}
         aria-label={open ? t('Cerrar') : t('Chat con {{name}}', { name: ASSISTANT_NAME })}
         aria-expanded={open}
-        className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-white shadow-lg transition-[transform,background-color] duration-150 hover:bg-brand-700 active:scale-95 motion-reduce:transition-none md:bottom-6 md:right-6"
+        className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] end-4 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-brand-600 text-white shadow-lg transition-[transform,background-color] duration-150 hover:bg-brand-700 active:scale-95 motion-reduce:transition-none md:bottom-6 md:end-6"
       >
         {open ? <X className="h-6 w-6" aria-hidden="true" /> : <TaffyAvatar className="h-12 w-12" mood={buttonMood} />}
       </button>

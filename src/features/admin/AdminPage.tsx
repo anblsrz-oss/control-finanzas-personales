@@ -641,16 +641,16 @@ export function AdminPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-200 dark:border-slate-700">
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700 dark:text-slate-200">
+                  <th className="px-4 py-3 text-start font-semibold text-slate-700 dark:text-slate-200">
                     {t('Email')}
                   </th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700 dark:text-slate-200">
+                  <th className="px-4 py-3 text-start font-semibold text-slate-700 dark:text-slate-200">
                     {t('Nombre')}
                   </th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700 dark:text-slate-200">
+                  <th className="px-4 py-3 text-start font-semibold text-slate-700 dark:text-slate-200">
                     {t('Estado')}
                   </th>
-                  <th className="px-4 py-3 text-left font-semibold text-slate-700 dark:text-slate-200">
+                  <th className="px-4 py-3 text-start font-semibold text-slate-700 dark:text-slate-200">
                     {t('Acciones')}
                   </th>
                 </tr>

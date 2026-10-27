@@ -7,6 +7,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import twemoji from '@twemoji/api'
+import { LANGUAGES } from '../src/i18n/languages.ts'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = join(__dirname, '..')
@@ -16,7 +17,8 @@ const assetsDir = join(root, 'public/emoji')
 const CDN_BASE = 'https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/'
 
 const categories = JSON.parse(readFileSync(categoriesPath, 'utf-8'))
-const emojis = [...new Set(categories.flatMap((g) => g.emojis))]
+// Además del catálogo: las banderas del selector de idioma (src/i18n/languages.ts).
+const emojis = [...new Set([...categories.flatMap((g) => g.emojis), ...LANGUAGES.map((l) => l.flag)])]
 
 function codepointOf(emoji) {
   let codepoint = null

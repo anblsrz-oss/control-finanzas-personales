@@ -93,7 +93,7 @@ export function Switch({
       aria-checked={checked}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className="flex w-full items-start gap-3 rounded-md text-left disabled:cursor-not-allowed disabled:opacity-60"
+      className="flex w-full items-start gap-3 rounded-md text-start disabled:cursor-not-allowed disabled:opacity-60"
     >
       <span
         aria-hidden="true"
@@ -102,8 +102,8 @@ export function Switch({
         }`}
       >
         <span
-          className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-150 ${
-            checked ? 'translate-x-4' : ''
+          className={`absolute start-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-150 ${
+            checked ? 'translate-x-4 rtl:-translate-x-4' : ''
           }`}
         />
       </span>

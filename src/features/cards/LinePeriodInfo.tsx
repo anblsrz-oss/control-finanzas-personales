@@ -39,12 +39,12 @@ export function LinePeriodInfo({ line, periods }: LinePeriodInfoProps) {
   return (
     <div className="mt-3 space-y-2">
       <p className="text-xs text-slate-600 dark:text-slate-300">
-        <CalendarDays className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Corte:')} {formatDate(cutDate)} · {relativeLabel(t, cutDate)}
+        <CalendarDays className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Corte:')} {formatDate(cutDate)} · {relativeLabel(t, cutDate)}
         {' | '}
         {t('Pago:')} {formatDate(paymentDate)} · {relativeLabel(t, paymentDate)}
         {confirmed?.confirmed && (
-          <span className="ml-1 text-line-green">
-            <Check className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('confirmado')}
+          <span className="ms-1 text-line-green">
+            <Check className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('confirmado')}
           </span>
         )}
       </p>
@@ -70,7 +70,7 @@ export function LinePeriodInfo({ line, periods }: LinePeriodInfoProps) {
                   <li key={p.id}>
                     {formatMonthLabel(p.period_month)}: {t('corte')} {formatDate(p.cut_date)}
                     {shift !== 0 && (
-                      <span className="ml-1 text-line-amber">
+                      <span className="ms-1 text-line-amber">
                         ({shift > 0 ? '+' : ''}{shift} {t('días')})
                       </span>
                     )}

@@ -237,7 +237,7 @@ export function ImportPage() {
                 type="file"
                 accept=".csv,text/csv"
                 onChange={handleFile}
-                className="block w-full text-sm text-slate-600 dark:text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-600 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-brand-700"
+                className="block w-full text-sm text-slate-600 dark:text-slate-300 file:me-3 file:rounded-lg file:border-0 file:bg-brand-600 file:px-4 file:py-2 file:text-sm file:font-medium file:text-white hover:file:bg-brand-700"
               />
             </div>
           </Card>
@@ -387,13 +387,13 @@ export function ImportPage() {
               )}
 
               <div className="max-h-96 overflow-auto rounded-lg border border-slate-200 dark:border-slate-700">
-                <table className="w-full text-left text-sm">
+                <table className="w-full text-start text-sm">
                   <thead className="sticky top-0 bg-canvas text-xs text-slate-500 dark:text-slate-400">
                     <tr>
                       <th className="px-3 py-2">{t('Fecha')}</th>
                       <th className="px-3 py-2">{t('Concepto')}</th>
                       <th className="px-3 py-2">{t('Tipo')}</th>
-                      <th className="px-3 py-2 text-right">{t('Monto')}</th>
+                      <th className="px-3 py-2 text-end">{t('Monto')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -409,7 +409,7 @@ export function ImportPage() {
                           {r.kind === 'income' ? t('📥 Ingreso') : t('📤 Egreso')}
                         </td>
                         <td
-                          className={`px-3 py-1.5 text-right font-medium ${
+                          className={`px-3 py-1.5 text-end font-medium ${
                             r.kind === 'income' ? 'text-line-green' : 'text-slate-800 dark:text-slate-100'
                           }`}
                         >

@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/Button'
 import { BrandLogo } from '@/components/ui/BrandLogo'
+import { LanguageSelect } from '@/components/ui/LanguageSelect'
 import { useSettings } from '@/store/useSettings'
 import { useAppConfig } from '@/hooks/useAppConfig'
 import { useLocalePath } from '@/hooks/useLocalePath'
@@ -15,29 +16,17 @@ function LanguageToggle() {
   const { i18n } = useTranslation()
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  // El idioma efectivo es el de la URL (/ es, /en en); ver RouteMeta.
-  const language = i18n.language
+  // El idioma efectivo es el de la URL (/ es, /en en, /pt pt…); ver RouteMeta.
   return (
-    <div className="inline-flex overflow-hidden rounded-lg border border-slate-300 dark:border-slate-600 text-xs">
-      {(['es', 'en'] as const).map((lng) => (
-        <button
-          key={lng}
-          type="button"
-          onClick={() => {
-            // Se guarda como preferencia (el usuario la eligió) y se va a la URL equivalente.
-            setLanguage(lng)
-            navigate(localePath(pathname, lng))
-          }}
-          className={`px-3 py-1.5 font-medium transition-colors ${
-            language === lng
-              ? 'bg-brand-600 text-white'
-              : 'bg-surface text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
-          }`}
-        >
-          {lng.toUpperCase()}
-        </button>
-      ))}
-    </div>
+    <LanguageSelect
+      tone="dark"
+      value={i18n.language}
+      onChange={(lng) => {
+        // Se guarda como preferencia (el usuario la eligió) y se va a la URL equivalente.
+        setLanguage(lng)
+        navigate(localePath(pathname, lng))
+      }}
+    />
   )
 }
 
