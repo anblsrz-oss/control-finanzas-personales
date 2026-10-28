@@ -1,6 +1,6 @@
 import { useLayoutEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import i18n from '@/i18n'
+import { changeLang } from '@/i18n'
 import { useAuth } from '@/store/useAuth'
 import { useSettings } from '@/store/useSettings'
 import { useAppConfig } from '@/hooks/useAppConfig'
@@ -40,9 +40,9 @@ export function RouteMeta() {
       useSettings.getState().setLanguage(lang)
       return
     }
-    void i18n.changeLanguage(lang)
+    void changeLang(lang)
     return () => {
-      void i18n.changeLanguage(useSettings.getState().language)
+      void changeLang(useSettings.getState().language)
     }
   }, [isPublic, lang, session])
 

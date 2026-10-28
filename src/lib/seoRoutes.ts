@@ -1,10 +1,15 @@
-// Registro de páginas públicas indexables (SEO bilingüe). Textos de docs/seo/copy.md.
-// Sin imports a propósito: así el archivo se prueba directo con node (seoRoutes.test.ts).
+// Registro de páginas públicas indexables (SEO multi-idioma). Textos de docs/seo/copy.md
+// (es/en) y lib/seoTranslations.ts (resto de idiomas).
+// Solo importa archivos sin dependencias, así se prueba directo con node (seoRoutes.test.ts).
 //
-// Para añadir una página pública: una línea en SEO_ROUTES + su <Route path="en?/slug">
-// en App.tsx. Los metadatos (title, description, canonical, hreflang) salen de aquí.
+// Para añadir una página pública: una línea en BASE_ROUTES (+ sus textos en seoTranslations.ts)
+// y su <Route path=":lang?/slug"> en publicRoutes.tsx. Los metadatos (title, description,
+// canonical, hreflang) salen de aquí.
 
-export type Lang = 'es' | 'en'
+import { LANGUAGES, type Lang } from '../i18n/languages.ts'
+import { SEO_TRANSLATIONS } from './seoTranslations.ts'
+
+export type { Lang }
 
 export const SITE_ORIGIN = 'https://controlfinanzaspersonales.com'
 export const APP_NAME = 'Mi Control de Finanzas Personales'
@@ -16,7 +21,12 @@ export interface SeoRoute {
   description: Record<Lang, string>
 }
 
-export const SEO_ROUTES: SeoRoute[] = [
+type BaseRoute = Omit<SeoRoute, 'title' | 'description'> & {
+  title: Record<'es' | 'en', string>
+  description: Record<'es' | 'en', string>
+}
+
+const BASE_ROUTES: BaseRoute[] = [
   { path: '/',
     title: { es: `App para controlar tus gastos personales | ${APP_NAME}`, en: `Personal expense tracker app | ${APP_NAME}` },
     description: { es: 'Registra tus gastos, cuentas, tarjetas y meses sin intereses en una sola app. Captura automática en Android, escaneo de tickets y presupuestos. Empieza gratis.', en: 'Track your expenses, accounts, credit cards and installment plans in one app. Automatic capture on Android, receipt scanning and budgets. Start for free.' } },
@@ -50,23 +60,25 @@ export const SEO_ROUTES: SeoRoute[] = [
     description: { es: 'La app no usa cookies de rastreo ni publicidad; solo guarda en tu navegador lo necesario para funcionar.', en: 'The app uses no tracking or advertising cookies; it only stores in your browser what it needs to work.' } },
 ]
 
-/** Quita el prefijo /en: '/en' → '/', '/en/x' → '/x'. Lo demás queda igual. */
-function stripEn(path: string): string {
-  if (path === '/en') return '/'
-  return path.startsWith('/en/') ? path.slice(3) : path
+/** Prefijo de idioma de la URL (/en, /pt…). El español no lleva prefijo. */
+const PREFIX_RE = new RegExp(`^/(${LANGUAGES.filter((l) => l.code !== 'es').map((l) => l.code).join('|')})(?=/|$)`)
+
+/** Quita el prefijo de idioma: '/en' → '/', '/pt/x' → '/x'. Lo demás queda igual. */
+function stripLang(path: string): string {
+  return path.replace(PREFIX_RE, '') || '/'
 }
 
-/** Idioma que fija el prefijo de la URL: /en… es inglés; todo lo demás, español. */
+/** Idioma que fija el prefijo de la URL (/en…, /pt…); sin prefijo, español. */
 export function langFromPath(pathname: string): Lang {
-  return pathname === '/en' || pathname.startsWith('/en/') ? 'en' : 'es'
+  return (PREFIX_RE.exec(pathname)?.[1] as Lang | undefined) ?? 'es'
 }
 
 /** '/x' ↔ '/en/x' (la landing: '/' ↔ '/en'). Conserva ?query y #hash; es idempotente. */
 export function localePath(path: string, lang: Lang): string {
   const i = path.search(/[?#]/)
-  const bare = stripEn(i < 0 ? path : path.slice(0, i))
+  const bare = stripLang(i < 0 ? path : path.slice(0, i))
   const rest = i < 0 ? '' : path.slice(i)
-  return (lang === 'en' ? (bare === '/' ? '/en' : `/en${bare}`) : bare) + rest
+  return (lang === 'es' ? bare : bare === '/' ? `/${lang}` : `/${lang}${bare}`) + rest
 }
 
 export function absoluteUrl(path: string, lang: Lang): string {
@@ -75,7 +87,20 @@ export function absoluteUrl(path: string, lang: Lang): string {
 
 /** Entrada del registro para una URL (con o sin /en, con o sin "/" final). */
 export function findSeoRoute(pathname: string): SeoRoute | undefined {
-  const bare = stripEn(pathname)
+  const bare = stripLang(pathname)
   const path = bare.length > 1 && bare.endsWith('/') ? bare.slice(0, -1) : bare
   return SEO_ROUTES.find((r) => r.path === path)
 }
+
+// es/en vienen de BASE_ROUTES; el resto de idiomas, de seoTranslations.ts (sin el sufijo de marca).
+export const SEO_ROUTES: SeoRoute[] = BASE_ROUTES.map((r) => {
+  const title = { ...r.title } as Record<Lang, string>
+  const description = { ...r.description } as Record<Lang, string>
+  for (const { code } of LANGUAGES) {
+    if (code === 'es' || code === 'en') continue
+    const t = SEO_TRANSLATIONS[code][r.path]
+    title[code] = `${t.title} | ${APP_NAME}`
+    description[code] = t.description
+  }
+  return { ...r, title, description }
+})

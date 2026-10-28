@@ -39,7 +39,7 @@ export function DeleteAccountPage() {
               {t('Puedes borrar tu cuenta de Mi Control de Finanzas Personales y todos tus datos cuando quieras. El borrado es inmediato y no se puede deshacer.')}
             </p>
             <p className="font-medium text-slate-700 dark:text-slate-200">{t('Qué se borra')}</p>
-            <ul className="list-disc space-y-1 pl-5">
+            <ul className="list-disc space-y-1 ps-5">
               <li>{t('Tu perfil y tu inicio de sesión.')}</li>
               <li>{t('Movimientos, cuentas, tarjetas, líneas de crédito, presupuestos, suscripciones y categorías.')}</li>
               <li>{t('Conexión con Google Calendar y captura en el teléfono. Se revoca el acceso a Google.')}</li>
@@ -64,7 +64,7 @@ export function DeleteAccountPage() {
           ) : (
             <div className="grid gap-3 text-sm text-slate-600 dark:text-slate-300">
               <p className="font-medium text-slate-700 dark:text-slate-200">{t('Cómo hacerlo')}</p>
-              <ol className="list-decimal space-y-1 pl-5">
+              <ol className="list-decimal space-y-1 ps-5">
                 <li>{t('Inicia sesión (en la app o aquí mismo).')}</li>
                 <li>{t('Ve a Configuración → Eliminar mi cuenta.')}</li>
                 <li>{t('Escribe ELIMINAR y confirma.')}</li>

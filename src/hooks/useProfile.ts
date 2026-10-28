@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/store/useAuth'
+import type { Lang } from '@/i18n/languages'
 import type { ReportEmailPeriod } from '@/types/db'
 
 // Actualiza la moneda principal del usuario. La política profiles_update_own
@@ -31,6 +32,23 @@ export function useUpdateMainCurrency() {
       await refreshProfile()
       queryClient.invalidateQueries({ queryKey: ['budgets', input.userId] })
       queryClient.invalidateQueries({ queryKey: ['budget_status', input.userId] })
+    },
+  })
+}
+
+// Guarda el idioma elegido en el perfil para que lo siga en otros dispositivos.
+export function useUpdateLanguage() {
+  const refreshProfile = useAuth((s) => s.refreshProfile)
+  return useMutation({
+    mutationFn: async (input: { userId: string; lang: Lang }) => {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ lang: input.lang })
+        .eq('id', input.userId)
+      if (error) throw error
+    },
+    onSuccess: async () => {
+      await refreshProfile()
     },
   })
 }

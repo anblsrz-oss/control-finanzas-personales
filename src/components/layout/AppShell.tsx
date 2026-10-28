@@ -36,7 +36,7 @@ const MOBILE_NAV: NavItem[] = [
 function PendingBadge({ count }: { count: number }) {
   if (count <= 0) return null
   return (
-    <span className="ml-auto inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-line-amber px-1.5 text-[11px] font-semibold leading-5 text-white">
+    <span className="ms-auto inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-line-amber px-1.5 text-[11px] font-semibold leading-5 text-white">
       {count > 99 ? '99+' : count}
     </span>
   )
@@ -117,7 +117,7 @@ export function AppShell() {
       <TourGate />
       <AssistantButton />
       {/* Sidebar */}
-      <aside className="hidden w-60 shrink-0 flex-col overflow-hidden border-r border-slate-200 dark:border-slate-700 bg-surface md:sticky md:top-0 md:flex md:h-screen">
+      <aside className="hidden w-60 shrink-0 flex-col overflow-hidden border-e border-slate-200 dark:border-slate-700 bg-surface md:sticky md:top-0 md:flex md:h-screen">
         <div className="flex h-16 shrink-0 items-center gap-2 border-b border-slate-200 dark:border-slate-700 px-5">
           <BrandLogo logoUrl={appConfig?.logo_url} />
           <span className="line-clamp-2 text-sm font-semibold leading-tight text-slate-800 dark:text-slate-100">{appTitle}</span>
@@ -171,7 +171,7 @@ export function AppShell() {
             <BrandLogo logoUrl={appConfig?.logo_url} />
             <span className="truncate font-semibold text-slate-800 dark:text-slate-100">{appTitle}</span>
           </div>
-          <div className="ml-auto flex shrink-0 items-center gap-1 sm:gap-3">
+          <div className="ms-auto flex shrink-0 items-center gap-1 sm:gap-3">
             {profile?.is_premium ? (
               <NavLink to="/suscripcion" className="hidden rounded-full bg-line-amber/15 px-2.5 py-1 text-xs font-semibold text-line-amber sm:inline">
                 Premium
@@ -292,7 +292,7 @@ export function AppShell() {
             <span className="relative">
               <NavIcon to={item.to} className="h-[22px] w-[22px]" />
               {item.to === '/transacciones' && pendingCount > 0 && (
-                <span className="absolute -right-2 -top-1 inline-flex min-w-[1rem] items-center justify-center rounded-full bg-line-amber px-1 text-[10px] font-semibold leading-4 text-white">
+                <span className="absolute -end-2 -top-1 inline-flex min-w-[1rem] items-center justify-center rounded-full bg-line-amber px-1 text-[10px] font-semibold leading-4 text-white">
                   {pendingCount > 99 ? '99+' : pendingCount}
                 </span>
               )}
@@ -313,7 +313,7 @@ export function AppShell() {
                 móvil: sin este punto, un aviso pendiente quedaría invisible
                 hasta abrir la hoja. */}
             {(budgetAlertCount > 0 || subscriptionAlertCount > 0 || cardPaymentAlertCount > 0) && (
-              <span className="absolute -right-1.5 -top-0.5 h-2 w-2 rounded-full bg-line-amber" />
+              <span className="absolute -end-1.5 -top-0.5 h-2 w-2 rounded-full bg-line-amber" />
             )}
           </span>
           {t('Más')}

@@ -132,8 +132,8 @@ export function CardVisual({ card }: CardVisualProps) {
             : 'bg-gradient-to-tr from-white/0 via-white/5 to-white/15'
         }`}
       />
-      <div className={`pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full ${overlay}`} />
-      <div className={`pointer-events-none absolute -bottom-12 -left-6 h-32 w-32 rounded-full ${overlay}`} />
+      <div className={`pointer-events-none absolute -end-8 -top-10 h-32 w-32 rounded-full ${overlay}`} />
+      <div className={`pointer-events-none absolute -bottom-12 -start-6 h-32 w-32 rounded-full ${overlay}`} />
 
       <div className="relative flex items-start justify-between">
         <div className="flex flex-col">
@@ -164,11 +164,11 @@ export function CardVisual({ card }: CardVisualProps) {
       <div className="relative mt-5 flex items-center gap-3">
         <div className="relative h-8 w-11 overflow-hidden rounded-md bg-gradient-to-br from-yellow-100 via-yellow-300 to-amber-500 shadow-inner">
           <div className="absolute inset-0 grid grid-cols-3 gap-px opacity-40">
-            <div className="border-r border-amber-700/40" />
+            <div className="border-e border-amber-700/40" />
             <div className="border-x border-amber-700/40" />
-            <div className="border-l border-amber-700/40" />
+            <div className="border-s border-amber-700/40" />
           </div>
-          <div className="absolute inset-y-1/3 left-0 right-0 border-y border-amber-700/40" />
+          <div className="absolute inset-y-1/3 start-0 end-0 border-y border-amber-700/40" />
         </div>
         <svg viewBox="0 0 24 24" className="h-5 w-5 opacity-80" fill="none" aria-hidden>
           <path

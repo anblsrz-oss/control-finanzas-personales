@@ -26,7 +26,7 @@ export function PossibleDuplicateNotice({
   return (
     <span
       className={`inline-flex flex-wrap items-center gap-1.5 rounded bg-line-amber/10 px-1.5 py-0.5 font-medium text-line-amber ${
-        compact ? 'ml-1.5 text-[10px]' : 'mt-1 text-xs'
+        compact ? 'ms-1.5 text-[10px]' : 'mt-1 text-xs'
       }`}
       title={
         original
@@ -37,7 +37,7 @@ export function PossibleDuplicateNotice({
           : undefined
       }
     >
-      <TriangleAlert className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Posible duplicado')}
+      <TriangleAlert className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Posible duplicado')}
       {!compact && original?.concept && (
         <span className="font-normal">· {original.concept}</span>
       )}

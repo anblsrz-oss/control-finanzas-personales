@@ -55,7 +55,7 @@ export function Modal({ open, title, icon, children, onClose }: ModalProps) {
           <button
             type="button"
             onClick={onClose}
-            className="-mr-1 shrink-0 rounded-md p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+            className="-me-1 shrink-0 rounded-md p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
             aria-label="Cerrar"
             title="Cerrar"
           >

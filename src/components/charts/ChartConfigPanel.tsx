@@ -81,7 +81,7 @@ export function ChartConfigPanel({ chartId, open, onClose, points }: ChartConfig
 
   return (
     <Modal open={open} title={t('Configurar gráfico')} onClose={onClose}>
-      <div className="max-h-[60vh] space-y-4 overflow-y-auto pr-1">
+      <div className="max-h-[60vh] space-y-4 overflow-y-auto pe-1">
         <div>
           <p className="mb-2 text-xs font-semibold uppercase text-slate-400">{t('Series')}</p>
           <div className="space-y-2">

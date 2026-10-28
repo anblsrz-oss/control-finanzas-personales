@@ -69,7 +69,7 @@ export function FamilyPage() {
         <Card key={inv.id} className="mb-4 border-line-amber/30 bg-line-amber/10">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-sm text-slate-700 dark:text-slate-200">
-              <Users className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Te invitaron a la familia')}{' '}
+              <Users className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Te invitaron a la familia')}{' '}
               <span className="font-semibold">
                 {inv.families?.name ?? t('Sin nombre')}
               </span>
@@ -228,7 +228,7 @@ function FamilyDetail({
       <Card>
         <div className="mb-3 flex items-center justify-between">
           <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-            <Users className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {familyName} — {t('miembros')}
+            <Users className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {familyName} — {t('miembros')}
           </p>
           {isOwner ? (
             <Button
@@ -368,7 +368,7 @@ function FamilyDetail({
       {/* Tarjetas compartidas */}
       <Card>
         <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-          <CreditCard className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Tarjetas compartidas')}
+          <CreditCard className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Tarjetas compartidas')}
         </p>
 
         {isOwner ? (
@@ -462,7 +462,7 @@ function FamilyDetail({
       {/* Movimientos familiares */}
       <Card>
         <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-          <Banknote className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Movimientos familiares')}
+          <Banknote className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Movimientos familiares')}
         </p>
         {familyTxs.length === 0 ? (
           <p className="text-sm text-slate-500 dark:text-slate-400">

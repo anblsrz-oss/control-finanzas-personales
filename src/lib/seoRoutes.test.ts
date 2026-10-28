@@ -18,9 +18,19 @@ test('localePath: idempotente y conserva query/hash', () => {
   assert.equal(localePath('/login?mode=signup', 'es'), '/login?mode=signup')
 })
 
-test('langFromPath: solo /en y /en/… son inglés', () => {
+test('localePath: cualquier idioma lleva su prefijo y cambiar de idioma no lo acumula', () => {
+  assert.equal(localePath('/privacidad', 'ja'), '/ja/privacidad')
+  assert.equal(localePath('/ar/privacidad', 'pt'), '/pt/privacidad')
+  assert.equal(localePath('/ar', 'es'), '/')
+  assert.equal(localePath('/', 'de'), '/de')
+})
+
+test('langFromPath: el prefijo /<código> fija el idioma; sin prefijo, español', () => {
   assert.equal(langFromPath('/en'), 'en')
   assert.equal(langFromPath('/en/cookies'), 'en')
+  assert.equal(langFromPath('/ja/terminos'), 'ja')
+  assert.equal(langFromPath('/ar'), 'ar')
+  assert.equal(langFromPath('/artes'), 'es')
   assert.equal(langFromPath('/'), 'es')
   assert.equal(langFromPath('/cookies'), 'es')
   assert.equal(langFromPath('/entradas'), 'es')

@@ -2,7 +2,8 @@ import { renderToString } from 'react-dom/server'
 import { StaticRouter } from 'react-router-dom/server'
 import { Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import i18n from '@/i18n'
+import { changeLang } from '@/i18n'
+import { LANGUAGES } from '@/i18n/languages'
 import { publicRoutes } from '@/publicRoutes'
 import { LandingPage } from '@/features/landing/LandingPage'
 import { headTags } from '@/hooks/usePageMeta'
@@ -15,7 +16,7 @@ import { APP_NAME, SEO_ROUTES, absoluteUrl, localePath, type Lang, type SeoRoute
 // en la caché de react-query (misma query key que useAppConfig) para que los planes muestren
 // los límites reales del admin.
 
-export { APP_NAME, SEO_ROUTES, PRICES, absoluteUrl, localePath }
+export { APP_NAME, SEO_ROUTES, PRICES, LANGUAGES, absoluteUrl, localePath }
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
@@ -28,7 +29,7 @@ export interface RenderedPage {
 }
 
 export async function renderPage(route: SeoRoute, lang: Lang, appConfig: unknown): Promise<RenderedPage> {
-  await i18n.changeLanguage(lang)
+  await changeLang(lang)
   const queryClient = new QueryClient()
   queryClient.setQueryData(['app_config'], appConfig)
 

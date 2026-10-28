@@ -308,7 +308,7 @@ export function ReportsPage() {
       {!canUseReportsFilters && (
         <Card className="mt-6 border-line-amber/30 bg-line-amber/10">
           <p className="text-sm text-line-amber">
-            <ChartColumn className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Premium: filtra por rango de fechas personalizado, cuenta o tarjeta. Actualiza tu plan para más análisis.')}
+            <ChartColumn className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Premium: filtra por rango de fechas personalizado, cuenta o tarjeta. Actualiza tu plan para más análisis.')}
           </p>
         </Card>
       )}

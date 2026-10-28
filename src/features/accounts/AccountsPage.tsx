@@ -205,7 +205,7 @@ export function AccountsPage() {
                       {acc.name}
                       {acc.is_scholarship && (
                         <span className="inline-flex items-center rounded-full bg-line-cobalt/10 px-2 py-0.5 text-xs font-medium text-line-cobalt">
-                          <GraduationCap className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {acc.scholarship_name || t('Beca')}
+                          <GraduationCap className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {acc.scholarship_name || t('Beca')}
                         </span>
                       )}
                     </h3>
@@ -214,13 +214,13 @@ export function AccountsPage() {
                     </p>
                     {acc.has_yield && (
                       <p className="mt-1 text-xs text-line-green">
-                        <TrendingUp className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Rendimiento:')} {acc.yield_rate}%{' '}
+                        <TrendingUp className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Rendimiento:')} {acc.yield_rate}%{' '}
                         {acc.yield_rate_period === 'annual' ? t('anual') : t('mensual')}
                         {acc.yield_kind === 'term' && <> · {t('plazo fijo')}</>}
                       </p>
                     )}
                   </div>
-                  <div className="text-right">
+                  <div className="text-end">
                     <p className="text-lg font-semibold text-slate-800 dark:text-slate-100">
                       <Money amount={balance} currency={acc.currency} />
                     </p>
@@ -281,7 +281,7 @@ export function AccountsPage() {
                 </Card>
 
                 {movingAccount?.id === acc.id && (
-                  <Card className="ml-6 border-dashed">
+                  <Card className="ms-6 border-dashed">
                     <p className="mb-2 text-xs font-medium text-slate-700 dark:text-slate-200">
                       {t('Convertir "{{name}}" en apartado de…', { name: acc.name })}
                     </p>
@@ -337,7 +337,7 @@ export function AccountsPage() {
                   return (
                     <Card
                       key={pocket.id}
-                      className="ml-6 flex items-start justify-between border-dashed"
+                      className="ms-6 flex items-start justify-between border-dashed"
                     >
                       <div className="flex-1">
                         <h4 className="text-sm font-semibold text-slate-700 dark:text-slate-200">
@@ -348,13 +348,13 @@ export function AccountsPage() {
                         </p>
                         {pocket.has_yield && (
                           <p className="mt-1 text-xs text-line-green">
-                            <TrendingUp className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Rendimiento:')} {pocket.yield_rate}%{' '}
+                            <TrendingUp className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Rendimiento:')} {pocket.yield_rate}%{' '}
                             {pocket.yield_rate_period === 'annual' ? t('anual') : t('mensual')}
                             {pocket.yield_kind === 'term' && <> · {t('plazo fijo')}</>}
                           </p>
                         )}
                       </div>
-                      <div className="text-right">
+                      <div className="text-end">
                         <p className="text-base font-semibold text-slate-800 dark:text-slate-100">
                           <Money amount={pocketBalance} currency={pocket.currency} />
                         </p>

@@ -609,7 +609,7 @@ export function TransactionsPage() {
                 : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
             }`}
           >
-            <LayoutGrid className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Tarjetas')}
+            <LayoutGrid className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Tarjetas')}
           </button>
           <button
             type="button"
@@ -621,7 +621,7 @@ export function TransactionsPage() {
                 : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
             }`}
           >
-            <Table2 className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Tabla')}
+            <Table2 className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Tabla')}
           </button>
         </div>
       )}
@@ -638,7 +638,7 @@ export function TransactionsPage() {
         </Card>
       ) : transactionsViewMode === 'table' ? (
         <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
-          <table className="w-full text-left text-sm">
+          <table className="w-full text-start text-sm">
             <thead className="bg-canvas text-xs text-slate-500 dark:text-slate-400">
               <tr>
                 <th className="px-3 py-2">{t('Fecha')}</th>
@@ -646,7 +646,7 @@ export function TransactionsPage() {
                 <th className="px-3 py-2">{t('Categoría')}</th>
                 <th className="px-3 py-2">{t('Cuenta / tarjeta')}</th>
                 <th className="px-3 py-2">{t('Tipo')}</th>
-                <th className="px-3 py-2 text-right">{t('Monto')}</th>
+                <th className="px-3 py-2 text-end">{t('Monto')}</th>
                 <th className="px-3 py-2"></th>
               </tr>
             </thead>
@@ -673,12 +673,12 @@ export function TransactionsPage() {
                         {tx.concept || t('Sin concepto')}
                       </span>
                       {hasLines && (
-                        <span className="ml-1.5 rounded bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 text-[10px] font-medium text-slate-500 dark:text-slate-300">
-                          <Receipt className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('{{n}} líneas', { n: lines!.length })}
+                        <span className="ms-1.5 rounded bg-slate-100 dark:bg-slate-700 px-1.5 py-0.5 text-[10px] font-medium text-slate-500 dark:text-slate-300">
+                          <Receipt className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('{{n}} líneas', { n: lines!.length })}
                         </span>
                       )}
                       {tx.pending && (
-                        <span className="ml-1.5 rounded bg-line-amber/10 px-1.5 py-0.5 text-[10px] font-medium text-line-amber">
+                        <span className="ms-1.5 rounded bg-line-amber/10 px-1.5 py-0.5 text-[10px] font-medium text-line-amber">
                           {t('Pendiente')}
                         </span>
                       )}
@@ -692,7 +692,7 @@ export function TransactionsPage() {
                       {kindLabel(tx.kind)}
                     </td>
                     <td
-                      className={`whitespace-nowrap px-3 py-2 text-right font-semibold ${
+                      className={`whitespace-nowrap px-3 py-2 text-end font-semibold ${
                         tx.kind === 'income' || tx.kind === 'refund'
                           ? 'text-line-green'
                           : 'text-slate-800 dark:text-slate-100'
@@ -705,7 +705,7 @@ export function TransactionsPage() {
                           : '-'}
                       <Money amount={tx.amount} currency={tx.currency} />
                     </td>
-                    <td className="whitespace-nowrap px-3 py-2 text-right">
+                    <td className="whitespace-nowrap px-3 py-2 text-end">
                       <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                         {tx.pending && (
                           <button
@@ -794,7 +794,7 @@ export function TransactionsPage() {
                     onClick={() => setViewingLinesTx(tx)}
                     className="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400 underline transition-colors hover:text-brand-600"
                   >
-                    <Receipt className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Ver detalle ({{n}} líneas)', { n: linesByTx.get(tx.id)!.length })}
+                    <Receipt className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Ver detalle ({{n}} líneas)', { n: linesByTx.get(tx.id)!.length })}
                   </button>
                 )}
               </div>
@@ -829,7 +829,7 @@ export function TransactionsPage() {
                       disabled={confirmTx.isPending}
                       className="text-xs font-medium text-line-green transition-colors hover:text-line-green disabled:opacity-50"
                     >
-                      <Check className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Confirmar')}
+                      <Check className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Confirmar')}
                     </button>
                   )}
                   {tx.kind === 'expense' && (
@@ -845,7 +845,7 @@ export function TransactionsPage() {
                       onClick={() => setDeferring(tx)}
                       className="text-xs font-medium text-brand-600 transition-colors hover:text-brand-800 dark:text-brand-400"
                     >
-                      <CalendarClock className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Diferir')}
+                      <CalendarClock className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Diferir')}
                     </button>
                   )}
                   <button
@@ -855,13 +855,13 @@ export function TransactionsPage() {
                     }}
                     className="text-xs font-medium text-brand-600 transition-colors hover:text-brand-800 dark:text-brand-400"
                   >
-                    <Pencil className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Editar')}
+                    <Pencil className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Editar')}
                   </button>
                   <button
                     onClick={() => openDelete(tx)}
                     className="text-xs font-medium text-line-scarlet transition-colors hover:text-line-scarlet"
                   >
-                    <Trash2 className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Eliminar')}
+                    <Trash2 className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Eliminar')}
                   </button>
                 </div>
               </div>

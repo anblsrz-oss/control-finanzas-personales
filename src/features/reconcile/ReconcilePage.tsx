@@ -394,7 +394,7 @@ export function ReconcilePage() {
             type="file"
             accept="application/pdf,image/*"
             onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-            className="block w-full text-sm text-slate-600 dark:text-slate-300 file:mr-3 file:rounded-lg file:border-0 file:bg-brand-500 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white"
+            className="block w-full text-sm text-slate-600 dark:text-slate-300 file:me-3 file:rounded-lg file:border-0 file:bg-brand-500 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white"
           />
         </div>
 
@@ -490,7 +490,7 @@ export function ReconcilePage() {
               {/* Falta en la app */}
               <Card>
                 <h3 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  <Plus className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('En el estado de cuenta, no en la app')} ({result.missingInApp.length})
+                  <Plus className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('En el estado de cuenta, no en la app')} ({result.missingInApp.length})
                 </h3>
                 {result.missingInApp.length === 0 ? (
                   <p className="text-xs text-slate-500 dark:text-slate-400">{t('Nada 🎉')}</p>
@@ -545,7 +545,7 @@ export function ReconcilePage() {
               {/* Monto distinto */}
               <Card>
                 <h3 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  <TriangleAlert className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Monto distinto')} ({result.amountMismatch.length})
+                  <TriangleAlert className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Monto distinto')} ({result.amountMismatch.length})
                 </h3>
                 {result.amountMismatch.length === 0 ? (
                   <p className="text-xs text-slate-500 dark:text-slate-400">{t('Nada 🎉')}</p>
@@ -581,7 +581,7 @@ export function ReconcilePage() {
               {/* Falta en el estado de cuenta */}
               <Card>
                 <h3 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  <Minus className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('En la app, no en el estado de cuenta')} ({result.missingInStatement.length})
+                  <Minus className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('En la app, no en el estado de cuenta')} ({result.missingInStatement.length})
                 </h3>
                 {result.missingInStatement.length === 0 ? (
                   <p className="text-xs text-slate-500 dark:text-slate-400">{t('Nada 🎉')}</p>
@@ -607,7 +607,7 @@ export function ReconcilePage() {
               {result.installments.length > 0 && (
                 <Card>
                   <h3 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                    <CircleCheck className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Mensualidades a meses')} ({result.installments.length})
+                    <CircleCheck className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Mensualidades a meses')} ({result.installments.length})
                   </h3>
                   <div className="grid gap-1">
                     {result.installments.map((i, k) => (
@@ -626,7 +626,7 @@ export function ReconcilePage() {
               {/* Coinciden */}
               <Card>
                 <h3 className="mb-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                  <CircleCheck className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Coinciden')} ({result.matched.length})
+                  <CircleCheck className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Coinciden')} ({result.matched.length})
                 </h3>
                 <div className="grid gap-1">
                   {result.matched.map((m, i) => (
@@ -667,7 +667,7 @@ export function ReconcilePage() {
                 <button
                   type="button"
                   onClick={() => setOpenHistoryId(openHistoryId === r.id ? null : r.id)}
-                  className="flex w-full items-center justify-between gap-2 text-left"
+                  className="flex w-full items-center justify-between gap-2 text-start"
                 >
                   <span className="font-medium text-slate-800 dark:text-slate-100">
                     {targetLabel(r)}{' '}
@@ -676,7 +676,7 @@ export function ReconcilePage() {
                     </span>
                   </span>
                   <span className="text-xs text-slate-500 dark:text-slate-400">
-                    <CircleCheck className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {r.matched_count} · ⚠️ {r.amount_mismatch_count} · ➕ {r.missing_in_app_count} · ➖{' '}
+                    <CircleCheck className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {r.matched_count} · ⚠️ {r.amount_mismatch_count} · ➕ {r.missing_in_app_count} · ➖{' '}
                     {r.missing_in_statement_count}
                   </span>
                 </button>

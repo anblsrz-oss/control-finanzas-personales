@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Select } from '@/components/ui/Select'
+import { LanguageSelect } from '@/components/ui/LanguageSelect'
 import { confirmDialog, showAlert } from '@/components/ui/DialogHost'
 import { CalendarDays, Check, Coins, Download, Eye, Globe, GraduationCap, LogOut, Palette, Smartphone, Target, Trash2, User, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '@/store/useAuth'
-import { useSettings, type ThemePref, type LanguagePref } from '@/store/useSettings'
+import { useSettings, type ThemePref } from '@/store/useSettings'
 import { useMyFamilies, useMyInvitations } from '@/hooks/useFamily'
 import {
   useUpdateMainCurrency,
+  useUpdateLanguage,
   useUpdateBudgetAlertThreshold,
   useUpdateBudgetAlertsEmail,
   useUpdateCalendarSubscriptionReminders,
@@ -42,11 +44,6 @@ const THEME_OPTIONS: { value: ThemePref; label: string; icon: string }[] = [
   { value: 'light', label: 'Claro', icon: '☀️' },
   { value: 'dark', label: 'Oscuro', icon: '🌙' },
   { value: 'system', label: 'Sistema', icon: '🖥️' },
-]
-
-const LANGUAGE_OPTIONS: { value: LanguagePref; label: string }[] = [
-  { value: 'es', label: 'Español' },
-  { value: 'en', label: 'English' },
 ]
 
 const REPORT_PERIOD_OPTIONS: { value: ReportEmailPeriod; label: string }[] = [
@@ -85,6 +82,7 @@ export function SettingsPage() {
   const { data: invitations = [] } = useMyInvitations(email)
   const family = families[0]
 
+  const updateLanguage = useUpdateLanguage()
   const updateMainCurrency = useUpdateMainCurrency()
   const mainCurrency = profile?.main_currency ?? 'MXN'
   const updateThreshold = useUpdateBudgetAlertThreshold()
@@ -178,7 +176,7 @@ export function SettingsPage() {
         {/* Perfil */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            <User className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Perfil')}
+            <User className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Perfil')}
           </p>
           <div className="flex items-center gap-3">
             {profile?.avatar_url ? (
@@ -201,7 +199,7 @@ export function SettingsPage() {
               </p>
             </div>
             {profile?.is_premium && (
-              <Badge className="ml-auto bg-line-amber/10 text-line-amber">
+              <Badge className="ms-auto bg-line-amber/10 text-line-amber">
                 Premium
               </Badge>
             )}
@@ -214,7 +212,7 @@ export function SettingsPage() {
         {/* Apariencia */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            <Palette className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Apariencia')}
+            <Palette className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Apariencia')}
           </p>
           <div className="flex gap-2">
             {THEME_OPTIONS.map((opt) => (
@@ -238,30 +236,18 @@ export function SettingsPage() {
         {/* Idioma */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            <Globe className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Idioma')}
+            <Globe className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Idioma')}
           </p>
-          <div className="flex gap-2">
-            {LANGUAGE_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => setLanguage(opt.value)}
-                className={`flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors ${
-                  language === opt.value
-                    ? 'border-brand-600 bg-brand-50 dark:bg-brand-800/40 text-brand-700 dark:text-brand-500'
-                    : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
+          <LanguageSelect value={language} onChange={(lng) => {
+            setLanguage(lng)
+            if (userId) updateLanguage.mutate({ userId, lang: lng })
+          }} />
         </Card>
 
         {/* Privacidad / visibilidad */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            <Eye className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Visibilidad')}
+            <Eye className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Visibilidad')}
           </p>
           <label className="flex items-start gap-2">
             <input
@@ -282,7 +268,7 @@ export function SettingsPage() {
         {/* Moneda principal */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            <Coins className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Moneda principal')}
+            <Coins className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Moneda principal')}
           </p>
           <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
             {t('Tu balance y reportes se muestran en esta moneda. Los movimientos en otra moneda se convierten con el tipo de cambio.')}
@@ -316,7 +302,7 @@ export function SettingsPage() {
         {/* Presupuestos */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            <Target className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Presupuestos')}
+            <Target className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Presupuestos')}
           </p>
           <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
             {t('Se usa en los presupuestos que no definen su propio umbral. Te avisamos una vez por periodo al cruzarlo, y otra si lo excedes.')}
@@ -349,7 +335,7 @@ export function SettingsPage() {
             <span className="text-sm text-slate-700 dark:text-slate-200">%</span>
             <Link
               to="/presupuestos"
-              className="ml-auto text-sm font-medium text-brand-700 dark:text-brand-500 hover:underline"
+              className="ms-auto text-sm font-medium text-brand-700 dark:text-brand-500 hover:underline"
             >
               {t('Ver mis presupuestos')} →
             </Link>
@@ -467,7 +453,7 @@ export function SettingsPage() {
         {/* Google Calendar */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            <CalendarDays className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Recordatorios en Google Calendar')}
+            <CalendarDays className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Recordatorios en Google Calendar')}
           </p>
           <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
             {t('Crea en tu cuenta un calendario aparte, «Mi Control de Finanzas — Recordatorios», con un evento cuando se acerca el próximo cobro de una suscripción o la fecha de pago de una tarjeta/MSI. La app no ve tus otros calendarios ni eventos.')}
@@ -491,7 +477,7 @@ export function SettingsPage() {
             ) : (
               <>
                 <span className="text-sm text-line-green">
-                  <Check className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Conectado{{email}}', {
+                  <Check className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Conectado{{email}}', {
                     email: calendarConnQuery.data?.email ? ` (${calendarConnQuery.data.email})` : '',
                   })}
                 </span>
@@ -551,7 +537,7 @@ export function SettingsPage() {
         {/* Teléfono */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            <Smartphone className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Teléfono')}
+            <Smartphone className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Teléfono')}
           </p>
           <PhoneSection />
         </Card>
@@ -578,7 +564,7 @@ export function SettingsPage() {
         {/* Familia */}
         <Card>
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            <Users className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Plan familiar')}
+            <Users className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Plan familiar')}
           </p>
           {invitations.length > 0 && (
             <p className="mb-2 rounded-lg bg-line-amber/10 p-2 text-sm text-line-amber">
@@ -625,7 +611,7 @@ export function SettingsPage() {
         {!isNative() && (
           <Card>
             <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-              <Smartphone className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Aplicación')}
+              <Smartphone className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Aplicación')}
             </p>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -636,7 +622,7 @@ export function SettingsPage() {
               </p>
               <a href={APK_URL} target="_blank" rel="noopener noreferrer">
                 <Button size="sm" variant="secondary">
-                  <Download className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Descargar app (Android)')}
+                  <Download className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Descargar app (Android)')}
                 </Button>
               </a>
             </div>
@@ -648,7 +634,7 @@ export function SettingsPage() {
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                <GraduationCap className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Tutorial')}
+                <GraduationCap className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Tutorial')}
               </p>
               <p className="text-sm text-slate-500 dark:text-slate-400">
                 {t('Vuelve a ver el recorrido guiado por las secciones de la app.')}
@@ -678,7 +664,7 @@ export function SettingsPage() {
         <Card>
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-              <LogOut className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Sesión')}
+              <LogOut className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Sesión')}
             </p>
             <Button variant="danger" size="sm" onClick={() => signOut()}>
               {t('Cerrar sesión')}
@@ -689,7 +675,7 @@ export function SettingsPage() {
         {/* Eliminar cuenta (requisito de Google Play) */}
         <Card className="border-line-scarlet/30">
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-            <Trash2 className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Eliminar mi cuenta')}
+            <Trash2 className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Eliminar mi cuenta')}
           </p>
           <DeleteAccountSection />
         </Card>

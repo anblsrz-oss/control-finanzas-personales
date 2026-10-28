@@ -1,6 +1,8 @@
 // Tipos de las tablas/vistas de Supabase (definidos a mano; en el futuro se pueden
 // generar con `supabase gen types typescript`).
 
+import type { Lang } from '@/i18n/languages'
+
 export type AccountType = 'checking' | 'savings' | 'investment' | 'cash' | 'voucher'
 export type CardType = 'credit' | 'debit' | 'voucher'
 export type TxKind = 'income' | 'expense' | 'transfer' | 'card_payment' | 'refund'
@@ -11,6 +13,8 @@ export type ImportStatus = 'parsing' | 'staged' | 'confirmed' | 'failed'
 export type StagingStatus = 'pending' | 'confirmed' | 'discarded' | 'duplicate'
 
 export interface ProfileRow {
+  /** Idioma de la interfaz elegido por el usuario (default 'es'). */
+  lang: Lang
   id: string
   email: string | null
   full_name: string | null

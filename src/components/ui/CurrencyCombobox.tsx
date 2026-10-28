@@ -150,7 +150,7 @@ export function CurrencyCombobox({
           role="combobox"
           aria-expanded={open}
           onClick={() => setOpen((o) => !o)}
-          className={`flex w-full items-center justify-between gap-2 rounded-md border bg-surface px-3 py-2 text-left text-sm transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
+          className={`flex w-full items-center justify-between gap-2 rounded-md border bg-surface px-3 py-2 text-start text-sm transition-colors focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/20 ${
             error ? 'border-line-scarlet' : 'border-slate-300 dark:border-slate-600'
           }`}
         >
@@ -201,7 +201,7 @@ export function CurrencyCombobox({
                   aria-selected={row.code === value}
                   onMouseEnter={() => setHighlight(idx)}
                   onClick={() => pick(row.code)}
-                  className={`flex w-full items-baseline gap-2 px-3 py-2 text-left text-sm ${
+                  className={`flex w-full items-baseline gap-2 px-3 py-2 text-start text-sm ${
                     idx === highlight
                       ? 'bg-brand-50 dark:bg-slate-800'
                       : ''

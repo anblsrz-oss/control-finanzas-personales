@@ -1,7 +1,7 @@
 // Prerender de las páginas públicas (solo web: Vercel o PRERENDER=1; ver vite.config.ts).
 // Lo llama vite-plugin-pwa justo antes de generar el service worker, cuando dist/ ya tiene el
 // bundle del cliente. Genera:
-//  - dist/<ruta>/index.html para cada ruta de SEO_ROUTES × es/en (HTML real dentro de #root).
+//  - dist/<ruta>/index.html para cada ruta de SEO_ROUTES × cada idioma de LANGUAGES (HTML real dentro de #root).
 //  - dist/app-shell.html: el index.html del SPA sin contenido de landing, destino del rewrite
 //    de vercel.json para rutas privadas/desconocidas (noindex, no es la landing).
 //  - dist/sitemap.xml y dist/llms.txt desde SEO_ROUTES.
@@ -13,8 +13,6 @@ import { createHash } from 'node:crypto'
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-
-const LANGS = ['es', 'en']
 
 async function fetchAppConfig(env) {
   const url = env.VITE_SUPABASE_URL
@@ -66,6 +64,7 @@ export async function prerender({ root, outDir, workbox }) {
   const env = loadEnv('production', root, 'VITE_')
   const appConfig = await fetchAppConfig(env)
   const { mod, outDir: ssrDir } = await loadEntryServer(root)
+  const LANGS = mod.LANGUAGES.map((l) => l.code)
   try {
     const built = await readFile(join(outDir, 'index.html'), 'utf8')
     // Base común: index.html del cliente sin los metadatos y el contenido de la landing.
@@ -76,7 +75,7 @@ export async function prerender({ root, outDir, workbox }) {
     if (!rootRe.test(base) || !base.includes('</head>')) throw new Error('Prerender: dist/index.html no tiene la forma esperada.')
     const page = (lang, head, body) =>
       base
-        .replace('<html lang="es">', `<html lang="${lang}">`)
+        .replace('<html lang="es">', `<html lang="${lang}" dir="${mod.LANGUAGES.find((l) => l.code === lang).dir}">`)
         .replace('</head>', () => `\n    ${head}\n  </head>`)
         .replace(rootRe, () => `<div id="root">${body}</div>`)
 
@@ -132,7 +131,7 @@ export async function prerender({ root, outDir, workbox }) {
     const entries = mod.SEO_ROUTES.flatMap((r) =>
       LANGS.map((lang) => {
         const alt = (hreflang, l) => `<xhtml:link rel="alternate" hreflang="${hreflang}" href="${mod.absoluteUrl(r.path, l)}"/>`
-        return `  <url><loc>${mod.absoluteUrl(r.path, lang)}</loc>${alt('es', 'es')}${alt('en', 'en')}${alt('x-default', 'es')}</url>`
+        return `  <url><loc>${mod.absoluteUrl(r.path, lang)}</loc>${LANGS.map((l) => alt(l, l)).join('')}${alt('x-default', 'es')}</url>`
       }),
     )
     await write(
@@ -143,7 +142,7 @@ export async function prerender({ root, outDir, workbox }) {
     // llms.txt: plantilla + precios y páginas del registro.
     const pages = [
       ...mod.SEO_ROUTES.map((r) => `- [${r.title.es}](${mod.absoluteUrl(r.path, 'es')})`),
-      `- [English version](${mod.absoluteUrl('/', 'en')})`,
+      ...LANGS.filter((l) => l !== 'es').map((l) => `- [${l}](${mod.absoluteUrl('/', l)})`),
     ].join('\n')
     const template = await readFile(join(dirname(fileURLToPath(import.meta.url)), 'llms.template.md'), 'utf8')
     await write(

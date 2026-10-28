@@ -41,7 +41,7 @@ export function BrandBatteryGuide() {
               type="button"
               onClick={() => setExpandedBrand(isOpen ? null : guide.key)}
               aria-expanded={isOpen}
-              className="flex w-full items-center justify-between px-3 py-2 text-left text-sm font-medium text-slate-700 dark:text-slate-200"
+              className="flex w-full items-center justify-between px-3 py-2 text-start text-sm font-medium text-slate-700 dark:text-slate-200"
             >
               {t(guide.brands)}
               <span className="text-xs text-slate-400">{isOpen ? '▲' : '▼'}</span>

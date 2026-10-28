@@ -29,7 +29,7 @@ export function StatStrip({ items, className = '' }: { items: StatItem[]; classN
             {/* Tramo de línea con parada: dentro de la celda, sin tocar el borde. */}
             <span aria-hidden="true" className="mb-3 flex items-center">
               <span className={`h-3 w-3 shrink-0 rounded-full border-[3px] bg-surface ${TONES[item.tone].ring}`} />
-              <span className={`h-1 flex-1 rounded-r-full ${TONES[item.tone].bar}`} />
+              <span className={`h-1 flex-1 rounded-e-full ${TONES[item.tone].bar}`} />
             </span>
             <dt className="text-xs font-medium text-slate-500 dark:text-slate-400">{item.label}</dt>
             <dd className={`mt-1 text-2xl font-bold tracking-tight ${TONES[item.tone].text}`}>{item.value}</dd>

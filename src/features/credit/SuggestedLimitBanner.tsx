@@ -15,7 +15,7 @@ export function SuggestedLimitBanner({ line, userId }: { line: CreditLineRow; us
   return (
     <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-line-green/30 bg-line-green/10 p-3">
       <p className="text-sm text-slate-700 dark:text-slate-200">
-        <TrendingUp className="mr-1.5 inline h-4 w-4 align-[-2px] text-line-green" aria-hidden="true" />
+        <TrendingUp className="me-1.5 inline h-4 w-4 align-[-2px] text-line-green" aria-hidden="true" />
         {t('{{name}} subió tu límite a {{amount}}. ¿Lo actualizo?', {
           name: line.name,
           amount: formatMoney(line.suggested_limit, line.currency),

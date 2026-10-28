@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { absoluteUrl, type Lang } from '@/lib/seoRoutes'
+import { LANGUAGES, langInfo } from '@/i18n/languages'
 
 // React 18 no tiene tags de <head> nativos: se escriben a mano. Todo es idempotente
 // (se busca la etiqueta por selector y se actualiza; si no aplica, se quita), así que
@@ -56,16 +57,17 @@ export function headTags({ title, description, lang, path, noindex }: PageMeta):
       selector: 'link[rel="canonical"]',
       attrs: path ? { rel: 'canonical', href: absoluteUrl(path, lang) } : null,
     },
-    ...(['es', 'en', 'x-default'] as const).map((l): HeadTag => ({
+    ...([...LANGUAGES.map((l) => l.code), 'x-default'] as const).map((l): HeadTag => ({
       tag: 'link',
       selector: `link[rel="alternate"][hreflang="${l}"]`,
-      attrs: path ? { rel: 'alternate', hreflang: l, href: absoluteUrl(path, l === 'en' ? 'en' : 'es') } : null,
+      attrs: path ? { rel: 'alternate', hreflang: l, href: absoluteUrl(path, l === 'x-default' ? 'es' : l) } : null,
     })),
     ogMeta('og:title', title),
     ogMeta('og:description', description),
     ogMeta('og:type', 'website'),
     ogMeta('og:url', path ? absoluteUrl(path, lang) : undefined),
-    ogMeta('og:locale', lang === 'en' ? 'en_US' : 'es_MX'),
+    ogMeta('og:locale', langInfo(lang).og),
+
   ]
 }
 
@@ -73,6 +75,7 @@ function applyMeta(meta: PageMeta) {
   const { title, lang, jsonLd } = meta
   document.title = title
   document.documentElement.lang = lang
+  document.documentElement.dir = langInfo(lang).dir
   for (const t of headTags(meta)) setTag(t.tag, t.selector, t.attrs)
 
   const ld = document.head.querySelector('script[type="application/ld+json"]')

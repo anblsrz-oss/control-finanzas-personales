@@ -134,7 +134,7 @@ export function SubscriptionPage() {
               <>
                 <p className="mt-2 text-3xl font-bold tracking-tight">
                   {PRICES.monthly}
-                  <span className="ml-1 text-sm font-normal text-slate-500 dark:text-slate-400">{t('al mes')}</span>
+                  <span className="ms-1 text-sm font-normal text-slate-500 dark:text-slate-400">{t('al mes')}</span>
                 </p>
                 <p className="text-sm text-slate-500 dark:text-slate-400">
                   {t('7 días de prueba gratis. Cancela cuando quieras.')}

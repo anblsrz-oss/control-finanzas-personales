@@ -98,7 +98,7 @@ export function LineStatement({
           </p>
         </div>
         <Button size="sm" onClick={() => onPay(pending)}>
-          <CreditCard className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Pagar')}
+          <CreditCard className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Pagar')}
         </Button>
       </div>
 

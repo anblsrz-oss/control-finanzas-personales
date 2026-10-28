@@ -78,7 +78,7 @@ export const ChartCard = forwardRef<HTMLDivElement, ChartCardProps>(function Cha
           </button>
           {exportable && (
             <label
-              className="ml-1 flex cursor-pointer items-center gap-1 text-xs text-slate-500 dark:text-slate-400"
+              className="ms-1 flex cursor-pointer items-center gap-1 text-xs text-slate-500 dark:text-slate-400"
               title={t('Incluir en Excel')}
             >
               <input

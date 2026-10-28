@@ -52,7 +52,7 @@ export function WhatsNewButton({ className = '' }: { className?: string }) {
       >
         <Sparkles className="h-5 w-5" aria-hidden="true" />
         {hasUnseen && (
-          <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-line-scarlet" />
+          <span className="absolute end-1 top-1 h-2 w-2 rounded-full bg-line-scarlet" />
         )}
       </button>
 

@@ -107,7 +107,7 @@ export function RefundDialog({ transaction, userId, plans, onClose }: RefundDial
           {cancelledPlan ? (
             <div className="space-y-3">
               <p className="rounded-lg bg-line-green/10 p-3 text-sm text-line-green">
-                <CircleCheck className="mr-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Reembolso registrado. Este plan de MSI se canceló: ya no se te cobrarán las mensualidades restantes.')}
+                <CircleCheck className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Reembolso registrado. Este plan de MSI se canceló: ya no se te cobrarán las mensualidades restantes.')}
               </p>
               <div className="flex justify-end">
                 <Button onClick={onClose}>{t('Cerrar')}</Button>
