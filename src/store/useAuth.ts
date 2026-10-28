@@ -6,6 +6,8 @@ import { initNativeAuthListener } from '@/lib/nativeAuth'
 import { autoSyncSmsSilently, isAndroidNative } from '@/lib/smsSync'
 import { flushNotificationQueueSilently } from '@/lib/notificationSync'
 import { registerPush, unregisterPush } from '@/lib/pushNotifications'
+import { isLang } from '@/i18n/languages'
+import { useSettings } from '@/store/useSettings'
 import type { ProfileRow } from '@/types/db'
 
 export type Profile = ProfileRow
@@ -32,6 +34,24 @@ async function fetchProfile(userId: string): Promise<Profile | null> {
     return null
   }
   return data as Profile | null
+}
+
+// Alinea idioma local y perfil al iniciar sesión. 'es' es el default de la BD
+// (probablemente nunca elegido): si el local es otro, se sube; si no, gana el perfil.
+async function syncLanguage(profile: Profile | null) {
+  try {
+    if (!profile || !isLang(profile.lang)) return
+    const local = useSettings.getState().language
+    if (profile.lang === local) return
+    if (profile.lang === 'es') {
+      const { error } = await supabase.from('profiles').update({ lang: local }).eq('id', profile.id)
+      if (!error) await useAuth.getState().refreshProfile()
+    } else {
+      useSettings.getState().setLanguage(profile.lang)
+    }
+  } catch {
+    // nunca romper el login por esto
+  }
 }
 
 export const useAuth = create<AuthState>((set, get) => ({
@@ -70,6 +90,7 @@ export const useAuth = create<AuthState>((set, get) => ({
       : null
     set({ session, profile, loading: false })
     if (session?.user) void registerPush(session.user.id)
+    void syncLanguage(profile)
 
     supabase.auth.onAuthStateChange(async (_event, newSession) => {
       const newProfile = newSession?.user
@@ -77,6 +98,7 @@ export const useAuth = create<AuthState>((set, get) => ({
         : null
       set({ session: newSession, profile: newProfile })
       if (newSession?.user) void registerPush(newSession.user.id)
+      void syncLanguage(newProfile)
     })
   },
 

@@ -10,6 +10,7 @@ import { useSettings, type ThemePref } from '@/store/useSettings'
 import { useMyFamilies, useMyInvitations } from '@/hooks/useFamily'
 import {
   useUpdateMainCurrency,
+  useUpdateLanguage,
   useUpdateBudgetAlertThreshold,
   useUpdateBudgetAlertsEmail,
   useUpdateCalendarSubscriptionReminders,
@@ -81,6 +82,7 @@ export function SettingsPage() {
   const { data: invitations = [] } = useMyInvitations(email)
   const family = families[0]
 
+  const updateLanguage = useUpdateLanguage()
   const updateMainCurrency = useUpdateMainCurrency()
   const mainCurrency = profile?.main_currency ?? 'MXN'
   const updateThreshold = useUpdateBudgetAlertThreshold()
@@ -236,7 +238,10 @@ export function SettingsPage() {
           <p className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
             <Globe className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Idioma')}
           </p>
-          <LanguageSelect value={language} onChange={setLanguage} />
+          <LanguageSelect value={language} onChange={(lng) => {
+            setLanguage(lng)
+            if (userId) updateLanguage.mutate({ userId, lang: lng })
+          }} />
         </Card>
 
         {/* Privacidad / visibilidad */}
