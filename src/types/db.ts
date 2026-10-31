@@ -101,6 +101,8 @@ export interface CreditLineRow {
   cut_day: number | null
   payment_day: number | null
   dates_may_shift: boolean
+  /** Cuenta desde la que se paga esta línea (origen de los avisos de pago). */
+  payment_account_id: string | null
   /** Límite nuevo avisado por el banco ("aumentamos tu límite"), por aplicar. */
   suggested_limit: number | null
   suggested_limit_at: string | null

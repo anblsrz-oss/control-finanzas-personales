@@ -316,6 +316,9 @@ export const en: Record<string, string> = {
   'Nombre de la línea': 'Line name',
   'Ej: Nu': 'E.g. Nu',
   'Las fechas se recorren en días inhábiles': 'Dates shift on non-business days',
+  'Cuenta desde la que la pagas (opcional)': 'Account you pay it from (optional)',
+  'Sin definir': 'Not set',
+  'Los avisos de pago de tarjeta que no dicen de qué cuenta sale el dinero (como Mercado Pago) usan esta cuenta y se registran confirmados.': 'Card payment notices that don\'t say which account the money comes from (like Mercado Pago) use this account and are recorded as confirmed.',
   'Te preguntaremos la fecha real cuando llegue el corte.':
     "We'll ask you for the real date when the cut-off comes around.",
   'Hereda de {{name}}: límite {{limit}}{{dates}}':

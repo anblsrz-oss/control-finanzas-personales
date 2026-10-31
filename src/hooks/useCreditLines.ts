@@ -332,6 +332,7 @@ export function useCreateCreditLine() {
       cut_day?: number | null
       payment_day?: number | null
       dates_may_shift?: boolean
+      payment_account_id?: string | null
     }) => {
       const { userId, ...rest } = input
       const { data, error } = await supabase
@@ -345,6 +346,7 @@ export function useCreateCreditLine() {
           cut_day: rest.cut_day ?? null,
           payment_day: rest.payment_day ?? null,
           dates_may_shift: rest.dates_may_shift ?? false,
+          payment_account_id: rest.payment_account_id ?? null,
         }])
         .select()
         .single()
@@ -371,6 +373,7 @@ export function useUpdateCreditLine() {
       cut_day?: number | null
       payment_day?: number | null
       dates_may_shift?: boolean
+      payment_account_id?: string | null
       /** null = descartar/aplicar la sugerencia de límite del banco. */
       suggested_limit?: null
     }) => {
@@ -383,6 +386,7 @@ export function useUpdateCreditLine() {
       if (rest.cut_day !== undefined) updates.cut_day = rest.cut_day
       if (rest.payment_day !== undefined) updates.payment_day = rest.payment_day
       if (rest.dates_may_shift !== undefined) updates.dates_may_shift = rest.dates_may_shift
+      if (rest.payment_account_id !== undefined) updates.payment_account_id = rest.payment_account_id
       if (rest.suggested_limit !== undefined) updates.suggested_limit = rest.suggested_limit
 
       const { data, error } = await supabase

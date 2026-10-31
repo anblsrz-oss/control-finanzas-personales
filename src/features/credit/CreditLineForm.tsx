@@ -8,6 +8,7 @@ import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
 import { useEntitlements } from '@/hooks/useAppConfig'
 import { useAuth } from '@/store/useAuth'
+import { useAccounts } from '@/hooks/useAccounts'
 import { useCreateCreditLine, useUpdateCreditLine } from '@/hooks/useCreditLines'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -24,6 +25,7 @@ const schema = z.object({
   cut_day: optionalInt(1, 31, 'Entre 1 y 31'),
   payment_day: optionalInt(1, 31, 'Entre 1 y 31'),
   dates_may_shift: z.boolean().default(false),
+  payment_account_id: z.string().optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -37,6 +39,7 @@ interface CreditLineFormProps {
 export function CreditLineForm({ line, onSuccess, onCancel }: CreditLineFormProps) {
   const { t } = useTranslation()
   const { session } = useAuth()
+  const accountsQuery = useAccounts(session?.user?.id)
   const createLine = useCreateCreditLine()
   const updateLine = useUpdateCreditLine()
   const isEdit = !!line
@@ -53,6 +56,7 @@ export function CreditLineForm({ line, onSuccess, onCancel }: CreditLineFormProp
       cut_day: line?.cut_day ?? undefined,
       payment_day: line?.payment_day ?? undefined,
       dates_may_shift: line?.dates_may_shift ?? false,
+      payment_account_id: line?.payment_account_id ?? '',
     },
   })
 
@@ -74,6 +78,7 @@ export function CreditLineForm({ line, onSuccess, onCancel }: CreditLineFormProp
       cut_day: data.cut_day ?? null,
       payment_day: data.payment_day ?? null,
       dates_may_shift: data.dates_may_shift,
+      payment_account_id: data.payment_account_id || null,
     }
     const handlers = {
       onSuccess: () => {
@@ -145,6 +150,18 @@ export function CreditLineForm({ line, onSuccess, onCancel }: CreditLineFormProp
             error={form.formState.errors.payment_day?.message}
           />
         </div>
+
+        <Select
+          label={t('Cuenta desde la que la pagas (opcional)')}
+          options={[
+            { value: '', label: t('Sin definir') },
+            ...(accountsQuery.data ?? []).map((a) => ({ value: a.id, label: a.name })),
+          ]}
+          {...form.register('payment_account_id')}
+        />
+        <p className="-mt-2 text-xs text-slate-400 dark:text-slate-500">
+          {t('Los avisos de pago de tarjeta que no dicen de qué cuenta sale el dinero (como Mercado Pago) usan esta cuenta y se registran confirmados.')}
+        </p>
 
         <Switch
           checked={!!form.watch('dates_may_shift')}
