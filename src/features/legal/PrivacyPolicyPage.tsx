@@ -11,7 +11,7 @@ import { activeLocale } from '@/i18n'
 // OAuth de Google. Incluye la cláusula de "Limited Use" que Google exige
 // a las apps que usan sus APIs (inicio de sesión y Google Calendar).
 
-const LAST_UPDATED_ISO = '2026-10-17'
+const LAST_UPDATED_ISO = '2026-11-08'
 const CONTACT_EMAIL = 'soporte@controlfinanzaspersonales.com'
 
 type Section = { heading: string; paragraphs: string[]; link?: { to: string; label: string } }
@@ -56,7 +56,7 @@ const SECTIONS: Section[] = [
       'Usamos Supabase como proveedor de infraestructura (base de datos, autenticación y funciones del servidor) para operar la app; Supabase procesa los datos en nuestro nombre bajo sus propias medidas de seguridad, y no los usa para sus propios fines.',
       'Cuando inicias sesión con Google o conectas Google Calendar, compartimos información con Google únicamente en la medida necesaria para autenticarte o para crear tus recordatorios, conforme a esta política.',
       'Cuando escaneas un recibo, una factura o un estado de cuenta, la imagen o el documento se envía a OpenAI para extraer el monto, la fecha y el comercio. OpenAI lo procesa en nuestro nombre, no lo guardamos nosotros y, conforme a sus condiciones para clientes de su API, no lo usa para entrenar sus modelos.',
-      'Cuando usas el asistente de ayuda, los mensajes que escribes y los nombres de tus cuentas, tarjetas y categorías (para no duplicarlos) se envían a OpenAI para generar la respuesta. No se envían saldos, movimientos ni correos. OpenAI los procesa en nuestro nombre y, conforme a sus condiciones para clientes de su API, no los usa para entrenar sus modelos.',
+      'Cuando usas el asistente de ayuda, los mensajes que escribes y los nombres de tus cuentas, tarjetas y categorías (para no duplicarlos) se envían a OpenAI para generar la respuesta. Si le preguntas por tus propias cifras (por ejemplo, cuánto gastaste en un periodo o una categoría), el servidor calcula el total con tus datos y solo envía a OpenAI ese resultado (totales por moneda y por categoría), nunca tu lista de movimientos, saldos ni correos. Si preguntas por tus fechas de corte y de pago, se envían a OpenAI los nombres de tus tarjetas con esas fechas, pero no montos ni saldos. Solo se consultan tus propios datos. OpenAI los procesa en nuestro nombre y, conforme a sus condiciones para clientes de su API, no los usa para entrenar sus modelos.',
       'Los correos que te manda la app (alertas de presupuesto, avisos de suscripciones, reportes e invitaciones familiares) se envían a través de Resend, que recibe tu correo y el contenido del aviso solo para entregarlo.',
       'Las notificaciones push se entregan mediante Firebase Cloud Messaging (Google), que recibe un identificador de tu dispositivo y el texto de la notificación.',
       'Si contratas Premium, Stripe o Google Play reciben los datos necesarios para cobrarte (correo, datos de la tarjeta o del medio de pago que capturas directamente en su página) y los tratan conforme a su propia política de privacidad.',

@@ -36,7 +36,15 @@
       },
       {
         "q": "¿Qué datos se envían?",
-        "a": "Tus mensajes y los **nombres** de tus cuentas, tarjetas y categorías, para no duplicarlos. No se envían saldos, movimientos ni correos."
+        "a": "Tus mensajes y los **nombres** de tus cuentas, tarjetas y categorías, para no duplicarlos. Si preguntas por tus cifras, solo se envía el total ya calculado (por moneda y categoría), nunca tu lista de movimientos, saldos ni correos."
+      },
+      {
+        "q": "¿Puedo preguntarle por mis fechas de corte o qué tarjeta usar?",
+        "a": "Sí. Pregúntale \"¿cuándo es el corte de mis tarjetas?\" o \"¿qué tarjeta me conviene usar hoy?\". Te dice el próximo corte y la fecha de pago de una compra de hoy, y sugiere la tarjeta con más días de plazo. No considera intereses, beneficios ni cashback, y todavía no calcula cuánto debes pagar: eso lo ves en Tarjetas."
+      },
+      {
+        "q": "¿Puedo preguntarle cuánto gasté?",
+        "a": "Sí. Pregúntale, por ejemplo, \"¿cuánto gasté en comida este mes?\" o \"¿cuánto gasté en Uber en octubre?\". Solo consulta **tus** datos y te da el total (los gastos ya restan reembolsos). Si no dices el periodo, usa el mes actual."
       },
       {
         "q": "No veo la burbuja de Taffy.",
