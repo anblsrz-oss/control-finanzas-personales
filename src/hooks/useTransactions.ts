@@ -418,6 +418,88 @@ export function useConfirmTransaction() {
   })
 }
 
+// Aplica (todo o parte de) un cashback pendiente al pago de una tarjeta de
+// crédito, sin cuenta de origen: el dinero nunca pasó por una cuenta, solo baja
+// la deuda de la línea.
+//   * Se crea un pago de tarjeta (card_payment) por el monto aplicado.
+//   * El ingreso original queda confirmado por el monto aplicado (el cashback
+//     sigue contando como ingreso, pero sin cuenta: no mueve ningún saldo).
+//   * Si sobra, el resto entra como un ingreso pendiente nuevo para que el
+//     usuario le asigne cuenta.
+export function useApplyCashbackToCard() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async (input: {
+      userId: string
+      transaction: TransactionRow
+      amount: number
+      creditLineId: string
+      txDate: string
+    }) => {
+      const { transaction: tx, amount } = input
+      if (tx.kind !== 'income' || !tx.pending) throw new Error('El movimiento ya no está pendiente.')
+      if (!(amount > 0) || amount > tx.amount + 0.005) throw new Error('Monto inválido.')
+      const applied = Math.min(amount, tx.amount)
+      const rest = Math.round((tx.amount - applied) * 100) / 100
+
+      const { error: payErr } = await supabase.from('transactions').insert([
+        {
+          user_id: input.userId,
+          kind: 'card_payment',
+          amount: applied,
+          currency: tx.currency,
+          tx_date: input.txDate,
+          concept: 'Pago de tarjeta con cashback',
+          to_credit_line_id: input.creditLineId,
+          payment_scope: 'partial',
+          notes: tx.concept ? `Cashback: ${tx.concept}`.slice(0, 500) : null,
+          pending: false,
+        },
+      ])
+      if (payErr) throw payErr
+
+      const { error: updErr } = await supabase
+        .from('transactions')
+        .update(rest > 0 ? { amount: applied, pending: false } : { pending: false })
+        .eq('id', tx.id)
+      if (updErr) throw updErr
+
+      if (rest > 0) {
+        const { error: restErr } = await supabase.from('transactions').insert([
+          {
+            user_id: input.userId,
+            kind: 'income',
+            amount: rest,
+            currency: tx.currency,
+            tx_date: tx.tx_date,
+            concept: tx.concept,
+            category_id: tx.category_id,
+            notes: 'Resto del cashback no aplicado a la tarjeta',
+            pending: true,
+          },
+        ])
+        if (restErr) throw restErr
+      }
+    },
+    onSuccess: (_data, input) => {
+      for (const key of [
+        'transactions',
+        'transactions_pending_count',
+        'transactions_count',
+        'account_balances',
+        'card_usage',
+        'credit_line_usage',
+        'credit_activity',
+        'transactions_summary',
+        'monthly_totals',
+        'category_totals',
+      ]) {
+        queryClient.invalidateQueries({ queryKey: [key, input.userId] })
+      }
+    },
+  })
+}
+
 // Historial de transacciones eliminadas (con motivo).
 export function useTransactionDeletions(userId?: string) {
   return useQuery({
