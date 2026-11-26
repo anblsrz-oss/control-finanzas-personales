@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { CalendarClock, Check, LayoutGrid, Pencil, Receipt, Table2, Trash2 } from 'lucide-react'
+import { CalendarClock, Check, CreditCard, LayoutGrid, Pencil, Receipt, Table2, Trash2 } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { userDeleteReasons } from '@/lib/deleteReasons'
@@ -31,6 +31,7 @@ import { Modal } from '@/components/ui/Modal'
 import { TransactionForm } from './TransactionForm'
 import { RefundDialog } from './RefundDialog'
 import { DeferDialog } from './DeferDialog'
+import { ApplyCashbackDialog } from './ApplyCashbackDialog'
 import { PossibleDuplicateNotice, ReceivedVia } from './CaptureInfo'
 import { AmountlessNotice } from './AmountlessNotice'
 import {
@@ -77,6 +78,7 @@ export function TransactionsPage() {
   const [editingTx, setEditingTx] = useState<TransactionRow | null>(null)
   const [deleting, setDeleting] = useState<TransactionRow | null>(null)
   const [refunding, setRefunding] = useState<TransactionRow | null>(null)
+  const [applyingCashback, setApplyingCashback] = useState<TransactionRow | null>(null)
   const [deferring, setDeferring] = useState<TransactionRow | null>(null)
   const [reason, setReason] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -334,6 +336,14 @@ export function TransactionsPage() {
     creditLines.find((l) => l.id === id)?.name || '—'
   const getCategoryName = (id?: string) =>
     categories.find((c) => c.id === id)?.name || '—'
+
+  // Cashback pendiente y sin cuenta: se puede abonar (todo o parte) a una TC.
+  const canApplyToCard = (tx: TransactionRow) =>
+    tx.kind === 'income' &&
+    tx.pending &&
+    !tx.account_id &&
+    creditLines.length > 0 &&
+    (/cashback/i.test(tx.concept ?? '') || getCategoryName(tx.category_id || undefined) === 'Cashback')
 
   function openDelete(tx: TransactionRow) {
     setDeleting(tx)
@@ -716,6 +726,16 @@ export function TransactionsPage() {
                             <Check className="inline h-4 w-4" aria-hidden="true" />
                           </button>
                         )}
+                        {canApplyToCard(tx) && (
+                          <button
+                            onClick={() => setApplyingCashback(tx)}
+                            title={t('Pagar tarjeta')}
+                            aria-label={t('Pagar tarjeta')}
+                            className="text-xs font-medium text-brand-600 transition-colors hover:text-brand-800 dark:text-brand-400"
+                          >
+                            <CreditCard className="inline h-4 w-4" aria-hidden="true" />
+                          </button>
+                        )}
                         <button
                           onClick={() => {
                             setShowForm(false)
@@ -832,6 +852,14 @@ export function TransactionsPage() {
                       <Check className="me-1.5 inline h-4 w-4 align-[-2px]" aria-hidden="true" /> {t('Confirmar')}
                     </button>
                   )}
+                  {canApplyToCard(tx) && (
+                    <button
+                      onClick={() => setApplyingCashback(tx)}
+                      className="text-xs font-medium text-brand-600 transition-colors hover:text-brand-800 dark:text-brand-400"
+                    >
+                      💳 {t('Pagar tarjeta')}
+                    </button>
+                  )}
                   {tx.kind === 'expense' && (
                     <button
                       onClick={() => setRefunding(tx)}
@@ -942,6 +970,13 @@ export function TransactionsPage() {
         userId={userId}
         plans={plans}
         onClose={() => setRefunding(null)}
+      />
+
+      <ApplyCashbackDialog
+        transaction={applyingCashback}
+        userId={userId}
+        creditLines={creditLines}
+        onClose={() => setApplyingCashback(null)}
       />
 
       <DeferDialog

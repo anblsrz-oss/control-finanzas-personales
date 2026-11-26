@@ -2112,6 +2112,22 @@ export const en: Record<string, string> = {
     'Refund',
   'Reembolsar compra':
     'Refund purchase',
+  'Pagar tarjeta':
+    'Pay card',
+  'Pagar la tarjeta con este cashback':
+    'Pay the card with this cashback',
+  'Monto a abonar':
+    'Amount to apply',
+  'Abonar a la tarjeta':
+    'Apply to card',
+  'Escribe un monto entre 0 y {{max}}.':
+    'Enter an amount between 0 and {{max}}.',
+  'Selecciona la línea de crédito a pagar':
+    'Select the credit line to pay',
+  'No tienes una línea de crédito en {{currency}}.':
+    'You have no credit line in {{currency}}.',
+  'Los {{rest}} restantes quedan como ingreso pendiente para que les asignes cuenta.':
+    'The remaining {{rest}} stays as a pending income so you can assign an account.',
   'Reembolso registrado. Este plan de MSI se canceló: ya no se te cobrarán las mensualidades restantes.':
     'Refund recorded. This installment plan was cancelled: you will no longer be charged the remaining installments.',
   'Ya reembolsado':
